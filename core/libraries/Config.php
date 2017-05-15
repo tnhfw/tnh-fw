@@ -56,4 +56,12 @@
 		static function setAll(array $config = array()){
 			static::$config = array_merge(static::$config, $config);
 		}
+		
+		static function delete($item){
+			unset(static::$config[$item]);
+		}
+		
+		static function load($config){
+			Loader::config($config);
+		}
 	}

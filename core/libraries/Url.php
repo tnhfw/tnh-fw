@@ -64,7 +64,10 @@
 				$domain = $obj->request->server('SERVER_ADDR');
 			}
 			if($port && (is_https() && $port != 443 || !is_https() && $port != 80)){
-				$domain .= ':'.$port;
+				//some server use SSL but the port doesn't equal 443 sometime is 80 if is the case don't try to emulate it
+				if(is_https() && $port != 80){
+					$domain .= ':'.$port;
+				}
 			}
 
 			return $protocol.'://'.$domain;
