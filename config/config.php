@@ -5,6 +5,9 @@
 	*/
 	
 	$config['base_url'] = '';
+	
+	/* the front controller 
+	*/
 	$config['front_controller'] = 'index.php';
 	$config['pagination_per_page'] = 10;
 	
