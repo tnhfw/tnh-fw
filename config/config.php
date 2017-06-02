@@ -4,9 +4,29 @@
 	+------------------------------------------------------------------+
 	*/
 	
+	/* your app base url
+	* The address of your application or website, terminated by a slash. 
+	* If this value is empty then we try to determine it automatically using the server variables (SERVER_ADDR, SCRIPT_NAME), 
+	* we recommend you specify this value for a server in production.
+	*/
 	$config['base_url'] = '';
+	
+	/* The front controller
+	* The front controller. This represents the name of the file called by the application 
+	* during the loading process generally the file "index.php". 
+	* If your webserver supports the url rewrite module, then you can leave this value empty. 
+	* You will find a sample file to hide this file in the url inside the root folder of your 
+	* application (htaccess.txt) for the apache web server just rename it to .htaccess 	
+	*/
 	$config['front_controller'] = 'index.php';
+	
+	
+	/* The pagination
+	* Represents the number of data to display per page.
+	* Note: this value must be strictly greater than zero (0)
+	*/
 	$config['pagination_per_page'] = 10;
+	
 	
 	/*+---------------------------------------------------------------+
 	* Logs configuration section
