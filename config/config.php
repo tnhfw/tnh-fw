@@ -11,12 +11,14 @@
 	*/
 	$config['base_url'] = '';
 	
+
 	/* The front controller
 	* The front controller. This represents the name of the file called by the application 
 	* during the loading process generally the file "index.php". 
 	* If your webserver supports the url rewrite module, then you can leave this value empty. 
 	* You will find a sample file to hide this file in the url inside the root folder of your 
 	* application (htaccess.txt) for the apache web server just rename it to .htaccess 	
+	/* the front controller 
 	*/
 	$config['front_controller'] = 'index.php';
 	
