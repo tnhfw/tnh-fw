@@ -572,7 +572,7 @@ class Upload
     */
     public function allowOverwriting()
     {
-        $this->allowOverwriting = true;
+        $this->overwrite_file = true;
         return $this;
     }
     /**
