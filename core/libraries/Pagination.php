@@ -30,7 +30,8 @@
 
         }
 
-        public function getLink($total, $current_page_no, $nb_link = 10, $nb_per_page = 10){
+        public function getLink($total, $current_page_no, $nb_link = 10){
+			$nb_per_page = Config::get('pagination_per_page');
             $queryString = Url::queryString();
             $current = Url::current();
             if($queryString == ''){
