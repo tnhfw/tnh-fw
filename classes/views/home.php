@@ -35,7 +35,7 @@
 							A simple PHP framework created using the concept of codeigniter with bootstrap twitter
 						</h3>
 						<br />
-						<p><?php echo Html::a('http://www.nguereza-tony.cf', 'Web site', array('class' => 'btn btn-primary', 'target' => '_blank'));?></p>
+						<p><?php echo Html::a('http://www.iacademy.cf', 'Web site', array('class' => 'btn btn-primary', 'target' => '_blank'));?></p>
 					</div>
 				</div>
 				<div class = "panel panel-default">
