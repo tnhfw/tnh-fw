@@ -1,45 +1,102 @@
 <?php
-/**
- * TNH Framework
- *
- * A simple PHP framework created using the concept of codeigniter with bootstrap twitter
- *
- * This content is released under the GNU GPL License (GPL)
- *
- * Copyright (C) 2017 Tony NGUEREZA
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+	/**
+	 * TNH Framework
+	 *
+	 * A simple PHP framework created using the concept of codeigniter with bootstrap twitter
+	 *
+	 * This content is released under the GNU GPL License (GPL)
+	 *
+	 * Copyright (C) 2017 Tony NGUEREZA
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License
+	 * as published by the Free Software Foundation; either version 3
+	 * of the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with this program; if not, write to the Free Software
+	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	*/
 
-
+	/**
+	 *  @file bootstrap.php
+	 *  
+	 *  contains the loading process: loading of constants, functions and libraries essential 
+	 *  to the good functioning of the application, the loading of the configurations,
+	 *  verification of the environment and the routing of the request.
+	 *  
+	 *  @package	core	
+	 *  @author	Tony NGUEREZA
+	 *  @copyright	Copyright (c) 2017
+	 *  @license	https://opensource.org/licenses/gpl-3.0.html GNU GPL License (GPL)
+	 *  @link	http://www.iacademy.cf
+	 *  @version 1.0.0
+	 *  @since	Version 1.0.0
+	 *  @filesource
+	 */
+	 
+	 /**
+	  *  inclusion of global constants of the environment that contain : name of the framework,
+	  *  version, build date, version of PHP required, etc.
+	  */
 	require_once CORE_PATH.'constants.php';
+	
+	
+	/**
+	 *  include file containing useful methods: show_error, 
+	 *  exception_handler, error_handler, get_instance, etc.
+	 */
 	require_once CORE_PATH.'common.php';
+	
+	
+	/**
+	 *  include file containing the class for library loads, 
+	 *  functions, models, configuration file, controller
+	 */
 	require_once CORE_LIBRARY_PATH.'Loader.php';
 	
+	/**
+	 *  Registration of automatic function of loading resources.
+	 *  
+	 */
 	Loader::register();
 	
+	/**
+	* Loading "string" helper that contains most of the character 
+	* string processing functions : attributes_to_string, get_random_string, etc.
+	*/
 	Loader::functions('string');
+	
+	/**
+	* Helper loader "url" which contains most of the URL 
+	* processing functions: is_https, is_url, etc.
+	*/
 	Loader::functions('url');
 	
-	
+	/**
+	 *  Definition of the PHP error message handling function
+	 */
 	set_error_handler('error_handler');
+	
+	/*
+	* Definition of the PHP error exception handling function
+	*/
 	set_exception_handler('exception_handler');
 	
+	/*
+	* Load configurations using the 
+	* static method of the Config class.
+	*/
 	Config::init();
 	
-	//checking environment
+	/*
+	* Verification of the PHP environment: minimum and maximum version
+	*/
 	if(version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
 		show_error('Your PHP Version <b>'.phpversion().'</b> is less than <b>'.TNH_REQUIRED_PHP_MIN_VERSION.'</b>, please install a new version or update your PHP to the latest.', 'Error environment');	
 	}
@@ -47,6 +104,9 @@
 		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than <b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'Error environment');	
 	}
 	
-	//routing
+	/*
+	* Routing
+	* instantiation of the "Router" class and user request routing
+	*/
 	$router = new Router();
 	$router->dispatch();

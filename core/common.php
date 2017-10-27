@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-		
+
 	function show_error($msg, $title = 'error'){
 		$data['error'] = $msg;
 		$data['title'] = ucfirst($title);
