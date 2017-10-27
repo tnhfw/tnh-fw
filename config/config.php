@@ -41,6 +41,7 @@
 	* You can use a domain name or IP address, for example:
 	*
 	* $config['base_url'] = 'http://www.mysite.com';
+	* or
 	* $config['base_url'] = 'http://198.15.25.12';
 	*
 	* If this value is empty, we try to determine it automatically by using 
