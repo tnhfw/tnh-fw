@@ -61,7 +61,7 @@ abstract class Model
     /**
      * Support for soft deletes and this model's 'deleted' key
      */
-    protected $soft_delete = true;
+    protected $soft_delete = false;
     protected $soft_delete_key = 'is_deleted';
     protected $_temporary_with_deleted = FALSE;
     protected $_temporary_only_deleted = FALSE;

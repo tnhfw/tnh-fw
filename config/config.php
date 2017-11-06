@@ -71,6 +71,15 @@
 	*/
 	$config['front_controller'] = 'index.php';
 	
+	/**
+	 *  Url suffix
+	 */
+	 $config['url_suffix'] = '';
+	
+	/**
+	 *  site charset
+	 */
+	$config['charset'] = 'UTF-8';
 	
 	/**
 	* The pagination.

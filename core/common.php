@@ -34,7 +34,6 @@
 	 *  @license	https://opensource.org/licenses/gpl-3.0.html GNU GPL License (GPL)
 	 *  @link	http://www.iacademy.cf
 	 *  @version 1.0.0
-	 *  @since	Version 1.0.0
 	 *  @filesource
 	 */
 	 
@@ -110,11 +109,9 @@
 	* For example :
 	* $obj = & get_instance();
 	*  
-	*  @return object : the instance of the "Controller" class
+	*  @return Controller the instance of the "Controller" class
 	*  
 	*/
 	function & get_instance(){
 		return Controller::get_instance();
 	}
-	
-?>

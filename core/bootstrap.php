@@ -26,7 +26,7 @@
 	/**
 	 *  @file bootstrap.php
 	 *  
-	 *  contains the loading process: loading of constants, functions and libraries essential 
+	 *  Contains the loading process: loading of constants, functions and libraries essential 
 	 *  to the good functioning of the application, the loading of the configurations,
 	 *  verification of the environment and the routing of the request.
 	 *  
@@ -36,14 +36,13 @@
 	 *  @license	https://opensource.org/licenses/gpl-3.0.html GNU GPL License (GPL)
 	 *  @link	http://www.iacademy.cf
 	 *  @version 1.0.0
-	 *  @since	Version 1.0.0
 	 *  @filesource
 	 */
 	 
-	 /**
-	  *  inclusion of global constants of the environment that contain : name of the framework,
-	  *  version, build date, version of PHP required, etc.
-	  */
+	/**
+	*  inclusion of global constants of the environment that contain : name of the framework,
+	*  version, build date, version of PHP required, etc.
+	*/
 	require_once CORE_PATH.'constants.php';
 	
 	
@@ -61,8 +60,7 @@
 	require_once CORE_LIBRARY_PATH.'Loader.php';
 	
 	/**
-	 *  Registration of automatic function of loading resources.
-	 *  
+	 *  Registration of automatic function of loading resources.  
 	 */
 	Loader::register();
 	
@@ -90,7 +88,7 @@
 	
 	/*
 	* Load configurations using the 
-	* static method of the Config class.
+	* static method "init" of the Config class.
 	*/
 	Config::init();
 	
@@ -106,7 +104,7 @@
 	
 	/*
 	* Routing
-	* instantiation of the "Router" class and user request routing
+	* instantiation of the "Router" class and user request routing processing.
 	*/
 	$router = new Router();
 	$router->dispatch();

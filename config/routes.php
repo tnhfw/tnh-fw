@@ -81,4 +81,4 @@
 	 *  The default route
 	 */
 	$route['/'] = 'Home';
-?>
+	
