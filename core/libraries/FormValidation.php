@@ -129,7 +129,12 @@
         $this->_forceFail = false;
 
         foreach ($_POST as $inputName => $inputVal) {
-            $_POST[$inputName] = trim($_POST[$inputName]);
+			if(is_array($_POST[$inputName])){
+				$_POST[$inputName] = array_map('trim', $_POST[$inputName]);
+			}
+			else{
+				$_POST[$inputName] = trim($_POST[$inputName]);
+			}
 
             if (array_key_exists($inputName, $this->_rules)) {
                 foreach ($this->_parseRuleString($this->_rules[$inputName]) as $eachRule) {
