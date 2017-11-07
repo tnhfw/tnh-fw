@@ -55,7 +55,7 @@
 	* - $route['/profile/(:num)'] = 'UsersController/profile'; => http://yoursite.com/profile/4 will be captured but 
 	* http://yoursite.com/profile/a will not work.
 	*
-	* - $ route['/profile/(:alpha)'] = 'UsersController/profile'; => http://yoursite.com/profile/a will be captured 
+	* - $route['/profile/(:alpha)'] = 'UsersController/profile'; => http://yoursite.com/profile/a will be captured 
 	* but http://yoursite.com/profile/1457 will not work.
 	*
 	* - $route['/profile/(:alnum)'] = 'UsersController/profile'; => http://yoursite.com/profile/4a, 
