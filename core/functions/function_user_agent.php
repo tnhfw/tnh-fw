@@ -24,13 +24,35 @@
 	*/
 
 
+	/**
+	 *  @file function_user_agent.php
+	 *    
+	 *  Contains most of the utility functions for agent, platform, mobile, browser, and other management.
+	 *  
+	 *  @package	core
+	 *  @author	Tony NGUEREZA
+	 *  @copyright	Copyright (c) 2017
+	 *  @license	https://opensource.org/licenses/gpl-3.0.html GNU GPL License (GPL)
+	 *  @link	http://www.iacademy.cf
+	 *  @version 1.0.0
+	 *  @since 1.0.0
+	 *  @filesource
+	 */
+	 
+	 
 	if(!function_exists('get_ip')){
 		/**
-		* get the visitor ip
-		*/
+		 *  Retrieves the user's IP address
+		 *  
+		 *  This function allows to retrieve the IP address of the client
+		 *  even if it uses a proxy, the actual IP address is retrieved.
+		 *  
+		 *  @return string the IP address.
+		 */
 		function get_ip(){
 			$ip = $_SERVER['REMOTE_ADDR'];
 
+			//for proxy
 			if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
 				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 			}

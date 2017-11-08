@@ -6,31 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Tony NGUEREZA">
-
     <title>Page not found</title>
-
-    <link href="<?php echo Assets::css('bootstrap.min');?>" rel="stylesheet" type = "text/css" >
-	<link href="<?php echo Assets::css('font-awesome.min');?>" rel="stylesheet" type = "text/css" >
-	<link href="<?php echo Assets::css('responsive');?>" rel="stylesheet" type = "text/css" >
-	<link rel="icon" href="<?php echo Assets::img('favicon.ico');?>">
-	<!--[if lt IE 9]>
-	<script src="<?php echo Assets::js('html5shiv');?>"></script>
-	<script src="<?php echo Assets::js('respond.min');?>"></script>
-    <![endif]--> 
+	<style type = 'text/css'>
+	/* reset */
+		*{
+			padding : 0;
+			margin : 0;
+		}
+		body{
+			margin : 10px auto;
+			padding : 10px;
+			font-family : Helvetica, arial, sans-serif;
+		}
+		
+		.container{
+			margin : 20px auto;
+			max-width : 50%;
+			border : 2px solid #ccc;
+			box-shadow : 2px 2px 2px #ccc;
+		}
+		
+		.title, .body{
+			border-bottom : 2px solid #ccc;
+			padding : 15px;
+		}
+		
+		
+		.title{
+			background : #d9534f;
+		}
+		
+		.title h2{
+			text-transform : uppercase;
+			font-weight : 200px;
+			color : #fdfdff;
+		}
+		
+		.body{
+			border-bottom : none;
+		}
+		
+		.body p{
+			font-weight : none;
+		}
+		
+		a{
+			text-decoration : none;
+			color : #ff2626;
+		}
+		
+		a:hover{
+			text-decoration : underline;
+			color : #4000ff;
+		}
+	</style>
   </head>
   <body>
 	<div class="container">
-	<br />
-		<div class = "panel panel-primary">
-			<div class = "panel-heading">
-				<h1>404 Page Not Found</h1>
-			</div>
-			<div class = "panel-body">
-				<h3>Désolé, la page que vous demandez n'existe pas ou a été déplacée voire supprimée. Retourner à la <a href = "<?php echo Url::base_url();?>"> page d'accueil</a></h3>
-			</div>
+		<div class = "title">
+			<h2>404 Page Not Found</h2>
 		</div>
-	</div> <!-- ./container-->	
-	<script src="<?php echo Assets::js('jquery');?>"></script>
-	<script src="<?php echo Assets::js('bootstrap.min');?>"></script>
+		<div class = "body">
+			<p>Désolé, la page que vous demandez n'existe pas ou a été déplacée voire supprimée. Retourner à la <a href = "<?php echo Url::base_url();?>"> page d'accueil</a></p>
+		</div>
+	</div> <!-- ./container-->
 </body>
 </html>

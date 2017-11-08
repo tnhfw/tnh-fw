@@ -57,6 +57,13 @@
 				foreach($attributes as $key => $value){
 					$key = trim(htmlspecialchars($key));
 					$value = trim(htmlspecialchars($value));
+					/*
+					* To predict the case where the string to convert contains the character "
+					* we check if this is the case we add a slash to solve this problem.
+					* For example:
+					* 	$attr = array('placeholder' => 'I am a "puple"')
+					* 	$str = attributes_to_string($attr); => placeholder = "I am a \"puple\""
+					 */
 					if(strpos('"', $value) != false){
 						$value = addslashes($value);
 					}
@@ -67,10 +74,18 @@
 		}
 	}
 
-	if(!function_exists('get_random_string')){	
-		function get_random_string($type = 'alnum',$length = 10, $lower = false){
-			//$type must be alpha, alnum, num.
-			$str = '';
+	if(!function_exists('get_random_string')){
+		/**
+		 * Generate a random string
+		 * @param  string $type the type of generation. It can take the values: "alpha" for alphabetic characters,
+		 * "alnum" for alpha-numeric characters and "num" for numbers.
+		 * By default it is "alnum".
+		 * @param  integer $length the length of the string to generate. By default it is 10.
+		 * @param  boolean $lower if we return the generated string in lowercase (true). By default it's false.
+		 * @return string the generated string.
+		 */
+		function get_random_string($type = 'alnum', $length = 10, $lower = false){
+			$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 			switch($type){
 				case 'alpha':
 					$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -81,8 +96,6 @@
 				case 'num':
 					$str = '1234567890';
 				break;
-				default:
-					$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 			}
 			$random = null;
 			for($i = 0 ; $i < $length ; $i++){
