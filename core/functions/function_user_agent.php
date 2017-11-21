@@ -66,8 +66,15 @@
 
 
 	if(!function_exists('get_user_agent')){
+		/**
+		 *  Retrieves the user agent
+		 *  
+		 *  User Agent is sometimes the browser used to connect to your application or website.
+		 *  
+		 *  @return string the user agent
+		 */
 		function get_user_agent(){
-			$user_agent =  $_SERVER['HTTP_USER_AGENT'];
+			$user_agent =  isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:null;
 			return $user_agent;
 		}
 

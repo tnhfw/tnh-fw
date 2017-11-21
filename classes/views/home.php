@@ -26,19 +26,20 @@
 	<div class = "container">
 		<div class = "row">
 			<div class = "col-md-offset-2 col-md-8 col-md-offset-2">
-				<div class = "panel panel-default">
+				<div class = "panel panel-primary">
 					<div class = "panel-heading">
 						<h2>Welcome on <?php echo TNH_NAME;?> v<?php echo TNH_VERSION;?></h2>
 					</div>
 					<div class = "panel-body">
+						<img src = "<?php echo Assets::img('logo.png');?>" class = "img-responsive" style = "float:left;" />
 						<h3>
 							A simple PHP framework created using the concept of codeigniter with bootstrap twitter
 						</h3>
 						<br />
-						<p><?php echo Html::a('http://www.iacademy.cf', 'Web site', array('class' => 'btn btn-primary', 'target' => '_blank'));?></p>
+						<p><?php echo Html::a('http://github.com/nguereza-tony/tnh-fw', 'Framework on Github', array('class' => 'btn btn-default', 'target' => '_blank'));?></p>
 					</div>
 				</div>
-				<div class = "panel panel-default">
+				<div class = "panel panel-primary">
 					<div class = "panel-heading">
 						<h2>Server information</h2>
 					</div>

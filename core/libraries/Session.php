@@ -86,6 +86,11 @@
 		static function clear($item){
 			unset($_SESSION[$item]);
 		}
+		
+		static function clearFlash($item){
+			$key = self::SESSION_FLASH_KEY.'_'.$item;
+			unset($_SESSION[$key]);
+		}
 
 		static function exists($item){
 			return isset($_SESSION[$item]);

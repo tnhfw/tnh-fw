@@ -138,7 +138,7 @@
 					$found = true;
 				}
 				if(!$found){
-					show_error('Unable to find view file '.$view);
+					show_error('Unable to find view '.$view);
 				}
 
 			}
@@ -149,7 +149,7 @@
 				$request = new Request();
 				Loader::functions('user_agent');
 				$str = '[404 page not found] : ';
-				$str .= ' un visiteur tente d\'acceder à la page ['.$request->requestUri().'] mais il tombe sur l\'erreur 404 [page non trouvée] son IP : '.get_ip();
+				$str .= ' un visiteur tente d\'acceder à la page ['.$request->requestUri().'] mais il tombe sur l\'erreur 404 [page non trouvée] son IP : '.get_ip(). ', Agent utilisateur : '.get_user_agent();
 				Log::error($str);
 				/***********************************/
 				$path = CORE_VIEWS_PATH.'404.php';
