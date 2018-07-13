@@ -125,7 +125,13 @@
      * afterwards.
      */
     protected function _run() {
-
+        //first check for CSRF
+        if( Config::get('csrf_enable', false)){
+            if(!Security::validateCSRF()){
+                show_error('Invalide Form data Cross Site Request Forgery do his job, form data corrupted.');
+            }
+        }
+        /////////////////////////////////////////////
         $this->_forceFail = false;
 
         foreach ($_POST as $inputName => $inputVal) {

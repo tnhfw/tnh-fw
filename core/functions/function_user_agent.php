@@ -38,7 +38,7 @@
 	 *  @since 1.0.0
 	 *  @filesource
 	 */
-	 
+	
 	 
 	if(!function_exists('get_ip')){
 		/**
@@ -74,8 +74,8 @@
 		 *  @return string the user agent
 		 */
 		function get_user_agent(){
-			$user_agent =  isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:null;
-			return $user_agent;
+			$userAgent =  isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+			return $userAgent;
 		}
 
 	}

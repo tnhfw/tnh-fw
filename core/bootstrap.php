@@ -38,26 +38,26 @@
 	 *  @version 1.0.0
 	 *  @filesource
 	 */
-	 
+	
 	/**
 	*  inclusion of global constants of the environment that contain : name of the framework,
 	*  version, build date, version of PHP required, etc.
 	*/
-	require_once CORE_PATH.'constants.php';
+	require_once CORE_PATH . 'constants.php';
 	
 	
 	/**
 	 *  include file containing useful methods: show_error, 
 	 *  exception_handler, error_handler, get_instance, etc.
 	 */
-	require_once CORE_PATH.'common.php';
+	require_once CORE_PATH . 'common.php';
 	
 	
 	/**
 	 *  include file containing the class for library loads, 
 	 *  functions, models, configuration file, controller
 	 */
-	require_once CORE_LIBRARY_PATH.'Loader.php';
+	require_once CORE_LIBRARY_PATH . 'Loader.php';
 	
 	/**
 	 *  Registration of automatic function of loading resources.  
@@ -95,11 +95,12 @@
 	/*
 	* Verification of the PHP environment: minimum and maximum version
 	*/
-	if(version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
-		show_error('Your PHP Version <b>'.phpversion().'</b> is less than <b>'.TNH_REQUIRED_PHP_MIN_VERSION.'</b>, please install a new version or update your PHP to the latest.', 'Error environment');	
-	}
-	else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
-		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than <b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'Error environment');	
+	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
+		show_error('Your PHP Version <b>'.phpversion().'</b> is less than <b>'.TNH_REQUIRED_PHP_MIN_VERSION.'</b>, 
+			please install a new version or update your PHP to the latest.', 'Error environment');	
+	}else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
+		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than 
+			<b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'Error environment');	
 	}
 	
 	/*

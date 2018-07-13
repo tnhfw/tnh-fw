@@ -1,13 +1,23 @@
 <?php
-	defined('ROOT_PATH') or exit('Access denied');
+	defined('ROOT_PATH') || exit('Access denied');
 
-	class Home extends Controller{
+	/**
+	 * 
+	 */
+	class Home extends Controller {
 
-		public function __construct(){
+		/**
+		 * the class constructor
+		 */
+		public function __construct() {
 			parent::__construct();
 		}
 
-		function index(){
+		/**
+		 * the default method
+		 * @return null
+		 */
+		function index() {
 			$this->response->render('home');
 		}
 	}

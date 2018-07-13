@@ -72,6 +72,8 @@
 	 *  
 	 *  This function has the role of verifying if the chain passed 
 	 *  in argument is a valid address that is to say using the protocol (http, https, ftp, ftps, etc.)
+	 *
+	 *  @param string $url the URL address to check
 	 *  
 	 *  @return boolean true if is a valid URL address.
 	 */

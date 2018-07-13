@@ -64,7 +64,7 @@
 					* 	$attr = array('placeholder' => 'I am a "puple"')
 					* 	$str = attributes_to_string($attr); => placeholder = "I am a \"puple\""
 					 */
-					if(strpos('"', $value) != false){
+					if(strpos('"', $value) !== false){
 						$value = addslashes($value);
 					}
 					$str .= $key.' = "'.$value.'" ';
@@ -98,8 +98,11 @@
 				break;
 			}
 			$random = null;
-			for($i = 0 ; $i < $length ; $i++){
-				$random .= $str[mt_rand()%strlen($str)];
+			for($i = 0; $i < $length; $i++){
+				$random .= $str[mt_rand() % strlen($str)];
+			}
+			if($lower){
+				$random = strtolower($random);
 			}
 			return $random;
 		}

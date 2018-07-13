@@ -34,7 +34,7 @@
 	*
 	* you can place this directory outside of your web directory, for example "/home/your_app", etc.
 	*/
-	define('ROOT_PATH', dirname(realpath(__FILE__)).DS);
+	define('ROOT_PATH', dirname(realpath(__FILE__)) . DS);
 
 	/** 
 	* The core directory
@@ -42,7 +42,7 @@
 	* It is recommended to put this folder out of the web directory of your server and 
 	* you should not change its content because in case of update you could lose the modified files.
 	*/
-	define('CORE_PATH', ROOT_PATH.'core'.DS);
+	define('CORE_PATH', ROOT_PATH . 'core' . DS);
 
 	/**
 	* The path to the system library directory.
@@ -50,14 +50,14 @@
 	* Which contains the libraries most often used in your web application, as for the 
 	* core directory it is advisable to put it out of the root directory of your application.
 	*/
-	define('CORE_LIBRARY_PATH', CORE_PATH.'libraries'.DS);
+	define('CORE_LIBRARY_PATH', CORE_PATH . 'libraries' . DS);
 
 	/**
 	* The path to the system view directory.
 	*
 	* That contains the views used for the system, such as error messages, and so on.
 	*/
-	define('CORE_VIEWS_PATH', CORE_PATH.'views'.DS);
+	define('CORE_VIEWS_PATH', CORE_PATH . 'views' . DS);
 
 	/**
 	* The path to the configuration directory.
@@ -65,7 +65,7 @@
 	* That contains most of the configuration files for your 
 	* application (database, class loading file, functions, etc.)
 	*/
-	define('CONFIG_PATH', ROOT_PATH.'config'.DS);
+	define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
 
 	/**
 	* The path to the directory.
@@ -82,7 +82,7 @@
 	* Note: you should not put your personal libraries in the system library directory, 
 	* because it is recalled in case of updating the system you might have surprises.
 	*/
-	define('LIBRARY_PATH', ROOT_PATH.'libraries'.DS);
+	define('LIBRARY_PATH', ROOT_PATH . 'libraries' . DS);
 
 
 	/**
@@ -90,7 +90,7 @@
 	*
 	* It contains PHP functions that perform a particular task: character string processing, URL, etc.
 	*/
-	define('CORE_FUNCTIONS_PATH', CORE_PATH.'functions'.DS);
+	define('CORE_FUNCTIONS_PATH', CORE_PATH . 'functions' . DS);
 
 
 	/**
@@ -100,7 +100,7 @@
 	* Note: Do not put your personal functions or helpers in the system functions directory, 
 	* because if you update the system you may lose them.
 	*/
-	define('FUNCTIONS_PATH', ROOT_PATH.'functions'.DS);
+	define('FUNCTIONS_PATH', ROOT_PATH . 'functions' . DS);
 
 
 	/**
@@ -108,7 +108,7 @@
 	*
 	* If you have already used "composer" you know what that means.
 	*/
-	define('VENDOR_PATH', ROOT_PATH.'vendor'.DS);
+	define('VENDOR_PATH', ROOT_PATH . 'vendor' . DS);
 
 	/**
 	* The path to the application directory. 
@@ -116,7 +116,7 @@
 	* It contains your most often used files that is to say which contains your files of the application, 
 	* in MVC architecture (controllers, models, views).
 	*/
-	define('APPS_PATH', ROOT_PATH.'classes'.DS);
+	define('APPS_PATH', ROOT_PATH . 'classes' . DS);
 
 	/**
 	* The path to the controller directory of your application.
@@ -124,7 +124,7 @@
 	* If you already know the MVC architecture you know what a controller means; 
 	* it is he who makes the business logic of your application in general.
 	*/
-	define('APPS_CONTROLLER_PATH', APPS_PATH.'controllers'.DS);
+	define('APPS_CONTROLLER_PATH', APPS_PATH . 'controllers' . DS);
 
 
 	/**
@@ -133,7 +133,7 @@
 	* If you already know the MVC architecture you know what a model means; 
 	* it's the one who interacts with the database, in one word persistent data from your application.
 	*/
-	define('APPS_MODEL_PATH', APPS_PATH.'models'.DS);
+	define('APPS_MODEL_PATH', APPS_PATH . 'models' . DS);
 
 	/**
 	* The path to the directory of your views.
@@ -142,7 +142,7 @@
 	* a view is just a user interface (html page, form, etc.) that is to say 
 	* everything displayed in the browser interface, etc.
 	*/
-	define('APPS_VIEWS_PATH', APPS_PATH.'views'.DS);
+	define('APPS_VIEWS_PATH', APPS_PATH . 'views' . DS);
 
 
 	/**
@@ -151,7 +151,7 @@
 	* This feature is not yet available. 
 	* You can help us do this if you are nice or wish to see the developed framework.
 	*/
-	define('LANG_PATH', CORE_PATH.'lang'.DS);
+	define('LANG_PATH', CORE_PATH . 'lang' . DS);
 
 	/**
 	* The path to the directory of your cache files.
@@ -159,7 +159,7 @@
 	* This feature is not yet available.
 	* You can help us do it if you are nice or want to see the developed framework.
 	*/
-	define('CACHE_PATH', ROOT_PATH.'cache'.DS);
+	define('CACHE_PATH', ROOT_PATH . 'cache' . DS);
 
 	/**
 	* The path to the directory that contains the log files.
@@ -171,7 +171,7 @@
 	* # chmod -R 700 /path/to/your/logs/directory/
 	* # chown -R www-data:www-data /path/to/your/logs/directory/
 	*/
-	define('LOGS_PATH', ROOT_PATH.'logs'.DS);
+	define('LOGS_PATH', ROOT_PATH . 'logs' . DS);
 
 	/**
 	* The front controller of your application.
@@ -201,7 +201,7 @@
 	/******************** DO NOT CHANGE THE LINES BELOW *********************************/
 	////////////////////////////////////////////////////////////////////////////////////
 
-	switch (ENVIRONMENT){
+	switch (ENVIRONMENT) {
 		case 'development':
 			error_reporting(-1);
 			ini_set('display_errors', 1);
@@ -210,10 +210,9 @@
 		case 'testing':
 		case 'production':
 			ini_set('display_errors', 0);
-			if (version_compare(PHP_VERSION, '5.3', '>=')){
+			if (version_compare(PHP_VERSION, '5.3', '>=')) {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-			}
-			else{
+			}else {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
 			}
 		break;
@@ -226,4 +225,4 @@
 	* let's go.
 	* All is correct we launch our application.
 	*/
-	require_once CORE_PATH.'bootstrap.php';
+	require_once CORE_PATH . 'bootstrap.php';

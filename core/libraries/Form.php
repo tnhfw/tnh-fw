@@ -41,6 +41,13 @@
 			}
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
+			
+			//if CSRF enable
+			if( Config::get('csrf_enable', false)){
+				$csrfValue = Security::generateCSRF();
+				$csrfName = Config::get('csrf_key', 'csrf_key');
+				$str .= static::hidden($csrfName, $csrfValue);
+			}
 
 			return $str;
 		}

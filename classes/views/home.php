@@ -53,7 +53,7 @@
 									<th>Name</th>
 									<th>Version</th>
 								</tr>
-								<?php foreach(get_loaded_extensions() as $e):?>
+								<?php foreach (get_loaded_extensions() as $e):?>
 									<tr>
 										<td><?php echo $e;?></td>
 										<td><?php echo phpversion($e);?></td>
@@ -78,10 +78,10 @@
 									<th>Path</th>
 									<th>File</th>
 								</tr>
-								<?php foreach(get_included_files() as $f):?>
+								<?php foreach(get_included_files() as $file):?>
 									<tr>
-										<td><?php echo $f;?></td>
-										<td><?php echo basename($f);?></td>
+										<td><?php echo $file;?></td>
+										<td><?php echo basename($file);?></td>
 									</tr>
 								<?php endforeach;?>
 							</table>

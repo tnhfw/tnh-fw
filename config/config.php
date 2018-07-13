@@ -74,7 +74,7 @@
 	/**
 	 *  Url suffix
 	 */
-	 $config['url_suffix'] = '';
+	$config['url_suffix'] = '';
 	
 	/**
 	 *  site charset
@@ -184,3 +184,31 @@
 	* else set this value to "false"
 	*/
 	$config['session_cookie_httponly'] = false;
+
+
+	/*+---------------------------------------------------------------+
+	* CSRF configuration section
+	+------------------------------------------------------------------+
+	*/
+	
+	/**
+	 * CSRF status
+	 *
+	 * if you would to use the CSRF (that we recommand you), set this key to true
+	 */
+	$config['csrf_enable'] = true;
+
+	/**
+	 * CSRF key
+	 *
+	 * the key used to store the csrf data
+	 */
+	$config['csrf_key'] = 'csrf_key';
+
+	/**
+	 * CSRF expire
+	 *
+	 * expire time in seconds of the CSRF data
+	 */
+	$config['csrf_expire'] = 120;
+	
