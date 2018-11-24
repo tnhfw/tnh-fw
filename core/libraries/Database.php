@@ -44,7 +44,7 @@ class Database
   private $error      = null;
   private $result     = [];
   private $prefix     = null;
-  private $op         = ['=','!=','<','>','<=','>=','<>'];
+  private $op         = array('=','!=','<','>','<=','>=','<>');
   private $cache      = null;
   private $cacheDir   = null;
   private $queryCount = 0;
@@ -58,8 +58,8 @@ class Database
 			show_error('No database configuration found in database.php');
 		}
 		else{
-			$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
-			$config['username']  = isset($db['username']) ? $db['username'] : 'root';
+			    $config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
+			    $config['username']  = isset($db['username']) ? $db['username'] : 'root';
         	$config['password']  = isset($db['password']) ? $db['password'] : '';
         	$config['database']  = isset($db['database']) ? $db['database'] : '';
         	$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
@@ -70,10 +70,10 @@ class Database
         	$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
         	$this->prefix        = $config['prefix'];
         	$this->cacheDir      = $config['cachedir'];
-            $this->database = $config['database'];
+          $this->database = $config['database'];
 	        $dsn = '';
 	        if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
-			  $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
+			      $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
 					. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
 					. 'dbname=' . $config['database'];
 			}
@@ -191,47 +191,82 @@ class Database
     return $this;
   }
 
-  public function innerJoin($table, $field1, $op = '', $field2 = '')
+  public function innerJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'INNER ');
 
     return $this;
   }
 
-  public function leftJoin($table, $field1, $op = '', $field2 = '')
+  public function leftJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'LEFT ');
 
     return $this;
   }
 
-  public function rightJoin($table, $field1, $op = '', $field2 = '')
+  public function rightJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'RIGHT ');
 
     return $this;
   }
 
-  public function fullOuterJoin($table, $field1, $op = '', $field2 = '')
+  public function fullOuterJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'FULL OUTER ');
 
     return $this;
   }
 
-  public function leftOuterJoin($table, $field1, $op = '', $field2 = '')
+  public function leftOuterJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'LEFT OUTER ');
 
     return $this;
   }
 
-  public function rightOuterJoin($table, $field1, $op = '', $field2 = '')
+  public function rightOuterJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'RIGHT OUTER ');
 
     return $this;
   }
+
+  public function whereIsNull($field, $and_or = 'AND'){
+    if(is_array($field)){
+      foreach($field as $v){
+        $this->whereIsNull($v, $and_or);
+      }
+    }
+    else{
+      if (!$this->where){
+        $this->where = $field.' IS NULL ';
+      }
+      else{
+          $this->where = $this->where . ' '.$and_or.' ' . $field.' IS NULL ';
+        }
+    }
+     return $this;
+  }
+
+  public function whereIsNotNull($field, $and_or = 'AND'){
+    if(is_array($field)){
+      foreach($field as $v){
+        $this->whereIsNull($v, $and_or);
+      }
+    }
+    else{
+      if (!$this->where){
+        $this->where = $field.' IS NOT NULL ';
+      }
+      else{
+          $this->where = $this->where . ' '.$and_or.' ' . $field.' IS NOT NULL ';
+        }
+    }
+     return $this;
+  }
+  
 
   public function where($where, $op = null, $val = null, $type = '', $and_or = 'AND')
   {
@@ -258,10 +293,12 @@ class Database
         }
         $where = $w;
       }
-      elseif (!in_array($op, $this->op))
+      elseif (!in_array((string)$op, $this->op)){
         $where = $type . $where . ' = ' . $this->escape($op);
-      else
+      }
+      else{
         $where = $type . $where . $op . $this->escape($val);
+      }
     }
 
     if($this->grouped)
