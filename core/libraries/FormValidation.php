@@ -27,23 +27,7 @@
  class FormValidation {
 
     protected $_success  = false;
-    protected $_errorsMessages = array(
-        'required'     => 'Le champ %1 est obligatoire.',
-        'min_length'   => 'Le champ %1 doit contenir au minimum %2 caractères.',
-        'max_length'   => 'Le champ %1 doit contenir au maximum %2 caractères.',
-        'exact_length' => 'Le champ %1 doit contenir exactement %2 caractères.',
-        'matches'      => 'Le champ %1 doit être identique au champ %2.',
-        'valid_email'  => 'Le champ %1 doit contenir une adresse valide.',
-        'not_equal'    => array(
-                    'post:key' => 'Le champ %1 ne doit pas être identique au champ %2.',
-                    'string'   => 'Le champ %1 ne doit pas contenir la valeur %2.'),
-        'depends'      => 'Le champ %1 dépend du champ %2 qui n\'est pas valide.',
-		'is_unique'	   => 'La valeur du champ %1 existe déjà',
-        'exists'	   => 'La valeur du champ %1 n\'existe pas',
-        'regex'	   => 'La valeur du champ %1 n\'utilise pas le bon format',
-        'in_list'	   => 'La valeur du champ %1 doit être dans la liste (%2)',
-        'numeric'	   => 'La valeur du champ %1 doit être un nombre'
-		);
+    protected $_errorsMessages = array();
     // Array of rule sets, fieldName => PIPE seperated ruleString
     protected $_rules             = array();
     // Array of errors, niceName => Error Message
@@ -54,6 +38,8 @@
     protected $_eachErrorDelimiter   = array('<p class="error">', '</p>');
     protected $_forceFail            = false;
     protected $_errorPhraseOverrides = array();
+    //super global objet
+    protected $OBJ = null;
 
     /**
      * Sets all errors and rule sets empty, and sets success to false.
@@ -61,6 +47,25 @@
      * @return void
      */
     public function __construct() {
+        $this->OBJ = & get_instance();
+        $this->_errorsMessages  = array(
+                    'required'     => $this->OBJ->lang->get('fv_required'),
+                    'min_length'   => $this->OBJ->lang->get('fv_min_length'),
+                    'max_length'   => $this->OBJ->lang->get('fv_max_length'),
+                    'exact_length' => $this->OBJ->lang->get('fv_exact_length'),
+                    'matches'      => $this->OBJ->lang->get('fv_matches'),
+                    'valid_email'  => $this->OBJ->lang->get('fv_valid_email'),
+                    'not_equal'    => array(
+                                            'post:key' => $this->OBJ->lang->get('fv_not_equal_post_key'),
+                                            'string'   => $this->OBJ->lang->get('fv_not_equal_string')
+                                        ),
+                    'depends'      => $this->OBJ->lang->get('fv_depends'),
+                    'is_unique'    => $this->OBJ->lang->get('fv_is_unique'),
+                    'exists'       => $this->OBJ->lang->get('fv_exists'),
+                    'regex'        => $this->OBJ->lang->get('fv_regex'),
+                    'in_list'      => $this->OBJ->lang->get('fv_in_list'),
+                    'numeric'      => $this->OBJ->lang->get('fv_numeric')
+                );
         $this->_resetValidation();
         return;
     }
@@ -78,9 +83,7 @@
 
     protected function _toCallCase($funcName, $prefix='_validate') {
         $funcName = strtolower($funcName);
-
         $finalFuncName = $prefix;
-
         foreach (explode('_', $funcName) as $funcNamePart) {
             $finalFuncName .= strtoupper($funcNamePart[0]) . substr($funcNamePart, 1);
         }
@@ -350,12 +353,35 @@
      */
     protected function _parseRuleString($ruleString) {
         $ruleSets = array();
-
-        if (strpos($ruleString, "|") !== FALSE) {
-            $ruleSets = explode("|", $ruleString);
-        } else {
-            $ruleSets[] = $ruleString;
+        /*
+        //////////////// hack for regex rule that can contain "|"
+        */
+        if(strpos($ruleString, 'regex') !== false){
+            $regexRule = array();
+            $rule = '#regex\[\/(.*)\/([a-zA-Z0-9]?)\]#';
+            preg_match($rule, $ruleString, $regexRule);
+            $ruleStringTemp = preg_replace($rule, '', $ruleString);
+             if(isset($regexRule[0]) && !empty($regexRule[0])){
+                 $ruleSets[] = $regexRule[0];
+             }
+             $ruleStringRegex = explode('|', $ruleStringTemp);
+             if(is_array($ruleStringRegex)){
+                foreach ($ruleStringRegex as $rule) {
+                    $rule = trim($rule);
+                    if($rule){
+                        $ruleSets[] = $rule;
+                    }
+                }
+             }
         }
+        /***********************************/
+        else{
+            if (strpos($ruleString, '|') !== FALSE) {
+                $ruleSets = explode('|', $ruleString);
+            } else {
+                $ruleSets[] = $ruleString;
+            }
+         }
 
         return $ruleSets;
     }
@@ -394,8 +420,7 @@
         $realRule = preg_match('/\[(.*)\]/', $ruleName, $ruleArgs);
 
         $ruleName = preg_replace('/\[(.*)\]/', '', $ruleName);
-        //var_dump($ruleArgs, $inputName, $inputVal, $ruleName);exit;
-
+        
         if (method_exists($this, $this->_toCallCase($ruleName))) {
             $methodToCall = $this->_toCallCase($ruleName);
             @call_user_func(array($this, $methodToCall), $inputName, $ruleName, $ruleArgs);
@@ -600,7 +625,7 @@
     protected function _validateInList($inputName, $ruleName, array $ruleArgs) {
         $inputVal = $this->post($inputName);
 		$list = explode(',', $ruleArgs[1]);
-
+        $list = array_map('trim', $list);
         if (!in_array($inputVal, $list)) {
             if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
                 return;

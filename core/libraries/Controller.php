@@ -31,7 +31,7 @@
 		public function __construct(){
 			self::$instance = & $this;
 
-			$libraries = array('loader', 'config', 'request', 'response');
+			$libraries = array('loader', 'config', 'request', 'response', 'lang');
 			$config = array();
 			$models = array();
 			$functions = array();
@@ -78,6 +78,19 @@
 			foreach($models as $model){
 				Loader::model($model);
 			}
+
+			//add the supported languages ('key', 'display name')
+			$languages = Config::get('languages', null);
+			if(!empty($languages)){
+				foreach($languages as $k => $v){
+					$this->lang->addLang($k, $v);
+				}
+			}
+
+			///////////////////////// PATCH SESSION HANDLER /////////////////////////////////
+			//set session config
+			set_session_config();
+
 		}
 
 

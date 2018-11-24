@@ -89,7 +89,32 @@
 	*/
 	$config['pagination_per_page'] = 10;
 	
-	
+
+	/*+---------------------------------------------------------------+
+	* Language configuration section
+	+------------------------------------------------------------------+
+	*/
+	/**
+	 * list of available supported language
+	 * array(
+	 * 		'lang_key' => 'human readable'
+	 * )
+	 */
+	$config['languages'] = array('en' => 'english');
+
+
+	/**
+	 * the default language to use if can not find the client language
+	 * need match with the array key of the supported languages
+	 */
+	$config['default_language'] = 'en'; //en = english, fr = french
+
+	/**
+	 * the name of cookie used to store the client langauge
+	 */
+	$config['language_cookie_name'] = 'cookie_lang';
+
+
 	/*+---------------------------------------------------------------+
 	* Logs configuration section
 	+------------------------------------------------------------------+
@@ -141,9 +166,34 @@
 	* warning : if set, this directory must exist and will be writable and owned by the web server
 	* for security raison this directory must be outside of the document root of your
 	* website.
+	* Note: if the session handler is "database" the session_save_path is the model name to use
 	*/
 	$config['session_save_path'] = '';
+
+	/**
+	* Session handler
+	*
+	* The session handler that we will use to manage the session.
+	* currently the possible values are "files", "database".
+	*/
+	$config['session_handler'] = 'files';
 	
+	/**
+	* Session secret
+	*
+	* This is used to hash the session data if the config "session_handler" is set to "database"
+	* warning : do not change this value until you already set
+	* for security raison use the very complicated value include $%)@^&^\''\'\'
+	* NOTE: this value is an base64 so you need use the tool that generate it, like
+	*  PHP function base64_encode()
+	*/
+	$config['session_secret'] = '';
+
+	/**
+	 * number of second that consider the session already expire
+	 */
+	$config['session_inactivity_time'] = 600; //in second
+
 	/**
 	* Session cookie lifetime
 	*

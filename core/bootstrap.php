@@ -103,6 +103,7 @@
 			<b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'Error environment');	
 	}
 	
+	
 	/*
 	* Routing
 	* instantiation of the "Router" class and user request routing processing.

@@ -55,6 +55,8 @@
 	 *	$db['hostname'] = 'mysql.host.com';
 	 * or
 	 *	$db['hostname'] = '187.15.14.17';
+	 *	* or if port is not a standart port
+	 *	$db['hostname'] = 'mydb.server.com:6356';
 	 */
 	$db['hostname'] = 'localhost';
 	

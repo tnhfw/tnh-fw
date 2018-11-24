@@ -62,7 +62,7 @@
 	 *  
 	 */
 	function exception_handler($ex){
-		show_error('Une exception est survenue sur le fichier <b>'.$ex->getFile().'</b> en ligne <b>'.$ex->getLine().'</b> cause : '.$ex->getMessage(), 'PHP Exception #'.$ex->getCode());
+		show_error('An exception is occured in file <b>'.$ex->getFile().'</b> at line <b>'.$ex->getLine().'</b> raison : '.$ex->getMessage(), 'PHP Exception #'.$ex->getCode());
 		return true;
 	}
 	
@@ -99,8 +99,56 @@
 				$error_type = 'error';
 				break;
 		}
-		show_error('Une erreur est survenue sur le fichier <b>'.$errfile.'</b> en ligne <b>'.$errline.'</b> cause : '.$errstr, 'PHP '.$error_type);
+		show_error('An error is occurred in the file <b>'.$errfile.'</b> at line <b>'.$errline.'</b> raison : '.$errstr, 'PHP '.$error_type);
 		return true;
+	}
+
+	/**
+	 * this function is used to set the initial session config regarding the configuration set
+	 */
+	function set_session_config(){
+		//set session params
+		$session_handler = Config::get('session_handler', 'files'); //the default is to store in the files
+		$session_name = Config::get('session_name');
+		if($session_name){
+			session_name($session_name);
+		}
+
+		if($session_handler == 'files'){
+			$session_save_path = Config::get('session_save_path');
+			if($session_save_path){
+				if(!is_dir($session_save_path)){
+					mkdir($session_save_path, 0777);
+				}
+				session_save_path($session_save_path);
+			}
+		}
+		else if($session_handler == 'database'){
+			//load database session handle library
+			Loader::library('DBSessionHandler');
+			$obj = & get_instance();
+			/**
+			 * set the session handler class to manage session
+			 * TODO: use the best way to load the class DBSessionHandler.
+			 */
+			session_set_save_handler($obj->dbsessionhandler, true);
+			
+		}
+		$lifetime = Config::get('session_cookie_lifetime', 0);
+		$path = Config::get('session_cookie_path', '/');
+		$domain = Config::get('session_cookie_domain', '');
+		$secure = Config::get('session_cookie_secure', false);
+		$httponly = Config::get('session_cookie_httponly', false);
+		session_set_cookie_params(
+			$lifetime,
+			$path,
+			$domain,
+			$secure,
+			$httponly
+		);
+		if((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()){
+			session_start();
+		}
 	}
 	
 	/**
