@@ -43,7 +43,7 @@
 			$str .= '>';
 			
 			//if CSRF enable
-			if( Config::get('csrf_enable', false)){
+			if( Config::get('csrf_enable', false) && $method != 'GET'){
 				$csrfValue = Security::generateCSRF();
 				$csrfName = Config::get('csrf_key', 'csrf_key');
 				$str .= static::hidden($csrfName, $csrfValue);
