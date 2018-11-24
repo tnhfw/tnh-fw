@@ -64,7 +64,7 @@
 					* 	$attr = array('placeholder' => 'I am a "puple"')
 					* 	$str = attributes_to_string($attr); => placeholder = "I am a \"puple\""
 					 */
-					if(strpos('"', $value) !== false){
+					if($value && strpos('"', $value) !== false){
 						$value = addslashes($value);
 					}
 					$str .= $key.' = "'.$value.'" ';
