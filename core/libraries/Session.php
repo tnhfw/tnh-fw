@@ -25,35 +25,7 @@
 
 
 	class Session{
-
 		const SESSION_FLASH_KEY = 'session_flash';
-
-		public function __construct(){
-			$session_name = Config::get('session_name');
-			if($session_name){
-				session_name($session_name);
-			}
-			$session_save_path = Config::get('session_save_path');
-			if($session_save_path){
-				session_save_path($session_save_path);
-			}
-			$lifetime = Config::get('session_cookie_lifetime', 0);
-			$path = Config::get('session_cookie_path', '/');
-			$domain = Config::get('session_cookie_domain', '');
-			$secure = Config::get('session_cookie_secure', false);
-			$httponly = Config::get('session_cookie_httponly', false);
-			session_set_cookie_params(
-				$lifetime,
-				$path,
-				$domain,
-				$secure,
-				$httponly
-			);
-			if((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()){
-				session_start();
-			}
-		}
-
 
 		static function get($item, $default = null){
 			return isset($_SESSION[$item])?($_SESSION[$item]):$default;
