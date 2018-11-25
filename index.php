@@ -67,6 +67,7 @@
 	*/
 	define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
 
+
 	/**
 	* The path to the directory.
 	*

@@ -129,6 +129,7 @@
 			}
 		}
 
+
 		public function getSupported(){
 			return $this->availables;
 		}
