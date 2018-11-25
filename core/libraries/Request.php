@@ -55,13 +55,17 @@
 		}
 		
 		public function get($key, $xss = true){
+			if(empty($key)){
+				//return all
+				return $this->get;
+			}
 			$get = isset($this->get[$key])?$this->get[$key]:null;
 			if($xss){
 				if(is_array($get)){
 					$get = array_map('htmlspecialchars', $get);
 				}
 				else{
-					$get =  htmlspecialchars($get);
+					$get = htmlspecialchars($get);
 				}
 			}
 			return $get;
@@ -69,6 +73,10 @@
 		
 		
 		public function query($key, $xss = true){
+			if(empty($key)){
+				//return all
+				return $this->query;
+			}
 			$query = isset($this->query[$key])?$this->query[$key]:null;
 			if($xss){
 				if(is_array($query)){
@@ -82,6 +90,10 @@
 		}
 		
 		public function post($key, $xss = true){
+			if(empty($key)){
+				//return all
+				return $this->post;
+			}
 			$post = isset($this->post[$key])?$this->post[$key]:null;
 			if($xss){
 				if(is_array($post)){
@@ -95,6 +107,10 @@
 		}
 		
 		public function server($key, $xss = true){
+			if(empty($key)){
+				//return all
+				return $this->server;
+			}
 			$server = isset($this->server[$key])?$this->server[$key]:null;
 			if($xss){
 				if(is_array($server)){
@@ -109,6 +125,10 @@
 		
 		
 		public function cookie($key, $xss = true){
+			if(empty($key)){
+				//return all
+				return $this->cookie;
+			}
 			$cookie = isset($this->cookie[$key])?$this->cookie[$key]:null;
 			if($xss){
 				if(is_array($cookie)){
@@ -131,7 +151,21 @@
 			$session = $this->session->get($key);
 			if($xss){
 				if(is_array($session)){
-					$session = array_map('htmlspecialchars', $session);
+					$temp = array();
+					foreach ($session as $key => $value){
+						if(is_string($value)){
+							$temp[$key] = htmlspecialchars($value);
+						}
+						else if(is_array($value)){
+							$temp[$key] = array_map('htmlspecialchars', $value);
+						}
+						else{
+							//TODO use best method to remove the dangerous chars
+							 $temp[$key] = $value;
+						}
+					}
+					$session = $temp;
+					unset($temp);
 				}
 				else{
 					$session =  htmlspecialchars($session);
