@@ -34,7 +34,7 @@
 			$libraries = array('loader', 'config', 'request', 'response', 'lang');
 			$config = array();
 			$models = array();
-			$functions = array();
+			$functions = array('lang');
 
 			if(file_exists(CONFIG_PATH.'autoload.php')){
 				require_once CONFIG_PATH.'autoload.php';

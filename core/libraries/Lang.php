@@ -45,26 +45,35 @@
 			$cLang = Cookie::get($cfgKey);
 			if($cLang && $this->isValid($cLang)){
 				$language = $cLang;
+				$this->current = $language;
 			}
 			else{
 				$language = $this->getDefault();
 			}
-			
-			$path = $this->getFilePath($language);
-			if(file_exists($path)){
-				require_once $path;
+			//system language
+			if(file_exists(CORE_LANG_PATH . $language . '.php')){
+				require_once CORE_LANG_PATH . $language . '.php';
 				if(!empty($lang) && is_array($lang)){
-					$this->languages = $lang;
+					$this->addLangMessages($lang);
 					//free the memory
 					unset($lang);
-					$this->current = $language;
 				}
 				else{
 					show_error('No language message found in '.$language.'.php');
 				}
 			}
-			else{
-				show_error('Unable to find the language file ');
+
+			//app language
+			if(file_exists(APP_LANG_PATH . $language . '.php')){
+				require_once APP_LANG_PATH . $language . '.php';
+				if(!empty($lang) && is_array($lang)){
+					$this->addLangMessages($lang);
+					//free the memory
+					unset($lang);
+				}
+				else{
+					show_error('No language message found in '.$language.'.php');
+				}
 			}
 		}
 
@@ -85,15 +94,15 @@
 		}
 
 		public function isValid($language){
-			return file_exists(LANG_PATH . $language. '.php');
+			$search_dir = array(CORE_LANG_PATH, APP_LANG_PATH);
+			foreach($search_dir as $dir){
+				if(file_exists($dir . $language. '.php')){
+					return true;
+				}
+			}
+			return false;
 		}
 
-		public function getFilePath($language){
-			if($this->isValid($language)){
-				return LANG_PATH . $language . '.php';
-			}
-			return null;
-		}
 
 		public function getDefault(){
 			return $this->default;
@@ -122,6 +131,16 @@
 
 		public function getSupported(){
 			return $this->availables;
+		}
+
+		/**
+		 * add new language messages
+		 * @param array $langs the languages array of messages
+		 */
+		public function addLangMessages(array $langs){
+			foreach ($langs as $key => $value) {
+				$this->languages[$key] = $value;
+			}
 		}
 
 	}

@@ -146,12 +146,20 @@
 
 
 	/**
-	* The path to the directory of your languages. 
+	* The path to the core directory of languages files. 
+	*
+	*/
+	define('CORE_LANG_PATH', CORE_PATH . 'lang' . DS);
+
+
+	/**
+	* The path to the app directory of personal language. 
 	*
 	* This feature is not yet available. 
 	* You can help us do this if you are nice or wish to see the developed framework.
 	*/
-	define('LANG_PATH', CORE_PATH . 'lang' . DS);
+	define('APP_LANG_PATH', ROOT_PATH . 'lang' . DS);
+
 
 	/**
 	* The path to the directory of your cache files.
