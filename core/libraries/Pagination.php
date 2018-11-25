@@ -93,20 +93,20 @@
                     else
                         $navbar .= "<li><a href='$query".$i."'>$i</a></li>";
                 }
-            $navbar .= "<li><a href='$query".($current_page_no+1)."'>Suiv &raquo;</a></li>";
+            $navbar .= "<li><a href='$query".($current_page_no+1)."'>&raquo;&raquo;</a></li>";
             }
             else if($current_page_no > 1 && $current_page_no < $nb_page){
-                $navbar .= "<li><a href='$query".($current_page_no-1)."'>&laquo; Préc</a></li>";
+                $navbar .= "<li><a href='$query".($current_page_no-1)."'>&laquo;&laquo;</a></li>";
                 for($i = $begin; $i <= $end; $i++){
                     if($i == $current_page_no)
                         $navbar .= '<li class = "active"><a href = "#">'.$current_page_no.'</a></li>';
                     else
                         $navbar .= "<li><a href='$query".$i."'>$i</a></li>";
                 }
-            $navbar .= "<li><a href='$query".($current_page_no+1)."'>Suiv &raquo;</a></li>";
+            $navbar .= "<li><a href='$query".($current_page_no+1)."'>&raquo;&raquo;</a></li>";
             }
             else if($current_page_no == $nb_page){
-                $navbar .= "<li><a href='$query".($current_page_no-1)."'>&laquo; Préc</a></li>";
+                $navbar .= "<li><a href='$query".($current_page_no-1)."'>&laquo;&laquo;</a></li>";
                 for($i = $begin; $i <= $end; $i++){
                     if($i == $current_page_no)
                         $navbar .= '<li class = "active"><a href = "#">'.$current_page_no.'</a></li>';
@@ -114,7 +114,7 @@
                         $navbar .= "<li><a href='$query".$i."'>$i</a></li>";
                 }
             }
-            $navbar = '<ul class = "pagination">'.$navbar.'</ul>';
+            $navbar = '<ul class = "button-bar">'.$navbar.'</ul>';
             return $navbar;
         }
     }
