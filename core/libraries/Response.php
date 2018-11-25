@@ -146,10 +146,15 @@
 
 			public static function send404(){
 				/********* for logs **************/
-				$request = new Request();
+				//can't use $obj = & get_instance()  here because the global super object will be available until
+				//the main controller is loaded even for like Loader::library('xxxx');
+				$r = new Request();
+				$b = new Browser();
+				$browser = $b->getPlatform().', '.$b->getBrowser().' '.$b->getVersion();
 				Loader::functions('user_agent');
+
 				$str = '[404 page not found] : ';
-				$str .= ' un visiteur tente d\'acceder à la page ['.$request->requestUri().'] mais il tombe sur l\'erreur 404 [page non trouvée] son IP : '.get_ip(). ', Agent utilisateur : '.get_user_agent();
+				$str .= ' Unable to find the page ['.$r->requestUri().'] the visitor IP address is : '.get_ip(). ', browser : '.$browser;
 				Log::error($str);
 				/***********************************/
 				$path = CORE_VIEWS_PATH.'404.php';
