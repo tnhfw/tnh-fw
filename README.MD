@@ -1,1 +1,1 @@
-A simple PHP framework created using the concept of codeigniter with bootstrap twitter
+A simple PHP framework created using the concept of codeigniter using the default design: Bootstrap framework 3.3.6
