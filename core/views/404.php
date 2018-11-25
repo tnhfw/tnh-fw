@@ -67,7 +67,7 @@
 			<h2>404 Page Not Found</h2>
 		</div>
 		<div class = "body">
-			<p>Désolé, la page que vous demandez n'existe pas ou a été déplacée voire supprimée. Retourner à la <a href = "<?php echo Url::base_url();?>"> page d'accueil</a></p>
+			<p>Sorry, the page that you requested was not found in this server, try to check the URL address or contact the site administrator for further information. Return to <a href = "<?php echo Url::base_url();?>"> home page</a>.</p>
 		</div>
 	</div> <!-- ./container-->
 </body>
