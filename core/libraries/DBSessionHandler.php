@@ -99,7 +99,7 @@ defined('ROOT_PATH') || exit('Access denied');
 			$data = $instance->get($sid);
 			if($data && isset($data->{$columns['sdata']})){
 				//checking inactivity 
-				$timeInactivity = time() - Config::get('inactivity_time', 100);
+				$timeInactivity = time() - Config::get('session_inactivity_time', 100);
 				if($data->{$columns['stime']} < $timeInactivity){
 					$this->destroy($sid);
 					return false;
