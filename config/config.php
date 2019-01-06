@@ -120,6 +120,28 @@
 	+------------------------------------------------------------------+
 	*/
 	
+	/** 
+	* The log level
+	*
+	* The valid level are: OFF, NONE, FATAL, ERROR, WARNING, WARN, INFO, DEBUG, ALL
+	*
+	* 'OFF' or 'NONE' = do not save log
+	* 'FATAL' = enable log for fatal level and above (FATAL)
+	* 'ERROR' = enable log for error level and above (ERROR, FATAL)
+	* 'WARNING' or WARN = enable log for warning level and above (WARNING, ERROR, FATAL)
+	* 'INFO' = enable log for info level and above (INFO, WARNING, ERROR, FATAL)
+	* 'DEBUG' = enable log for debug level and above (DEBUG, INFO, WARNING, ERROR, FATAL)
+	* 'ALL' = enable log for all level
+	*
+	* The default value is NONE if the config value is: null, '', 0, false
+	* 
+	* Note: in production environment it's recommand to set the log level to 'WARNING' if not in small
+	* of time the log file size will increase very fast and will cost the application performance
+	* and also the filesystem usage of your server.
+	*/
+	$config['log_level'] = 'WARNING';
+
+
 	/**
 	* The path to log directory
 	* 
@@ -132,18 +154,6 @@
 	*/	
 	$config['log_save_path'] = '';
 	
-	/** 
-	* The log level
-	*
-	* -1 = do not save log
-	* 0 = all logs must be saved
-	* 1 = enable log for success only
-	* 2 = enable log for info only
-	* 3 = enable log for warning only
-	* 4 = enable log for error only
-	* 5 = enable log for debug only
-	*/
-	$config['log_level'] = 0;
 	
 	
 	/*+---------------------------------------------------------------+

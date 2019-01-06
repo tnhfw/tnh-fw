@@ -36,6 +36,18 @@
 	 *  @version 1.0.0
 	 *  @filesource
 	 */
+	
+	if(!class_exists('Log')){
+        //here the Log class is not yet loaded
+        //load it manually
+        require_once CORE_LIBRARY_PATH . 'Log.php';
+    }
+    /**
+     * instance of the Log class
+     */
+    $logger = new Log();
+
+    $logger->setLogger('ApplicationBootstrap');
 	 
 	 
 	/**
@@ -43,13 +55,48 @@
 	 *  
 	 *  @param $msg the message to display
 	 *  @param $title the message title: "error", "info", "warning", etc.
+	 *  @param $logging either to save error in log
 	 */
-	function show_error($msg, $title = 'error'){
+	function show_error($msg, $title = 'error', $logging = true){
 		$data['error'] = $msg;
 		$data['title'] = ucfirst($title);
-		Log::error('['.$title.'] '.strip_tags($msg));
+		if($logging){
+			$logger = new Log();
+			$logger->error('['.$title.'] '.strip_tags($msg));
+		}
+		if(!class_exists('Response')){
+	        //here the Response class is not yet loaded
+	        //load it manually
+	        require_once CORE_LIBRARY_PATH . 'Response.php';
+	    }
 		Response::sendError($data);
 		die();
+	}
+
+	if(!function_exists('is_https')){
+		/**
+		 *  Check whether the protocol used is "https"
+		 *  
+		 *  That is, the web server is configured to use a secure connection.
+		 *  
+		 *  @return boolean true if the web server uses the https protocol, false if not.
+		 */
+		function is_https(){
+			/*
+			* some servers pass the "HTTPS" parameter in the server variable,
+			* if is the case, check if the value is "on", "true", "1".
+			*/
+			if(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off'){
+				return true;
+			}
+			else if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'){
+				return true;
+			}
+			else if(isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off'){
+				return true;
+			}
+			return false;
+		}
 	}
 	
 	/**
@@ -79,6 +126,10 @@
 	 */
 	function error_handler($errno , $errstr, $errfile , $errline, array $errcontext){
 		if (!(error_reporting() & $errno)) {
+			$logger = new Log();
+			//just log no need show
+			$logger->setLogger('PHP ERROR');
+			$logger->error('An error is occurred in the file '.$errfile.' at line '.$errline.' raison : '.$errstr, 'PHP '.$error_type);
 			return;
 		}
 		$error_type = 'error';
@@ -86,15 +137,12 @@
 			case E_USER_ERROR:
 				$error_type = 'error';
 				break;
-
 			case E_USER_WARNING:
 				$error_type = 'warning';
 				break;
-
 			case E_USER_NOTICE:
 				$error_type = 'notice';
 				break;
-
 			default:
 				$error_type = 'error';
 				break;
@@ -107,12 +155,15 @@
 	 * this function is used to set the initial session config regarding the configuration set
 	 */
 	function set_session_config(){
+		$logger = new Log();
 		//set session params
 		$session_handler = Config::get('session_handler', 'files'); //the default is to store in the files
 		$session_name = Config::get('session_name');
 		if($session_name){
 			session_name($session_name);
 		}
+		$logger->info('session handler: ' . $session_handler);
+		$logger->info('session name: ' . $session_name);
 
 		if($session_handler == 'files'){
 			$session_save_path = Config::get('session_save_path');
@@ -121,6 +172,7 @@
 					mkdir($session_save_path, 0777);
 				}
 				session_save_path($session_save_path);
+				$logger->info('session save path: ' . $session_save_path);
 			}
 		}
 		else if($session_handler == 'database'){
@@ -132,7 +184,10 @@
 			 * TODO: use the best way to load the class DBSessionHandler.
 			 */
 			session_set_save_handler($obj->dbsessionhandler, true);
-			
+			$logger->info('session save path: ' . get_class($obj->dbsessionhandler));
+		}
+		else{
+			show_error('Invalid session handler configuration');
 		}
 		$lifetime = Config::get('session_cookie_lifetime', 0);
 		$path = Config::get('session_cookie_path', '/');
@@ -146,7 +201,14 @@
 			$secure,
 			$httponly
 		);
+		$logger->info('session lifetime: ' . $lifetime);
+		$logger->info('session cookie path: ' . $path);
+		$logger->info('session domain: ' . $domain);
+		$logger->info('session is secure: ' . ($secure ? 'TRUE':'FALSE'));
+		$logger->info('session is httponly: ' . ($httponly ? 'TRUE':'FALSE'));
+
 		if((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()){
+			$logger->info('session not yet start, start it now');
 			session_start();
 		}
 	}

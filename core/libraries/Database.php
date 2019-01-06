@@ -50,57 +50,67 @@ class Database
   private $queryCount = 0;
   public $database = null;
   private static $config = array();
+  private $logger;
 
   public function __construct(){
-	if(file_exists(CONFIG_PATH.'database.php')){
-		require_once CONFIG_PATH.'database.php';
-		if(empty($db) || !is_array($db)){
-			show_error('No database configuration found in database.php');
-		}
-		else{
-			    $config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
-			    $config['username']  = isset($db['username']) ? $db['username'] : 'root';
-        	$config['password']  = isset($db['password']) ? $db['password'] : '';
-        	$config['database']  = isset($db['database']) ? $db['database'] : '';
-        	$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
-        	$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
-        	$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
-        	$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
-        	$config['cachedir']  = isset($db['cachedir']) ? $db['cachedir'] : CACHE_PATH;
-        	$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
-        	$this->prefix        = $config['prefix'];
-        	$this->cacheDir      = $config['cachedir'];
-          $this->database = $config['database'];
-	        $dsn = '';
-	        if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
-			      $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
-					. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
-					. 'dbname=' . $config['database'];
-			}
-			elseif ($config['driver'] == 'sqlite'){
-			  $dsn = 'sqlite:' . $config['database'];
-			}
-			elseif($config['driver'] == 'oracle'){
-			  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
-			}
-			try{
-			  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
-			  $this->pdo->exec("SET NAMES '".$config['charset']."' COLLATE '".$config['collation']."'");
-			  $this->pdo->exec("SET CHARACTER SET '".$config['charset']."'");
-			  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-			}
-			catch (PDOException $e){
-			  show_error('Cannot connect to Database with PDO.<br /><br />');
-			}
-			static::$config = $config;
-		}
-	}
-	else{
-		show_error('Unable to find database configuration');
-	}
+      if(!class_exists('Log')){
+          //here the Log class is not yet loaded
+          //load it manually
+          require_once CORE_LIBRARY_PATH . 'Log.php';
+      }
+      /**
+       * instance of the Log class
+       */
+      $this->logger = new Log();
+      $this->logger->setLogger('Library::Database');
 
-
-    return $this->pdo;
+    	if(file_exists(CONFIG_PATH.'database.php')){
+    		require_once CONFIG_PATH.'database.php';
+    		if(empty($db) || !is_array($db)){
+    			show_error('No database configuration found in database.php');
+    		}
+    		else{
+    			    $config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
+    			    $config['username']  = isset($db['username']) ? $db['username'] : 'root';
+            	$config['password']  = isset($db['password']) ? $db['password'] : '';
+            	$config['database']  = isset($db['database']) ? $db['database'] : '';
+            	$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
+            	$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
+            	$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
+            	$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
+            	$config['cachedir']  = isset($db['cachedir']) ? $db['cachedir'] : CACHE_PATH;
+            	$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
+            	$this->prefix        = $config['prefix'];
+            	$this->cacheDir      = $config['cachedir'];
+              $this->database = $config['database'];
+    	        $dsn = '';
+    	        if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
+    			      $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
+    					. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
+    					. 'dbname=' . $config['database'];
+    			}
+    			elseif ($config['driver'] == 'sqlite'){
+  			  $dsn = 'sqlite:' . $config['database'];
+  			}
+  			elseif($config['driver'] == 'oracle'){
+  			  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
+  			}
+  			try{
+  			  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
+  			  $this->pdo->exec("SET NAMES '".$config['charset']."' COLLATE '".$config['collation']."'");
+  			  $this->pdo->exec("SET CHARACTER SET '".$config['charset']."'");
+  			  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+  			}
+  			catch (PDOException $e){
+  			  show_error('Cannot connect to Database with PDO.');
+  			}
+  			static::$config = $config;
+        $this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
+  		}
+  	}
+  	else{
+  		show_error('Unable to find database configuration');
+  	}
   }
 
 
@@ -229,7 +239,6 @@ class Database
   public function rightOuterJoin($table, $field1, $op = null, $field2 = '')
   {
     $this->join($table, $field1, $op, $field2, 'RIGHT OUTER ');
-
     return $this;
   }
 
@@ -318,21 +327,18 @@ class Database
   public function orWhere($where, $op = null, $val = null)
   {
     $this->where($where, $op, $val, '', 'OR');
-
     return $this;
   }
 
   public function notWhere($where, $op = null, $val = null)
   {
     $this->where($where, $op, $val, 'NOT ', 'AND');
-
     return $this;
   }
 
   public function orNotWhere($where, $op = null, $val = null)
   {
     $this->where($where, $op, $val, 'NOT ', 'OR');
-
     return $this;
   }
 
@@ -341,7 +347,6 @@ class Database
     $this->grouped = true;
     call_user_func($obj);
     $this->where .= ')';
-
     return $this;
   }
 
@@ -356,10 +361,12 @@ class Database
 
       $keys = implode(', ', $_keys);
 
-      if (is_null($this->where))
+      if (is_null($this->where)){
         $this->where = $field . ' ' . $type . 'IN (' . $keys . ')';
-      else
+      }
+      else{
         $this->where = $this->where . ' ' . $and_or . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
+      }
     }
 
     return $this;
@@ -368,158 +375,150 @@ class Database
   public function notIn($field, Array $keys)
   {
     $this->in($field, $keys, 'NOT ', 'AND');
-
     return $this;
   }
 
   public function orIn($field, Array $keys)
   {
     $this->in($field, $keys, '', 'OR');
-
     return $this;
   }
 
   public function orNotIn($field, Array $keys)
   {
     $this->in($field, $keys, 'NOT ', 'OR');
-
     return $this;
   }
 
   public function between($field, $value1, $value2, $type = '', $and_or = 'AND')
   {
-    if (is_null($this->where))
+    if (is_null($this->where)){
       $this->where = $field . ' ' . $type . 'BETWEEN ' . $this->escape($value1) . ' AND ' . $this->escape($value2);
-    else
+    }
+    else{
       $this->where = $this->where . ' ' . $and_or . ' ' . $field . ' ' . $type . 'BETWEEN ' . $this->escape($value1) . ' AND ' . $this->escape($value2);
-
+    }
     return $this;
   }
 
   public function notBetween($field, $value1, $value2)
   {
     $this->between($field, $value1, $value2, 'NOT ', 'AND');
-
     return $this;
   }
 
   public function orBetween($field, $value1, $value2)
   {
     $this->between($field, $value1, $value2, '', 'OR');
-
     return $this;
   }
 
   public function orNotBetween($field, $value1, $value2)
   {
     $this->between($field, $value1, $value2, 'NOT ', 'OR');
-
     return $this;
   }
 
   public function like($field, $data, $type = '', $and_or = 'AND')
   {
     $like = $this->escape($data);
-
-    if (is_null($this->where))
+    if (is_null($this->where)){
       $this->where = $field . ' ' . $type . 'LIKE ' . $like;
-    else
+    }
+    else{
       $this->where = $this->where . ' '.$and_or.' ' . $field . ' ' . $type . 'LIKE ' . $like;
-
+    }
     return $this;
   }
 
   public function orLike($field, $data)
   {
     $this->like($field, $data, '', 'OR');
-
     return $this;
   }
 
   public function notLike($field, $data)
   {
     $this->like($field, $data, 'NOT ', 'AND');
-
     return $this;
   }
 
   public function orNotLike($field, $data)
   {
     $this->like($field, $data, 'NOT ', 'OR');
-
     return $this;
   }
 
   public function limit($limit, $limitEnd = null)
   {
-    if (!is_null($limitEnd))
+    if (!is_null($limitEnd)){
       $this->limit = $limit . ', ' . $limitEnd;
-    else
+    }
+    else{
       $this->limit = $limit;
-
+    }
     return $this;
   }
 
   public function orderBy($orderBy, $order_dir = null)
   {
-    if (!is_null($order_dir))
+    if (!is_null($order_dir)){
       $this->orderBy = $orderBy . ' ' . strtoupper($order_dir);
-    else
-    {
-      if(stristr($orderBy, ' ') || $orderBy == 'rand()')
-        $this->orderBy = $orderBy;
-      else
-        $this->orderBy = $orderBy . ' ASC';
     }
-
+    else{
+      if(stristr($orderBy, ' ') || $orderBy == 'rand()'){
+        $this->orderBy = $orderBy;
+      }
+      else{
+        $this->orderBy = $orderBy . ' ASC';
+      }
+    }
     return $this;
   }
 
   public function groupBy($groupBy)
   {
-    if(is_array($groupBy))
+    if(is_array($groupBy)){
       $this->groupBy = implode(', ', $groupBy);
-    else
+    }
+    else{
       $this->groupBy = $groupBy;
-
+    }
     return $this;
   }
 
   public function having($field, $op = null, $val = null)
   {
-    if(is_array($op))
-    {
+    if(is_array($op)){
       $x = explode('?', $field);
       $w = '';
-
       foreach($x as $k => $v)
-        if(!empty($v))
+        if(!empty($v)){
           $w .= $v . (isset($op[$k]) ? $this->escape($op[$k]) : '');
-
+        }
       $this->having = $w;
     }
-
-    elseif (!in_array($op, $this->op))
+    elseif (!in_array($op, $this->op)){
       $this->having = $field . ' > ' . $this->escape($op);
-    else
+    }
+    else{
       $this->having = $field . ' ' . $op . ' ' . $this->escape($val);
-
+    }
     return $this;
   }
 
-  public function numRows()
-  {
+  public function numRows(){
     return $this->numRows;
   }
 
   public function insertId()
   {
+    $this->logger->info('The database last insert id: ' . $this->insertId);
     return $this->insertId;
   }
 
-  public function error()
-  {
-	 show_error('Query: <b>"'.$this->query.'"</b> <br />Error: <b>'.$this->error.'</b>', 'Database Error');
+  public function error(){
+	   show_error('Query: "'.$this->query.'" Error: '.$this->error, 'Database Error');
   }
 
   public function get($type = false)
@@ -527,47 +526,45 @@ class Database
     $this->limit = 1;
     $query = $this->getAll(true);
 
-    if($type == true)
+    if($type == true){
       return $query;
-    else
+    }
+    else{
       return $this->query( $query, false, (($type == 'array') ? true : false) );
+    }
   }
-
-
 
   public function getAll($type = false)
   {
-
     $query = 'SELECT ' . $this->select . ' FROM ' . $this->from;
-
-    if (!is_null($this->join))
+    if (!is_null($this->join)){
       $query .= $this->join;
-
-    if (!is_null($this->where))
+    }
+    if (!is_null($this->where)){
       $query .= ' WHERE ' . $this->where;
+    }
 
-    if (!is_null($this->groupBy))
+    if (!is_null($this->groupBy)){
       $query .= ' GROUP BY ' . $this->groupBy;
+    }
 
-    if (!is_null($this->having))
+    if (!is_null($this->having)){
       $query .= ' HAVING ' . $this->having;
+    }
 
 
-  if (!is_null($this->orderBy))
+    if (!is_null($this->orderBy)){
+        $query .= ' ORDER BY ' . $this->orderBy;
+    }
 
-      $query .= ' ORDER BY ' . $this->orderBy;
-
-
-    if
-	(!is_null($this->limit))
-
-	$query .= ' LIMIT ' . $this->limit;
-
-	if($type == true){
-	      return $query;
+    if(!is_null($this->limit)){
+    	$query .= ' LIMIT ' . $this->limit;
+    }
+  	if($type == true){
+  	      return $query;
     }
     else{
-		return $this->query( $query, true, (($type == 'array') ? true : false) );
+  		return $this->query( $query, true, (($type == 'array') ? true : false) );
     }
   }
 
@@ -585,48 +582,55 @@ class Database
       $this->insertId = $this->pdo->lastInsertId();
       return $this->insertId();
     }
-    else
+    else{
       return false;
+    }
   }
 
   public function update($data)
   {
     $query = 'UPDATE ' . $this->from . ' SET ';
-    $values = [];
+    $values =array();
 
-    foreach ($data as $column => $val)
+    foreach ($data as $column => $val){
       $values[] = $column . '=' . $this->escape($val);
+    }
 
     $query .= (is_array($data) ? implode(',', $values) : $data);
-
-    if (!is_null($this->where))
+    if (!is_null($this->where)){
       $query .= ' WHERE ' . $this->where;
+    }
 
-    if (!is_null($this->orderBy))
+    if (!is_null($this->orderBy)){
       $query .= ' ORDER BY ' . $this->orderBy;
+    }
 
-    if (!is_null($this->limit))
+    if (!is_null($this->limit)){
       $query .= ' LIMIT ' . $this->limit;
-
+    }
     return $this->query($query);
   }
 
   public function delete()
   {
-	$query = 'DELETE FROM ' . $this->from;
+  	$query = 'DELETE FROM ' . $this->from;
 
-	if (!is_null($this->where))
-	  $query .= ' WHERE ' . $this->where;
+  	if (!is_null($this->where)){
+  	  $query .= ' WHERE ' . $this->where;
+    }
 
-	if (!is_null($this->orderBy))
-	  $query .= ' ORDER BY ' . $this->orderBy;
+  	if (!is_null($this->orderBy)){
+  	  $query .= ' ORDER BY ' . $this->orderBy;
+    }
 
-	if (!is_null($this->limit))
-	  $query .= ' LIMIT ' . $this->limit;
+  	if (!is_null($this->limit)){
+  	  $query .= ' LIMIT ' . $this->limit;
+    }
 
-	if($query == 'DELETE FROM ' . $this->from)
-	  $query = 'TRUNCATE TABLE ' . $this->from;
-	return $this->query($query);
+  	if($query == 'DELETE FROM ' . $this->from){
+  	  $query = 'TRUNCATE TABLE ' . $this->from;
+    }
+    return $this->query($query);
   }
 
   public function query($query, $all = true, $array = false)
@@ -636,39 +640,43 @@ class Database
     {
       $x = explode('?', $query);
       $q = '';
-
-      foreach($x as $k => $v)
-        if(!empty($v))
+      foreach($x as $k => $v){
+        if(!empty($v)){
           $q .= $v . (isset($all[$k]) ? $this->escape($all[$k]) : '');
-
+        }
+      }
       $query = $q;
     }
 
     $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
     $str = stristr($this->query, 'SELECT');
 
+    $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . ($all ? 'YES':'NO'));
     $cache = false;
 
-    if (!is_null($this->cache))
+    if (!is_null($this->cache)){
+      $this->logger->info('The database cache is not null try to get the query result [' .$this->query. '] from cache');
       $cache = $this->cache->getCache($this->query, $array);
+      if($cache){
+        $this->logger->info('The query result already cached get result from cache cost in performance');  
+      }
+    }
 
     if (!$cache && $str)
     {
+      $this->logger->info('No cache for this query get the query result directly from real database');
       $sql = $this->pdo->query($this->query);
-
       if ($sql)
       {
         $this->numRows = $sql->rowCount();
-
         if (($this->numRows > 0))
         {
           if ($all)
           {
-            $q = [];
-
-            while ($result = ($array == false) ? $sql->fetchAll(PDO::FETCH_OBJ) : $sql->fetchAll(PDO::FETCH_ASSOC))
+            $q = array();
+            while ($result = ($array == false) ? $sql->fetchAll(PDO::FETCH_OBJ) : $sql->fetchAll(PDO::FETCH_ASSOC)){
               $q[] = $result;
-
+            }
             $this->result = $q[0];
           }
           else
@@ -677,28 +685,25 @@ class Database
             $this->result = $q;
           }
         }
-
-        if (!is_null($this->cache))
+        if (!is_null($this->cache)){
+          $this->logger->info('Save the query result [' .$this->query. '] into cache for future use');
           $this->cache->setCache($this->query, $this->result);
-
+        }
         $this->cache = null;
       }
-
       else
       {
         $this->cache = null;
         $this->error = $this->pdo->errorInfo();
         $this->error = $this->error[2];
-
+        $this->logger->error('The database query execution error: ' . $this->error);
         return $this->error();
       }
     }
-
-    elseif ((!$cache && !$str) || ($cache && !$str))
+    else if ((!$cache && !$str) || ($cache && !$str))
     {
       $this->cache = null;
       $this->result = $this->pdo->query($this->query);
-
       if (!$this->result)
       {
         $this->error = $this->pdo->errorInfo();
@@ -712,24 +717,21 @@ class Database
       $this->cache = null;
       $this->result = $cache;
     }
-
     $this->queryCount++;
-
     return $this->result;
   }
 
   public function escape($data)
   {
-    if(is_null($data))
+    if(is_null($data)){
       return null;
-
+    }
     return $this->pdo->quote(trim($data));
   }
 
-  public function cache($time)
+  public function setCache($time)
   {
     $this->cache = new DatabaseCache($this->cacheDir, $time);
-
     return $this;
   }
 
@@ -758,7 +760,7 @@ class Database
     $this->insertId  = null;
     $this->query  = null;
     $this->error  = null;
-    $this->result  = [];
+    $this->result  = array();
     return;
   }
 

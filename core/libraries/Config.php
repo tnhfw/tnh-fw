@@ -24,10 +24,31 @@
 	*/
 
 
+	/**
+	 * TODO: use the best way to include the Log class
+	 */
+	if(!class_exists('Log')){
+		//here the Log class is not yet loaded
+		//load it manually, normally the class Config is loaded before
+		require_once CORE_LIBRARY_PATH . 'Log.php';
+	}
+
 	class Config{
 		private static $config = array();
 
+		private static $logger;
+
+
+		private static function getLogger(){
+			if(static::$logger == null){
+				static::$logger = new Log();
+				static::$logger->setLogger('Library::Config');
+			}
+			return static::$logger;
+		}
+
 		static function init(){
+			$logger = static::getLogger();
 			if(file_exists(CONFIG_PATH.'config.php')){
 				require_once CONFIG_PATH.'config.php';
 				if(!empty($config) && is_array($config)){
@@ -42,6 +63,7 @@
 			}
 
 			if(!static::$config['base_url'] || !is_url(static::$config['base_url'])){
+				$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
 				$base_url = null;
 				if (isset($_SERVER['SERVER_ADDR'])){
 					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE){
@@ -55,18 +77,22 @@
 						.substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
 				}
 				else{
+					$logger->warning('can not determine the application base URL automatically, use localhost as default');
 					$base_url = 'http://localhost/';
 				}
 				self::set('base_url', $base_url);
 			}
-			else{
-				static::$config['base_url'] = rtrim(static::$config['base_url'], '/').'/';
-			}
-
+			static::$config['base_url'] = rtrim(static::$config['base_url'], '/').'/';
+			$logger->info('Configuration initialized successfully');
 		}
 
 		static function get($item, $default = null){
-			return isset(static::$config[$item])?(static::$config[$item]):$default;
+			$logger = static::getLogger();
+			if(isset(static::$config[$item])){
+				return static::$config[$item];
+			}
+			$logger->warning('cannot find config item ['.$item.'] using the default value ['.$default.']');
+			return $default;
 		}
 
 		static function set($item, $value){
@@ -82,7 +108,14 @@
 		}
 
 		static function delete($item){
-			unset(static::$config[$item]);
+			$logger = static::getLogger();
+			if(isset(static::$config[$item])){
+				$logger->info('delete config item ['.$item.' => '.static::$config[$item].']');
+				unset(static::$config[$item]);
+			}
+			else{
+				$logger->warning('config item ['.$item.'] to be deleted does not exists');
+			}
 		}
 
 		static function load($config){

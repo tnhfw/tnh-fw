@@ -14,7 +14,7 @@
 		}
 
 		/**
-		 * the default method
+		 * The default method
 		 * @return null
 		 */
 		function index() {

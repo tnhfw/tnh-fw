@@ -39,34 +39,6 @@
 	 */
 
 
-
-	if(!function_exists('is_https')){
-		/**
-		 *  Check whether the protocol used is "https"
-		 *  
-		 *  That is, the web server is configured to use a secure connection.
-		 *  
-		 *  @return boolean true if the web server uses the https protocol, false if not.
-		 */
-		function is_https(){
-			/*
-			* some servers pass the "HTTPS" parameter in the server variable,
-			* if so, check if the value is "on", "true", "1".
-			*/
-			if(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off'){
-				return true;
-			}
-			else if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'){
-				return true;
-			}
-			else if(isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off'){
-				return true;
-			}
-
-			return false;
-		}
-	}
-
 	/**
 	 *  Check if it's a valid URL.
 	 *  

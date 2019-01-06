@@ -196,6 +196,11 @@ class Upload
     );
 
     protected $error = null;
+
+
+    private $logger;
+
+
     /**
     *    Construct
     *
@@ -206,6 +211,16 @@ class Upload
     */
     public function __construct()
     {
+
+        if(!class_exists('Log')){
+            //here the Log class is not yet loaded
+            //load it manually
+            require_once CORE_LIBRARY_PATH . 'Log.php';
+        }
+        $this->logger = new Log();
+        $this->logger->setLogger('Library::Upload');
+
+
         $this->file = array(
             "status"                =>    false,    // True: success upload
             "mime"                  =>    "",       // Empty string
@@ -227,6 +242,7 @@ class Upload
         } elseif (isset($HTTP_POST_FILES) AND is_array($HTTP_POST_FILES)) {
             $this->file_array = $HTTP_POST_FILES;
         }
+        $this->logger->info('The upload file information is : ' .stringfy_vars($this->file_array));
     }
     /**
     *    Set input.
@@ -634,11 +650,12 @@ class Upload
                 $this->file["filename"]     = $this->filename;
                 $this->file["error"]        = $this->file_array[$this->input]["error"];
 
+                $this->logger->info('The upload file information to process is : ' .stringfy_vars($this->file));
                 // Check if exists file
                 if ($this->fileExists($this->destination_directory.$this->filename)) {
                     // Check if overwrite file
                     if ($this->overwrite_file === false) {
-                        $this->setError("You don't allow overwriting");
+                        $this->setError("You don't allow overwriting upload file exists");
                         return false;
                     }
                 }
@@ -661,7 +678,7 @@ class Upload
                 }
 
                 $this->file["status"] = call_user_func_array(
-                    $this->upload_function,array(
+                    $this->upload_function, array(
                         $this->file_array[$this->input]["tmp_name"],
                         $this->destination_directory . $this->filename
                     )
@@ -719,6 +736,6 @@ class Upload
     }
 
     public function setError($message){
-        return $this->error = $message;
+        show_error($message);
     }
 }

@@ -23,9 +23,31 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+	/**
+	 * TODO: use the best way to include the Log class
+	 */
+	if(!class_exists('Log')){
+		//here the Log class is not yet loaded
+		//load it manually, normally the class Config is loaded before
+		require_once CORE_LIBRARY_PATH . 'Log.php';
+	}
 
 	class Loader{
 		public static $loaded = array();
+		private static $logger;
+
+
+		private static function getLogger(){
+			if(static::$logger == null){
+				static::$logger = new Log();
+				static::$logger->setLogger('Library::Loader');
+			}
+			return static::$logger;
+		}
+
+		public function __construct(){
+		}
+
 		static function register(){
 			spl_autoload_register(array('Loader', 'autoload'));
 		}
@@ -60,18 +82,24 @@
 		}
 
 		static function autoload($class){
+			$logger = static::getLogger();
 			$search_dir = array(CORE_PATH, CORE_LIBRARY_PATH, LIBRARY_PATH, APPS_CONTROLLER_PATH);
 			$file = $class.'.php';
+			$logger->debug('Loading class [' . $class . '] ...');
 			if(static::isLoadedClass($class)){
+				$logger->info('class ' . $class . ' already loaded no need to load it again, cost in performance');
 				return;
 			}
 			foreach($search_dir as $dir){
 				if(file_exists($dir.$file)){
-					require_once $dir.$file;
+					if(!class_exists($class)){
+						require_once $dir.$file;
+					}
 					if(class_exists($class)){
 						static::$loaded['classes'][$class] = $dir.$file;
+						$logger->info('class: [' . $class . '] ' . $dir.$file . ' loaded successfully.');
 					}
-					//is already found not to continue
+					//is already found no need to continue
 					break;
 				}
 			}
@@ -79,10 +107,13 @@
 		}
 
 		static function controller($class, $graceful = true){
+			$logger = static::getLogger();
 			$class = str_ireplace('.php', '', $class);
 			$class = ucfirst($class);
 			$file = $class.'.php';
+			$logger->debug('Loading controller [' . $class . '] ...');
 			if(static::isLoadedController($class)){
+				$logger->info('controller [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
 			if(file_exists(APPS_CONTROLLER_PATH.$file)){
@@ -90,9 +121,11 @@
 				if(!class_exists($class)){
 					show_error('The file '.$file.' exists but does not contain the class '.$class);
 				}
-				static::$loaded['controllers'][$class] = APPS_CONTROLLER_PATH.$file;;
+				$logger->info('controller [' . $class . '] ' . APPS_CONTROLLER_PATH.$file . ' loaded successfully.');
+				static::$loaded['controllers'][$class] = APPS_CONTROLLER_PATH.$file;
 			}
 			else if($graceful){
+				$logger->error('cannot find controller ' . $class);
 				return false;
 			}
 			else{
@@ -101,10 +134,13 @@
 		}
 
 		static function model($class, $instance = null){
+			$logger = static::getLogger();
 			$class = str_ireplace('.php', '', $class);
 			$class = ucfirst($class);
 			$file = $class.'.php';
+			$logger->debug('Loading model [' . $class . '] ...');
 			if(static::isLoadedModel($class)){
+				$logger->info('model [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
 			if(!$instance){
@@ -126,15 +162,19 @@
 				show_error('Unable to find model class '.$class);
 			}
 			static::$loaded['models'][$class] = APPS_MODEL_PATH.$file;
+			$logger->info('model [' . $class . '] ' . APPS_MODEL_PATH.$file . ' loaded successfully.');
 		}
 
 		static function library($class, $instance = null){
+			$logger = static::getLogger();
 			$search_dir = array(LIBRARY_PATH, CORE_LIBRARY_PATH);
 			$found = false;
 			$class = str_ireplace('.php', '', $class);
 			$class = ucfirst($class);
 			$file = $class.'.php';
+			$logger->debug('Loading library [' . $class . '] ...');
 			if(static::isLoadedLibrary($class)){
+				$logger->info('library [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
 			if(!$instance){
@@ -149,6 +189,7 @@
 						$obj = & get_instance();
 						$obj->{$instance} = $c;
 						static::$loaded['libraries'][$class] = $dir.$file;
+						$logger->info('library [' . $class . '] ' . $dir.$file . ' loaded successfully.');
 					}
 					else{
 						show_error('The file '.$file.' exists but does not contain the class '.$class);
@@ -164,18 +205,22 @@
 		}
 
 		static function functions($function){
+			$logger = static::getLogger();
 			$search_dir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
 			$found = false;
 			$function = str_ireplace('.php', '', $function);
 			$function = str_ireplace('function_', '', $function);
 			$file = 'function_'.$function.'.php';
+			$logger->debug('Loading helper [' . $function . '] ...');
 			if(static::isLoadedFunction($function)){
+				$logger->info('helper [' . $function . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
 			foreach($search_dir as $dir){
 				if(file_exists($dir.$file)){
 					require_once $dir.$file;
 					static::$loaded['functions'][$function] = $dir.$file;
+					$logger->info('helper [' . $function . '] ' . $dir.$file . ' loaded successfully.');
 					$found = true;
 					//is already found not to continue
 					break;
@@ -187,10 +232,13 @@
 		}
 
 		static function config($filename){
+			$logger = static::getLogger();
 			$filename = str_ireplace('.php', '', $filename);
 			$filename = str_ireplace('config_', '', $filename);
 			$file = 'config_'.$filename.'.php';
+			$logger->debug('Loading configuration [' . $c . '] ...');
 			if(static::isLoadedConfig($filename)){
+				$logger->info('configuration [' . $filename . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
 			if(file_exists(CONFIG_PATH.$file)){
@@ -206,5 +254,6 @@
 				show_error('Unable to find config file '.$file);
 			}
 			static::$loaded['config'][$filename] = CONFIG_PATH.$file;
+			$logger->info('configuration [' . $filename . '] ' . CONFIG_PATH.$file . ' loaded successfully.');
 		}
 	}

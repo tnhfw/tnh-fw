@@ -36,24 +36,41 @@
 		protected $current = null;
 
 
+		private $logger;
+
 		public function __construct(){
+			if(!class_exists('Log')){
+	            //here the Log class is not yet loaded
+	            //load it manually
+	            require_once CORE_LIBRARY_PATH . 'Log.php';
+	        }
+	        $this->logger = new Log();
+	        $this->logger->setLogger('Library::Lang');
+
 			$this->default = Config::get('default_language');
 			//determine the current language
 			$language = null;
 			//if the language exists in the cookie use it
 			$cfgKey = Config::get('language_cookie_name');
+			$this->logger->debug('Try to get the language from cookie [' .$cfgKey. ']');
 			$cLang = Cookie::get($cfgKey);
 			if($cLang && $this->isValid($cLang)){
 				$language = $cLang;
 				$this->current = $language;
+				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid set the language from the cookie');
 			}
 			else{
+				$this->logger->info('Language from cookie [' .$cfgKey. '] is not set, use the default value [' .$this->getDefault(). ']');
 				$language = $this->getDefault();
 			}
+			$systemLangPath = CORE_LANG_PATH . $language . '.php';
+			$this->logger->debug('Try to include the system language file  [' .$systemLangPath. ']');
 			//system language
-			if(file_exists(CORE_LANG_PATH . $language . '.php')){
-				require_once CORE_LANG_PATH . $language . '.php';
+			if(file_exists($systemLangPath)){
+				$this->logger->info('System language file  [' .$systemLangPath. '] exists include it');
+				require_once $systemLangPath;
 				if(!empty($lang) && is_array($lang)){
+					$this->logger->info('System language file  [' .$systemLangPath. '] contains the valide languages keys add them to the list');
 					$this->addLangMessages($lang);
 					//free the memory
 					unset($lang);
@@ -62,11 +79,18 @@
 					show_error('No language message found in '.$language.'.php');
 				}
 			}
+			else{
+				$this->logger->warning('System language file  [' .$systemLangPath. '] does not exist');
+			}
 
+			$appLangPath = APP_LANG_PATH . $language . '.php';
+			$this->logger->debug('Try to include the custom language file  [' .$appLangPath. ']');
 			//app language
-			if(file_exists(APP_LANG_PATH . $language . '.php')){
-				require_once APP_LANG_PATH . $language . '.php';
+			if(file_exists($appLangPath)){
+				$this->logger->info('Custom language file  [' .$appLangPath. '] exists include it');
+				require_once $appLangPath;
 				if(!empty($lang) && is_array($lang)){
+					$this->logger->info('Custom language file  [' .$appLangPath. '] contains the valide languages keys add them to the list');
 					$this->addLangMessages($lang);
 					//free the memory
 					unset($lang);
@@ -74,6 +98,9 @@
 				else{
 					show_error('No language message found in '.$language.'.php');
 				}
+			}
+			else{
+				$this->logger->warning('Custom language file  [' .$appLangPath. '] does not exist');
 			}
 		}
 
@@ -90,6 +117,7 @@
 			if(isset($this->languages[$key])){
 				return $this->languages[$key];
 			}
+			$this->logger->warning('Language key  [' .$key. '] does not exist use the default value [' .$default. ']');
 			return $default;
 		}
 

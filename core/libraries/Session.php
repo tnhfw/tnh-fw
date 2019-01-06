@@ -23,12 +23,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+	/**
+	 * TODO: use the best way to include the Log class
+	 */
+	if(!class_exists('Log')){
+		//here the Log class is not yet loaded
+		//load it manually, normally the class Config is loaded before
+		require_once CORE_LIBRARY_PATH . 'Log.php';
+	}
+
 
 	class Session{
 		const SESSION_FLASH_KEY = 'session_flash';
+		private static $logger;
+
+		private static function getLogger(){
+			if(static::$logger == null){
+				static::$logger = new Log();
+				static::$logger->setLogger('Library::Session');
+			}
+			return static::$logger;
+		}
 
 		static function get($item, $default = null){
-			return isset($_SESSION[$item])?($_SESSION[$item]):$default;
+			$logger = static::getLogger();
+			if(isset($_SESSION[$item])){
+				return $_SESSION[$item];
+			}
+			$logger->warning('cannot find session item ['.$item.'] using the default value ['.$default.']');
+			return $default;
 		}
 
 		static function set($item, $value){
@@ -36,11 +59,15 @@
 		}
 
 		static function getFlash($item, $default = null){
+			$logger = static::getLogger();
 			$key = self::SESSION_FLASH_KEY.'_'.$item;
 			$return = isset($_SESSION[$key])?
 			($_SESSION[$key]):$default;
 			if(isset($_SESSION[$key])){
 				unset($_SESSION[$key]);
+			}
+			else{
+				$logger->warning('cannot find session flash item ['.$item.'] using the default value ['.$default.']');
 			}
 			return $return;
 		}
@@ -56,12 +83,26 @@
 		}
 
 		static function clear($item){
-			unset($_SESSION[$item]);
+			$logger = static::getLogger();
+			if(isset($_SESSION[$item])){
+				$logger->info('delete session item ['.$item.' => '.$_SESSION[$item].']');
+				unset($_SESSION[$item]);
+			}
+			else{
+				$logger->warning('session item ['.$item.'] to be deleted does not exists');
+			}
 		}
 		
 		static function clearFlash($item){
+			$logger = static::getLogger();
 			$key = self::SESSION_FLASH_KEY.'_'.$item;
-			unset($_SESSION[$key]);
+			if(isset($_SESSION[$item])){
+				$logger->info('delete session flash item ['.$item.' => '.$_SESSION[$item].']');
+				unset($_SESSION[$item]);
+			}
+			else{
+				$logger->warning('session flash item ['.$item.'] to be deleted does not exists');
+			}
 		}
 
 		static function exists($item){

@@ -131,7 +131,6 @@ abstract class Model
         }
 		$this->_database = $obj->database;
 				
-
         array_unshift($this->before_create, 'protect_attributes');
         array_unshift($this->before_update, 'protect_attributes');
         $this->_temporary_return_type = $this->return_type;
@@ -188,9 +187,7 @@ abstract class Model
     public function get_many_by()
     {
         $where = func_get_args();
-
         $this->_set_where($where);
-
         return $this->get_all();
     }
 
@@ -201,7 +198,6 @@ abstract class Model
     public function get_all()
     {
         $this->trigger('before_get');
-
         if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
         {
             $this->_database->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
@@ -214,7 +210,6 @@ abstract class Model
         {
             $row = $this->trigger('after_get', $row, ($key == count($result) - 1));
         }
-
         $this->_with = array();
         return $result;
     }
@@ -235,9 +230,7 @@ abstract class Model
             $data = $this->trigger('before_create', $data);
             $this->_database->from($this->_table)->insert($data);
             $insert_id = $this->_database->insertId();
-
             $this->trigger('after_create', $insert_id);
-
             return $insert_id;
         }
         else
@@ -252,12 +245,10 @@ abstract class Model
     public function insert_many($data, $skip_validation = FALSE)
     {
         $ids = array();
-
         foreach ($data as $key => $row)
         {
             $ids[] = $this->insert($row, $skip_validation, ($key == count($data) - 1));
         }
-
         return $ids;
     }
 
@@ -267,7 +258,6 @@ abstract class Model
     public function update($primary_value, $data, $skip_validation = FALSE)
     {
         $data = $this->trigger('before_update', $data);
-
         if ($skip_validation === FALSE)
         {
             $data = $this->validate($data);
@@ -278,9 +268,7 @@ abstract class Model
             $result = $this->_database->where($this->primary_key, $primary_value)
                                ->from($this->_table)
                                ->update($data);
-
             $this->trigger('after_update', array($data, $result));
-
             return $result;
         }
         else
@@ -295,12 +283,10 @@ abstract class Model
     public function update_many($primary_values, $data, $skip_validation = FALSE)
     {
         $data = $this->trigger('before_update', $data);
-
         if ($skip_validation === FALSE)
         {
             $data = $this->validate($data);
         }
-
         if ($data !== FALSE)
         {
             $result = $this->_database->in($this->primary_key, $primary_values)
@@ -324,13 +310,11 @@ abstract class Model
         $data = array_pop($args);
 
         $data = $this->trigger('before_update', $data);
-
         if ($this->validate($data) !== FALSE)
         {
             $this->_set_where($args);
             $result = $this->_database->from($this->_table)->update($data);
             $this->trigger('after_update', array($data, $result));
-
             return $result;
         }
         else
@@ -346,9 +330,7 @@ abstract class Model
     {
         $data = $this->trigger('before_update', $data);
         $result = $this->_database->from($this->_table)-> update($data);
-
         $this->trigger('after_update', array($data, $result));
-
         return $result;
     }
 
@@ -358,9 +340,7 @@ abstract class Model
     public function delete($id)
     {
         $this->trigger('before_delete', $id);
-
         $this->_database->where($this->primary_key, $id);
-
         if ($this->soft_delete)
         {
             $result = $this->_database->from($this->_table)->update(array( $this->soft_delete_key => TRUE ));
@@ -371,7 +351,6 @@ abstract class Model
         }
 
         $this->trigger('after_delete', $result);
-
         return $result;
     }
 
@@ -381,12 +360,8 @@ abstract class Model
     public function delete_by()
     {
         $where = func_get_args();
-
 	    $where = $this->trigger('before_delete', $where);
-
         $this->_set_where($where);
-
-
         if ($this->soft_delete)
         {
             $result = $this->_database->from($this->_table)->update(array( $this->soft_delete_key => TRUE ));
@@ -395,9 +370,7 @@ abstract class Model
         {
             $result = $this->_database->from($this->_table)->delete();
         }
-
         $this->trigger('after_delete', $result);
-
         return $result;
     }
 
@@ -407,9 +380,7 @@ abstract class Model
     public function delete_many($primary_values)
     {
         $primary_values = $this->trigger('before_delete', $primary_values);
-
         $this->_database->in($this->primary_key, $primary_values);
-
         if ($this->soft_delete)
         {
             $result = $this->_database->from($this->_table)->update(array( $this->soft_delete_key => TRUE ));
@@ -418,9 +389,7 @@ abstract class Model
         {
             $result = $this->_database->from($this->_table)->delete();
         }
-
         $this->trigger('after_delete', $result);
-
         return $result;
     }
 
@@ -431,7 +400,6 @@ abstract class Model
     public function truncate()
     {
         $result = $this->_database->from($this->_table)->delete();
-
         return $result;
     }
 
@@ -442,12 +410,10 @@ abstract class Model
     public function with($relationship)
     {
         $this->_with[] = $relationship;
-
         if (!in_array('relate', $this->after_get))
         {
             $this->after_get[] = 'relate';
         }
-
         return $this;
     }
 
@@ -474,7 +440,6 @@ abstract class Model
             if (in_array($relationship, $this->_with))
             {
                 Loader::model($options['model'], $relationship . '_model');
-
                 if (is_object($row))
                 {
                     $row->{$relationship} = $this->{$relationship . '_model'}->get($row->{$options['primary_key']});
@@ -525,7 +490,6 @@ abstract class Model
     function dropdown()
     {
         $args = func_get_args();
-
         if(count($args) == 2)
         {
             list($key, $value) = $args;
@@ -535,24 +499,19 @@ abstract class Model
             $key = $this->primary_key;
             $value = $args[0];
         }
-
         $this->trigger('before_dropdown', array( $key, $value ));
-
         if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
         {
             $this->_database->where($this->soft_delete_key, FALSE);
         }
-
         $result = $this->_database->select(array($key, $value))
                            ->from($this->_table)
                            ->getAll();
         $options = array();
-
         foreach ($result as $row)
         {
             $options[$row->{$key}] = $row->{$value};
         }
-
         $options = $this->trigger('after_dropdown', $options);
         return $options;
     }
@@ -566,10 +525,8 @@ abstract class Model
         {
             $this->_database->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
         }
-
         $where = func_get_args();
         $this->_set_where($where);
-
         $this->_database->from($this->_table)->getAll();
         return $this->_database->numRows();
     }
@@ -694,7 +651,6 @@ abstract class Model
         {
             $row['updated_at'] = date('Y-m-d H:i:s');
         }
-
         return $row;
     }
 
@@ -708,7 +664,6 @@ abstract class Model
         {
             $row[$column] = serialize($row[$column]);
         }
-
         return $row;
     }
 
@@ -725,7 +680,6 @@ abstract class Model
                 $row->$column = unserialize($row->$column);
             }
         }
-
         return $row;
     }
 
@@ -745,7 +699,6 @@ abstract class Model
                 unset($row[$attr]);
             }
         }
-
         return $row;
     }
 
@@ -803,11 +756,9 @@ abstract class Model
                     $method = $matches[1];
                     $this->callback_parameters = explode(',', $matches[3]);
                 }
-
                 $data = call_user_func_array(array($this, $method), array($data, $last));
             }
         }
-
         return $data;
     }
 
@@ -820,16 +771,13 @@ abstract class Model
         {
             return $data;
         }
-
         if(!empty($this->validate))
         {
             foreach($data as $key => $val)
             {
                 $_POST[$key] = $val;
             }
-
             Loader::library('FormValidation');
-
             if(is_array($this->validate))
             {
                 $this->formvalidation->setRules($this->validate);
@@ -924,4 +872,12 @@ abstract class Model
     public function __get($key){
 		return get_instance()->{$key};
 	}
+
+    /**
+     * set the database cache
+     * @param integer $time the numbers of second for this cache
+     */
+    public function setCache($time = 0){
+        $this->_database->setCache($time);
+    }
 }

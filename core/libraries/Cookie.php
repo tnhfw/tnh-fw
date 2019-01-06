@@ -23,17 +23,40 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
+	/**
+	 * TODO: use the best way to include the Log class
+	 */
+	if(!class_exists('Log')){
+		//here the Log class is not yet loaded
+		//load it manually, normally the class Config is loaded before
+		require_once CORE_LIBRARY_PATH . 'Log.php';
+	}
 
 	class Cookie{
 
+		private static $logger;
+
+		private static function getLogger(){
+			if(static::$logger == null){
+				static::$logger = new Log();
+				static::$logger->setLogger('Library::Cookie');
+			}
+			return static::$logger;
+		}
+
 		static function get($item, $default = null){
-			return isset($_COOKIE[$item])?($_COOKIE[$item]):$default;
+			$logger = static::getLogger();
+			if(isset($_COOKIE[$item])){
+				return $_COOKIE[$item];
+			}
+			$logger->warning('cannot find cookie item ['.$item.'] using the default value ['.$default.']');
+			return $default;
 		}
 
 		static function set($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = false){
 			if(headers_sent()){
 				show_error('There exists a cookie that we wanted to create that we couldn\'t 
-							create because headers was already sent. Make sure to do the first 
+							create because headers was already sent. Make sure to do this first 
 							before outputing anything.');
 			}
 			$timestamp = $expire;
@@ -44,8 +67,15 @@
 		}
 
 
-		static function clear($name){
-			static::set($name, '');
+		static function clear($item){
+			$logger = static::getLogger();
+			if(isset($_COOKIE[$item])){
+				$logger->info('delete cookie item ['.$item.' => '.$_COOKIE[$item].']');
+				unset($_COOKIE[$item]);
+			}
+			else{
+				$logger->warning('cookie item ['.$item.'] to be deleted does not exists');
+			}
 		}
 
 		static function exists($item){

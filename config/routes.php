@@ -78,7 +78,7 @@
 	*/
 	
 	/**
-	 *  The default route
+	 *  The default route like your home page
 	 */
 	$route['/'] = 'Home';
 	

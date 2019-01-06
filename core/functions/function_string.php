@@ -40,7 +40,7 @@
 
 	if(!function_exists('attributes_to_string')){
 		/**
-		 *  Convert array to attributes string
+		 *  Convert array attributes to string
 		 *
 		 *  This function converts an associative array into HTML attributes.
 		 *  For example :
@@ -71,6 +71,19 @@
 				}
 			}
 			return $str;
+		}
+	}
+
+	if(!function_exists('stringfy_vars')){
+		/**
+		* function to stringfy PHP variable, useful in debug situation
+		*
+		* @param mixed $var the variable to stringfy
+		*
+		* @return string the stringfy value
+		*/
+		function stringfy_vars($var){
+			return print_r($var, $returnAsString = true);
 		}
 	}
 

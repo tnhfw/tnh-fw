@@ -93,7 +93,7 @@
                     else
                         $navbar .= "<li><a href='$query".$i."'>$i</a></li>";
                 }
-            $navbar .= "<li><a href='$query".($current_page_no+1)."'>&raquo;&raquo;</a></li>";
+                $navbar .= "<li><a href='$query".($current_page_no+1)."'>&raquo;&raquo;</a></li>";
             }
             else if($current_page_no > 1 && $current_page_no < $nb_page){
                 $navbar .= "<li><a href='$query".($current_page_no-1)."'>&laquo;&laquo;</a></li>";
@@ -103,7 +103,7 @@
                     else
                         $navbar .= "<li><a href='$query".$i."'>$i</a></li>";
                 }
-            $navbar .= "<li><a href='$query".($current_page_no+1)."'>&raquo;&raquo;</a></li>";
+                $navbar .= "<li><a href='$query".($current_page_no+1)."'>&raquo;&raquo;</a></li>";
             }
             else if($current_page_no == $nb_page){
                 $navbar .= "<li><a href='$query".($current_page_no-1)."'>&laquo;&laquo;</a></li>";

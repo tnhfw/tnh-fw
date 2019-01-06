@@ -204,7 +204,6 @@
 	*/
 	define('ENVIRONMENT', 'development');
 
-
 	/* ---------------------------------------------------------------------------------- */
 	////////////////////////////////////////////////////////////////////////////////////
 	/******************** DO NOT CHANGE THE LINES BELOW *********************************/
@@ -232,6 +231,6 @@
 	}
 	/**
 	* let's go.
-	* All is correct we launch our application.
+	* Everything is OK now we launch our application.
 	*/
 	require_once CORE_PATH . 'bootstrap.php';

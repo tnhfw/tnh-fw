@@ -27,7 +27,16 @@
 
 		private static $instance;
 
+		protected static $logger;
+
 		public function __construct(){
+			if(!class_exists('Log')){
+				//here the Log class is not yet loaded
+				//load it manually
+				require_once CORE_LIBRARY_PATH . 'Log.php';
+			}
+			static::$logger = new Log();
+			static::$logger->setLogger('MainController');
 			self::$instance = & $this;
 
 			$libraries = array('loader', 'config', 'request', 'response', 'lang');
@@ -59,7 +68,6 @@
 				else{
 					show_error('No autoload configuration found in autoload.php');
 				}
-
 			}
 
 			foreach($config as $c){
@@ -88,8 +96,8 @@
 
 			///////////////////////// PATCH SESSION HANDLER /////////////////////////////////
 			//set session config
+			static::$logger->debug('Setting PHP application session handler');
 			set_session_config();
-
 		}
 
 

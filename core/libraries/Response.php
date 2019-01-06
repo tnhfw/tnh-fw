@@ -26,6 +26,7 @@
 
 	class Response{
 			private static $headers = array();
+			private static $logger;
 			public static $httpStatutCode = 200;
 			protected static $http_code = array(
 											100 => 'Continue',
@@ -70,6 +71,16 @@
 											504 => 'Gateway Timeout',
 											505 => 'HTTP Version Not Supported',
 										);
+
+			public function __construct(){
+				if(!class_exists('Log')){
+					//here the Log class is not yet loaded
+					//load it manually, normally the class Config is loaded before
+					require_once CORE_LIBRARY_PATH . 'Log.php';
+				}
+				static::$logger = new Log();
+				static::$logger->setLogger('Library::Response');
+			}
 
 			public static function sendHeaders($http_code = 200, array $headers = array()){
 				static::setStatutCode($http_code);
@@ -147,7 +158,7 @@
 			public static function send404(){
 				/********* for logs **************/
 				//can't use $obj = & get_instance()  here because the global super object will be available until
-				//the main controller is loaded even for like Loader::library('xxxx');
+				//the main controller is loaded even for Loader::library('xxxx');
 				$r = new Request();
 				$b = new Browser();
 				$browser = $b->getPlatform().', '.$b->getBrowser().' '.$b->getVersion();
@@ -155,7 +166,11 @@
 
 				$str = '[404 page not found] : ';
 				$str .= ' Unable to find the page ['.$r->requestUri().'] the visitor IP address is : '.get_ip(). ', browser : '.$browser;
-				Log::error($str);
+				if(static::$logger == null){
+					static::$logger = new Log();
+					static::$logger->setLogger('Library::Response');
+				}
+				static::$logger->error($str);
 				/***********************************/
 				$path = CORE_VIEWS_PATH.'404.php';
 				if(file_exists($path)){
@@ -178,6 +193,9 @@
 					$output = ob_get_clean();
 					//template here
 					echo $output;
+				}
+				else{
+					show_error('error view ' .$path. ' does not exist');
 				}
 			}
 		}

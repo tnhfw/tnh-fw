@@ -52,14 +52,31 @@ defined('ROOT_PATH') || exit('Access denied');
 		 */
 		private $sessionTableColumns = array();
 
+		/**
+		 * the instance of the Log 
+		 * @var Log
+		 */
+		private $logger;
+
 		public function __construct(){
+			if(!class_exists('Log')){
+		        //here the Log class is not yet loaded
+		        //load it manually
+		        require_once CORE_LIBRARY_PATH . 'Log.php';
+		    }
+		    $this->logger = new Log();
+		    $this->logger->setLogger('Library::' . __CLASS__, __FILE__);
 			$this->OBJ = & get_instance();
+
 			$secret = Config::get('session_secret', false);
 			//try to check if session secret is set and the length is >= SESSION_SECRET_MIN_LENGTH
 			if(!$secret || strlen($secret) < self::SESSION_SECRET_MIN_LENGTH){
-				show_error('Session secret is not set or the length is below to '.self::SESSION_SECRET_MIN_LENGTH.' caracters', 1);
+				show_error('Session secret is not set or the length is below to '.self::SESSION_SECRET_MIN_LENGTH.' caracters');
 			}
+			$this->logger->info('session secret: ' . $secret);
+
 			$modelName = Config::get('session_save_path');
+			$this->logger->info('database session model: ' . $modelName);
 			Loader::model($modelName);
 
 			//set model instance name
@@ -73,8 +90,9 @@ defined('ROOT_PATH') || exit('Access denied');
 			$this->sessionTableColumns = $this->modelInstanceName->getSessionTableColumns();
 
 			if(empty($this->sessionTableColumns)){
-				show_error('The session handler is "database" but the table columns does not set');
+				show_error('The session handler is "database" but the table columns not set');
 			}
+			$this->logger->info('database session, the model columns are listed below: ' . stringfy_vars($this->sessionTableColumns));
 
 			$this->sessionSecret = $secret;
 			$key = base64_decode($this->sessionSecret);
@@ -85,15 +103,18 @@ defined('ROOT_PATH') || exit('Access denied');
 
 
 		public function open($savePath, $sessionName){
+			$this->logger->debug('opening database session handler');
 			return true;
 		}
 
 
 		public function close(){
+			$this->logger->debug('closing database session handler');
 			return true;
 		}
 
 		public function read($sid){
+			$this->logger->debug('reading database session data for SID: ' . $sid);
 			$instance = $this->modelInstanceName;
 			$columns = $this->sessionTableColumns;
 			$data = $instance->get($sid);
@@ -101,15 +122,18 @@ defined('ROOT_PATH') || exit('Access denied');
 				//checking inactivity 
 				$timeInactivity = time() - Config::get('session_inactivity_time', 100);
 				if($data->{$columns['stime']} < $timeInactivity){
+					$this->logger->info('database session data for SID: ' . $sid . ' already expired, destroy it');
 					$this->destroy($sid);
 					return false;
 				}
 				return $this->decode($data->{$columns['sdata']});
 			}
+			$this->logger->info('database session data for SID: ' . $sid . ' is not valid return false, may be session ID is wrong');
 			return false;
 		}
 
 		public function write($sid, $data){
+			$this->logger->debug('writing database session data for SID: ' . $sid . ', data: ' . stringfy_vars($data));
 			$instance = $this->modelInstanceName;
 			$columns = $this->sessionTableColumns;
 
@@ -129,14 +153,16 @@ defined('ROOT_PATH') || exit('Access denied');
 					$columns['sip'] => $ip,
 					$columns['skey'] => $keyValue
 			);
-			
+			$this->logger->info('database session data to save are listed below :' . stringfy_vars($params));
 			$exists = $instance->get($sid);
 			if($exists){
+				$this->logger->info('session data for SID: ' . $sid . ' already exists, just update it');
 				//update
 				unset($params[$columns['sid']]);
 				$instance->update($sid, $params);
 			}
 			else{
+				$this->logger->info('session data for SID: ' . $sid . ' not yet exists, just insert it now');
 				$instance->insert($params);
 			}
 			return true;
@@ -144,6 +170,7 @@ defined('ROOT_PATH') || exit('Access denied');
 
 
 		public function destroy($sid){
+			$this->logger->debug('destroy of session data for SID: ' . $sid);
 			$instance = $this->modelInstanceName;
 			$instance->delete($sid);
 			return true;
@@ -153,6 +180,7 @@ defined('ROOT_PATH') || exit('Access denied');
 			$instance = $this->modelInstanceName;
 			$time = time() - $maxLifetime;
 			$instance->deleteByTime($time);
+			$this->logger->debug('garbage collector of expired session. maxLifetime: ' . $maxLifetime . ', expired time:' . $time);
 			return true;
 		}
 

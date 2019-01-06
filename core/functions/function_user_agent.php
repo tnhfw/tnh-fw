@@ -77,5 +77,4 @@
 			$userAgent =  isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
 			return $userAgent;
 		}
-
 	}

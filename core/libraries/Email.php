@@ -72,6 +72,8 @@ class Email
      */
     protected $_uid;
 
+    private $logger;
+
 
     /**
      * __construct
@@ -80,6 +82,13 @@ class Email
      */
     public function __construct()
     {
+        if(!class_exists('Log')){
+            //here the Log class is not yet loaded
+            //load it manually
+            require_once CORE_LIBRARY_PATH . 'Log.php';
+        }
+        $this->logger = new Log();
+        $this->logger->setLogger('Library::Email');
         $this->reset();
     }
 
@@ -441,7 +450,7 @@ class Email
         } else {
             $message = $this->getWrapMessage();
         }
-
+        $this->logger->info('Sending new mail, the information are listed below: destination: ' . $to . ', headers: ' . $headers . ', message: ' . $message);
         return mail($to, $this->_subject, $message, $headers, $this->_params);
     }
 

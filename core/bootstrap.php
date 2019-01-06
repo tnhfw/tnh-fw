@@ -39,12 +39,23 @@
 	 *  @filesource
 	 */
 	
+	if(!class_exists('Log')){
+        //here the Log class is not yet loaded
+        //load it manually
+        require_once CORE_LIBRARY_PATH . 'Log.php';
+    }
+    /**
+     * instance of the Log class
+     */
+    $logger = new Log();
+
+    $logger->setLogger('ApplicationBootstrap');
+
 	/**
 	*  inclusion of global constants of the environment that contain : name of the framework,
 	*  version, build date, version of PHP required, etc.
 	*/
-	require_once CORE_PATH . 'constants.php';
-	
+	require_once CORE_PATH . 'constants.php';	
 	
 	/**
 	 *  include file containing useful methods: show_error, 
@@ -52,58 +63,68 @@
 	 */
 	require_once CORE_PATH . 'common.php';
 	
-	
+
+	/**
+	 *  Definition of the PHP error message handling function
+	 */
+	set_error_handler('error_handler');
+
+	/*
+	* Definition of the PHP error exception handling function
+	*/
+	set_exception_handler('exception_handler');
+
+	/*
+	* Load configurations using the 
+	* static method "init" of the Config class.
+	* here the Loader class is not instancied so just use require_once
+	*/
+	require_once CORE_LIBRARY_PATH . 'Config.php';
+	Config::init();
+
+	$logger->debug('Loading Loader library ...');
 	/**
 	 *  include file containing the class for library loads, 
 	 *  functions, models, configuration file, controller
 	 */
 	require_once CORE_LIBRARY_PATH . 'Loader.php';
-	
+	$logger->info('Loader library loaded successfully');
+
+	$logger->debug('Registering PHP autoload function to load the PHP classes automatically');
 	/**
 	 *  Registration of automatic function of loading resources.  
 	 */
 	Loader::register();
-	
+	$logger->info('PHP autoload function registered successfully');
+
 	/**
 	* Loading "string" helper that contains most of the character 
 	* string processing functions : attributes_to_string, get_random_string, etc.
 	*/
 	Loader::functions('string');
 	
+	$logger->info('The application configuration are listed below: ' . stringfy_vars(Config::getAll()));
+	
 	/**
 	* Helper loader "url" which contains most of the URL 
 	* processing functions: is_https, is_url, etc.
 	*/
 	Loader::functions('url');
-	
-	/**
-	 *  Definition of the PHP error message handling function
-	 */
-	set_error_handler('error_handler');
-	
-	/*
-	* Definition of the PHP error exception handling function
-	*/
-	set_exception_handler('exception_handler');
-	
-	/*
-	* Load configurations using the 
-	* static method "init" of the Config class.
-	*/
-	Config::init();
-	
+
+	$logger->debug('Checking PHP environment ...');	
 	/*
 	* Verification of the PHP environment: minimum and maximum version
 	*/
 	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
-		show_error('Your PHP Version <b>'.phpversion().'</b> is less than <b>'.TNH_REQUIRED_PHP_MIN_VERSION.'</b>, 
-			please install a new version or update your PHP to the latest.', 'Error environment');	
+		show_error('Your PHP Version <b>'.phpversion().'</b> is less than <b>'.TNH_REQUIRED_PHP_MIN_VERSION.'</b>, please install a new version or update your PHP to the latest.', 'PHP Error environment');	
 	}else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
-		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than 
-			<b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'Error environment');	
+		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than <b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'PHP Error environment');	
 	}
+
+	$logger->info('PHP environment is OK, application can work without any issue');
 	
-	
+
+	$logger->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/*
 	* Routing
 	* instantiation of the "Router" class and user request routing processing.
