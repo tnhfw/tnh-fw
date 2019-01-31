@@ -141,6 +141,9 @@
 				$this->logger->info('front controller is enabled in the configuration, the value is [' .$temp[0]. ']' );
 				array_shift($temp);
 			}
+			else{
+				$this->logger->info('front controller is not enabled in the configuration' );
+			}
 			$uri = implode('/', $temp);
 			$this->logger->info('The final Request URI is [' .$uri. ']' );
 			$pattern = array(':num', ':alpha', ':alnum', ':any');
@@ -181,7 +184,7 @@
 					$this->logger->warning('Controller class [' .$controller. '] exist but the method [' .$m. '] does not exists');
 				}
 				else{
-					$this->logger->info('Routing data is set correctly lunch the application');
+					$this->logger->info('Routing data is set correctly launch the application');
 					call_user_func_array(array($c, $m), $this->getArgs());
 				}
 			}

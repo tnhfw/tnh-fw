@@ -729,6 +729,10 @@ class Database
     return $this->pdo->quote(trim($data));
   }
 
+  /**
+    * set the database cache
+    * @param integer $time the numbers of second for this cache
+  */
   public function setCache($time)
   {
     $this->cache = new DatabaseCache($this->cacheDir, $time);

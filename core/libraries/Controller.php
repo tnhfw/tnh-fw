@@ -39,7 +39,7 @@
 			static::$logger->setLogger('MainController');
 			self::$instance = & $this;
 
-			$libraries = array('loader', 'config', 'request', 'response', 'lang');
+			$libraries = array('request', 'response', 'lang');
 			$config = array();
 			$models = array();
 			$functions = array('lang');

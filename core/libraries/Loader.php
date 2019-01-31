@@ -255,5 +255,6 @@
 			}
 			static::$loaded['config'][$filename] = CONFIG_PATH.$file;
 			$logger->info('configuration [' . $filename . '] ' . CONFIG_PATH.$file . ' loaded successfully.');
+			$logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
 		}
 	}

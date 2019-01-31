@@ -113,6 +113,12 @@ abstract class Model
      */
     protected $return_type = 'object';
     protected $_temporary_return_type = NULL;
+	
+	
+	/**
+		The database cache time 
+	*/
+	protected $dbCacheTime = 0;
 
     /* --------------------------------------------------------------
      * GENERIC METHODS
@@ -134,6 +140,10 @@ abstract class Model
         array_unshift($this->before_create, 'protect_attributes');
         array_unshift($this->before_update, 'protect_attributes');
         $this->_temporary_return_type = $this->return_type;
+		
+		if($this->dbCacheTime > 0){
+			$this->_database->setCache($this->dbCacheTime);
+		}
     }
 
     /* --------------------------------------------------------------
@@ -873,11 +883,4 @@ abstract class Model
 		return get_instance()->{$key};
 	}
 
-    /**
-     * set the database cache
-     * @param integer $time the numbers of second for this cache
-     */
-    public function setCache($time = 0){
-        $this->_database->setCache($time);
-    }
 }

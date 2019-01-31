@@ -80,16 +80,15 @@ class DatabaseCache
     if (file_exists($cacheFile)){
       $this->logger->info('Database cache file [' .$cacheFile. '] for query ['. $sql .'] exists');
       $cache = json_decode(file_get_contents($cacheFile), $array);
-      if (($array ? $cache['finish'] : $cache->finish) < time())
-      {
+      if (($array ? $cache['finish'] : $cache->finish) < time()){
         $this->logger->info('Database cache already expired delete the cache file [' .$cacheFile. '] for query ['. $sql .']');
         unlink($cacheFile);
-        return;
+        return false;
       }
-    else{
-        $this->logger->info('Database cache not yet expire, now return the database cache for query ['. $sql .']');
-        return ($array ? $cache['data'] : $cache->data);
-    }
+	  else{
+		    $this->logger->info('Database cache not yet expire, now return the database cache for query ['. $sql .']');
+			return ($array ? $cache['data'] : $cache->data);
+	  }
       return false;
     }
   }
