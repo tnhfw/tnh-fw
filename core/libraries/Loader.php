@@ -236,7 +236,7 @@
 			$filename = str_ireplace('.php', '', $filename);
 			$filename = str_ireplace('config_', '', $filename);
 			$file = 'config_'.$filename.'.php';
-			$logger->debug('Loading configuration [' . $c . '] ...');
+			$logger->debug('Loading configuration [' . $file . '] ...');
 			if(static::isLoadedConfig($filename)){
 				$logger->info('configuration [' . $filename . '] already loaded no need to load it again, cost in performance');
 				return;

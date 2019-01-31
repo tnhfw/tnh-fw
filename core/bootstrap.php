@@ -63,6 +63,17 @@
 	 */
 	require_once CORE_PATH . 'common.php';
 	
+	/**
+	* Loading "string" helper that contains most of the character 
+	* string processing functions : attributes_to_string, get_random_string, etc.
+	*/
+	require_once CORE_FUNCTIONS_PATH . 'function_string.php';
+	
+	/**
+	* Helper loader "url" which contains most of the URL 
+	* processing functions: is_https, is_url, etc.
+	*/
+	require_once CORE_FUNCTIONS_PATH . 'function_url.php';
 
 	/**
 	 *  Definition of the PHP error message handling function
@@ -97,19 +108,8 @@
 	Loader::register();
 	$logger->info('PHP autoload function registered successfully');
 
-	/**
-	* Loading "string" helper that contains most of the character 
-	* string processing functions : attributes_to_string, get_random_string, etc.
-	*/
-	Loader::functions('string');
 	
 	$logger->info('The application configuration are listed below: ' . stringfy_vars(Config::getAll()));
-	
-	/**
-	* Helper loader "url" which contains most of the URL 
-	* processing functions: is_https, is_url, etc.
-	*/
-	Loader::functions('url');
 
 	$logger->debug('Checking PHP environment ...');	
 	/*
