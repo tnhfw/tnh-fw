@@ -85,7 +85,7 @@
 		static function clear($item){
 			$logger = static::getLogger();
 			if(isset($_SESSION[$item])){
-				$logger->info('delete session item ['.$item.' => '.$_SESSION[$item].']');
+				$logger->info('delete session for item ['.$item.' ]');
 				unset($_SESSION[$item]);
 			}
 			else{
@@ -97,7 +97,7 @@
 			$logger = static::getLogger();
 			$key = self::SESSION_FLASH_KEY.'_'.$item;
 			if(isset($_SESSION[$item])){
-				$logger->info('delete session flash item ['.$item.' => '.$_SESSION[$item].']');
+				$logger->info('delete session flash for item ['.$item.']');
 				unset($_SESSION[$item]);
 			}
 			else{

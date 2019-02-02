@@ -70,7 +70,7 @@
 		static function clear($item){
 			$logger = static::getLogger();
 			if(isset($_COOKIE[$item])){
-				$logger->info('delete cookie item ['.$item.' => '.$_COOKIE[$item].']');
+				$logger->info('delete cookie item ['.$item.']');
 				unset($_COOKIE[$item]);
 			}
 			else{

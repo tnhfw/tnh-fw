@@ -80,7 +80,6 @@
 		 * used to check the CSRF status is valid, not expire
 		 * @return boolean true if valid, false if not valid
 		 */
-
 		static public function validateCSRF(){
 			$logger = static::getLogger();
 			$logger->debug('Validation of CSRF ...');
@@ -113,7 +112,59 @@
 				}
 			}
 			else{
+				$logger->info('CSRF is not enabled in the configuration, ignore checking');
 				return false; //TODO no need to return false if CSRF not enable no need to call this method
 			}
 		}
+		
+		/**
+		 * used to check the whitelist address allowed
+		 */
+		 static public function checkWhiteListIpAccess(){
+			$logger = static::getLogger();
+			$logger->debug('Validation of the IP address access ...');
+			$logger->debug('Check if whitelist ip access is enabled in the configuration ...');
+			$isEnable = Config::get('white_list_ip_enable', false);
+			if($isEnable){
+				$logger->info('Whitelist ip access is enabled in the configuration');
+				$list = Config::get('white_list_ip_addresses', array());
+				if(!empty($list)){
+					//may be at this time helper user_agent not yet included
+					require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
+					$ip = get_ip();
+					if(count($list) == 1 && $list[0] == '*' || in_array($ip, $list)){
+						$logger->info('IP address ' . $ip . ' allowed using the wildcard "*" or the full IP');
+						//wildcard to access all ip address
+						return;
+					}
+					else{
+						// go through all whitelisted ips
+						foreach ($list as $ipaddr) {
+							// find the wild card * in whitelisted ip (f.e. find position in "127.0.*" or "127*")
+							$wildcardPosition = strpos($ipaddr, "*");
+							if ($wildcardPosition === false) {
+								// no wild card in whitelisted ip --continue searching
+								continue;
+							}
+							// cut ip at the position where we got the wild card on the whitelisted ip
+							// and add the wold card to get the same pattern
+							if (substr($ip, 0, $wildcardPosition) . "*" === $ipaddr) {
+								// f.e. we got
+								//  ip "127.0.0.1"
+								//  whitelisted ip "127.0.*"
+								// then we compared "127.0.*" with "127.0.*"
+								// return success
+								$logger->info('IP address ' . $ip . ' allowed using the wildcard like "x.x.x.*"');
+								return;
+							}
+						}
+						$logger->warning('IP address ' . $ip . ' is not allowed to access to this application');
+						show_error('Access to this application is not allowed');
+					}
+				}
+			}
+			else{
+				$logger->info('Whitelist ip access is not enabled in the configuration, ignore checking');
+			}
+		 }
 	}

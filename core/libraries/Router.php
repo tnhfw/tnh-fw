@@ -59,22 +59,24 @@
 	            //load it manually
 	            require_once CORE_LIBRARY_PATH . 'Log.php';
 	        }
+			$routes_path = CONFIG_PATH.'routes.php';
 	        $this->logger = new Log();
 	        $this->logger->setLogger('Library::Router');
-	         $this->logger->debug('Try to load the routes configuration');
-			if(file_exists(CONFIG_PATH.'routes.php')){
-				 $this->logger->info('Routes configuration file [' .CONFIG_PATH. 'routes.php] exists require it');
-				require_once CONFIG_PATH.'routes.php';
+	        $this->logger->debug('Try to load the routes configuration [' .$routes_path. '] ...');
+			if(file_exists($routes_path)){
+				 $this->logger->info('Routes configuration file [' .$routes_path. '] exists load it');
+				require_once $routes_path;
 				if(!empty($route) && is_array($route)){
 					$this->routes = $route;
-					 $this->logger->info('The routes configuration are listed below: ' . stringfy_vars($route));
+					$this->logger->info('The routes configuration are listed below: ' . stringfy_vars($route));
+					unset($route);
 				}
 				else{
-					show_error('No routing configuration found in routes.php');
+					show_error('No routing configuration found in [' .$routes_path. ']');
 				}
 			}
 			else{
-				show_error('Unable to find the route configuration file');
+				show_error('Unable to find the route configuration file [' .$routes_path. ']');
 			}
 			
 			$this->request = new Request();
@@ -114,7 +116,7 @@
 		}
 
 		public function dispatch() {
-			 $this->logger->debug('Routing process start ...');
+			$this->logger->debug('Routing process start ...');
 			$uri = $this->getRequest()->requestUri();
 			$this->logger->info('Request URI [' .$uri. ']' );
 

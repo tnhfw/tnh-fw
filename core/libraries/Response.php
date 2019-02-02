@@ -162,6 +162,7 @@
 				$r = new Request();
 				$b = new Browser();
 				$browser = $b->getPlatform().', '.$b->getBrowser().' '.$b->getVersion();
+				//here the helper not yet included
 				Loader::functions('user_agent');
 
 				$str = '[404 page not found] : ';

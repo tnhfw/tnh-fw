@@ -146,16 +146,20 @@
 			if(!file_exists($path)){
 				@touch($path);
 			}
+			//may be at this time helper user_agent not yet included
+			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
+			//date
 			$date = date('Y-m-d H:i:s');
+			//ip
+			$ip = get_ip();
 			//level name
 			$levelName = static::getLevelName($level);
 			//debug info
 			$dtrace = debug_backtrace();
 			array_shift($dtrace); //remove the first element
 			$fileInfo = array_shift($dtrace);//use the second index that contains the caller info
-
 			$l = $this->logger;
-			$str = $date . ' [' .str_pad($levelName, 7 /*warning len*/) . '] '. $l . ' : ' . $message . ' ' . '['.$fileInfo['file'] . '::' .$fileInfo['line']. ']'."\n";
+			$str = $date . ' [' .str_pad($levelName, 7 /*warning len*/) . '] '. ' [' .str_pad($ip, 15) . '] '.$l . ' : ' . $message . ' ' . '['.$fileInfo['file'] . '::' .$fileInfo['line']. ']'."\n";
 			$fp = fopen($path, "a+");
 			fwrite($fp, $str);
 			fclose($fp);

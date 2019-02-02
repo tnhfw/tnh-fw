@@ -236,25 +236,27 @@
 			$filename = str_ireplace('.php', '', $filename);
 			$filename = str_ireplace('config_', '', $filename);
 			$file = 'config_'.$filename.'.php';
-			$logger->debug('Loading configuration [' . $file . '] ...');
+			$path = CONFIG_PATH . $file;
+			$logger->debug('Loading configuration [' . $path . '] ...');
 			if(static::isLoadedConfig($filename)){
-				$logger->info('configuration [' . $filename . '] already loaded no need to load it again, cost in performance');
+				$logger->info('configuration [' . $path . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
-			if(file_exists(CONFIG_PATH.$file)){
-				require_once CONFIG_PATH.$file;
+			if(file_exists($path)){
+				require_once $path;
 				if(!empty($config) && is_array($config)){
 					Config::setAll($config);
 				}
 				else{
-					show_error('No configuration found in '.$file);
+					show_error('No configuration found in ['. $path . ']');
 				}
 			}
 			else{
-				show_error('Unable to find config file '.$file);
+				show_error('Unable to find config file ['. $path . ']');
 			}
-			static::$loaded['config'][$filename] = CONFIG_PATH.$file;
-			$logger->info('configuration [' . $filename . '] ' . CONFIG_PATH.$file . ' loaded successfully.');
+			static::$loaded['config'][$filename] = $path;
+			$logger->info('configuration [' . $path . '] loaded successfully.');
 			$logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
+			unset($config);
 		}
 	}

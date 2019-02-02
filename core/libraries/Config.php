@@ -53,6 +53,7 @@
 				require_once CONFIG_PATH.'config.php';
 				if(!empty($config) && is_array($config)){
 					static::$config = $config;
+					unset($config);
 				}
 				else{
 					show_error('No configuration found in config.php');
@@ -110,7 +111,7 @@
 		static function delete($item){
 			$logger = static::getLogger();
 			if(isset(static::$config[$item])){
-				$logger->info('delete config item ['.$item.' => '.static::$config[$item].']');
+				$logger->info('delete config item ['.$item.']');
 				unset(static::$config[$item]);
 			}
 			else{

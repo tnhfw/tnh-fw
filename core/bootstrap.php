@@ -108,6 +108,8 @@
 	Loader::register();
 	$logger->info('PHP autoload function registered successfully');
 
+	$logger->debug('Checking the IP whitelist access...'); 
+	Security::checkWhiteListIpAccess();
 	
 	$logger->info('The application configuration are listed below: ' . stringfy_vars(Config::getAll()));
 
@@ -121,7 +123,7 @@
 		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than <b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'PHP Error environment');	
 	}
 
-	$logger->info('PHP environment is OK, application can work without any issue');
+	$logger->info('PHP environment [' .phpversion(). '] is OK, application can work without any issue');
 	
 
 	$logger->info('Everything is OK load Router library and dispatch the request to the corresponding controller');

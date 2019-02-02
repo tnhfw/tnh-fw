@@ -272,3 +272,29 @@
 	 */
 	$config['csrf_expire'] = 120;
 	
+	
+	/*+---------------------------------------------------------------+
+	* White list IP access configuration section
+	+------------------------------------------------------------------+
+	*/
+	
+	
+	/**
+	 * White list ip status
+	 *
+	 * if you would to use the white list ip access, set this key to true
+	 */
+	$config['white_list_ip_enable'] = false;
+	
+	
+	/**
+	 * White listed ip addresses
+	 *
+	 * add the allowed ip address to access to this application.
+	 * You can use the wildcard address
+	 * @example: '18.90.09.*', '10.*.*.*', '*'
+	 * 
+	 */
+	$config['white_list_ip_addresses'] = array('127.0.0.1', '::1');
+
+	

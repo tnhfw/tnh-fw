@@ -52,12 +52,25 @@
 		function get_ip(){
 			$ip = $_SERVER['REMOTE_ADDR'];
 
-			//for proxy
-			if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
-				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			if (isset($_SERVER["HTTP_CLIENT_IP"])) {
+				$ip = $_SERVER["HTTP_CLIENT_IP"];
 			}
-			else if(isset($_SERVER['HTTP_CLIENT_IP'])){
-				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			else if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+				$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+			} 
+			else if (isset($_SERVER["HTTP_X_FORWARDED"])) {
+				$ip = $_SERVER["HTTP_X_FORWARDED"];
+			} 
+			else if (isset($_SERVER["HTTP_FORWARDED_FOR"])) {
+				$ip = $_SERVER["HTTP_FORWARDED_FOR"];
+			} 
+			else if (isset($_SERVER["HTTP_FORWARDED"])) {
+				$ip = $_SERVER["HTTP_FORWARDED"];
+			} 
+
+			// Strip any secondary IP etc from the IP address
+			if (strpos($ip, ',') > 0) {
+				$ip = substr($ip, 0, strpos($ip, ','));
 			}
 
 			return $ip;
