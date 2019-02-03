@@ -101,8 +101,8 @@ defined('ROOT_PATH') || exit('Access denied');
 			$this->iv = substr(hash('sha256', $key), 0, $iv_length);
 			
 			//delete the expired session
-			$timeToDelete = time() - Config::get('session_inactivity_time', 100);
-			$this->gc($timeToDelete);
+			$timeActivity = Config::get('session_inactivity_time', 100);
+			$this->gc($timeActivity);
 		}
 
 
@@ -121,7 +121,14 @@ defined('ROOT_PATH') || exit('Access denied');
 			$this->logger->debug('reading database session data for SID: ' . $sid);
 			$instance = $this->modelInstanceName;
 			$columns = $this->sessionTableColumns;
-			$data = $instance->get($sid);
+			Loader::functions('user_agent'); //for using get_ip()
+			$ip = get_ip();
+			$keyValue = $instance->getKeyValue();
+			$host = gethostbyaddr($ip);
+			Loader::library('Browser');
+			$browser = $this->OBJ->browser->getPlatform().', '.$this->OBJ->browser->getBrowser().' '.$this->OBJ->browser->getVersion();
+			
+			$data = $instance->get_by(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
 			if($data && isset($data->{$columns['sdata']})){
 				//checking inactivity 
 				$timeInactivity = time() - Config::get('session_inactivity_time', 100);
@@ -183,8 +190,8 @@ defined('ROOT_PATH') || exit('Access denied');
 		public function gc($maxLifetime){
 			$instance = $this->modelInstanceName;
 			$time = time() - $maxLifetime;
+			$this->logger->debug('garbage collector of expired session. maxLifetime: ' . $maxLifetime . ' sec, expired time:' . $time);
 			$instance->deleteByTime($time);
-			$this->logger->debug('garbage collector of expired session. maxLifetime: ' . $maxLifetime . ', expired time:' . $time);
 			return true;
 		}
 
