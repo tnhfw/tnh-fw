@@ -99,6 +99,10 @@ defined('ROOT_PATH') || exit('Access denied');
 			
 			$iv_length = openssl_cipher_iv_length(self::DB_SESSION_HASH_METHOD);
 			$this->iv = substr(hash('sha256', $key), 0, $iv_length);
+			
+			//delete the expired session
+			$timeToDelete = time() - Config::get('session_inactivity_time', 100);
+			$this->gc($timeToDelete);
 		}
 
 
