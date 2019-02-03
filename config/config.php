@@ -243,7 +243,7 @@
 	* If you would like the cookie is available only in HTTP mode, then set this value to "true" 
 	* else set this value to "false"
 	*/
-	$config['session_cookie_httponly'] = false;
+	$config['session_cookie_httponly'] = true;
 
 
 	/*+---------------------------------------------------------------+
