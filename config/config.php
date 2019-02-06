@@ -139,7 +139,7 @@
 	* of time the log file size will increase very fast and will cost the application performance
 	* and also the filesystem usage of your server.
 	*/
-	$config['log_level'] = 'WARNING';
+	$config['log_level'] = 'NONE';
 
 
 	/**
