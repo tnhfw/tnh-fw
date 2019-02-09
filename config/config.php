@@ -256,7 +256,7 @@
 	 *
 	 * if you would to use the CSRF (that we recommand you), set this key to true
 	 */
-	$config['csrf_enable'] = true;
+	$config['csrf_enable'] = false;
 
 	/**
 	 * CSRF key

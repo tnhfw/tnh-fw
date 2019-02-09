@@ -63,6 +63,8 @@
                     'min_length'   => $this->OBJ->lang->get('fv_min_length'),
                     'max_length'   => $this->OBJ->lang->get('fv_max_length'),
                     'exact_length' => $this->OBJ->lang->get('fv_exact_length'),
+                    'less_than'    => $this->OBJ->lang->get('fv_less_than'),
+                    'greater_than' => $this->OBJ->lang->get('fv_greater_than'),
                     'matches'      => $this->OBJ->lang->get('fv_matches'),
                     'valid_email'  => $this->OBJ->lang->get('fv_valid_email'),
                     'not_equal'    => array(
@@ -71,6 +73,7 @@
                                         ),
                     'depends'      => $this->OBJ->lang->get('fv_depends'),
                     'is_unique'    => $this->OBJ->lang->get('fv_is_unique'),
+                    'is_unique_update'    => $this->OBJ->lang->get('fv_is_unique_update'),
                     'exists'       => $this->OBJ->lang->get('fv_exists'),
                     'regex'        => $this->OBJ->lang->get('fv_regex'),
                     'in_list'      => $this->OBJ->lang->get('fv_in_list'),
@@ -582,6 +585,26 @@
         }
     }
 	
+	protected function _validateLessThan($inputName, $ruleName, array $ruleArgs) {
+        $inputVal = $this->post($inputName);
+        if ($inputVal >= $ruleArgs[1]) {
+            if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                return;
+            }
+            $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
+        }
+    }
+	
+	protected function _validateGreaterThan($inputName, $ruleName, array $ruleArgs) {
+        $inputVal = $this->post($inputName);
+        if ($inputVal <= $ruleArgs[1]) {
+            if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                return;
+            }
+            $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
+        }
+    }
+	
 	 protected function _validateNumeric($inputName, $ruleName, array $ruleArgs) {
         $inputVal = $this->post($inputName);
 
@@ -605,6 +628,33 @@
 		list($table, $column) = explode('.', $ruleArgs[1]);
 		$db->from($table)
 			->where($column, $inputVal)
+			->get();
+		$nb = $db->numRows();
+        if ($nb != 0) {
+            if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                return;
+            }
+            $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+        }
+    }
+	
+	protected function _validateIsUniqueUpdate($inputName, $ruleName, array $ruleArgs) {
+        $inputVal = $this->post($inputName);
+		$db = null;
+		$obj = & get_instance();
+		if(!isset($obj->database)){
+			return;
+		}
+		$db = $obj->database;
+		$data = explode(',', $ruleArgs[1]);
+		if(count($data) < 2){
+			return;
+		}
+		list($table, $column) = explode('.', $data[0]);
+		list($field, $val) = explode('=', $data[1]);
+		$db->from($table)
+			->where($column, $inputVal)
+			->where($field, '!=', trim($val))
 			->get();
 		$nb = $db->numRows();
         if ($nb != 0) {
