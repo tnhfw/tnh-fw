@@ -114,7 +114,7 @@
                         $navbar .= "<li><a href='$query".$i."'>$i</a></li>";
                 }
             }
-            $navbar = '<ul class = "button-bar">'.$navbar.'</ul>';
+            $navbar = '<ul class = "pagination">'.$navbar.'</ul>';
             return $navbar;
         }
     }

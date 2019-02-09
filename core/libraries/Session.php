@@ -47,14 +47,18 @@
 
 		static function get($item, $default = null){
 			$logger = static::getLogger();
+			$logger->debug('Getting session data for item [' .$item. '] ...');
 			if(isset($_SESSION[$item])){
+				$logger->info('Session data for item [' .$item. '] is : [' .stringfy_vars($_SESSION[$item]). ']');
 				return $_SESSION[$item];
 			}
-			$logger->warning('cannot find session item ['.$item.'] using the default value ['.$default.']');
+			$logger->warning('Cannot find session item ['.$item.'] using the default value ['.$default.']');
 			return $default;
 		}
 
 		static function set($item, $value){
+			$logger = static::getLogger();
+			$logger->debug('Setting session data for item [' .$item. '], value [' .stringfy_vars($value). ']');
 			$_SESSION[$item] = $value;
 		}
 
@@ -67,7 +71,7 @@
 				unset($_SESSION[$key]);
 			}
 			else{
-				$logger->warning('cannot find session flash item ['.$item.'] using the default value ['.$default.']');
+				$logger->warning('Cannot find session flash item ['.$item.'] using the default value ['.$default.']');
 			}
 			return $return;
 		}
@@ -85,11 +89,11 @@
 		static function clear($item){
 			$logger = static::getLogger();
 			if(isset($_SESSION[$item])){
-				$logger->info('delete session for item ['.$item.' ]');
+				$logger->info('Delete session for item ['.$item.' ]');
 				unset($_SESSION[$item]);
 			}
 			else{
-				$logger->warning('session item ['.$item.'] to be deleted does not exists');
+				$logger->warning('Session item ['.$item.'] to be deleted does not exists');
 			}
 		}
 		
@@ -97,11 +101,11 @@
 			$logger = static::getLogger();
 			$key = self::SESSION_FLASH_KEY.'_'.$item;
 			if(isset($_SESSION[$item])){
-				$logger->info('delete session flash for item ['.$item.']');
+				$logger->info('Delete session flash for item ['.$item.']');
 				unset($_SESSION[$item]);
 			}
 			else{
-				$logger->warning('session flash item ['.$item.'] to be deleted does not exists');
+				$logger->warning('Dession flash item ['.$item.'] to be deleted does not exists');
 			}
 		}
 

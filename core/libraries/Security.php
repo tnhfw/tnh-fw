@@ -63,11 +63,18 @@
 				$expire = Config::get('csrf_expire', 60);
 				$keyExpire = 'csrf_expire';
 				$currentTime = time();
-				$newTime = $currentTime + $expire;
-				$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. '] sec');
-				Session::set($keyExpire, $newTime);
-				Session::set($key, sha1(uniqid()).sha1(uniqid()));
-				return Session::get($key);
+				if(Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) < $currentTime){
+					$logger->info('The CSRF token not yet expire just return it');
+					return Session::get($key);
+				}
+				else{
+					$newTime = $currentTime + $expire;
+					$token = sha1(uniqid()).sha1(uniqid());
+					$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. '] sec, token [' .$token. ']');
+					Session::set($keyExpire, $newTime);
+					Session::set($key, $token);
+					return Session::get($key);
+				}
 			}
 			else{
 				$logger->info('CSRF is not enabled in the configuration');
@@ -103,7 +110,7 @@
 					$obj = & get_instance();
 					$token = $obj->request->query($key);
 					if(!$token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime){
-						$logger->warning('The CSRF data is not valide may be attacker do his job');
+						$logger->warning('The CSRF data [' .$token. '] is not valide may be attacker do his job');
 						return false;
 					}
 					else{
