@@ -125,11 +125,11 @@
 				static::$loaded['controllers'][$class] = APPS_CONTROLLER_PATH.$file;
 			}
 			else if($graceful){
-				$logger->error('cannot find controller ' . $class);
+				$logger->error('Cannot find controller [' . $class . ']');
 				return false;
 			}
 			else{
-				show_error('Unable to find controller class '.$class);
+				show_error('Unable to find controller class [' . $class . ']');
 			}
 		}
 
