@@ -1,4 +1,5 @@
 <?php
+	defined('ROOT_PATH') || exit('Access denied');
 	/**
 	 * TNH Framework
 	 *
@@ -62,7 +63,6 @@
 			else{
 				show_error('Unable to find the configuration file');
 			}
-
 			if(!static::$config['base_url'] || !is_url(static::$config['base_url'])){
 				$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
 				$base_url = null;
@@ -78,12 +78,15 @@
 						.substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
 				}
 				else{
-					$logger->warning('can not determine the application base URL automatically, use localhost as default');
+					$logger->warning('Can not determine the application base URL automatically, use localhost as default');
 					$base_url = 'http://localhost/';
 				}
 				self::set('base_url', $base_url);
 			}
 			static::$config['base_url'] = rtrim(static::$config['base_url'], '/').'/';
+			if(ENVIRONMENT == 'production' && (strtolower(static::$config['log_level']) == 'debug' || strtolower(static::$config['log_level']) == 'info' || strtolower(static::$config['log_level']) == 'all')){
+				$logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
+			}
 			$logger->info('Configuration initialized successfully');
 		}
 
@@ -92,7 +95,7 @@
 			if(isset(static::$config[$item])){
 				return static::$config[$item];
 			}
-			$logger->warning('cannot find config item ['.$item.'] using the default value ['.$default.']');
+			$logger->warning('Cannot find config item ['.$item.'] using the default value ['.$default.']');
 			return $default;
 		}
 

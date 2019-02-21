@@ -1,4 +1,5 @@
 <?php
+	defined('ROOT_PATH') or exit('Access denied');
 	/**
 	 * TNH Framework
 	 *
@@ -40,6 +41,10 @@
 		*/
 		protected $uriTrim = '/\^$';
 
+		protected $controllerPath = null;
+
+		protected $module = null;
+		
 		protected $controller = null;
 
 		protected $method = 'index';
@@ -68,7 +73,6 @@
 				require_once $routes_path;
 				if(!empty($route) && is_array($route)){
 					$this->routes = $route;
-					$this->logger->info('The routes configuration are listed below: ' . stringfy_vars($route));
 					unset($route);
 				}
 				else{
@@ -79,13 +83,28 @@
 				show_error('Unable to find the route configuration file [' .$routes_path. ']');
 			}
 			
+			//loading routes for module
+			$this->logger->debug('Loading of modules routes if exists ... ');
+			$modulesRoutes = Module::getModulesRoutes();
+			if($modulesRoutes && is_array($modulesRoutes)){
+				$this->routes = array_merge($this->routes, $modulesRoutes);
+				$this->logger->info('Routes for all modules loaded successfully');
+			}
+			else{
+				$this->logger->info('No routes found for all modules skip.');
+			}
+
+			$this->logger->info('The routes configuration are listed below: ' . stringfy_vars($this->routes));
+
 			$this->request = new Request();
 			foreach($this->routes as $pattern => $callback){
 				$this->add($pattern, $callback);
 			}
+			//for performance remove all loaded routes array
+			$this->routes = array();
 
 		}
-		
+
 		/**
 		* Adds the function and callback to the list of URIs to validate
 		*
@@ -94,10 +113,21 @@
 		*/
 		public function add($uri, $callback) {
 			$uri = trim($uri, $this->uriTrim);
+			if(in_array($uri, $this->pattern)){
+				$this->logger->warning('The route [' .$uri. '] already added may adding again can have route conflict');
+			}
 			$this->pattern[] = $uri;
 			$this->callback[] = $callback;
 		}
 
+
+		public function getControllerPath(){
+			return $this->controllerPath;
+		}
+
+		public function getModule(){
+			return $this->module;
+		}
 
 		public function getController(){
 			return $this->controller;
@@ -129,7 +159,7 @@
 			else{
 				$this->logger->info('URL suffix is not enabled in the configuration');
 			}
-			if(strpos($uri, '?') != false){
+			if(strpos($uri, '?') !== false){
 				$uri = substr($uri, 0, strpos($uri, '?'));
 			}
 			$uri = trim($uri, $this->uriTrim);
@@ -156,10 +186,16 @@
 				// Check for a existant matching URI
 				if (preg_match("#^$uriList$#", $uri, $args)) {
 					array_shift($args);
-					$temp = explode('/', $this->callback[$index]);
+					$temp = explode('@', $this->callback[$index]);
 
 					if(isset($temp[0])){
-						$this->controller = $temp[0];
+						$path = explode('/', $temp[0]);
+						$this->controller = end($path);
+						array_pop($path);
+						$path = implode(DS, $path);
+						if($path){
+							$this->controllerPath = $path . DS;
+						}
 					}
 
 					if(isset($temp[1])){
@@ -172,8 +208,8 @@
 			}
 			$e404 = false;
 			$controller = ucfirst($this->getController());
-			Loader::controller($controller);
 			$this->logger->info('The routing information are: controller [' .$controller. '], method [' .$this->method. '], args [' .stringfy_vars($this->args). ']' );
+			Loader::controller($controller, $this->getControllerPath());
 			if(!class_exists($controller)){
 				$e404 = true;
 				$this->logger->warning('Controller class [' .$controller. '] does not exist');
@@ -183,9 +219,19 @@
 				$m = $this->getMethod();
 				if(!method_exists($c, $m)){
 					$e404 = true;
-					$this->logger->warning('Controller class [' .$controller. '] exist but the method [' .$m. '] does not exists');
+					$this->logger->warning('Controller class [' .$controller. '] exist but the method [' .$m. '] does not exist');
 				}
 				else{
+					//check if this controller is from module or not
+					$this->logger->debug('Check if the controller belongs to an module');
+					$module = Module::findModuleForController($controller, $this->getControllerPath());
+					if($module){
+						$this->logger->info('This controller belongs in a module [' .$module. '] setting it now');
+						$c->module = $module;
+					}
+					else{
+						$this->logger->info('This controller not belongs in a module skiping');
+					}
 					$this->logger->info('Routing data is set correctly launch the application');
 					call_user_func_array(array($c, $m), $this->getArgs());
 				}

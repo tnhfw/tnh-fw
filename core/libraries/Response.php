@@ -1,4 +1,5 @@
 <?php
+	defined('ROOT_PATH') or exit('Access denied');
 	/**
 	 * TNH Framework
 	 *
@@ -23,6 +24,14 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
+	/**
+	 * TODO: use the best way to include the Log class
+	 */
+	if(!class_exists('Log')){
+		//here the Log class is not yet loaded
+		//load it manually, normally the class Config is loaded before
+		require_once CORE_LIBRARY_PATH . 'Log.php';
+	}
 
 	class Response{
 			private static $headers = array();
@@ -73,13 +82,14 @@
 										);
 
 			public function __construct(){
-				if(!class_exists('Log')){
-					//here the Log class is not yet loaded
-					//load it manually, normally the class Config is loaded before
-					require_once CORE_LIBRARY_PATH . 'Log.php';
+			}
+
+			private static function getLogger(){
+				if(static::$logger == null){
+					static::$logger = new Log();
+					static::$logger->setLogger('Library::Response');
 				}
-				static::$logger = new Log();
-				static::$logger->setLogger('Library::Response');
+				return static::$logger;
 			}
 
 			public static function sendHeaders($http_code = 200, array $headers = array()){
@@ -99,6 +109,8 @@
 
 			public static function redirect($path = ''){
 				$url = Url::site_url($path);
+				$logger = static::getLogger();
+				$logger->info('Redirect to URL [' .$url. ']');
 				if(!headers_sent()){
 					header('Location:'.$url);
 					exit;
@@ -128,8 +140,28 @@
 			}
 
 			public function render($view, array $data = array(), $return = false){
+				$logger = static::getLogger();
 				$view = str_ireplace('.php', '', $view);
-				$path = APPS_VIEWS_PATH.$view.'.php';
+				$view = trim($view, '/\\');
+				$viewFile = $view . '.php';
+				$path = APPS_VIEWS_PATH . $viewFile;
+				//check in module first
+				$logger->debug('Trying to find view [' . $view . '] from module list ...');
+				$obj = & get_instance();
+				$module = $obj->module;
+				if($module){
+					$moduleViewPath = Module::findViewFullPath($view, $module);
+					if($moduleViewPath){
+						$path = $moduleViewPath;
+						$logger->info('Found view [' . $view . '] in module [' .$module. '], the file path is [' .$moduleViewPath. '] we will used it');
+					}
+					else{
+						$logger->info('Cannot find view [' . $view . '] in module [' .$module. '] using the default location');
+					}
+				}
+				else{
+					$logger->info('The current request does not use module using the default location.');
+				}
 				$found = false;
 				if(file_exists($path)){
 					$obj = & get_instance();

@@ -1,6 +1,34 @@
 <?php
 	defined('ROOT_PATH') || exit('Access denied');
+	/**
+	 * TNH Framework
+	 *
+	 * A simple PHP framework created using the concept of codeigniter with bootstrap twitter
+	 *
+	 * This content is released under the GNU GPL License (GPL)
+	 *
+	 * Copyright (C) 2017 Tony NGUEREZA
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License
+	 * as published by the Free Software Foundation; either version 3
+	 * of the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with this program; if not, write to the Free Software
+	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	*/
 
+	if(!class_exists('Log')){
+        //here the Log class is not yet loaded
+        //load it manually
+        require_once CORE_LIBRARY_PATH . 'Log.php';
+    }
 	/**
 	 * for application language management
 	 */
@@ -39,11 +67,6 @@
 		private $logger;
 
 		public function __construct(){
-			if(!class_exists('Log')){
-	            //here the Log class is not yet loaded
-	            //load it manually
-	            require_once CORE_LIBRARY_PATH . 'Log.php';
-	        }
 	        $this->logger = new Log();
 	        $this->logger->setLogger('Library::Lang');
 
@@ -65,7 +88,8 @@
 			}
 			$systemLangPath = CORE_LANG_PATH . $language . '.php';
 			$this->logger->debug('Try to include the system language file  [' .$systemLangPath. ']');
-			//system language
+			
+			//system languages
 			if(file_exists($systemLangPath)){
 				$this->logger->info('System language file  [' .$systemLangPath. '] exists include it');
 				require_once $systemLangPath;
@@ -83,6 +107,7 @@
 				$this->logger->warning('System language file  [' .$systemLangPath. '] does not exist');
 			}
 
+			//application languages
 			$appLangPath = APP_LANG_PATH . $language . '.php';
 			$this->logger->debug('Try to include the custom language file  [' .$appLangPath. ']');
 			//app language
@@ -101,6 +126,19 @@
 			}
 			else{
 				$this->logger->warning('Custom language file  [' .$appLangPath. '] does not exist');
+			}
+
+			//modules languages
+			$this->logger->debug('Try to set the modules languages');
+			$modulesLanguages = Module::getModulesLanguages();
+			if($modulesLanguages && is_array($modulesLanguages)){
+				$this->addLangMessages($modulesLanguages);
+				$this->logger->info('Languages for all modules loaded successfully');
+				//free the memory
+				unset($modulesLanguages);
+			}
+			else{
+				$this->logger->info('No languages found for all modules skip.');
 			}
 		}
 

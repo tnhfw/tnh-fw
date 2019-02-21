@@ -1,4 +1,5 @@
 <?php
+	defined('ROOT_PATH') || exit('Access denied');
 	/**
 	 * TNH Framework
 	 *
@@ -93,6 +94,24 @@
 	require_once CORE_LIBRARY_PATH . 'Config.php';
 	Config::init();
 
+	/*
+	* Load modules using the 
+	* static method "init" of the Module class.
+	* here the Loader class is not instancied so just use require_once
+	*/
+	require_once CORE_LIBRARY_PATH . 'Module.php';
+	Module::init();
+
+	$logger->debug('Loading modules configuration ...');
+	$cfg = Module::getModulesConfig();
+	if($cfg && is_array($cfg)){
+		Config::setAll($cfg);
+		$logger->info('Configurations for all modules loaded successfully');
+	}
+	else{
+		$logger->info('No configuration found for all modules skip.');
+	}
+
 	$logger->debug('Loading Loader library ...');
 	/**
 	 *  include file containing the class for library loads, 
@@ -118,9 +137,9 @@
 	* Verification of the PHP environment: minimum and maximum version
 	*/
 	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
-		show_error('Your PHP Version <b>'.phpversion().'</b> is less than <b>'.TNH_REQUIRED_PHP_MIN_VERSION.'</b>, please install a new version or update your PHP to the latest.', 'PHP Error environment');	
+		show_error('Your PHP Version ['.phpversion().'] is less than ['.TNH_REQUIRED_PHP_MIN_VERSION.'], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
 	}else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
-		show_error('Your PHP Version <b>'.phpversion().'</b> is greather than <b>'.TNH_REQUIRED_PHP_MAX_VERSION.'</b> please install a PHP version that is compatible.', 'PHP Error environment');	
+		show_error('Your PHP Version ['.phpversion().'] is greather than ['.TNH_REQUIRED_PHP_MAX_VERSION.'] please install a PHP version that is compatible.', 'PHP Error environment');	
 	}
 
 	$logger->info('PHP environment [' .phpversion(). '] is OK, application can work without any issue');

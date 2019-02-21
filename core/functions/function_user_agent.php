@@ -1,4 +1,5 @@
 <?php
+	defined('ROOT_PATH') || exit('Access denied');
 	/**
 	 * TNH Framework
 	 *

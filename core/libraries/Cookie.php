@@ -1,4 +1,5 @@
 <?php
+	defined('ROOT_PATH') || exit('Access denied');
 	/**
 	 * TNH Framework
 	 *
@@ -49,7 +50,7 @@
 			if(isset($_COOKIE[$item])){
 				return $_COOKIE[$item];
 			}
-			$logger->warning('cannot find cookie item ['.$item.'] using the default value ['.$default.']');
+			$logger->warning('Cannot find cookie item ['.$item.'] using the default value ['.$default.']');
 			return $default;
 		}
 
@@ -70,11 +71,11 @@
 		static function clear($item){
 			$logger = static::getLogger();
 			if(isset($_COOKIE[$item])){
-				$logger->info('delete cookie item ['.$item.']');
+				$logger->info('Delete cookie item ['.$item.']');
 				unset($_COOKIE[$item]);
 			}
 			else{
-				$logger->warning('cookie item ['.$item.'] to be deleted does not exists');
+				$logger->warning('Cookie item ['.$item.'] to be deleted does not exists');
 			}
 		}
 

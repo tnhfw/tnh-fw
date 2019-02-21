@@ -1,5 +1,5 @@
 <?php 
-defined('ROOT_PATH') || exit('Access denied');
+	defined('ROOT_PATH') || exit('Access denied');
 
 	/**
 	 * check if the interface "SessionHandlerInterface" exists (normally in PHP 5.4 this already exists)

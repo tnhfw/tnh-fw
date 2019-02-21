@@ -36,38 +36,6 @@
 	*/
 	define('ROOT_PATH', dirname(realpath(__FILE__)) . DS);
 
-	/** 
-	* The core directory
-	*
-	* It is recommended to put this folder out of the web directory of your server and 
-	* you should not change its content because in case of update you could lose the modified files.
-	*/
-	define('CORE_PATH', ROOT_PATH . 'core' . DS);
-
-	/**
-	* The path to the system library directory.
-	*
-	* Which contains the libraries most often used in your web application, as for the 
-	* core directory it is advisable to put it out of the root directory of your application.
-	*/
-	define('CORE_LIBRARY_PATH', CORE_PATH . 'libraries' . DS);
-
-	/**
-	* The path to the system view directory.
-	*
-	* That contains the views used for the system, such as error messages, and so on.
-	*/
-	define('CORE_VIEWS_PATH', CORE_PATH . 'views' . DS);
-
-	/**
-	* The path to the configuration directory.
-	*
-	* That contains most of the configuration files for your 
-	* application (database, class loading file, functions, etc.)
-	*/
-	define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
-
-
 	/**
 	* The path to the directory.
 	*
@@ -77,39 +45,12 @@
 	define('ASSETS_PATH', 'assets/');
 
 	/**
-	* The path to the directory of your personal libraries
+	* The path to the directory of your cache files.
 	*
-	* It contains your PHP classes, package, etc.
-	* Note: you should not put your personal libraries in the system library directory, 
-	* because it is recalled in case of updating the system you might have surprises.
+	* This feature is available currently for database.
+	* You can help us do it if you are nice or want to see the developed framework.
 	*/
-	define('LIBRARY_PATH', ROOT_PATH . 'libraries' . DS);
-
-
-	/**
-	* The path to the directory of functions or helper systems.
-	*
-	* It contains PHP functions that perform a particular task: character string processing, URL, etc.
-	*/
-	define('CORE_FUNCTIONS_PATH', CORE_PATH . 'functions' . DS);
-
-
-	/**
-	* The path to the directory of your PHP personal functions or helper.
-	*
-	* It contains your PHP functions that perform a particular task: utilities, etc.
-	* Note: Do not put your personal functions or helpers in the system functions directory, 
-	* because if you update the system you may lose them.
-	*/
-	define('FUNCTIONS_PATH', ROOT_PATH . 'functions' . DS);
-
-
-	/**
-	* The path to the directory of sources external to your application.
-	*
-	* If you have already used "composer" you know what that means.
-	*/
-	define('VENDOR_PATH', ROOT_PATH . 'vendor' . DS);
+	define('CACHE_PATH', ROOT_PATH . 'cache' . DS);
 
 	/**
 	* The path to the application directory. 
@@ -145,6 +86,30 @@
 	*/
 	define('APPS_VIEWS_PATH', APPS_PATH . 'views' . DS);
 
+	/**
+	* The path to the configuration directory.
+	*
+	* That contains most of the configuration files for your 
+	* application (database, class loading file, functions, etc.)
+	*/
+	define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
+
+
+	/** 
+	* The core directory
+	*
+	* It is recommended to put this folder out of the web directory of your server and 
+	* you should not change its content because in case of update you could lose the modified files.
+	*/
+	define('CORE_PATH', ROOT_PATH . 'core' . DS);
+
+	/**
+	* The path to the directory of functions or helper systems.
+	*
+	* It contains PHP functions that perform a particular task: character string processing, URL, etc.
+	*/
+	define('CORE_FUNCTIONS_PATH', CORE_PATH . 'functions' . DS);
+
 
 	/**
 	* The path to the core directory of languages files. 
@@ -152,6 +117,30 @@
 	*/
 	define('CORE_LANG_PATH', CORE_PATH . 'lang' . DS);
 
+	/**
+	* The path to the system library directory.
+	*
+	* Which contains the libraries most often used in your web application, as for the 
+	* core directory it is advisable to put it out of the root directory of your application.
+	*/
+	define('CORE_LIBRARY_PATH', CORE_PATH . 'libraries' . DS);
+
+
+	/**
+	* The path to the system view directory.
+	*
+	* That contains the views used for the system, such as error messages, and so on.
+	*/
+	define('CORE_VIEWS_PATH', CORE_PATH . 'views' . DS);
+	
+	/**
+	* The path to the directory of your PHP personal functions or helper.
+	*
+	* It contains your PHP functions that perform a particular task: utilities, etc.
+	* Note: Do not put your personal functions or helpers in the system functions directory, 
+	* because if you update the system you may lose them.
+	*/
+	define('FUNCTIONS_PATH', ROOT_PATH . 'functions' . DS);
 
 	/**
 	* The path to the app directory of personal language. 
@@ -161,14 +150,15 @@
 	*/
 	define('APP_LANG_PATH', ROOT_PATH . 'lang' . DS);
 
-
 	/**
-	* The path to the directory of your cache files.
+	* The path to the directory of your personal libraries
 	*
-	* This feature is not yet available.
-	* You can help us do it if you are nice or want to see the developed framework.
+	* It contains your PHP classes, package, etc.
+	* Note: you should not put your personal libraries in the system library directory, 
+	* because it is recalled in case of updating the system you might have surprises.
 	*/
-	define('CACHE_PATH', ROOT_PATH . 'cache' . DS);
+	define('LIBRARY_PATH', ROOT_PATH . 'libraries' . DS);
+
 
 	/**
 	* The path to the directory that contains the log files.
@@ -181,6 +171,21 @@
 	* # chown -R www-data:www-data /path/to/your/logs/directory/
 	*/
 	define('LOGS_PATH', ROOT_PATH . 'logs' . DS);
+
+	/**
+	* The path to the modules directory. 
+	*
+	* It contains your modules used files (config, controllers, libraries, etc.) that is to say which contains your files of the modules, 
+	* in HMVC architecture (hierichical, controllers, models, views).
+	*/
+	define('MODULE_PATH', ROOT_PATH . 'modules' . DS);
+
+	/**
+	* The path to the directory of sources external to your application.
+	*
+	* If you have already used "composer" you know what that means.
+	*/
+	define('VENDOR_PATH', ROOT_PATH . 'vendor' . DS);
 
 	/**
 	* The front controller of your application.

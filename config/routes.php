@@ -29,7 +29,7 @@
 	* the name of the controller and the method to call separated by a slash.
 	* For example :
 	*
-	* $route['/users/login'] = 'UsersController/login_action';
+	* $route['/users/login'] = 'UsersController@login_action';
 	*
 	* it means, if the user type in the address bar an address like http://yoursite.com/users/login, 
 	* that will call the controller "UsersController" and the method "login_action".
@@ -38,7 +38,7 @@
 	* Note 2: to define the homepage of your application you use the index "/" 
 	* for example the following route represents the homepage:
 	* 
-	* $route['/'] = 'Home/index';
+	* $route['/'] = 'Home@index';
 	*
 	* Note 3: If the method is not specified then the "index" method will be used as 
 	* default method. For example in the case of our homepage, this will be able to make:
@@ -52,28 +52,28 @@
 	* respectively to the regular expression [0-9], [a-zA-Z], [a-zA-Z0-9] and. *.
 	* For example :
 	*
-	* - $route['/profile/(:num)'] = 'UsersController/profile'; => http://yoursite.com/profile/4 will be captured but 
+	* - $route['/profile/(:num)'] = 'UsersController@profile'; => http://yoursite.com/profile/4 will be captured but 
 	* http://yoursite.com/profile/a will not work.
 	*
-	* - $route['/profile/(:alpha)'] = 'UsersController/profile'; => http://yoursite.com/profile/a will be captured 
+	* - $route['/profile/(:alpha)'] = 'UsersController@profile'; => http://yoursite.com/profile/a will be captured 
 	* but http://yoursite.com/profile/1457 will not work.
 	*
-	* - $route['/profile/(:alnum)'] = 'UsersController/profile'; => http://yoursite.com/profile/4a, 
+	* - $route['/profile/(:alnum)'] = 'UsersController@profile'; => http://yoursite.com/profile/4a, 
 	* http://yoursite.com/profile/7 will be caught but http://yoursite.com/profile/7-dangerous will not work.
 	*
-	* - $route['/(:any)'] = 'ArticleController/read'; => http://yoursite.com/1-my-super-article, 
+	* - $route['/(:any)'] = 'ArticleController@read'; => http://yoursite.com/1-my-super-article, 
 	* http://yoursite.com/7, will be captured.
 	* 
 	* Note 5: The order of definition of each route is important. 
 	* For example, the following definitions work:
 	*
-	* $route['/article/add'] = 'Article/add';
-	* $route['article/(:any)'] = 'Article/read';
+	* $route['/article/add'] = 'Article@add';
+	* $route['article/(:any)'] = 'Article@read';
 	*
 	* however, the following definitions do not work as intended
 	*
-	* $route['article/(:any)'] = 'Article/read';
-	* $route['/article/add'] = 'Article/add';
+	* $route['article/(:any)'] = 'Article@read';
+	* $route['/article/add'] = 'Article@add';
 	*
 	*/
 	
@@ -81,4 +81,3 @@
 	 *  The default route like your home page
 	 */
 	$route['/'] = 'Home';
-	

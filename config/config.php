@@ -82,6 +82,16 @@
 	$config['charset'] = 'UTF-8';
 	
 	/**
+	* Module list
+	*
+	* The list of the module you will used in your application.
+	* Note: the array index will be the directory name (case sensitive and [a-z0-9-_]) inside the 
+	* modules directory located at MODULE_PATH.
+	*/
+	$config['modules'] = array();
+
+
+	/**
 	* The pagination.
 	*
 	* Represents the number of data to display per page.
@@ -110,7 +120,7 @@
 	$config['default_language'] = 'en'; //en = english, fr = french
 
 	/**
-	 * the name of cookie used to store the client langauge
+	 * the name of cookie used to store the client language
 	 */
 	$config['language_cookie_name'] = 'cookie_lang';
 

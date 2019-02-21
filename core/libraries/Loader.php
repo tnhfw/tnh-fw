@@ -1,27 +1,28 @@
 <?php
-/**
- * TNH Framework
- *
- * A simple PHP framework created using the concept of codeigniter with bootstrap twitter
- *
- * This content is released under the GNU GPL License (GPL)
- *
- * Copyright (C) 2017 Tony NGUEREZA
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+	defined('ROOT_PATH') || exit('Access denied');
+	/**
+	 * TNH Framework
+	 *
+	 * A simple PHP framework created using the concept of codeigniter with bootstrap twitter
+	 *
+	 * This content is released under the GNU GPL License (GPL)
+	 *
+	 * Copyright (C) 2017 Tony NGUEREZA
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License
+	 * as published by the Free Software Foundation; either version 3
+	 * of the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with this program; if not, write to the Free Software
+	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	*/
 
 	/**
 	 * TODO: use the best way to include the Log class
@@ -97,7 +98,7 @@
 					}
 					if(class_exists($class)){
 						static::$loaded['classes'][$class] = $dir.$file;
-						$logger->info('class: [' . $class . '] ' . $dir.$file . ' loaded successfully.');
+						$logger->info('Class: [' . $class . '] ' . $dir.$file . ' loaded successfully.');
 					}
 					//is already found no need to continue
 					break;
@@ -106,23 +107,35 @@
 
 		}
 
-		static function controller($class, $graceful = true){
+		static function controller($class, $path = null, $graceful = true){
 			$logger = static::getLogger();
 			$class = str_ireplace('.php', '', $class);
 			$class = ucfirst($class);
-			$file = $class.'.php';
+			$classFile = $class.'.php';
 			$logger->debug('Loading controller [' . $class . '] ...');
 			if(static::isLoadedController($class)){
-				$logger->info('controller [' . $class . '] already loaded no need to load it again, cost in performance');
+				$logger->info('Controller [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
-			if(file_exists(APPS_CONTROLLER_PATH.$file)){
-				require_once APPS_CONTROLLER_PATH.$file;
+			$classFilePath = APPS_CONTROLLER_PATH . $path . $classFile;
+			//first check if this controller is in the module
+			$logger->debug('Trying to find controller [' . $class . '] from module list ...');
+			$moduleControllerFilePath = Module::findControllerFullPath($class, $path);
+			if($moduleControllerFilePath){
+				$logger->info('Found controller [' . $class . '] from modules, the file path is [' .$moduleControllerFilePath. '] we will used it');
+				$classFilePath = $moduleControllerFilePath;
+			}
+			else{
+				$logger->info('Cannot find controller [' . $class . '] from modules using the default location');
+			}
+
+			if(file_exists($classFilePath)){
+				require_once $classFilePath;
 				if(!class_exists($class)){
-					show_error('The file '.$file.' exists but does not contain the class '.$class);
+					show_error('The file '.$classFilePath.' exists but does not contain the class '.$class);
 				}
-				$logger->info('controller [' . $class . '] ' . APPS_CONTROLLER_PATH.$file . ' loaded successfully.');
-				static::$loaded['controllers'][$class] = APPS_CONTROLLER_PATH.$file;
+				$logger->info('Controller [' . $class . '] ' .  $classFilePath . ' loaded successfully.');
+				static::$loaded['controllers'][$class] =  $classFilePath;
 			}
 			else if($graceful){
 				$logger->error('Cannot find controller [' . $class . ']');
@@ -146,8 +159,20 @@
 			if(!$instance){
 				$instance = $class;
 			}
-			if(file_exists(APPS_MODEL_PATH.$file)){
-				require_once APPS_MODEL_PATH.$file;
+			$classFilePath = APPS_MODEL_PATH . $file;
+			//first check if this model is in the module
+			$logger->debug('Trying to find model [' . $class . '] from module list ...');
+			$moduleModelFilePath = Module::findModelFullPath($class);
+			if($moduleModelFilePath){
+				$logger->info('Found model [' . $class . '] from modules, the file path is [' .$moduleModelFilePath. '] we will used it');
+				$classFilePath = $moduleModelFilePath;
+			}
+			else{
+				$logger->info('Cannot find model [' . $class . '] from modules using the default location');
+			}
+
+			if(file_exists($classFilePath)){
+				require_once $classFilePath;
 				if(class_exists($class)){
 					$c = new $class();
 					$instance = strtolower($instance);
@@ -155,20 +180,18 @@
 					$obj->{$instance} = $c;
 				}
 				else{
-					show_error('The file '.$file.' exists but does not contain the class '.$class);
+					show_error('The file '.$classFilePath.' exists but does not contain the class '.$class);
 				}
 			}
 			else{
 				show_error('Unable to find model class '.$class);
 			}
-			static::$loaded['models'][$class] = APPS_MODEL_PATH.$file;
-			$logger->info('model [' . $class . '] ' . APPS_MODEL_PATH.$file . ' loaded successfully.');
+			static::$loaded['models'][$class] = $classFilePath;
+			$logger->info('model [' . $class . '] ' . $classFilePath . ' loaded successfully.');
 		}
 
 		static function library($class, $instance = null){
 			$logger = static::getLogger();
-			$search_dir = array(LIBRARY_PATH, CORE_LIBRARY_PATH);
-			$found = false;
 			$class = str_ireplace('.php', '', $class);
 			$class = ucfirst($class);
 			$file = $class.'.php';
@@ -181,33 +204,48 @@
 				$instance = $class;
 			}
 			$instance = strtolower($instance);
-			foreach($search_dir as $dir){
-				if(file_exists($dir.$file)){
-					require_once $dir.$file;
-					if(class_exists($class)){
-						$c = new $class();
-						$obj = & get_instance();
-						$obj->{$instance} = $c;
-						static::$loaded['libraries'][$class] = $dir.$file;
-						$logger->info('library [' . $class . '] ' . $dir.$file . ' loaded successfully.');
+			$libraryFilePath = null;
+			//first check if this library is in the module
+			$logger->debug('Trying to find library [' . $class . '] from module list ...');
+			$moduleLibraryPath = Module::findLibraryFullPath($class);
+			if($moduleLibraryPath){
+				$logger->info('Found library [' . $class . '] from modules, the file path is [' .$moduleLibraryPath. '] we will used it');
+				$libraryFilePath = $moduleLibraryPath;
+			}
+			else{
+				$logger->info('Cannot find library [' . $class . '] from modules using the default location');
+			}
+			if(! $libraryFilePath){
+				$search_dir = array(LIBRARY_PATH, CORE_LIBRARY_PATH);
+				foreach($search_dir as $dir){
+					$filePath = $dir . $file;
+					if(file_exists($filePath)){
+						$libraryFilePath = $filePath;
+						//is already found not to continue
+						break;
 					}
-					else{
-						show_error('The file '.$file.' exists but does not contain the class '.$class);
-					}
-					$found = true;
-					//is already found not to continue
-					break;
 				}
 			}
-			if(!$found){
+			if($libraryFilePath){
+				require_once $libraryFilePath;
+				if(class_exists($class)){
+					$c = new $class();
+					$obj = & get_instance();
+					$obj->{$instance} = $c;
+					static::$loaded['libraries'][$class] = $libraryFilePath;
+					$logger->info('Library [' . $class . '] ' . $libraryFilePath . ' loaded successfully.');
+				}
+				else{
+					show_error('The file '.$libraryFilePath.' exists but does not contain the class '.$class);
+				}
+			}
+			else{
 				show_error('Unable to find library class '.$class);
 			}
 		}
 
 		static function functions($function){
 			$logger = static::getLogger();
-			$search_dir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
-			$found = false;
 			$function = str_ireplace('.php', '', $function);
 			$function = str_ireplace('function_', '', $function);
 			$file = 'function_'.$function.'.php';
@@ -216,18 +254,35 @@
 				$logger->info('helper [' . $function . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
-			foreach($search_dir as $dir){
-				if(file_exists($dir.$file)){
-					require_once $dir.$file;
-					static::$loaded['functions'][$function] = $dir.$file;
-					$logger->info('helper [' . $function . '] ' . $dir.$file . ' loaded successfully.');
-					$found = true;
-					//is already found not to continue
-					break;
+			$functionFilePath = null;
+			//first check if this helper is in the module
+			$logger->debug('Trying to find helper [' . $function . '] from module list ...');
+			$moduleFunctionPath = Module::findFunctionFullPath($function);
+			if($moduleFunctionPath){
+				$logger->info('Found helper [' . $function . '] from modules, the file path is [' .$moduleFunctionPath. '] we will used it');
+				$functionFilePath = $moduleFunctionPath;
+			}
+			else{
+				$logger->info('Cannot find helper [' . $function . '] from modules using the default location');
+			}
+			if(! $functionFilePath){
+				$search_dir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
+				foreach($search_dir as $dir){
+					$filePath = $dir . $file;
+					if(file_exists($filePath)){
+						$functionFilePath = $filePath;
+						//is already found not to continue
+						break;
+					}
 				}
 			}
-			if(!$found){
-				show_error('Unable to find function file '.$file);
+			if($functionFilePath){
+				require_once $functionFilePath;
+				static::$loaded['functions'][$function] = $functionFilePath;
+				$logger->info('Helper [' . $function . '] ' . $functionFilePath . ' loaded successfully.');
+			}
+			else{
+				show_error('Unable to find helper file '.$file);
 			}
 		}
 
