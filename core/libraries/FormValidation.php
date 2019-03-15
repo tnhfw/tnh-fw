@@ -26,64 +26,108 @@
 
 
      class FormValidation {
-
+        /**
+         * The form validation status
+         * @var boolean
+         */
         protected $_success  = false;
-        protected $_errorsMessages = array();
-        // Array of rule sets, fieldName => PIPE seperated ruleString
-        protected $_rules             = array();
-        // Array of errors, niceName => Error Message
-        protected $_errors             = array();
-        // Array of post Key => Nice name labels
-        protected $_labels          = array();
-        protected $_allErrorsDelimiter   = array('<div class="error">', '</div>');
-        protected $_eachErrorDelimiter   = array('<p class="error">', '</p>');
-        protected $_forceFail            = false;
-        protected $_errorPhraseOverrides = array();
-        //super global objet
-        protected $OBJ = null;
-
-        private $loggger;
 
         /**
-         * Sets all errors and rule sets empty, and sets success to false.
+         * The list of errors messages
+         * @var array
+         */
+        protected $_errorsMessages = array();
+        
+        // Array of rule sets, fieldName => PIPE seperated ruleString
+        protected $_rules             = array();
+        
+        // Array of errors, niceName => Error Message
+        protected $_errors             = array();
+        
+        // Array of post Key => Nice name labels
+        protected $_labels          = array();
+        
+        /**
+         * The errors delimiters
+         * @var array
+         */
+        protected $_allErrorsDelimiter   = array('<div class="error">', '</div>');
+
+        /**
+         * The each error delimiter
+         * @var array
+         */
+        protected $_eachErrorDelimiter   = array('<p class="error">', '</p>');
+        /**
+         * Indicated if need force the validation to be failed
+         * @var boolean
+         */
+        protected $_forceFail            = false;
+
+        /**
+         * The list of the error messages overrides by the original
+         * @var array
+         */
+        protected $_errorPhraseOverrides = array();
+
+        /**
+         * The logger instance
+         * @var Log
+         */
+        private $logger;
+
+        /**
+         * The data to be validated, the default is to use $_POST array
+         * @var array
+         */
+        private $data = array();
+
+        /**
+         * Whether to check the CSRF. This attribute is just a way to allow custom change of the CSRF
+         * @var boolean
+         */
+        public $enable_csrf_check = false;
+
+
+        /**
+         * Set all errors and rule sets empty, and sets success to false.
          *
          * @return void
          */
         public function __construct() {
-            if(!class_exists('Log')){
-                //here the Log class is not yet loaded
-                //load it manually
-                require_once CORE_LIBRARY_PATH . 'Log.php';
-            }
-            $this->logger = new Log();
+            $this->logger =& class_loader('Log');
             $this->logger->setLogger('Library::FormValidation');
-
-            $this->OBJ = & get_instance();
+            //Load form validation message
+            Loader::lang('form_validation');
+            $obj = & get_instance();
             $this->_errorsMessages  = array(
-                        'required'     => $this->OBJ->lang->get('fv_required'),
-                        'min_length'   => $this->OBJ->lang->get('fv_min_length'),
-                        'max_length'   => $this->OBJ->lang->get('fv_max_length'),
-                        'exact_length' => $this->OBJ->lang->get('fv_exact_length'),
-                        'less_than'    => $this->OBJ->lang->get('fv_less_than'),
-                        'greater_than' => $this->OBJ->lang->get('fv_greater_than'),
-                        'matches'      => $this->OBJ->lang->get('fv_matches'),
-                        'valid_email'  => $this->OBJ->lang->get('fv_valid_email'),
+                        'required'     => $obj->lang->get('fv_required'),
+                        'min_length'   => $obj->lang->get('fv_min_length'),
+                        'max_length'   => $obj->lang->get('fv_max_length'),
+                        'exact_length' => $obj->lang->get('fv_exact_length'),
+                        'less_than'    => $obj->lang->get('fv_less_than'),
+                        'greater_than' => $obj->lang->get('fv_greater_than'),
+                        'matches'      => $obj->lang->get('fv_matches'),
+                        'valid_email'  => $obj->lang->get('fv_valid_email'),
                         'not_equal'    => array(
-                                                'post:key' => $this->OBJ->lang->get('fv_not_equal_post_key'),
-                                                'string'   => $this->OBJ->lang->get('fv_not_equal_string')
+                                                'post:key' => $obj->lang->get('fv_not_equal_post_key'),
+                                                'string'   => $obj->lang->get('fv_not_equal_string')
                                             ),
-                        'depends'      => $this->OBJ->lang->get('fv_depends'),
-                        'is_unique'    => $this->OBJ->lang->get('fv_is_unique'),
-                        'is_unique_update'    => $this->OBJ->lang->get('fv_is_unique_update'),
-                        'exists'       => $this->OBJ->lang->get('fv_exists'),
-                        'regex'        => $this->OBJ->lang->get('fv_regex'),
-                        'in_list'      => $this->OBJ->lang->get('fv_in_list'),
-                        'numeric'      => $this->OBJ->lang->get('fv_numeric')
+                        'depends'      => $obj->lang->get('fv_depends'),
+                        'is_unique'    => $obj->lang->get('fv_is_unique'),
+                        'is_unique_update'    => $obj->lang->get('fv_is_unique_update'),
+                        'exists'       => $obj->lang->get('fv_exists'),
+                        'regex'        => $obj->lang->get('fv_regex'),
+                        'in_list'      => $obj->lang->get('fv_in_list'),
+                        'numeric'      => $obj->lang->get('fv_numeric')
                     );
             $this->_resetValidation();
-            return;
+            $this->setData($obj->request->post(null));
         }
 
+        /**
+         * Reset the form validation instance
+         */
         protected function _resetValidation() {
             $this->_rules             = array();
             $this->_labels          = array();
@@ -92,7 +136,25 @@
 
             $this->_success = false;
             $this->_forceFail   = false;
+            $this->data = array();
             return;
+        }
+
+        /**
+         * Set the form validation data
+         * @param array $data the values to be validated
+         */
+        public function setData(array $data){
+            $this->logger->debug('Setting the form validation data, the values are: ' . stringfy_vars($data));
+            $this->data = $data;
+        }
+
+        /**
+         * Get the form validation data
+         * @return array the form validation data to be validated
+         */
+        public function getData(){
+            return $this->data;
         }
 
         protected function _toCallCase($funcName, $prefix='_validate') {
@@ -101,7 +163,6 @@
             foreach (explode('_', $funcName) as $funcNamePart) {
                 $finalFuncName .= strtoupper($funcNamePart[0]) . substr($funcNamePart, 1);
             }
-
             return $finalFuncName;
         }
 
@@ -121,7 +182,7 @@
          * @return boolean Whether or not the form has been submitted.
          */
         public function formSubmitted() {
-            return $_SERVER["REQUEST_METHOD"] == 'POST';
+            return ! empty($this->data) || $_SERVER["REQUEST_METHOD"] == 'POST';
         }
 
         /**
@@ -131,43 +192,45 @@
          */
         public function run() {
             if ($this->formSubmitted()) {
-                $this->logger->info('Form data to validate are listed below: ' . stringfy_vars($_POST));
+                $this->logger->info('Form data to validate are listed below: ' . stringfy_vars($this->getData()));
                 $this->_run();
             }
             return $this->formSuccess();
         }
 
         /**
-         * Takes and trims each $_POST field, if it has any rules, we parse the rule string and run
-         * each rule against the $_POST value. Sets formSuccess to true if there are no errors
+         * Takes and trims each form data field, if it has any rules, we parse the rule string and run
+         * each rule against the form data value. Sets formSuccess to true if there are no errors
          * afterwards.
          */
         protected function _run() {
-            $this->logger->debug('Check if CSRF is enabled in configuration');
-            //first check for CSRF
-            if( Config::get('csrf_enable', false)){
-                 $this->logger->info('CSRF is enabled in configuration, now check the CSRF value if is valid');
-                if(!Security::validateCSRF()){
-                    show_error('Invalide Form data Cross Site Request Forgery do his job, form data corrupted.');
+            if($_SERVER["REQUEST_METHOD"] == 'POST' || $this->enable_csrf_check){
+                $this->logger->debug('Check if CSRF is enabled in configuration');
+                //first check for CSRF
+                if( get_config('csrf_enable', false)){
+                     $this->logger->info('CSRF is enabled in configuration, now check the CSRF value if is valid');
+                    if(!Security::validateCSRF()){
+                        show_error('Invalide Form data Cross Site Request Forgery do his job, form data corrupted.');
+                    }
                 }
-            }
-            else{
-                $this->logger->info('CSRF is not enabled in configuration no need to check it');
+                else{
+                    $this->logger->info('CSRF is not enabled in configuration no need to check it');
+                }
             }
             /////////////////////////////////////////////
             $this->_forceFail = false;
 
-            foreach ($_POST as $inputName => $inputVal) {
-    			if(is_array($_POST[$inputName])){
-    				$_POST[$inputName] = array_map('trim', $_POST[$inputName]);
+            foreach ($this->getData() as $inputName => $inputVal) {
+    			if(is_array($this->data[$inputName])){
+    				$this->data[$inputName] = array_map('trim', $this->data[$inputName]);
     			}
     			else{
-    				$_POST[$inputName] = trim($_POST[$inputName]);
+    				$this->data[$inputName] = trim($this->data[$inputName]);
     			}
 
                 if (array_key_exists($inputName, $this->_rules)) {
                     foreach ($this->_parseRuleString($this->_rules[$inputName]) as $eachRule) {
-                        $this->_validateRule($inputName, $_POST[$inputName], $eachRule);
+                        $this->_validateRule($inputName, $this->data[$inputName], $eachRule);
                     }
                 }
             }
@@ -178,7 +241,7 @@
         }
 
         /**
-         * Adds a rule to a $_POST field.
+         * Adds a rule to a form data validation field.
          *
          * @param string $inputField Name of the field to add a rule to
          * @param string $ruleSets PIPE seperated string of rules
@@ -186,9 +249,8 @@
          */
         public function setRule($inputField, $inputLabel, $ruleSets) {
             $this->_rules[$inputField] = $ruleSets;
-
             $this->_labels[$inputField] = $inputLabel;
-            $this->logger->info('Set the field rule name [' .$inputField. '], label [' .$inputLabel. '], rules [' .$ruleSets. ']');
+            $this->logger->info('Set the field rule: name [' .$inputField. '], label [' .$inputLabel. '], rules [' .$ruleSets. ']');
             return $this;
         }
 
@@ -200,13 +262,11 @@
         public function setRules(array $ruleSets) {
             foreach ($ruleSets as $ruleSet) {
                 $pipeDelimitedRules = null;
-
                 if (is_array($ruleSet['rules'])) {
                     $pipeDelimitedRules = implode('|', $ruleSet['rules']);
                 } else {
                     $pipeDelimitedRules = $ruleSet['rules'];
                 }
-
                 $this->setRule($ruleSet['name'], $ruleSet['label'], $pipeDelimitedRules);
             }
 
@@ -252,7 +312,7 @@
 
         /**
          * This sets a custom error message that can override the default error phrase provided
-         * by Form-Validation, it can be used in the format of setMessage('rule', 'error phrase')
+         * by FormValidation, it can be used in the format of setMessage('rule', 'error phrase')
          * which will globally change the error phrase of that rule, or in the format of:
          * setMessage('rule', 'fieldname', 'error phrase') - which will only change the error phrase for
          * that rule, applied on that field.
@@ -266,7 +326,6 @@
                 default:
                     return false;
                     break;
-
                 // A global rule error message
                 case 2:
                     foreach ($this->post(null) as $key => $val) {
@@ -279,7 +338,6 @@
                     $this->_errorPhraseOverrides[func_get_arg(1)][func_get_arg(0)] = func_get_arg(2);
                     break;
             }
-
             return true;
         }
 
@@ -301,19 +359,19 @@
          * will recursively find all keys/values of the $_POST array. It also automatically trims
          * all values.
          *
-         * @param string $key Key of $_POST to be found, pass null for all Key => Val pairs.
-         * @param boolean $trim Defaults to true, trims all $_POST values.
+         * @param string $key Key of $this->data to be found, pass null for all Key => Val pairs.
+         * @param boolean $trim Defaults to true, trims all $this->data values.
          * @return string/array Array of post values if null is passed as key, string if only one key is desired.
          */
         public function post($key = null, $trim = true) {
             $returnValue = null;
             if (is_null($key)) {
                 $returnValue = array();
-                foreach ($_POST as $key => $val) {
+                foreach ($this->getData()  as $key => $val) {
                     $returnValue[$key] = $this->post($key, $trim);
                 }
             } else {
-                $returnValue = (array_key_exists($key, $_POST)) ? (($trim) ? trim($_POST[$key]) : $_POST[$key]) : false;
+                $returnValue = (array_key_exists($key, $this->getData())) ? (($trim) ? trim($this->data[$key]) : $this->data[$key]) : false;
             }
             return $returnValue;
         }
@@ -449,10 +507,8 @@
             if (array_key_exists($inputName, $this->_errorPhraseOverrides) && array_key_exists($ruleName, $this->_errorPhraseOverrides[$inputName])) {
                 $rulePhrase = $this->_errorPhraseOverrides[$inputName][$ruleName];
             }
-
             // Type cast to array in case it's a string
             $replacements = (array) $replacements;
-
             for ($i = 1, $replacementCount = count($replacements); $i <= $replacementCount; $i++) {
                 $key = $i - 1;
                 $rulePhrase = str_replace('%' . $i, $replacements[$key], $rulePhrase);
@@ -506,8 +562,8 @@
         }
 
         protected function _validateCallback($inputName, $ruleName, array $ruleArgs) {
-            if (function_exists($ruleArgs[1]) && !empty($_POST[$inputName])) {
-                $this->_runCallback($_POST[$inputName], $ruleArgs[1]);
+            if (function_exists($ruleArgs[1]) && !empty($this->data[$inputName])) {
+                $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
             }
         }
 
@@ -524,7 +580,7 @@
                 $inputVal = $this->post($inputName);
 
                 if (preg_match('/post:(.*)/', $doNotEqual)) {
-                    if ($inputVal == $_POST[str_replace('post:', '', $doNotEqual)]) {
+                    if ($inputVal == $this->data[str_replace('post:', '', $doNotEqual)]) {
                         $this->_setError($inputName, $ruleName . ',post:key', array($this->_getLabel($inputName), $this->_getLabel(str_replace('post:', '', $doNotEqual))));
                         continue;
                     }
@@ -539,7 +595,7 @@
 
         protected function _validateMatches($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if ($inputVal != $_POST[$ruleArgs[1]]) {
+            if ($inputVal != $this->data[$ruleArgs[1]]) {
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
@@ -548,7 +604,7 @@
             $inputVal = $this->post($inputName);
 
             if (!preg_match("/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i", $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
 
@@ -559,7 +615,7 @@
         protected function _validateExactLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) != $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -569,7 +625,7 @@
         protected function _validateMaxLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) > $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -579,7 +635,7 @@
         protected function _validateMinLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) < $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -589,7 +645,7 @@
     	protected function _validateLessThan($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if ($inputVal >= $ruleArgs[1]) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -599,7 +655,7 @@
     	protected function _validateGreaterThan($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if ($inputVal <= $ruleArgs[1]) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -610,7 +666,7 @@
             $inputVal = $this->post($inputName);
 
             if (!is_numeric($inputVal)) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -632,7 +688,7 @@
     			->get();
     		$nb = $db->numRows();
             if ($nb != 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -659,7 +715,7 @@
     			->get();
     		$nb = $db->numRows();
             if ($nb != 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -672,7 +728,7 @@
     		$list = explode(',', $ruleArgs[1]);
             $list = array_map('trim', $list);
             if (!in_array($inputVal, $list)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -683,7 +739,7 @@
             $inputVal = $this->post($inputName);
     		$regex = $ruleArgs[1];
             if (!preg_match($regex, $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -704,7 +760,7 @@
     			->get();
     		$nb = $db->numRows();
             if ($nb == 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($_POST[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
 

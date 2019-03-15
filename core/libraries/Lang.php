@@ -24,32 +24,26 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	if(!class_exists('Log')){
-        //here the Log class is not yet loaded
-        //load it manually
-        require_once CORE_LIBRARY_PATH . 'Log.php';
-    }
 	/**
-	 * for application language management
+	 * For application languages management
 	 */
 	class Lang{
 		/**
-		 * the supported available language supported by 
-		 * this application.
+		 * The supported available language for this application.
 		 * @example "en" => "english" 
-		 * @see Lang::addLang
+		 * @see Lang::addLang()
 		 * @var array
 		 */
 		protected $availables = array();
 
 		/**
-		 * the all languages message
+		 * The all messages language
 		 * @var array
 		 */
 		protected $languages = array();
 
 		/**
-		 * the default language to use if can not
+		 * The default language to use if can not
 		 *  determine the client language
 		 *  
 		 * @example $default = 'en'
@@ -58,99 +52,65 @@
 		protected $default = null;
 
 		/**
-		 * the current client language
+		 * The current client language
 		 * @var string
 		 */
 		protected $current = null;
 
-
+		/**
+		 * The logger instance
+		 * @var Log
+		 */
 		private $logger;
 
+		/**
+		 * Construct new Lang instance
+		 */
 		public function __construct(){
-	        $this->logger = new Log();
+	        $this->logger =& class_loader('Log');
 	        $this->logger->setLogger('Library::Lang');
 
-			$this->default = Config::get('default_language');
+			$this->default = get_config('default_language', 'en');
 			//determine the current language
 			$language = null;
-			//if the language exists in the cookie use it
-			$cfgKey = Config::get('language_cookie_name');
-			$this->logger->debug('Try to get the language from cookie [' .$cfgKey. ']');
+			//if the language exists in cookie use it
+			$cfgKey = get_config('language_cookie_name');
+			$this->logger->debug('Getting current language from cookie [' .$cfgKey. ']');
 			$cLang = Cookie::get($cfgKey);
 			if($cLang && $this->isValid($cLang)){
 				$language = $cLang;
 				$this->current = $language;
-				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid set the language from the cookie');
+				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid so we will set the language using the cookie value [' .$cLang. ']');
 			}
 			else{
 				$this->logger->info('Language from cookie [' .$cfgKey. '] is not set, use the default value [' .$this->getDefault(). ']');
 				$language = $this->getDefault();
 			}
-			$systemLangPath = CORE_LANG_PATH . $language . '.php';
-			$this->logger->debug('Try to include the system language file  [' .$systemLangPath. ']');
-			
-			//system languages
-			if(file_exists($systemLangPath)){
-				$this->logger->info('System language file  [' .$systemLangPath. '] exists include it');
-				require_once $systemLangPath;
-				if(!empty($lang) && is_array($lang)){
-					$this->logger->info('System language file  [' .$systemLangPath. '] contains the valide languages keys add them to the list');
-					$this->addLangMessages($lang);
-					//free the memory
-					unset($lang);
-				}
-				else{
-					show_error('No language message found in '.$language.'.php');
-				}
-			}
-			else{
-				$this->logger->warning('System language file  [' .$systemLangPath. '] does not exist');
-			}
-
-			//application languages
-			$appLangPath = APP_LANG_PATH . $language . '.php';
-			$this->logger->debug('Try to include the custom language file  [' .$appLangPath. ']');
-			//app language
-			if(file_exists($appLangPath)){
-				$this->logger->info('Custom language file  [' .$appLangPath. '] exists include it');
-				require_once $appLangPath;
-				if(!empty($lang) && is_array($lang)){
-					$this->logger->info('Custom language file  [' .$appLangPath. '] contains the valide languages keys add them to the list');
-					$this->addLangMessages($lang);
-					//free the memory
-					unset($lang);
-				}
-				else{
-					show_error('No language message found in '.$language.'.php');
-				}
-			}
-			else{
-				$this->logger->warning('Custom language file  [' .$appLangPath. '] does not exist');
-			}
-
-			//modules languages
-			$this->logger->debug('Try to set the modules languages');
-			$modulesLanguages = Module::getModulesLanguages();
-			if($modulesLanguages && is_array($modulesLanguages)){
-				$this->addLangMessages($modulesLanguages);
-				$this->logger->info('Languages for all modules loaded successfully');
-				//free the memory
-				unset($modulesLanguages);
-			}
-			else{
-				$this->logger->info('No languages found for all modules skip.');
-			}
 		}
 
+		/**
+		 * Get the all languages messages
+		 * @return array the language message list
+		 */
 		public function getAll(){
 			return $this->languages;
 		}
 
+		/**
+		 * Set the language message
+		 * @param string $key the language key to identify
+		 * @param string $value the language message value
+		 */
 		public function set($key, $value){
 			$this->languages[$key] = $value;
 		}
 
-
+		/**
+		 * Get the language message for the given key if can not find return the default value
+		 * @param  string $key the message language key
+		 * @param  string $default the default value to return if can not found the language message key
+		 * @return string the language message value
+		 */
 		public function get($key, $default = 'LANGUAGE_ERROR'){
 			if(isset($this->languages[$key])){
 				return $this->languages[$key];
@@ -159,28 +119,40 @@
 			return $default;
 		}
 
+		/**
+		 * Check whether the language file for given name exists
+		 * @param  string  $language the language name like "fr", "en", etc.
+		 * @return boolean true if the language file exist, false or not
+		 */
 		public function isValid($language){
 			$search_dir = array(CORE_LANG_PATH, APP_LANG_PATH);
 			foreach($search_dir as $dir){
-				if(file_exists($dir . $language. '.php')){
+				if(file_exists($dir . $language) && is_dir($dir . $language)){
 					return true;
 				}
 			}
 			return false;
 		}
 
-
+		/**
+		 * Get the default language value like "en" , "fr", etc.
+		 * @return string the default language
+		 */
 		public function getDefault(){
 			return $this->default;
 		}
 
+		/**
+		 * Get the current language defined by cookie or the default value
+		 * @return string the current language
+		 */
 		public function getCurrent(){
 			return $this->current;
 		}
 
 		/**
-		 * add new supported language
-		 * @param string $name the short language name
+		 * Add new supported language
+		 * @param string $name the short language name like "en", "fr".
 		 * @param string $desc the human readable descrition of this language
 		 */
 		public function addLang($name, $descrition){
@@ -191,23 +163,25 @@
 				$this->availables[$name] = $descrition;
 			}
 			else{
-				show_error('The language ' . $name . ' is not valid or does not exists');
+				show_error('The language [' . $name . '] is not valid or does not exists.');
 			}
 		}
 
-
+		/**
+		 * Get the list of the application supported language
+		 * @return array the list of the application language
+		 */
 		public function getSupported(){
 			return $this->availables;
 		}
 
 		/**
-		 * add new language messages
-		 * @param array $langs the languages array of messages
+		 * Add new language messages
+		 * @param array $langs the languages array of messages to be added
 		 */
 		public function addLangMessages(array $langs){
 			foreach ($langs as $key => $value) {
-				$this->languages[$key] = $value;
+				$this->set($key, $value);
 			}
 		}
-
 	}

@@ -39,18 +39,6 @@
 	 *  @version 1.0.0
 	 *  @filesource
 	 */
-	
-	if(!class_exists('Log')){
-        //here the Log class is not yet loaded
-        //load it manually
-        require_once CORE_LIBRARY_PATH . 'Log.php';
-    }
-    /**
-     * instance of the Log class
-     */
-    $logger = new Log();
-
-    $logger->setLogger('ApplicationBootstrap');
 
 	/**
 	*  inclusion of global constants of the environment that contain : name of the framework,
@@ -63,6 +51,48 @@
 	 *  exception_handler, error_handler, get_instance, etc.
 	 */
 	require_once CORE_PATH . 'common.php';
+
+	/**
+	 * The Benchmark class
+	 */
+	$BENCHMARK =& class_loader('Benchmark');
+	
+	 /**
+     * instance of the Log class
+     */
+    $LOGGER =& class_loader('Log');
+
+    $LOGGER->setLogger('ApplicationBootstrap');
+
+    $LOGGER->debug('Checking PHP version ...');	
+	/*
+	* Verification of the PHP environment: minimum and maximum version
+	*/
+	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
+		show_error('Your PHP Version ['.phpversion().'] is less than ['.TNH_REQUIRED_PHP_MIN_VERSION.'], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
+	}else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
+		show_error('Your PHP Version ['.phpversion().'] is greather than ['.TNH_REQUIRED_PHP_MAX_VERSION.'] please install a PHP version that is compatible.', 'PHP Error environment');	
+	}
+	$LOGGER->info('PHP version [' .phpversion(). '] is OK [REQUIRED MINIMUM: ' .TNH_REQUIRED_PHP_MIN_VERSION. ', REQUIRED MAXIMUM: ' .TNH_REQUIRED_PHP_MAX_VERSION. '], application can work without any issue');
+
+	/**
+	 *  Definition of the PHP error message handling function
+	 */
+	set_error_handler('php_error_handler');
+
+	/*
+	* Definition of the PHP error exception handling function
+	*/
+	set_exception_handler('php_exception_handler');
+
+	/**
+	 * function handler for shutdown
+	 */
+	register_shutdown_function('php_shudown_handler');
+	
+
+	$LOGGER->debug('Begin to load the required resources');
+	$BENCHMARK->mark('LOADING_REQUIRED_HELPERS_START');
 	
 	/**
 	* Loading "string" helper that contains most of the character 
@@ -77,78 +107,109 @@
 	require_once CORE_FUNCTIONS_PATH . 'function_url.php';
 
 	/**
-	 *  Definition of the PHP error message handling function
-	 */
-	set_error_handler('error_handler');
-
-	/*
-	* Definition of the PHP error exception handling function
+	* Helper loader "lang" which the function for lang 
 	*/
-	set_exception_handler('exception_handler');
+	require_once CORE_FUNCTIONS_PATH . 'function_lang.php';
 
+	$BENCHMARK->mark('LOADING_REQUIRED_HELPERS_END');
+
+	/**
+	* Event 
+	*/
+	require_once CORE_LIBRARY_PATH . 'Event.php';
+
+	/**
+	 * Load the event dispatcher
+	 * @var EventDispatcher
+	 */
+	$DISPATCHER =& class_loader('EventDispatcher');
+
+	$BENCHMARK->mark('CONFIG_INIT_START');
 	/*
 	* Load configurations using the 
 	* static method "init" of the Config class.
 	* here the Loader class is not instancied so just use require_once
 	*/
-	require_once CORE_LIBRARY_PATH . 'Config.php';
-	Config::init();
+	$CONFIG =& class_loader('Config');	
+	$CONFIG->init();
+	$BENCHMARK->mark('CONFIG_INIT_END');
 
+	$BENCHMARK->mark('MODULE_INIT_START');
 	/*
 	* Load modules using the 
 	* static method "init" of the Module class.
 	* here the Loader class is not instancied so just use require_once
 	*/
-	require_once CORE_LIBRARY_PATH . 'Module.php';
-	Module::init();
-
-	$logger->debug('Loading modules configuration ...');
+	$MODULE =& class_loader('Module');
+	$MODULE->init();
+	
+	$LOGGER->debug('Loading modules configuration ...');
 	$cfg = Module::getModulesConfig();
 	if($cfg && is_array($cfg)){
 		Config::setAll($cfg);
-		$logger->info('Configurations for all modules loaded successfully');
+		$LOGGER->info('Configurations for all modules loaded successfully');
 	}
 	else{
-		$logger->info('No configuration found for all modules skip.');
+		$LOGGER->info('No configuration found for all modules skipping.');
 	}
+	$BENCHMARK->mark('MODULE_INIT_END');
 
-	$logger->debug('Loading Loader library ...');
+	$LOGGER->debug('Loading Base Controller ...');
 	/**
-	 *  include file containing the class for library loads, 
-	 *  functions, models, configuration file, controller
+	 *  include file containing the Base Controller class 
 	 */
-	require_once CORE_LIBRARY_PATH . 'Loader.php';
-	$logger->info('Loader library loaded successfully');
+	require_once CORE_LIBRARY_PATH . 'Controller.php';
+	$LOGGER->info('Base Controller loaded successfully');
 
-	$logger->debug('Registering PHP autoload function to load the PHP classes automatically');
-	/**
-	 *  Registration of automatic function of loading resources.  
-	 */
-	Loader::register();
-	$logger->info('PHP autoload function registered successfully');
-
-	$logger->debug('Checking the IP whitelist access...'); 
-	Security::checkWhiteListIpAccess();
-	
-	$logger->info('The application configuration are listed below: ' . stringfy_vars(Config::getAll()));
-
-	$logger->debug('Checking PHP environment ...');	
 	/*
-	* Verification of the PHP environment: minimum and maximum version
-	*/
-	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
-		show_error('Your PHP Version ['.phpversion().'] is less than ['.TNH_REQUIRED_PHP_MIN_VERSION.'], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
-	}else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
-		show_error('Your PHP Version ['.phpversion().'] is greather than ['.TNH_REQUIRED_PHP_MAX_VERSION.'] please install a PHP version that is compatible.', 'PHP Error environment');	
+		check if application containing the user defined base controller
+	 */
+	if(file_exists(APPS_CONTROLLER_PATH . 'BaseController.php')){
+		require_once APPS_CONTROLLER_PATH . 'BaseController.php';
 	}
 
-	$logger->info('PHP environment [' .phpversion(). '] is OK, application can work without any issue');
-	
 
-	$logger->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
+	if(get_config('cache_enable', false)){
+		/**
+		 * Cache interface
+		 */
+		require_once CORE_LIBRARY_PATH . 'CacheInterface.php';
+		$CACHE =& class_loader(get_config('cache_handler'));
+	}
+
+	$BENCHMARK->mark('LOADING_REQUIRED_RESOURCES_START');
+	/*
+		Loading Security class
+	*/
+	$SECURITY =& class_loader('Security');
+	$SECURITY->checkWhiteListIpAccess();
+
+	/*
+		Loading Assets class
+	*/
+	$ASSETS =& class_loader('Assets');
+
+	/*
+		Loading Cookie class
+	*/
+	$COOKIE =& class_loader('Cookie');
+	
+	/*
+		Loading Html class
+	*/
+	$HTML =& class_loader('Html');
+
+	/*
+		Loading Url class
+	*/
+	$URL =& class_loader('Url');
+
+	$BENCHMARK->mark('LOADING_REQUIRED_RESOURCES_END');
+
+	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/*
 	* Routing
 	* instantiation of the "Router" class and user request routing processing.
 	*/
-	$router = new Router();
-	$router->dispatch();
+	$ROUTER = & class_loader('Router');
+	$ROUTER->run();

@@ -51,7 +51,7 @@
 		 *  @return string the IP address.
 		 */
 		function get_ip(){
-			$ip = $_SERVER['REMOTE_ADDR'];
+			$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
 
 			if (isset($_SERVER["HTTP_CLIENT_IP"])) {
 				$ip = $_SERVER["HTTP_CLIENT_IP"];
@@ -73,7 +73,6 @@
 			if (strpos($ip, ',') > 0) {
 				$ip = substr($ip, 0, strpos($ip, ','));
 			}
-
 			return $ip;
 		}
 	}

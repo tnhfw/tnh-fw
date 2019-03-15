@@ -26,19 +26,23 @@
 	/**
 	* This file contains the configuration of your routes that is to say that links to your URLs.
 	* The index of the $route array contains the url address to capture and the value contains 
-	* the name of the controller and the method to call separated by a slash.
+	* the name of the module, controller and the method to call.
 	* For example :
 	*
-	* $route['/users/login'] = 'UsersController@login_action';
+	* $route['/users/login'] = 'moduleUsers#UsersController@login_action';
 	*
-	* it means, if the user type in the address bar an address like http://yoursite.com/users/login, 
-	* that will call the controller "UsersController" and the method "login_action".
+	* it means, if the user type in the address bar an URL like http://yoursite.com/users/login, 
+	* that will call the module "moduleUsers", the controller "UsersController" and the method "login_action".
 	* Note 1: it is recommended that each index in the $route array start with a slash "/" 
-	* otherwise on some system will not work.
-	* Note 2: to define the homepage of your application you use the index "/" 
+	* otherwise on some system this will not work.
+	* Note 2: to define the default controller route (homepage) of your application you use only the index "/" 
 	* for example the following route represents the homepage:
 	* 
-	* $route['/'] = 'Home@index';
+	* $route['/'] = 'Home'; //only the controller or module name
+	*
+	* $route['/'] = 'Home@index'; //only the controller or module name with the method
+	*
+	* $route['/'] = 'module#Home@index'; //with module name, controller and method
 	*
 	* Note 3: If the method is not specified then the "index" method will be used as 
 	* default method. For example in the case of our homepage, this will be able to make:
@@ -53,13 +57,13 @@
 	* For example :
 	*
 	* - $route['/profile/(:num)'] = 'UsersController@profile'; => http://yoursite.com/profile/4 will be captured but 
-	* http://yoursite.com/profile/a will not work.
+	* http://yoursite.com/profile/a will not captured.
 	*
 	* - $route['/profile/(:alpha)'] = 'UsersController@profile'; => http://yoursite.com/profile/a will be captured 
-	* but http://yoursite.com/profile/1457 will not work.
+	* but http://yoursite.com/profile/1457 will not captured.
 	*
 	* - $route['/profile/(:alnum)'] = 'UsersController@profile'; => http://yoursite.com/profile/4a, 
-	* http://yoursite.com/profile/7 will be caught but http://yoursite.com/profile/7-dangerous will not work.
+	* http://yoursite.com/profile/7 will be captured but http://yoursite.com/profile/7-dangerous will not captured.
 	*
 	* - $route['/(:any)'] = 'ArticleController@read'; => http://yoursite.com/1-my-super-article, 
 	* http://yoursite.com/7, will be captured.
@@ -70,7 +74,7 @@
 	* $route['/article/add'] = 'Article@add';
 	* $route['article/(:any)'] = 'Article@read';
 	*
-	* however, the following definitions do not work as intended
+	* however, the following definitions does not work as intended
 	*
 	* $route['article/(:any)'] = 'Article@read';
 	* $route['/article/add'] = 'Article@add';

@@ -83,12 +83,7 @@
          */
         public function __construct()
         {
-            if(!class_exists('Log')){
-                //here the Log class is not yet loaded
-                //load it manually
-                require_once CORE_LIBRARY_PATH . 'Log.php';
-            }
-            $this->logger = new Log();
+            $this->logger =& class_loader('Log');
             $this->logger->setLogger('Library::Email');
             $this->reset();
         }

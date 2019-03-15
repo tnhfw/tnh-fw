@@ -25,17 +25,69 @@
 	*/
 
 	class Request{
+		/**
+		 * The value for the super global $_GET
+		 * @var array
+		 */
 		public $get = null;
+
+		/**
+		 * The value for the super global $_POST
+		 * @var array
+		 */
 		public $post = null;
+
+		/**
+		 * The value for the super global $_SERVER
+		 * @var array
+		 */
 		public $server = null;
+
+		/**
+		 * The value for the super global $_COOKIE
+		 * @var array
+		 */
 		public $cookie = null;
+
+		/**
+		 * The value for the super global $_FILES
+		 * @var array
+		 */
 		public $file = null;
+
+		/**
+		 * The session instance
+		 * @var Session
+		 */
 		public $session = null;
+
+		/**
+		 * The value for the super global $_REQUEST
+		 * @var array
+		 */
 		public $query = null;
+
+		/**
+		 * The current request method 'GET', 'POST', 'PUT', etc.
+		 * @var null
+		 */
 		public $method = null;
+
+		/**
+		 * The current request URI
+		 * @var string
+		 */
 		public $requestUri = null;
+
+		/**
+		 * The request headers
+		 * @var array
+		 */
 		public $header = null;
 		
+		/**
+		 * Construct new request instance
+		 */
 		public function __construct(){
 			$this->get = $_GET;
 			$this->post = $_POST;
@@ -43,7 +95,7 @@
 			$this->query = $_REQUEST;
 			$this->cookie = $_COOKIE;
 			$this->file = $_FILES;
-			$this->session = new Session();
+			$this->session =& class_loader('Session');
 			$this->method = $this->server('REQUEST_METHOD');
 			$this->requestUri = $this->server('REQUEST_URI');
 			$this->header = array();
@@ -54,145 +106,150 @@
 				$this->header = getallheaders();
 			}
 		}
-		
-		public function get($key, $xss = true){
-			if(empty($key)){
-				//return all
-				return $this->get;
-			}
-			$get = isset($this->get[$key])?$this->get[$key]:null;
-			if($xss){
-				if(is_array($get)){
-					$get = array_map('htmlspecialchars', $get);
-				}
-				else{
-					$get = htmlspecialchars($get);
-				}
-			}
-			return $get;
+
+		/**
+		 * Get the request method
+		 * @return string
+		 */
+		public function method(){
+			return $this->method;
 		}
 		
-		
+		/**
+		 * Get the request URI
+		 * @return string
+		 */
+		public function requestUri(){
+			return $this->requestUri;
+		}
+
+		/**
+		 * Get the value from $_REQUEST for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
 		public function query($key, $xss = true){
 			if(empty($key)){
 				//return all
-				return $this->query;
+				return $xss ? clean_input($this->query) : $this->query;
 			}
 			$query = isset($this->query[$key])?$this->query[$key]:null;
 			if($xss){
-				if(is_array($query)){
-					$query = array_map('htmlspecialchars', $query);
-				}
-				else{
-					$query =  htmlspecialchars($query);
-				}
+				$query = clean_input($query);
 			}
 			return $query;
 		}
 		
+		/**
+		 * Get the value from $_GET for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
+		public function get($key, $xss = true){
+			if(empty($key)){
+				//return all
+				return $xss ? clean_input($this->get) : $this->get;
+			}
+			$get = isset($this->get[$key])?$this->get[$key]:null;
+			if($xss){
+				$get = clean_input($get);
+			}
+			return $get;
+		}
+		
+		/**
+		 * Get the value from $_POST for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
 		public function post($key, $xss = true){
 			if(empty($key)){
 				//return all
-				return $this->post;
+				return $xss ? clean_input($this->post) : $this->post;
 			}
 			$post = isset($this->post[$key])?$this->post[$key]:null;
 			if($xss){
-				if(is_array($post)){
-					$post = array_map('htmlspecialchars', $post);
-				}
-				else{
-					$post =  htmlspecialchars($post);
-				}
+				$post = clean_input($post);
 			}
 			return $post;
 		}
 		
+		/**
+		 * Get the value from $_SERVER for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
 		public function server($key, $xss = true){
 			if(empty($key)){
 				//return all
-				return $this->server;
+				return $xss ? clean_input($this->server) : $this->server;
 			}
 			$server = isset($this->server[$key])?$this->server[$key]:null;
 			if($xss){
-				if(is_array($server)){
-					$server = array_map('htmlspecialchars', $server);
-				}
-				else{
-					$server =  htmlspecialchars($server);
-				}
+				$server = clean_input($server);
 			}
 			return $server;
 		}
 		
-		
+		/**
+		 * Get the value from $_COOKIE for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
 		public function cookie($key, $xss = true){
 			if(empty($key)){
 				//return all
-				return $this->cookie;
+				return $xss ? clean_input($this->cookie) : $this->cookie;
 			}
 			$cookie = isset($this->cookie[$key])?$this->cookie[$key]:null;
 			if($xss){
-				if(is_array($cookie)){
-					$cookie = array_map('htmlspecialchars', $cookie);
-				}
-				else{
-					$cookie =  htmlspecialchars($cookie);
-				}
+				$cookie = clean_input($cookie);
 			}
 			return $cookie;
 		}
 		
+		/**
+		 * Get the value from $_FILES for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
 		public function file($key, $xss = true){
 			$file = isset($this->file[$key])?$this->file[$key]:null;
 			return $file;
 		}
 		
-		
+		/**
+		 * Get the value from $_SESSION for given key. if the key is empty will return the all values
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+		 */
 		public function session($key, $xss = true){
 			$session = $this->session->get($key);
 			if($xss){
-				if(is_array($session)){
-					$temp = array();
-					foreach ($session as $key => $value){
-						if(is_string($value)){
-							$temp[$key] = htmlspecialchars($value);
-						}
-						else if(is_array($value)){
-							$temp[$key] = array_map('htmlspecialchars', $value);
-						}
-						else{
-							//TODO use best method to remove the dangerous chars
-							 $temp[$key] = $value;
-						}
-					}
-					$session = $temp;
-					unset($temp);
-				}
-				else{
-					$session =  htmlspecialchars($session);
-				}
+				$session = clean_input($session);
 			}
 			return $session;
 		}
-		
-		public function method(){
-			return $this->method;
-		}
-		
-		public function requestUri(){
-			return $this->requestUri;
-		}
-		
+
+		/**
+		 * Get the value from header array for given key.
+		 * @param  string  $key the item key to be fetched
+		 * @param  boolean $xss if need apply some XSS attack rule on the value
+		 * @return mixed       the item value if the key exists or null if the key does not exists
+		 */
 		public function header($key, $xss = true){
 			$header = isset($this->header[$key])?$this->header[$key]:null;
 			if($xss){
-				if(is_array($header)){
-					$header = array_map('htmlspecialchars', $header);
-				}
-				else{
-					$header =  htmlspecialchars($header);
-				}
+				$header = clean_input($header);
 			}
 			return $header;
 		}
+		
 	}

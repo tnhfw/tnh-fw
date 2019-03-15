@@ -41,35 +41,71 @@
 		*/
 		protected $uriTrim = '/\^$';
 
-		protected $controllerPath = null;
-
+		/**
+		 * The module name of the current request
+		 * @var string
+		 */
 		protected $module = null;
 		
+		/**
+		 * The controller name of the current request
+		 * @var string
+		 */
 		protected $controller = null;
 
+		/**
+		 * The controller path
+		 * @var string
+		 */
+		protected $controllerPath = null;
+
+		/**
+		 * The method name. The default value is "index"
+		 * @var string
+		 */
 		protected $method = 'index';
 
+		/**
+		 * List of argument to pass to the method
+		 * @var array
+		 */
 		protected $args = array();
 
+		/**
+		 * List of routes configurations
+		 * @var array
+		 */
 		protected $routes = array();
 
+		/**
+		 * The request object
+		 * @var object
+		 */
 		protected $request = null;
 
+		/**
+		 * The segments array for the current request
+		 * @var array
+		 */
+		protected $segments;
+
+		/**
+		 * The logger instance
+		 * @var Log
+		 */
 		private $logger;
 
 
+		/**
+		 * Construct the new Router instance
+		 */
 		function __construct(){
-			if(!class_exists('Log')){
-	            //here the Log class is not yet loaded
-	            //load it manually
-	            require_once CORE_LIBRARY_PATH . 'Log.php';
-	        }
-			$routes_path = CONFIG_PATH.'routes.php';
-	        $this->logger = new Log();
+			$this->logger =& class_loader('Log');
 	        $this->logger->setLogger('Library::Router');
-	        $this->logger->debug('Try to load the routes configuration [' .$routes_path. '] ...');
+	        $routes_path = CONFIG_PATH . 'routes.php';
+	        $this->logger->debug('Loading of routes configuration file [' .$routes_path. '] ...');
 			if(file_exists($routes_path)){
-				 $this->logger->info('Routes configuration file [' .$routes_path. '] exists load it');
+				 $this->logger->info('Found routes configuration file [' .$routes_path. '] now load it');
 				require_once $routes_path;
 				if(!empty($route) && is_array($route)){
 					$this->routes = $route;
@@ -80,79 +116,32 @@
 				}
 			}
 			else{
-				show_error('Unable to find the route configuration file [' .$routes_path. ']');
+				show_error('Unable to find the routes configuration file [' .$routes_path. ']');
 			}
 			
 			//loading routes for module
-			$this->logger->debug('Loading of modules routes if exists ... ');
+			$this->logger->debug('Loading of modules routes ... ');
 			$modulesRoutes = Module::getModulesRoutes();
 			if($modulesRoutes && is_array($modulesRoutes)){
 				$this->routes = array_merge($this->routes, $modulesRoutes);
 				$this->logger->info('Routes for all modules loaded successfully');
 			}
 			else{
-				$this->logger->info('No routes found for all modules skip.');
+				$this->logger->info('No routes found for all modules skipping.');
 			}
-
 			$this->logger->info('The routes configuration are listed below: ' . stringfy_vars($this->routes));
 
-			$this->request = new Request();
+			$this->request =& class_loader('Request');
 			foreach($this->routes as $pattern => $callback){
 				$this->add($pattern, $callback);
 			}
-			//for performance remove all loaded routes array
+			//for performance remove all configuration routes array
 			$this->routes = array();
 
-		}
-
-		/**
-		* Adds the function and callback to the list of URIs to validate
-		*
-		* @param string $uri The main request
-		* @param object $callback An anonymous function
-		*/
-		public function add($uri, $callback) {
-			$uri = trim($uri, $this->uriTrim);
-			if(in_array($uri, $this->pattern)){
-				$this->logger->warning('The route [' .$uri. '] already added may adding again can have route conflict');
-			}
-			$this->pattern[] = $uri;
-			$this->callback[] = $callback;
-		}
-
-
-		public function getControllerPath(){
-			return $this->controllerPath;
-		}
-
-		public function getModule(){
-			return $this->module;
-		}
-
-		public function getController(){
-			return $this->controller;
-		}
-
-		public function getMethod(){
-			return $this->method;
-		}
-
-		public function getRequest(){
-			return $this->request;
-		}
-
-		public function getArgs(){
-			return $this->args;
-		}
-
-		public function dispatch() {
-			$this->logger->debug('Routing process start ...');
 			$uri = $this->getRequest()->requestUri();
-			$this->logger->info('Request URI [' .$uri. ']' );
-
 			$this->logger->debug('Check if URL suffix is enabled in the configuration');
 			//remove url suffix from the request URI
-			if($suffix = Config::get('url_suffix')){
+			if($suffix = get_config('url_suffix')){
 				$this->logger->info('URL suffix is enabled in the configuration, the value is [' .$suffix. ']' );
 				$uri = str_ireplace($suffix, '', $uri);
 			}
@@ -163,82 +152,274 @@
 				$uri = substr($uri, 0, strpos($uri, '?'));
 			}
 			$uri = trim($uri, $this->uriTrim);
-			$temp = explode('/', $uri);
-			$base_url = Config::get('base_url');
-			if(isset($temp[0]) && stripos($base_url, $temp[0]) != false){
-				array_shift($temp);
+			$this->segments = explode('/', $uri);
+		}
+
+		/**
+		* Add the URI and callback to the list of URIs to validate
+		*
+		* @param string $uri the request URI
+		* @param object $callback the callback function
+		*/
+		public function add($uri, $callback) {
+			$uri = trim($uri, $this->uriTrim);
+			if(in_array($uri, $this->pattern)){
+				$this->logger->warning('The route [' .$uri. '] already added, may be adding again can have route conflict');
+			}
+			$this->pattern[] = $uri;
+			$this->callback[] = $callback;
+		}
+
+		/**
+		 * Get the module name
+		 * @return string
+		 */
+		public function getModule(){
+			return $this->module;
+		}
+		
+		/**
+		 * Get the controller name
+		 * @return string
+		 */
+		public function getController(){
+			return $this->controller;
+		}
+
+		/**
+		 * Get the controller file path
+		 * @return string
+		 */
+		public function getControllerPath(){
+			return $this->controllerPath;
+		}
+
+		/**
+		 * Get the controller method
+		 * @return string
+		 */
+		public function getMethod(){
+			return $this->method;
+		}
+
+		/**
+		 * Get the request arguments
+		 * @return array
+		 */
+		public function getArgs(){
+			return $this->args;
+		}
+
+		/**
+		 * Get the request instance
+		 * @return object
+		 */
+		public function getRequest(){
+			return $this->request;
+		}
+
+		/**
+		 * Get the URL segments array
+		 * @return array
+		 */
+		public function getSegments(){
+			return $this->segments;
+		}
+
+		/**
+		 * Routing the request to the correspondant module/controller/method if exists
+		 * otherwise send 404 error.
+		 */
+		public function run() {
+			$ben =& class_loader('Benchmark');
+			$ben->mark('ROUTING_PROCESS_START');
+			$segment = $this->segments;
+			$base_url = get_config('base_url');
+			//check if the app is not in DOCUMENT_ROOT
+			if(isset($segment[0]) && stripos($base_url, $segment[0]) != false){
+				array_shift($segment);
+				$this->segments = $segment;
 			}
 			$this->logger->debug('Check if the front controller is enabled in the configuration');
-			if(isset($temp[0]) && $temp[0] == Config::get('front_controller')){
-				$this->logger->info('front controller is enabled in the configuration, the value is [' .$temp[0]. ']' );
-				array_shift($temp);
+			if(isset($segment[0]) && $segment[0] == get_config('front_controller')){
+				$this->logger->info('The front controller is enabled in the configuration, the value is [' .$segment[0]. ']' );
+				array_shift($segment);
+				$this->segments = $segment;
 			}
 			else{
-				$this->logger->info('front controller is not enabled in the configuration' );
+				$this->logger->info('The front controller is not enabled in the configuration' );
 			}
-			$uri = implode('/', $temp);
+			$uri = implode('/', $segment);
 			$this->logger->info('The final Request URI is [' .$uri. ']' );
+			$this->logger->debug('Routing process start ...');
 			$pattern = array(':num', ':alpha', ':alnum', ':any');
 			$replace = array('[0-9]+', '[a-zA-Z]+', '[a-zA-Z0-9]+', '.*');
+			$this->logger->debug('Begin to loop in the predefined routes configuration to check if the current request match');
 			// Cycle through the URIs stored in the array
 			foreach ($this->pattern as $index => $uriList) {
 				$uriList = str_ireplace($pattern, $replace, $uriList);
-				// Check for a existant matching URI
+				// Check for an existant matching URI
 				if (preg_match("#^$uriList$#", $uri, $args)) {
+					$this->logger->info('Route found for request URI [' .$uri. '] using the predefined configuration');
 					array_shift($args);
-					$temp = explode('@', $this->callback[$index]);
-
-					if(isset($temp[0])){
-						$path = explode('/', $temp[0]);
-						$this->controller = end($path);
-						array_pop($path);
-						$path = implode(DS, $path);
-						if($path){
-							$this->controllerPath = $path . DS;
+					//check if this contains an module
+					$moduleControllerMethod = explode('#', $this->callback[$index]);
+					if(is_array($moduleControllerMethod) && count($moduleControllerMethod) >= 2){
+						$this->logger->info('The current request use the module [' .$moduleControllerMethod[0]. ']');
+						$this->module = $moduleControllerMethod[0];
+						$moduleControllerMethod = explode('@', $moduleControllerMethod[1]);
+					}
+					else{
+						$this->logger->info('The current request does not use the module');
+						$moduleControllerMethod = explode('@', $this->callback[$index]);
+					}
+					if(is_array($moduleControllerMethod)){
+						if(isset($moduleControllerMethod[0])){
+							$this->controller = $moduleControllerMethod[0];	
 						}
+						if(isset($moduleControllerMethod[1])){
+							$this->method = $moduleControllerMethod[1];
+						}
+						$this->args = $args;
 					}
-
-					if(isset($temp[1])){
-						$this->method = $temp[1];
-					}
-					$this->args = $args;
 					// stop here
 					break;
 				}
 			}
-			$e404 = false;
-			$controller = ucfirst($this->getController());
-			$this->logger->info('The routing information are: controller [' .$controller. '], method [' .$this->method. '], args [' .stringfy_vars($this->args). ']' );
-			Loader::controller($controller, $this->getControllerPath());
-			if(!class_exists($controller)){
-				$e404 = true;
-				$this->logger->warning('Controller class [' .$controller. '] does not exist');
+			//first if the controller is not set and the module is set use the module name as the controller
+			if(! $this->getController() && $this->getModule()){
+				$this->logger->info('After loop in predefined routes configuration, the module name is set but the controller is not set, so we will use module as the controller');
+				$this->controller = $this->getModule();
 			}
-			else{
-				$c = new $controller();
-				$m = $this->getMethod();
-				if(!method_exists($c, $m)){
-					$e404 = true;
-					$this->logger->warning('Controller class [' .$controller. '] exist but the method [' .$m. '] does not exist');
-				}
-				else{
-					//check if this controller is from module or not
-					$this->logger->debug('Check if the controller belongs to an module');
-					$module = Module::findModuleForController($controller, $this->getControllerPath());
-					if($module){
-						$this->logger->info('This controller belongs in a module [' .$module. '] setting it now');
-						$c->module = $module;
+			//if can not determine the module/controller/method via the defined routes configuration we will use
+			//the URL like http://domain.com/module/controller/method/arg1/arg2
+			if(! $this->getController()){
+				$this->logger->info('Cannot determine the routing information using the predefined routes configuration, will use the request URI parameters');
+				$nb_segment = count($segment);
+				//if segment is null so means no need to perform
+				if($nb_segment > 0){
+					//get the module list
+					$modules = Module::getModuleList();
+					//first check if no module
+					if(!$modules){
+						$this->logger->info('No module was loaded will skip the module checking');
+						//the application don't use module
+						//controller
+						if(isset($segment[0])){
+							$this->controller = $segment[0];
+							array_shift($segment);
+						}
+						//method
+						if(isset($segment[0])){
+							$this->method = $segment[0];
+							array_shift($segment);
+						}
+						//arg
+						$this->args = $segment;
 					}
 					else{
-						$this->logger->info('This controller not belongs in a module skiping');
+						$this->logger->info('The application contains a loaded module will check if the current request is found in the module list');
+						if(in_array($segment[0], $modules)){
+							$this->logger->info('Found, the current request use the module [' .$segment[0]. ']');
+							$this->module = $segment[0];
+							array_shift($segment);
+							//check if the second arg is the controller from module
+							if(isset($segment[0])){
+								$this->controller = $segment[0];
+								//check if the request use the same module name and controller
+								$path = Module::findControllerFullPath(ucfirst($this->getController()), $this->getModule());
+								if(!$path){
+									$this->logger->info('The controller [' .$this->getController(). '] not found in the module, may be will use the module [' .$this->getModule(). '] as controller');
+									$this->controller = $this->getModule();
+								}
+								else{
+									array_shift($segment);
+								}
+							}
+							//check for method
+							if(isset($segment[0])){
+								$this->method = $segment[0];
+								array_shift($segment);
+							}
+							//the remaining is for args
+							$this->args = $segment;
+						}
+						else{
+							$this->logger->info('The current request information is not found in the module list');
+							if(isset($segment[0])){
+								$this->controller = $segment[0];
+								array_shift($segment);
+							}
+							if(isset($segment[0])){
+								$this->method = $segment[0];
+								array_shift($segment);
+							}
+							$this->args = $segment;
+						}
 					}
-					$this->logger->info('Routing data is set correctly launch the application');
-					call_user_func_array(array($c, $m), $this->getArgs());
 				}
 			}
-
+			if(! $this->getController() && $this->getModule()){
+				$this->logger->info('After using the request URI the module name is set but the controller is not set so we will use module as the controller');
+				$this->controller = $this->getModule();
+			}
+			//did we set the controller, so set the controller path
+			if($this->getController()){
+				$this->logger->debug('Setting the file path for the controller [' .$this->getController(). ']');
+				//if it is the module controller
+				if($this->getModule()){
+					$this->controllerPath = Module::findControllerFullPath(ucfirst($this->getController()), $this->getModule());
+				}
+				else{
+					$this->controllerPath = APPS_CONTROLLER_PATH . ucfirst($this->getController()) . '.php';
+				}
+			}
+			$controller = ucfirst($this->getController());
+			$this->logger->info('The routing information are: module [' .$this->getModule(). '], controller [' .$controller. '], method [' .$this->getMethod(). '], args [' .stringfy_vars($this->args). ']');
+			$classFilePath = $this->getControllerPath();
+			$this->logger->debug('Loading controller [' . $controller . '], the file path is [' .$classFilePath. ']...');
+			$this->logger->debug('Check if the controller [' . $controller . '] is in module');
+			if($this->getModule() && $classFilePath){
+				$this->logger->info('Found controller [' . $controller . '] in module [' .$this->getModule(). '], the file path is [' .$classFilePath. '] we will used it');
+			}
+			else{
+				$this->logger->info('Cannot find controller [' . $controller . '] in module [' .$this->getModule(). ']');
+			}
+			$ben->mark('ROUTING_PROCESS_END');
+			$e404 = false;
+			if(file_exists($classFilePath)){
+				require_once $classFilePath;
+				if(!class_exists($controller)){
+					$e404 = true;
+					$this->logger->info('The controller file [' .$classFilePath. '] exists but does not contain the class [' .$controller. ']');
+				}
+				else{
+					$c = new $controller();
+					$m = $this->getMethod();
+					if(!method_exists($c, $m)){
+						$e404 = true;
+						$this->logger->info('The controller [' .$controller. '] exist but does not contain the method [' .$m. ']');
+					}
+					else{
+						if($this->getModule()){
+							$this->logger->info('The controller [' .$controller. '] belongs in the module [' .$this->getModule(). ']');
+							$c->module_name = $this->getModule();
+						}
+						else{
+							$this->logger->info('The controller [' .$controller. '] not belongs in the module list skipping');
+						}
+						$this->logger->info('Routing data is set correctly now GO!');
+						call_user_func_array(array($c, $m), $this->getArgs());
+					}
+				}
+			}
+			else{
+				$this->logger->info('The controller file path [' .$classFilePath. '] does not exist');
+				$e404 = true;
+			}
 			if($e404){
-				Response::send404();
+				$R =& class_loader('Response');
+				$R->send404();
 			}
 		}
 	}

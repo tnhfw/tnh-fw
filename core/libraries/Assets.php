@@ -24,18 +24,6 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-
-
-	/**
-	 * TODO: use the best way to include the Log class
-	 */
-	if(!class_exists('Log')){
-		//here the Log class is not yet loaded
-		//load it manually, normally the class Config is loaded before
-		require_once CORE_LIBRARY_PATH . 'Log.php';
-	}
-
-
 	/**
 	 *  @file Assets.php
 	 *    
@@ -54,13 +42,17 @@
 
 		private static $logger;
 
-
+		/**
+		 * The signleton of the logger
+		 * @return Object the Log instance
+		 */
 		private static function getLogger(){
 			if(static::$logger == null){
-				static::$logger = new Log();
-				static::$logger->setLogger('Library::Assets');
+				//can't assign reference to static varibale
+				static::$logger[0] =& class_loader('Log');
+				static::$logger[0]->setLogger('Library::Assets');
 			}
-			return static::$logger;
+			return static::$logger[0];
 		}
 
 
@@ -76,7 +68,7 @@
 		 *  @param $path the name of the css file without the extension.
 		 *  @return string|null the absolute path of the css file, if it exists otherwise returns null if the file does not exist.
 		 */
-		static function css($path){
+		public static function css($path){
 			$logger = static::getLogger();
 			/*
 			* if the file name contains the ".css" extension, replace it with 
@@ -85,7 +77,7 @@
 			$path = str_ireplace('.css', '', $path);
 			$path = ASSETS_PATH.'css/'.$path.'.css';
 			
-			$logger->debug('try to include the Assets file [' .$path. '] for CSS');
+			$logger->debug('Including the Assets file [' .$path. '] for CSS');
 			//Check if the file exists
 			if(file_exists($path)){
 				$logger->info('Assets file [' .$path. '] for CSS included successfully');
@@ -95,11 +87,23 @@
 			return null;
 		}
 
-		static function js($path){
+		/**
+		 *  Generate the link of the javascript file.
+		 *  
+		 *  Generates the absolute link of a file containing the javascript.
+		 *  For example :
+		 *  	echo Assets::js('myscript'); => http://mysite.com/assets/js/myscript.js
+		 *  Note:
+		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+		 *  
+		 *  @param $path the name of the javascript file without the extension.
+		 *  @return string|null the absolute path of the javascript file, if it exists otherwise returns null if the file does not exist.
+		 */
+		public static function js($path){
 			$logger = static::getLogger();
 			$path = str_ireplace('.js', '', $path);
 			$path = ASSETS_PATH.'js/'.$path.'.js';
-			$logger->debug('try to include the Assets file [' .$path. '] for Javascript');
+			$logger->debug('Including the Assets file [' .$path. '] for javascript');
 			if(file_exists($path)){
 				$logger->info('Assets file [' .$path. '] for Javascript included successfully');
 				return Url::base_url($path);
@@ -108,10 +112,22 @@
 			return null;
 		}
 
-		static function img($path){
+		/**
+		 *  Generate the link of the image file.
+		 *  
+		 *  Generates the absolute link of a file containing the image.
+		 *  For example :
+		 *  	echo Assets::img('myimage.png'); => http://mysite.com/assets/images/myimage.png
+		 *  Note:
+		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+		 *  
+		 *  @param $path the name of the image file with the extension.
+		 *  @return string|null the absolute path of the image file, if it exists otherwise returns null if the file does not exist.
+		 */
+		public static function img($path){
 			$logger = static::getLogger();
 			$path = ASSETS_PATH.'images/'.$path;
-			$logger->debug('try to include the Assets file [' .$path. '] for image');
+			$logger->debug('Including the Assets file [' .$path. '] for image');
 			if(file_exists($path)){
 				$logger->info('Assets file [' .$path. '] for image included successfully');
 				return Url::base_url($path);

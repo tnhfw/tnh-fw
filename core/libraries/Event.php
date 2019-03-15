@@ -1,5 +1,5 @@
 <?php
-	defined('ROOT_PATH') || exit('Access denied');
+	defined('ROOT_PATH') or exit('Access denied');
 	/**
 	 * TNH Framework
 	 *
@@ -24,31 +24,39 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	if(!function_exists('__')){
+	/**
+	 * This class represent the event detail to dispatch to correspond listener
+	 */
+	class Event{
 		/**
-		 * function for the shortcut to Lang::get()
-		 * @param  string $key the language key to retrieve
-		 * @param mixed $default the default value to return if can not find the value
-		 * for the given key
-		 * @return string  the language value
+		 * The event name
+		 * @var string
 		 */
-		function __($key, $default = 'LANGUAGE_ERROR'){
-			$obj = & get_instance();
-			return $obj->lang->get($key, $default);
-		}
+		public $name;
 
-	}
-
-
-	if(!function_exists('get_languages')){
 		/**
-		 * function for the shortcut to Lang::getSupported()
-		 * 
-		 * @return array all the supported languages
+		 * The event data to send to the listeners
+		 * @var mixed
 		 */
-		function get_languages(){
-			$obj = & get_instance();
-			return $obj->lang->getSupported();
-		}
+		public $payload;
 
+		/**
+		 * If the listeners need return the event after treatment or not, false means no need
+		 * return true need return the event. 
+		 * @var boolean
+		 */
+		public $returnBack;
+
+		/**
+		 * This variable indicates if need stop the event propagation
+		 * @var boolean
+		 */
+		public $stop;
+		
+		public function __construct($name = null, $payload = array(), $returnBack = false, $stop = false){
+			$this->name = $name;
+			$this->payload = $payload;
+			$this->returnBack = $returnBack;
+			$this->stop = $stop;
+		}
 	}

@@ -27,25 +27,35 @@
 
 	class Url{
 
+		/**
+		 * Return the link using base_url config without front controller "index.php"
+		 * @param  string $path the link path or full URL
+		 * @return string the full link URL
+		 */
 		public static function base_url($path = ''){
 			if(is_url($path)){
 				return $path;
 			}
-			return Config::get('base_url').$path;
+			return get_config('base_url') . $path;
 		}
 
+		/**
+		 * Return the link using base_url config with front controller "index.php"
+		 * @param  string $path the link path or full URL
+		 * @return string the full link URL
+		 */
 		public static function site_url($path = ''){
 			if(is_url($path)){
 				return $path;
 			}
 			$path = rtrim($path, '/');
-			$base_url = Config::get('base_url');
-			$front_controller = Config::get('front_controller');
+			$base_url = get_config('base_url');
+			$front_controller = get_config('front_controller');
 			$url = $base_url;
 			if($front_controller){
 				$url .= $front_controller.'/';
 			}
-			if(($suffix = Config::get('url_suffix')) && $path){
+			if(($suffix = get_config('url_suffix')) && $path){
 				if(strpos($path, '?') != false){
 					$query = explode('?', $path);
 					$query[0] = str_ireplace($suffix, '', $query[0]);
@@ -60,6 +70,10 @@
 			return $url.$path;
 		}
 
+		/**
+		 * Return the current site URL
+		 * @return string
+		 */
 		public static function current(){
 			$obj = & get_instance();
 			$current = '/';
@@ -67,17 +81,24 @@
 			if($requestUri){
 				$current = $requestUri;
 			}
-			return static::domain().$current;
+			return static::domain() . $current;
 		}
 
-
+		/**
+		 * Generate a friendly  text to use in link (slugs)
+		 * @param  string  $str       the title or text to use to get the friendly text
+		 * @param  string  $separator the caracters separator
+		 * @param  boolean $lowercase whether to set the final text to lowe case or not
+		 * @return string the friendly generated text
+		 */
 		public static function title($str = null, $separator = '-', $lowercase = true){
 			$str = trim($str);
 			$from = array('ç','À','Á','Â','Ã','Ä','Å','à','á','â','ã','ä','å','Ò','Ó','Ô','Õ','Ö','Ø','ò','ó','ô','õ','ö','ø','È','É','Ê','Ë','è','é','ê','ë','Ç','ç','Ì','Í','Î','Ï','ì','í','î','ï','Ù','Ú','Û','Ü','ù','ú','û','ü','ÿ','Ñ','ñ');
 			$to = array('c','a','a','a','a','a','a','a','a','a','a','a','a','o','o','o','o','o','o','o','o','o','o','o','o','e','e','e','e','e','e','e','e','e','e','i','i','i','i','i','i','i','i','u','u','u','u','u','u','u','u','y','n','n');
-			$str = str_replace($from,$to,$str);
+			$str = str_replace($from, $to, $str);
 			$str = preg_replace('#([^a-z0-9]+)#i', $separator, $str);
-			$str = str_replace("--", $separator, $str);
+			$str = str_replace('--', $separator, $str);
+			//if after process we get something like one-two-three-, need truncate the last separator "-"
 			if(substr($str, -1) == $separator){
 				$str = substr($str, 0, -1);
 			}
@@ -87,6 +108,10 @@
 			return $str;
 		}
 
+		/**
+		 * Get the current application domain with protocol
+		 * @return string the domain name
+		 */
 		public static function domain(){
 			$obj = & get_instance();
 			$domain = 'localhost';
@@ -103,16 +128,20 @@
 				$domain = $obj->request->server('SERVER_ADDR');
 			}
 			if($port && (is_https() && $port != 443 || !is_https() && $port != 80)){
-				//some server use SSL but the port doesn't equal 443 sometime is 80 if is the case don't try to emulate it
+				//some server use SSL but the port doesn't equal 443 sometime is 80 if is the case put the port at this en
+				//of the domain like https://my.domain.com:787
 				if(is_https() && $port != 80){
 					$domain .= ':'.$port;
 				}
 			}
-
 			return $protocol.'://'.$domain;
 		}
 
-		static function queryString(){
+		/**
+		 * Get the current request query string
+		 * @return string
+		 */
+		public static function queryString(){
 			$obj = & get_instance();
 			return $obj->request->server('QUERY_STRING');
 		}

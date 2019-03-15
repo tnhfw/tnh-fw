@@ -80,25 +80,6 @@
 	 *  site charset
 	 */
 	$config['charset'] = 'UTF-8';
-	
-	/**
-	* Module list
-	*
-	* The list of the module you will used in your application.
-	* Note: the array index will be the directory name (case sensitive and [a-z0-9-_]) inside the 
-	* modules directory located at MODULE_PATH.
-	*/
-	$config['modules'] = array();
-
-
-	/**
-	* The pagination.
-	*
-	* Represents the number of data to display per page.
-	* Note: this value must be strictly greater than zero (0)
-	*/
-	$config['pagination_per_page'] = 10;
-	
 
 	/*+---------------------------------------------------------------+
 	* Language configuration section
@@ -247,14 +228,6 @@
 	*/
 	$config['session_cookie_secure'] = false;
 	
-	/**
-	* Session cookie httponly
-	*
-	* If you would like the cookie is available only in HTTP mode, then set this value to "true" 
-	* else set this value to "false"
-	*/
-	$config['session_cookie_httponly'] = true;
-
 
 	/*+---------------------------------------------------------------+
 	* CSRF configuration section
@@ -282,6 +255,29 @@
 	 */
 	$config['csrf_expire'] = 120;
 	
+	/**
+	 * Cache status
+	 *
+	 * If you would to use the cache functionnality set this value to true
+	 */
+	$config['cache_enable'] = false;
+	
+	/**
+	 * Cache Time To Live
+	 *
+	 * expire time in seconds of the cache data
+	 */
+	$config['cache_ttl'] = 120; //in second
+
+	/**
+	* Cache handler class
+	*
+	* The cache handler class inside (CORE_LIBRARY_PATH, LIBRARY_PATH) directories that implements 
+	* the interface "CacheInterface" that we will use to manage the cache.
+	* currently the possible values are "FileCache".
+	*/
+	$config['cache_handler'] = 'FileCache';
+
 	
 	/*+---------------------------------------------------------------+
 	* White list IP access configuration section

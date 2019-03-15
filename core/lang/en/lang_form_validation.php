@@ -1,17 +1,8 @@
 <?php 
     defined('ROOT_PATH') || exit('Access denied');
  	/**
- 	 * application language (English) 
+ 	 * Form validation language message (English) 
  	 */
- 	
- 	 //////////////////////////////// COMMON ////////////////////////////
- 	 
- 	$lang['language'] = 'english';
-
- 	
- 	/////////////////////////////// FORMS ///////////////////////////////////////////
- 	
- 	//form validation error
  	$lang['fv_required']     		= 'Field %1 is required.';
     $lang['fv_min_length']   		= 'Field %1 must contain at least %2 characters.';
     $lang['fv_max_length']   		= 'Field %1 must contain at most %2 characters.';

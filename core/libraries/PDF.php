@@ -25,42 +25,56 @@
 	*/
 
 	/**
-	 * PDF library to generate PDF document using the vendor DOMPDF
+	 * PDF library to generate PDF document using the library DOMPDF
 	 */
 	class PDF{
 		/**
-		 * the super controller instance
-		 * @var Object
+		 * The dompdf instance
+		 * @var Dompdf
 		 */
-		protected $OBJ = null;
+		private $dompdf = null;
 
+		/**
+		 * The logger instance
+		 * @var Log
+		 */
 		private $logger;
 		
+		/**
+		 * Create PDF library instance
+		 */
 		public function __construct(){
-			if(!class_exists('Log')){
-	            //here the Log class is not yet loaded
-	            //load it manually
-	            require_once CORE_LIBRARY_PATH . 'Log.php';
-	        }
-	        $this->logger = new Log();
+	        $this->logger =& class_loader('Log');
 	        $this->logger->setLogger('Library::PDF');
 
 			require_once VENDOR_PATH.'dompdf/dompdf_config.inc.php';
+
 			$dompdf = new Dompdf();
-			$this->OBJ = & get_instance();
-			$this->OBJ->dompdf = $dompdf;
+			$obj = & get_instance();
+			$obj->dompdf = $dompdf;
+			$this->dompdf = $dompdf;
 		}
 
+		/**
+		 * Generate PDF document
+		 * @param  string  $html        the HTML content to use for generation
+		 * @param  string  $filename    the generated PDF document filename
+		 * @param  boolean $stream      if need send the generated PDF to browser for download
+		 * @param  string  $paper       the PDF document paper type like 'A4', 'A5', 'letter', etc.
+		 * @param  string  $orientation the PDF document orientation like 'portrait', 'landscape'
+		 * @return string|void               if $stream is true send PDF document to browser for download, else return the generated PDF
+		 * content like to join in Email attachment of for other purpose use.
+		 */
 		public function generate($html, $filename = '', $stream = true, $paper = 'A4', $orientation = 'portrait'){
-			$this->logger->info('Generate PDF document: filename [' .$filename. '], stream [' .($stream? 'TRUE':'FALSE'). '], paper [' .$paper. '], orientation [' .$orientation. ']');
-			$this->OBJ->dompdf->load_html($html);
-			$this->OBJ->dompdf->set_paper($paper, $orientation);
-			$this->OBJ->dompdf->render();
+			$this->logger->info('Generating of PDF document: filename [' .$filename. '], stream [' .($stream ? 'TRUE':'FALSE'). '], paper [' .$paper. '], orientation [' .$orientation. ']');
+			$this->dompdf->load_html($html);
+			$this->dompdf->set_paper($paper, $orientation);
+			$this->dompdf->render();
 			if($stream){
-				$this->OBJ->dompdf->stream($filename);
+				$this->dompdf->stream($filename);
 			}
 			else{
-				return $this->OBJ->dompdf->output();
+				return $this->dompdf->output();
 			}
 		}
 		

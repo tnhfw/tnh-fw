@@ -24,144 +24,183 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	/**
-	 * TODO: use the best way to include the Log class
-	 */
-	if(!class_exists('Log')){
-		//here the Log class is not yet loaded
-		//load it manually, normally the class Config is loaded before
-		require_once CORE_LIBRARY_PATH . 'Log.php';
-	}
-
 	class Response{
-			private static $headers = array();
-			private static $logger;
-			public static $httpStatutCode = 200;
-			protected static $http_code = array(
-											100 => 'Continue',
-											101 => 'Switching Protocols',
-											200 => 'OK',
-											201 => 'Created',
-											202 => 'Accepted',
-											203 => 'Non-Authoritative Information',
-											204 => 'No Content',
-											205 => 'Reset Content',
-											206 => 'Partial Content',
-											300 => 'Multiple Choices',
-											301 => 'Moved Permanently',
-											302 => 'Found',
-											303 => 'See Other',
-											304 => 'Not Modified',
-											305 => 'Use Proxy',
-											307 => 'Temporary Redirect',
-											400 => 'Bad Request',
-											401 => 'Unauthorized',
-											402 => 'Payment Required',
-											403 => 'Forbidden',
-											404 => 'Not Found',
-											405 => 'Method Not Allowed',
-											406 => 'Not Acceptable',
-											407 => 'Proxy Authentication Required',
-											408 => 'Request Timeout',
-											409 => 'Conflict',
-											410 => 'Gone',
-											411 => 'Length Required',
-											412 => 'Precondition Failed',
-											413 => 'Request Entity Too Large',
-											414 => 'Request-URI Too Long',
-											415 => 'Unsupported Media Type',
-											416 => 'Requested Range Not Satisfiable',
-											417 => 'Expectation Failed',
-											418 => 'I\'m a teapot',
-											500 => 'Internal Server Error',
-											501 => 'Not Implemented',
-											502 => 'Bad Gateway',
-											503 => 'Service Unavailable',
-											504 => 'Gateway Timeout',
-											505 => 'HTTP Version Not Supported',
-										);
+		/**
+		 * The list of request header to send with response
+		 * @var array
+		 */
+		private static $headers = array();
 
-			public function __construct(){
+		/**
+		 * The logger instance
+		 * @var Log
+		 */
+		private static $logger;
+		
+		/**
+		 * Construct new response instance
+		 */
+		public function __construct(){
+		}
+
+		/**
+		 * Get the logger singleton instance
+		 * @return Log the logger instance
+		 */
+		private static function getLogger(){
+			if(static::$logger == null){
+				static::$logger[0] =& class_loader('Log');
+				static::$logger[0]->setLogger('Library::Response');
 			}
+			return static::$logger[0];
+		}
 
-			private static function getLogger(){
-				if(static::$logger == null){
-					static::$logger = new Log();
-					static::$logger->setLogger('Library::Response');
+		/**
+		 * Send the HTTP Response headers
+		 * @param  integer $http_code the HTTP status code
+		 * @param  array   $headers   the additional headers to add to the existing header list
+		 */
+		public static function sendHeaders($http_code = 200, array $headers = array()){
+			set_http_status_header($http_code);
+			static::setHeaders($headers);
+			if(!headers_sent()){
+				foreach(static::getHeaders() as $key => $value){
+					header($key .':'.$value);
 				}
-				return static::$logger;
 			}
+		}
 
-			public static function sendHeaders($http_code = 200, array $headers = array()){
-				static::setStatutCode($http_code);
-				static::setHeaders($headers);
-				if(!headers_sent()){
-					foreach(static::getHeaders() as $key => $value){
-						header($key .':'.$value);
+		/**
+		 * Get the list of the headers
+		 * @return array the headers list
+		 */
+		public static function getHeaders(){
+			return static::$headers;
+		}
+
+		/**
+		 * Redirect user in the specified page
+		 * @param  string $path the URL or URI to be redirect to
+		 */
+		public static function redirect($path = ''){
+			$logger = static::getLogger();
+			$url = Url::site_url($path);
+			$logger->info('Redirect to URL [' .$url. ']');
+			if(!headers_sent()){
+				header('Location:'.$url);
+				exit;
+			}
+			else{
+				echo '<script>
+						location.href = "'.$url.'";
+					</script>';
+			}
+		}
+
+		/**
+		 * Get the header value for the given name
+		 * @param  string $name the header name
+		 * @return string       the header value
+		 */
+		public static function getHeader($name){
+			return isset(static::$headers[$name])?static::$headers[$name] : null;
+		}
+
+
+		/**
+		 * Set the header value for the specified name
+		 * @param string $name  the header name
+		 * @param string $value the header value to be set
+		 */
+		public static function setHeader($name,$value){
+			static::$headers[$name] = $value;
+		}
+
+		/**
+		 * Set the headers using array
+		 * @param array $headers the list of the headers to set. 
+		 * Note: this will merge with the existing headers
+		 */
+		public static function setHeaders(array $headers){
+			static::$headers = array_merge(static::getHeaders(), $headers);
+		}
+
+		/**
+		 * Render the view to display or return the content
+		 * @param  string  $view   the view name or path
+		 * @param  array   $data   the variable data to use in the view
+		 * @param  boolean $return whether to return the view generated content or display it directly
+		 * @return void|string          if $return is true will return the view content otherwise
+		 * will display the view content.
+		 */
+		public function render($view, array $data = array(), $return = false){
+			$logger = static::getLogger();
+			$view = str_ireplace('.php', '', $view);
+			$view = trim($view, '/\\');
+			$viewFile = $view . '.php';
+			$path = APPS_VIEWS_PATH . $viewFile;
+			$obj = & get_instance();
+			$cacheEnable = get_config('cache_enable', false);
+			$viewCacheEnable = !empty($obj->view_cache_enable);
+			$viewCacheTtl = !empty($obj->view_cache_ttl) ? $obj->view_cache_ttl : 0;
+			$cacheInstance = null;
+			$cacheKey = null;
+			$cached = false;
+			$dispatcher = $obj->eventdispatcher;
+			if($cacheEnable && $viewCacheEnable){
+				$cacheKey = md5(Url::current() . $view . serialize($data) . serialize($return));
+				$logger->debug('Getting the view [' . $view . '] content from cache ...');
+				$cacheInstance = $obj->{strtolower(get_config('cache_handler'))};
+				$content = $cacheInstance->get($cacheKey);
+				if($content){
+					$cached = true;
+					$logger->info('The view [' . $view . '] content already cached just use it');
+					//dispatch
+					$event = $dispatcher->dispatch('VIEW_LOADED', new Event('VIEW_LOADED', $content, true));
+					$content = (!empty($event->payload) && $event instanceof Event) ? $event->payload: null;
+					if(empty($content)){
+						$logger->warning('The view content is empty after dispatch to Event Listeners.');
 					}
-					header('HTTP/1.1 '.static::$httpStatutCode.' '.static::$http_code[static::$httpStatutCode]);
+					if($return){
+						return $content;
+					}
+					echo $content;
 				}
 			}
-
-			public static function getHeaders(){
-				return static::$headers;
+			else{
+				$logger->info('The cache is not enabled for the view [' . $view . '] skipping');
 			}
-
-			public static function redirect($path = ''){
-				$url = Url::site_url($path);
-				$logger = static::getLogger();
-				$logger->info('Redirect to URL [' .$url. ']');
-				if(!headers_sent()){
-					header('Location:'.$url);
-					exit;
-				}
-				else{
-					echo '<script>
-							location.href = "'.$url.'";
-						</script>';
-				}
-			}
-
-			public static function getHeader($name){
-				return isset(static::$headers[$name])?static::$headers[$name] : null;
-			}
-
-
-			public static function setHeader($name,$value){
-				static::$headers[$name] = $value;
-			}
-
-			public static function setHeaders(array $headers){
-				static::$headers = array_merge(static::getHeaders(), $headers);
-			}
-
-			public static function setStatutCode($code){
-				static::$httpStatutCode = $code;
-			}
-
-			public function render($view, array $data = array(), $return = false){
-				$logger = static::getLogger();
-				$view = str_ireplace('.php', '', $view);
-				$view = trim($view, '/\\');
-				$viewFile = $view . '.php';
-				$path = APPS_VIEWS_PATH . $viewFile;
+			if(! $cached){
 				//check in module first
-				$logger->debug('Trying to find view [' . $view . '] from module list ...');
-				$obj = & get_instance();
-				$module = $obj->module;
-				if($module){
-					$moduleViewPath = Module::findViewFullPath($view, $module);
+				$logger->debug('Checking the view [' . $view . '] from module list ...');
+				$mod = null;
+				//check if the request class contains module name
+				if(strpos($view, '/') !== false){
+					$viewPath = explode('/', $view);
+					if(isset($viewPath[0]) && in_array($viewPath[0], Module::getModuleList())){
+						$mod = $viewPath[0];
+						array_shift($viewPath);
+						$view = implode('/', $viewPath);
+						$viewFile = $view . '.php';
+					}
+				}
+				if(! $mod && !empty($obj->module_name)){
+					$mod = $obj->module_name;
+				}
+				if($mod){
+					$moduleViewPath = Module::findViewFullPath($view, $mod);
 					if($moduleViewPath){
 						$path = $moduleViewPath;
-						$logger->info('Found view [' . $view . '] in module [' .$module. '], the file path is [' .$moduleViewPath. '] we will used it');
+						$logger->info('Found view [' . $view . '] in module [' .$mod. '], the file path is [' .$moduleViewPath. '] we will used it');
 					}
 					else{
-						$logger->info('Cannot find view [' . $view . '] in module [' .$module. '] using the default location');
+						$logger->info('Cannot find view [' . $view . '] in module [' .$mod. '] using the default location');
 					}
 				}
 				else{
 					$logger->info('The current request does not use module using the default location.');
 				}
+				$logger->info('The view file path to be loaded is [' . $path . ']');
 				$found = false;
 				if(file_exists($path)){
 					$obj = & get_instance();
@@ -173,62 +212,78 @@
 					ob_start();
 					extract($data);
 					require_once $path;
-					$output = ob_get_clean();
-					if($return){
-						return $output;
+					$content = ob_get_clean();
+					if($cacheEnable && $viewCacheEnable){
+						$logger->debug('Save the view [' . $view . '] content into the cache ...');
+						$cacheInstance->set($cacheKey, $content, $viewCacheTtl ? $viewCacheTtl : get_config('cache_ttl'));
 					}
-					echo $output;
+					//dispatch
+					$event = $dispatcher->dispatch('VIEW_LOADED', new Event('VIEW_LOADED', $content, true));
+					$content = (!empty($event->payload) && $event instanceof Event) ? $event->payload: null;
+					if(empty($content)){
+						$logger->warning('The view content is empty after dispatch to Event Listeners.');
+					}
+					if($return){
+						return $content;
+					}
+					echo $content;
 					$found = true;
 				}
 				if(!$found){
-					show_error('Unable to find view '.$view);
-				}
-
-			}
-
-
-			public static function send404(){
-				/********* for logs **************/
-				//can't use $obj = & get_instance()  here because the global super object will be available until
-				//the main controller is loaded even for Loader::library('xxxx');
-				$r = new Request();
-				$b = new Browser();
-				$browser = $b->getPlatform().', '.$b->getBrowser().' '.$b->getVersion();
-				//here the helper not yet included
-				Loader::functions('user_agent');
-
-				$str = '[404 page not found] : ';
-				$str .= ' Unable to find the page ['.$r->requestUri().'] the visitor IP address is : '.get_ip(). ', browser : '.$browser;
-				if(static::$logger == null){
-					static::$logger = new Log();
-					static::$logger->setLogger('Library::Response');
-				}
-				static::$logger->error($str);
-				/***********************************/
-				$path = CORE_VIEWS_PATH.'404.php';
-				if(file_exists($path)){
-					static::sendHeaders(404);
-					ob_start();
-					require_once $path;
-					$output = ob_get_clean();
-					//template here
-					echo $output;
-				}
-			}
-
-			public static function sendError(array $data = array()){
-				$path = CORE_VIEWS_PATH.'errors.php';
-				if(file_exists($path)){
-					static::sendHeaders(503);
-					ob_start();
-					extract($data);
-					require_once $path;
-					$output = ob_get_clean();
-					//template here
-					echo $output;
-				}
-				else{
-					show_error('error view ' .$path. ' does not exist');
+					show_error('Unable to find view [' .$view . ']');
 				}
 			}
 		}
+
+		/**
+		 * Send the HTTP 404 error if can not found the 
+		 * routing information for the current request
+		 */
+		public static function send404(){
+			/********* for logs **************/
+			//can't use $obj = & get_instance()  here because the global super object will be available until
+			//the main controller is loaded even for Loader::library('xxxx');
+			$logger = static::getLogger();
+			$r =& class_loader('Request');
+			$b =& class_loader('Browser');
+			$browser = $b->getPlatform().', '.$b->getBrowser().' '.$b->getVersion();
+			
+			//here can't use Loader::functions just include the helper manually
+			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
+
+			$str = '[404 page not found] : ';
+			$str .= ' Unable to find the request page ['.$r->requestUri().']. The visitor IP address ['.get_ip(). '], browser ['.$browser.']';
+			$logger->error($str);
+			/***********************************/
+			$path = CORE_VIEWS_PATH . '404.php';
+			if(file_exists($path)){
+				static::sendHeaders(404);
+				ob_start();
+				require_once $path;
+				$output = ob_get_clean();
+				echo $output;
+			}
+			else{
+				show_error('The 404 view [' .$path. '] does not exist');
+			}
+		}
+
+		/**
+		 * Display the error to user
+		 * @param  array  $data the error information
+		 */
+		public static function sendError(array $data = array()){
+			$path = CORE_VIEWS_PATH . 'errors.php';
+			if(file_exists($path)){
+				static::sendHeaders(503);
+				ob_start();
+				extract($data);
+				require_once $path;
+				$output = ob_get_clean();
+				echo $output;
+			}
+			else{
+				show_error('The error view [' .$path. '] does not exist');
+			}
+		}
+	}

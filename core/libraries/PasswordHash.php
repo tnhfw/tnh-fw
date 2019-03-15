@@ -30,16 +30,31 @@
 		// cost parameter
 		private static $cost = '$10';
 
-		public static function uniqueSalt() {
+		/**
+		 * Get the unique salt for password hash
+		 * @return string the unique generated salt
+		 */
+		private static function uniqueSalt() {
 			return substr(sha1(mt_rand()), 0, 22);
 		}
 
+		/**
+		 * Hash the given password
+		 * @param  string $password the plain password text to be hashed
+		 * @return string           the hashed password
+		 */
 		public static function hash($password) {
 			return crypt($password, self::$algo .
 					self::$cost .
 					'$' . self::uniqueSalt());
 		}
 
+		/**
+		 * Check if the hash and plain password is valid
+		 * @param  string $hash     the hashed password
+		 * @param  string $password the plain text password
+		 * @return boolean  true if is valid or false if not
+		 */
 		public static function check($hash, $password) {
 			$full_salt = substr($hash, 0, 29);
 			$new_hash = crypt($password, $full_salt);

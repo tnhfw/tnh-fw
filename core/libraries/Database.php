@@ -23,12 +23,11 @@
    * along with this program; if not, write to the Free Software
    * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   */
-
-
   class Database
   {
 
     public $pdo = null;
+    public $database    = null;
 
     private $select     = '*';
     private $from       = null;
@@ -46,31 +45,32 @@
     private $result     = array();
     private $prefix     = null;
     private $op         = array('=','!=','<','>','<=','>=','<>');
-    private $cache      = null;
-    private $cacheDir   = null;
+    private $cacheExpire = 0;
     private $queryCount = 0;
-    public $database = null;
     private static $config = array();
     private $logger;
 
-    public function __construct(){
-        if(!class_exists('Log')){
-            //here the Log class is not yet loaded
-            //load it manually
-            require_once CORE_LIBRARY_PATH . 'Log.php';
-        }
+    /**
+     * Construct new database
+     * @param array $overwrite_config the config to overwrite the config set in database.php
+     */
+    public function __construct($overwrite_config = array()){
         /**
          * instance of the Log class
          */
-        $this->logger = new Log();
+        $this->logger =& class_loader('Log');
         $this->logger->setLogger('Library::Database');
 
-      	if(file_exists(CONFIG_PATH.'database.php')){
-      		require_once CONFIG_PATH.'database.php';
-      		if(empty($db) || !is_array($db)){
+      	if(file_exists(CONFIG_PATH . 'database.php')){
+          //here don't use require_once because somewhere user can create database instance directly
+      		require CONFIG_PATH . 'database.php';
+          if(empty($db) || !is_array($db)){
       			show_error('No database configuration found in database.php');
       		}
       		else{
+                if(!empty($overwrite_config)){
+                  $db = array_merge($db, $overwrite_config);
+                }
       			    $config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
       			    $config['username']  = isset($db['username']) ? $db['username'] : 'root';
               	$config['password']  = isset($db['password']) ? $db['password'] : '';
@@ -79,11 +79,9 @@
               	$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
               	$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
               	$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
-              	$config['cachedir']  = isset($db['cachedir']) ? $db['cachedir'] : CACHE_PATH;
-              	$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
+                $config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
               	$this->prefix        = $config['prefix'];
-              	$this->cacheDir      = $config['cachedir'];
-                $this->database = $config['database'];
+              	$this->database = $config['database'];
       	        $dsn = '';
       	        if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
       			      $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
@@ -103,7 +101,7 @@
     			  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
     			}
     			catch (PDOException $e){
-    			  show_error('Cannot connect to Database with PDO.');
+    			  show_error('Cannot connect to Database.');
     			}
     			static::$config = $config;
           $this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
@@ -653,20 +651,32 @@
       $str = stristr($this->query, 'SELECT');
 
       $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . ($all ? 'YES':'NO'));
-      $cache = false;
-
-      if (!is_null($this->cache)){
-        $this->logger->info('The database cache is not null try to get the query result [' .$this->query. '] from cache');
-        $cache = $this->cache->getCache($this->query, $array);
-        if($cache){
-          $this->logger->info('The query result already cached get result from cache cost in performance');  
-        }
+      $cacheExpire = $this->cacheExpire;
+      $cacheEnable = get_config('cache_enable');
+      $cacheContent = null;
+      $cacheKey = null;
+      $cacheInstance = null;
+      $obj = & get_instance();
+      if ($cacheEnable && $cacheExpire > 0 && $str){
+        $this->logger->info('The cache is enabled for this database query, try to get the database result from cache'); 
+        $cacheKey = md5($query . $all . $array);
+        $cacheInstance = $obj->{strtolower(get_config('cache_handler'))};
+        $cacheContent = $cacheInstance->get($cacheKey);        
       }
-
-      if (!$cache && $str)
+      else{
+        $this->logger->info('The cache is not enabled for this database query, get the query result directly from real database');
+      }
+      
+      if (!$cacheContent && $str)
       {
-        $this->logger->info('No cache for this query get the query result directly from real database');
+        $benchmark_marker_key = md5($query . $all . $array);
+        $obj->benchmark->mark('DATABASE_QUERY_START(' . $benchmark_marker_key . ')');
         $sql = $this->pdo->query($this->query);
+        $obj->benchmark->mark('DATABASE_QUERY_END(' . $benchmark_marker_key . ')');
+        $response_time = $obj->benchmark->elapsed_time('DATABASE_QUERY_START(' . $benchmark_marker_key . ')', 'DATABASE_QUERY_END(' . $benchmark_marker_key . ')');
+        if($response_time >= 1 ){
+            $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$response_time. '] sec.');
+        }
         if ($sql)
         {
           $this->numRows = $sql->rowCount();
@@ -686,40 +696,46 @@
               $this->result = $q;
             }
           }
-          if (!is_null($this->cache)){
+          if ($cacheEnable && $cacheExpire > 0 && $str){
             $this->logger->info('Save the query result [' .$this->query. '] into cache for future use');
-            $this->cache->setCache($this->query, $this->result);
+            $cacheInstance->set($cacheKey, $this->result, $cacheExpire);
           }
-          $this->cache = null;
         }
         else
         {
-          $this->cache = null;
           $this->error = $this->pdo->errorInfo();
           $this->error = $this->error[2];
-          $this->logger->error('The database query execution error: ' . $this->error);
+          $this->logger->error('The database query execution get error: [' . $this->error . ']');
           return $this->error();
         }
       }
-      else if ((!$cache && !$str) || ($cache && !$str))
+      else if ((!$cacheContent && !$str) || ($cacheContent && !$str))
       {
-        $this->cache = null;
         $this->result = $this->pdo->query($this->query);
         if (!$this->result)
         {
           $this->error = $this->pdo->errorInfo();
           $this->error = $this->error[2];
-
           return $this->error();
         }
       }
       else
       {
-        $this->cache = null;
-        $this->result = $cache;
+        $this->logger->info('The query result for [' .$this->query. '] already cached use it');
+        $this->result = $cacheContent;
       }
       $this->queryCount++;
+      $this->numRows = count($this->result);
+      if(!$this->result){
+        $this->logger->info('No result where found for the query [' . $query . ']');
+      }
       return $this->result;
+    }
+
+    public function setCache($ttl = 0){
+      if($ttl > 0){
+        $this->cacheExpire = $ttl;
+      }
     }
 
     public function escape($data)
@@ -728,16 +744,6 @@
         return null;
       }
       return $this->pdo->quote(trim($data));
-    }
-
-    /**
-      * set the database cache
-      * @param integer $time the numbers of second for this cache
-    */
-    public function setCache($time)
-    {
-      $this->cache = new DatabaseCache($this->cacheDir, $time);
-      return $this;
     }
 
     public function queryCount()

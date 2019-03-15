@@ -33,8 +33,7 @@
      * @copyright Copyright (c) 2012, Jamie Rumbelow <http://jamierumbelow.net>
      */
 
-    abstract class Model
-    {
+    abstract class Model{
 
         /* --------------------------------------------------------------
          * VARIABLES
@@ -129,22 +128,23 @@
          * Initialise the model, tie into the CodeIgniter superobject and
          * try our best to guess the table name.
          */
-        public function __construct()
-        {
-
+        public function __construct(){
             $obj = & get_instance();
     		if(!isset($obj->database)){
-    			show_error('You must load the database library first to use the model class');
+    			show_error('You must load the database library before to use the model class');
             }
-    		$this->_database = $obj->database;
+            /**
+             * NOTE: Need use "clone" because some Model need have the personal instance of the database library
+             * to prevent duplication
+             */
+    		$this->_database = clone $obj->database;
     				
             array_unshift($this->before_create, 'protect_attributes');
             array_unshift($this->before_update, 'protect_attributes');
             $this->_temporary_return_type = $this->return_type;
-    		
-    		if($this->dbCacheTime > 0){
-    			$this->_database->setCache($this->dbCacheTime);
-    		}
+            if($this->dbCacheTime > 0){
+                $this->_database->setCache($this->dbCacheTime);
+            }
         }
 
         /* --------------------------------------------------------------

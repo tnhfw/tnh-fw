@@ -39,55 +39,6 @@
 	 *  @filesource
 	 */
 
-	if(!function_exists('attributes_to_string')){
-		/**
-		 *  Convert array attributes to string
-		 *
-		 *  This function converts an associative array into HTML attributes.
-		 *  For example :
-		 *  $a = array('name' => 'Foo', 'type' => 'text'); => produces the following string:
-		 *  name = "Foo" type = "text"
-		 *
-		 *  @param $attributes associative array to convert to a string attribute.
-		 *  @return string string of the HTML attribute.
-		 */
-		function attributes_to_string(array $attributes){
-			$str = ' ';
-			//we check that the array passed as an argument is not empty.
-			if(!empty($attributes)){
-				foreach($attributes as $key => $value){
-					$key = trim(htmlspecialchars($key));
-					$value = trim(htmlspecialchars($value));
-					/*
-					* To predict the case where the string to convert contains the character "
-					* we check if this is the case we add a slash to solve this problem.
-					* For example:
-					* 	$attr = array('placeholder' => 'I am a "puple"')
-					* 	$str = attributes_to_string($attr); => placeholder = "I am a \"puple\""
-					 */
-					if($value && strpos('"', $value) !== false){
-						$value = addslashes($value);
-					}
-					$str .= $key.' = "'.$value.'" ';
-				}
-			}
-			return $str;
-		}
-	}
-
-	if(!function_exists('stringfy_vars')){
-		/**
-		* function to stringfy PHP variable, useful in debug situation
-		*
-		* @param mixed $var the variable to stringfy
-		*
-		* @return string the stringfy value
-		*/
-		function stringfy_vars($var){
-			return print_r($var, $returnAsString = true);
-		}
-	}
-
 	if(!function_exists('get_random_string')){
 		/**
 		 * Generate a random string

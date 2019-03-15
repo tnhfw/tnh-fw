@@ -25,84 +25,62 @@
 	*/
 
 	class Controller{
-		public $module = null;
+		/**
+		 * The name of the module if this controller belong to an module
+		 * @var string
+		 */
+		public $module_name = null;
 
+		/**
+		 * The singleton of the super object
+		 * @var Controller
+		 */
 		private static $instance;
 
-		protected static $logger;
+		/**
+		 * The logger instance
+		 * @var Log
+		 */
+		protected $logger;
 
+		/**
+		 * Class constructor
+		 */
 		public function __construct(){
-			if(!class_exists('Log')){
-				//here the Log class is not yet loaded
-				//load it manually
-				require_once CORE_LIBRARY_PATH . 'Log.php';
-			}
-			static::$logger = new Log();
-			static::$logger->setLogger('MainController');
+			$this->logger =& class_loader('Log');
+			$this->logger->setLogger('MainController');
 			self::$instance = & $this;
 
-			$libraries = array('request', 'response', 'lang');
-			$config = array();
-			$models = array();
-			$functions = array('lang');
-
-			if(file_exists(CONFIG_PATH.'autoload.php')){
-				require_once CONFIG_PATH.'autoload.php';
-				if(!empty($autoload) && is_array($autoload)){
-					//libraries autoload
-					if(!empty($autoload['libraries'])){
-						$libraries = array_merge($libraries, $autoload['libraries']);
-					}
-
-					//functions autoload
-					if(!empty($autoload['functions'])){
-						$functions = array_merge($functions, $autoload['functions']);
-					}
-					//config autoload
-					if(!empty($autoload['config'])){
-						$config = array_merge($config, $autoload['config']);
-					}
-					//models autoload
-					if(!empty($autoload['models'])){
-						$models = array_merge($models, $autoload['models']);
-					}
-				}
-				else{
-					show_error('No autoload configuration found in autoload.php');
-				}
+			$this->logger->debug('Adding the loaded classes to the super instance');
+			foreach (class_loaded() as $var => $class){
+				$this->$var =& class_loader($class);
 			}
 
-			foreach($config as $c){
-				Loader::config($c);
-			}
+			$this->logger->debug('Loading the required classes into super instance');
+			$this->loader =& class_loader('Loader');
+			$this->request =& class_loader('Request');
+			$this->response =& class_loader('Response');
+			$this->lang =& class_loader('Lang');
 			
-			foreach($libraries as $library){
-				Loader::library($library);
-			}
-
-			foreach($functions as $function){
-				Loader::functions($function);
-			}
-
-			foreach($models as $model){
-				Loader::model($model);
-			}
-
+			$this->logger->debug('Setting the supported languages');
 			//add the supported languages ('key', 'display name')
-			$languages = Config::get('languages', null);
+			$languages = get_config('languages', null);
 			if(!empty($languages)){
 				foreach($languages as $k => $v){
 					$this->lang->addLang($k, $v);
 				}
 			}
-
-			///////////////////////// PATCH SESSION HANDLER /////////////////////////////////
+			unset($languages);
 			//set session config
-			static::$logger->debug('Setting PHP application session handler');
+			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
 		}
 
 
+		/**
+		 * This is a very useful method it's used to get the super object instance
+		 * @return Controller the super object instance
+		 */
 		public static function &get_instance(){
 			return self::$instance;
 		}

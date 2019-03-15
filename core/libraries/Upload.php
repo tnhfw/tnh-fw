@@ -37,15 +37,15 @@
     *    @package FileUpload
     *    @version 1.5
     */
-    class Upload
-    {
+    class Upload{
         /**
         *   Version
         *
         *   @since      1.5
         *   @version    1.0
         */
-        const VERSION = "1.5";
+        const VERSION = '1.5';
+
         /**
         *    Upload function name
         *    Remember:
@@ -58,7 +58,8 @@
         *    @version    1.0
         *    @var        mixex
         */
-        private $upload_function = "move_uploaded_file";
+        private $upload_function = 'move_uploaded_file';
+
         /**
         *    Array with the information obtained from the
         *    variable $_FILES or $HTTP_POST_FILES.
@@ -68,6 +69,7 @@
         *    @var        array
         */
         private $file_array    = array();
+
         /**
         *    If the file you are trying to upload already exists it will
         *    be overwritten if you set the variable to true.
@@ -77,6 +79,7 @@
         *    @var        boolean
         */
         private $overwrite_file = false;
+
         /**
         *    Input element
         *    Example:
@@ -89,6 +92,7 @@
         *    @var        string
         */
         private $input;
+
         /**
         *    Path output
         *
@@ -97,6 +101,7 @@
         *    @var        string
         */
         private $destination_directory;
+
         /**
         *    Output filename
         *
@@ -105,6 +110,7 @@
         *    @var        string
         */
         private $filename;
+
         /**
         *    Max file size
         *
@@ -113,6 +119,7 @@
         *    @var        float
         */
         private $max_file_size= 0.0;
+
         /**
         *    List of allowed mime types
         *
@@ -121,6 +128,7 @@
         *    @var        array
         */
         private $allowed_mime_types = array();
+
         /**
         *    Callbacks
         *
@@ -128,7 +136,8 @@
         *    @version    1.0
         *    @var        array
         */
-        private $callbacks = array("before" => null, "after" => null);
+        private $callbacks = array('before' => null, 'after' => null);
+
         /**
         *    File object
         *
@@ -136,7 +145,8 @@
         *    @version    1.0
         *    @var        object
         */
-        private    $file;
+        private $file;
+
         /**
         *    Helping mime types
         *
@@ -154,6 +164,7 @@
                 'image/gif',
             ),
             'document'  =>    array(
+                'application/pdf',
                 'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
@@ -178,27 +189,22 @@
             ),
         );
 
+        /**
+         * The upload erro message
+         * @var array
+         */
+        public $error_messages = array();
 
-        public $error_messages = array(
-            1 => "The uploaded file exceeds the upload_max_filesize directive in php.ini.",
-            2 => "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.",
-            3 => "The uploaded file was only partially uploaded.",
-            4 => "No file was uploaded.",
-            6 => "Missing a temporary folder.",
-            7 => "Failed to write file to disk.",
-            8 => "A PHP extension stopped the file upload.",
-            'accept_file_types' => "Filetype not allowed",
-            'file_uploads' => "File uploading option in disabled in php.ini",
-            'post_max_size' => "The uploaded file exceeds the post_max_size directive in php.ini",
-            'max_file_size' => "File is too big %s",
-            'max_number_of_files' => "Maximum number of files exceeded",
-            'required_and_no_file' => "No file was choosed. Please select one.",
-            'no_download_content' => "File could't be download."
-        );
-
+        /**
+         * The upload error message
+         * @var string
+         */
         protected $error = null;
 
-
+        /**
+         * The logger instance
+         * @var Log
+         */
         private $logger;
 
 
@@ -210,40 +216,49 @@
         *    @return    object
         *    @method    object    __construct
         */
-        public function __construct()
-        {
-
-            if(!class_exists('Log')){
-                //here the Log class is not yet loaded
-                //load it manually
-                require_once CORE_LIBRARY_PATH . 'Log.php';
-            }
-            $this->logger = new Log();
+        public function __construct(){
+            $this->logger =& class_loader('Log');
             $this->logger->setLogger('Library::Upload');
 
+            Loader::lang('file_upload');
+            $obj =& get_instance();
+
+            $this->error_messages = array(
+                'upload_err_ini_size' => $obj->lang->get('fu_upload_err_ini_size'),
+                'upload_err_form_size' => $obj->lang->get('fu_upload_err_form_size'),
+                'upload_err_partial' => $obj->lang->get('fu_upload_err_partial'),
+                'upload_err_no_file' => $obj->lang->get('fu_upload_err_no_file'),
+                'upload_err_no_tmp_dir' => $obj->lang->get('fu_upload_err_no_tmp_dir'),
+                'upload_err_cant_write' => $obj->lang->get('fu_upload_err_cant_write'),
+                'upload_err_extension' => $obj->lang->get('fu_upload_err_extension'),
+                'accept_file_types' => $obj->lang->get('fu_accept_file_types'),
+                'file_uploads' => $obj->lang->get('fu_file_uploads_disabled'),
+                'max_file_size' => $obj->lang->get('fu_max_file_size'),
+                'overwritten_not_allowed' => $obj->lang->get('fu_overwritten_not_allowed'),
+            );
 
             $this->file = array(
-                "status"                =>    false,    // True: success upload
-                "mime"                  =>    "",       // Empty string
-                "filename"              =>    "",       // Empty string
-                "original"              =>    "",       // Empty string
-                "size"                  =>    0,        // 0 Bytes
-                "sizeFormated"          =>    "0B",     // 0 Bytes
-                "destination"           =>    "./",     // Default: ./
-                "allowed_mime_types"    =>    array(),  // Allowed mime types
-                "error"                 =>    null,        // File error
+                'status'                =>    false,    // True: success upload
+                'mime'                  =>    '',       // Empty string
+                'filename'              =>    '',       // Empty string
+                'original'              =>    '',       // Empty string
+                'size'                  =>    0,        // 0 Bytes
+                'sizeFormated'          =>    '0B',     // 0 Bytes
+                'destination'           =>    './',     // Default: ./
+                'allowed_mime_types'    =>    array(),  // Allowed mime types
+                'error'                 =>    null,        // File error
             );
 
             // Change dir to current dir
             $this->destination_directory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 
             // Set file array
-            if (isset($_FILES) AND is_array($_FILES)) {
+            if (isset($_FILES) && is_array($_FILES)) {
                 $this->file_array = $_FILES;
-            } elseif (isset($HTTP_POST_FILES) AND is_array($HTTP_POST_FILES)) {
+            } elseif (isset($HTTP_POST_FILES) && is_array($HTTP_POST_FILES)) {
                 $this->file_array = $HTTP_POST_FILES;
             }
-            $this->logger->info('The upload file information is : ' .stringfy_vars($this->file_array));
+            $this->logger->info('The upload file information are : ' .stringfy_vars($this->file_array));
         }
         /**
         *    Set input.
@@ -259,7 +274,7 @@
         */
         public function setInput($input)
         {
-            if (!empty($input) AND (is_string($input) or is_numeric($input) )) {
+            if (!empty($input) && (is_string($input) || is_numeric($input) )) {
                 $this->input = $input;
             }
             return $this;
@@ -311,13 +326,13 @@
         public function setMaxFileSize($file_size)
         {
             $file_size = $this->sizeInBytes($file_size);
-            if (is_numeric($file_size) AND $file_size > -1) {
+            if (is_numeric($file_size) && $file_size > -1) {
                 // Get php config
-                $size = $this->sizeInBytes(ini_get('upload_max_filesize'));
+                $php_size = $this->sizeInBytes(ini_get('upload_max_filesize'));
                 // Calculate difference
-                if ($size < $file_size) {
+                if ($php_size < $file_size) {
+                    $this->logger->warning('The upload max file size you set [' .$file_size. '] is greather than the PHP configuration for upload max file size [' .$php_size. ']');
                 }
-
                 $this->max_file_size = $file_size;
             }
             return $this;
@@ -334,9 +349,8 @@
         public function setAllowedMimeTypes(array $mimes)
         {
             if (count($mimes) > 0) {
-                array_map(array($this , "setAllowMimeType"), $mimes);
+                array_map(array($this , 'setAllowMimeType'), $mimes);
             }
-
             return $this;
         }
         /**
@@ -351,7 +365,7 @@
         public function setCallbackInput($callback)
         {
             if (is_callable($callback, false)) {
-                $this->callbacks["input"] = $callback;
+                $this->callbacks['input'] = $callback;
             }
             return $this;
         }
@@ -367,7 +381,7 @@
         public function setCallbackOutput($callback)
         {
             if (is_callable($callback, false)) {
-                $this->callbacks["output"] = $callback;
+                $this->callbacks['output'] = $callback;
             }
             return $this;
         }
@@ -382,10 +396,10 @@
         */
         public function setAllowMimeType($mime)
         {
-            if (!empty($mime) AND is_string($mime)) {
-                if (preg_match("#^[-\w\+]+/[-\w\+]+$#", $mime)) {
+            if (!empty($mime) && is_string($mime)) {
+                if (preg_match('#^[-\w\+]+/[-\w\+]+$#', $mime)) {
                     $this->allowed_mime_types[] = strtolower($mime);
-                    $this->file["allowed_mime_types"][] = strtolower($mime);
+                    $this->file['allowed_mime_types'][] = strtolower($mime);
                 } else {
                     return $this->setMimeHelping($mime);
                 }
@@ -402,7 +416,7 @@
         */
         public function setMimeHelping($name)
         {
-            if (!empty($mime) and is_string($name)) {
+            if (!empty($name) && is_string($name)) {
                 if (array_key_exists($name, $this->mime_helping)) {
                     return $this->setAllowedMimeTypes($this->mime_helping[ $name ]);
                 }
@@ -423,7 +437,7 @@
         */
         public function setUploadFunction($function)
         {
-            if (!empty($function) and (is_array($function) or is_string($function) )) {
+            if (!empty($function) && (is_array($function) || is_string($function) )) {
                 if (is_callable( $function)) {
                     $this->upload_function = $function;
                 }
@@ -441,7 +455,7 @@
         public function clearAllowedMimeTypes()
         {
             $this->allowed_mime_types = array();
-            $this->file["allowed_mime_types"] = array();
+            $this->file['allowed_mime_types'] = array();
             return $this;
         }
         /**
@@ -454,10 +468,7 @@
         *    @return    boolean
         *    @method    boolean     setDestinationDirectory
         */
-        public function setDestinationDirectory(
-            $destination_directory,
-            $create_if_not_exist = false
-        ) {
+        public function setDestinationDirectory($destination_directory, $create_if_not_exist = false) {
             $destination_directory = realpath($destination_directory);
             if (substr($destination_directory, -1) != DIRECTORY_SEPARATOR) {
                 $destination_directory .= DIRECTORY_SEPARATOR;
@@ -480,6 +491,9 @@
                             chdir($destination_directory);
                         }
                     }
+                    else{
+                        $this->logger->warning('Can not create the upload directory [' .$destination_directory. ']');
+                    }
                 }
             }
             return $this;
@@ -496,7 +510,7 @@
         public function fileExists($file_destination)
         {
             if ($this->isFilename($file_destination)) {
-                return (file_exists($file_destination) and is_file($file_destination));
+                return (file_exists($file_destination) && is_file($file_destination));
             }
             return false;
         }
@@ -512,7 +526,7 @@
         public function dirExists($path)
         {
             if ($this->isDirpath($path)) {
-                return (file_exists($path) and is_dir($path));
+                return (file_exists($path) && is_dir($path));
             }
             return false;
         }
@@ -528,7 +542,7 @@
         public function isFilename($filename)
         {
             $filename = basename($filename);
-            return (!empty($filename) and (is_string( $filename) or is_numeric($filename)));
+            return (!empty($filename) && (is_string( $filename) || is_numeric($filename)));
         }
         /**
         *    Validate mime type with allowed mime types,
@@ -557,7 +571,7 @@
         */
         public function getStatus()
         {
-            return $this->file["status"];
+            return $this->file['status'];
         }
         /**
         *    Check valid path
@@ -570,8 +584,8 @@
         */
         public function isDirpath($path)
         {
-            if (!empty( $path) and (is_string( $path) or is_numeric($path) )) {
-                if (DIRECTORY_SEPARATOR == "/") {
+            if (!empty( $path) && (is_string( $path) || is_numeric($path) )) {
+                if (DIRECTORY_SEPARATOR == '/') {
                     return (preg_match( '/^[^*?"<>|:]*$/' , $path) == 1 );
                 } else {
                     return (preg_match( "/^[^*?\"<>|:]*$/" , substr($path,2) ) == 1);
@@ -608,7 +622,7 @@
         public function isUploaded(){
             return isset($this->file_array[$this->input])
             &&
-            is_uploaded_file($this->file_array[$this->input]["tmp_name"]);
+            is_uploaded_file($this->file_array[$this->input]['tmp_name']);
         }
         /**
         *    Upload file
@@ -618,13 +632,17 @@
         *    @return    boolean
         *    @method    boolean    save
         */
-        public function save()
-        {
+        public function save(){
+            //check if file upload is  allowed in the configuration
+            if(! ini_get('file_uploads')){
+                $this->setError($this->error_messages['file_uploads']);
+                return false;
+            }
             if (count($this->file_array) > 0) {
                 if (array_key_exists($this->input, $this->file_array)) {
                     // set original filename if not have a new name
                     if (empty($this->filename)) {
-                        $this->filename = $this->file_array[$this->input]["name"];
+                        $this->filename = $this->file_array[$this->input]['name'];
                     }
                     else{
                         // Replace %s for extension in filename
@@ -633,63 +651,72 @@
                         // Support unicode(utf-8) characters
                         // Example: "русские.jpeg" is valid; "Zhōngguó.jpeg" is valid; "Tønsberg.jpeg" is valid
                         $extension = preg_replace(
-                            "/^[\p{L}\d\s\-\_\.\(\)]*\.([\d\w]+)$/iu",
+                            '/^[\p{L}\d\s\-\_\.\(\)]*\.([\d\w]+)$/iu',
                             '$1',
-                            $this->file_array[$this->input]["name"]
+                            $this->file_array[$this->input]['name']
                         );
                         $this->filename = $this->filename.'.'.$extension;
                     }
 
-
                     // set file info
-                    $this->file["mime"]         = $this->file_array[$this->input]["type"];
-                    $this->file["tmp"]          = $this->file_array[$this->input]["tmp_name"];
-                    $this->file["original"]     = $this->file_array[$this->input]["name"];
-                    $this->file["size"]         = $this->file_array[$this->input]["size"];
-                    $this->file["sizeFormated"] = $this->sizeFormat($this->file["size"]);
-                    $this->file["destination"]  = $this->destination_directory . $this->filename;
-                    $this->file["filename"]     = $this->filename;
-                    $this->file["error"]        = $this->file_array[$this->input]["error"];
+                    $this->file['mime']         = $this->file_array[$this->input]['type'];
+                    $this->file['tmp']          = $this->file_array[$this->input]['tmp_name'];
+                    $this->file['original']     = $this->file_array[$this->input]['name'];
+                    $this->file['size']         = $this->file_array[$this->input]['size'];
+                    $this->file['sizeFormated'] = $this->sizeFormat($this->file['size']);
+                    $this->file['destination']  = $this->destination_directory . $this->filename;
+                    $this->file['filename']     = $this->filename;
+                    $this->file['error']        = $this->file_array[$this->input]['error'];
 
                     $this->logger->info('The upload file information to process is : ' .stringfy_vars($this->file));
-                    // Check if exists file
-                    if ($this->fileExists($this->destination_directory.$this->filename)) {
-                        // Check if overwrite file
-                        if ($this->overwrite_file === false) {
-                            $this->setError("You don't allow overwriting upload file exists");
-                            return false;
-                        }
-                    }
 
-                    // Execute input callback
-                    if (!empty( $this->callbacks["input"])) {
-                        call_user_func($this->callbacks["input"], (object)$this->file);
+                    //check for php upload error
+                    if(is_numeric($this->file['error']) && $this->file['error'] > 0){
+                        $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
+                        return false;
                     }
-
-                    if (!$this->checkMimeType($this->file["mime"])) {
+                    
+                    //check for mime type
+                    if (!$this->checkMimeType($this->file['mime'])) {
                         $this->setError($this->error_messages['accept_file_types']);
                         return false;
                     }
-                    // Check file size
+
+                     // Check file size
                     if ($this->max_file_size > 0) {
-                        if ($this->max_file_size < $this->file["size"]) {
+                        if ($this->max_file_size < $this->file['size']) {
                             $this->setError(sprintf($this->error_messages['max_file_size'], $this->sizeFormat($this->max_file_size)));
                             return false;
                         }
                     }
 
-                    $this->file["status"] = call_user_func_array(
+                    // Check if exists file
+                    if ($this->fileExists($this->destination_directory . $this->filename)) {
+                        // Check if overwrite file
+                        if ($this->overwrite_file === false) {
+                            $this->setError($this->error_messages['overwritten_not_allowed']);
+                            return false;
+                        }
+                    }
+
+                    // Execute input callback
+                    if (!empty( $this->callbacks['input'])) {
+                        call_user_func($this->callbacks['input'], (object)$this->file);
+                    }
+                   
+
+                    $this->file['status'] = call_user_func_array(
                         $this->upload_function, array(
-                            $this->file_array[$this->input]["tmp_name"],
+                            $this->file_array[$this->input]['tmp_name'],
                             $this->destination_directory . $this->filename
                         )
                     );
 
                     // Execute output callback
-                    if (!empty( $this->callbacks["output"])) {
-                        call_user_func($this->callbacks["output"], (object)$this->file);
+                    if (!empty( $this->callbacks['output'])) {
+                        call_user_func($this->callbacks['output'], (object)$this->file);
                     }
-                    return $this->file["status"];
+                    return $this->file['status'];
                 }
             }
         }
@@ -706,10 +733,15 @@
         */
         public function sizeFormat($size, $precision = 2)
         {
-            $base       = log($size) / log(1024);
-            $suffixes   = array('B', 'K', 'M', 'G');
-    		return round(pow(1024, $base-floor($base)), $precision) . $suffixes[floor($base)];
+            if($size > 0){
+                $base       = log($size) / log(1024);
+                $suffixes   = array('B', 'K', 'M', 'G', 'T');
+                return round(pow(1024, $base - floor($base)), $precision) . ( isset($suffixes[floor($base)]) ? $suffixes[floor($base)] : '');
+            }
+            return null;
         }
+
+        
         /**
         *    Convert human file size to bytes
         *
@@ -721,22 +753,66 @@
         */
         public function sizeInBytes($size)
         {
-            $unit = "B";
-            $units = array("B"=>0, "K"=>1, "M"=>2, "G"=>3);
+            $unit = 'B';
+            $units = array('B' => 0, 'K' => 1, 'M' => 2, 'G' => 3, 'T' => 4);
             $matches = array();
-            preg_match("/(?<size>[\d\.]+)\s*(?<unit>b|k|m|g)?/i", $size, $matches);
-            if (array_key_exists("unit", $matches)) {
-                $unit = strtoupper($matches["unit"]);
+            preg_match('/(?<size>[\d\.]+)\s*(?<unit>b|k|m|g|t)?/i', $size, $matches);
+            if (array_key_exists('unit', $matches)) {
+                $unit = strtoupper($matches['unit']);
             }
-            return (floatval($matches["size"]) * pow(1024, $units[$unit]) ) ;
+            return (floatval($matches['size']) * pow(1024, $units[$unit]) ) ;
         }
 
-
+        /**
+         * Get the upload error message
+         * @return string
+         */
         public function getError(){
             return $this->error;
         }
 
+        /**
+         * Set the upload error message
+         * @param string $message the upload error message to set
+         */
         public function setError($message){
-            show_error($message);
+            $this->error = $message;
+        }
+
+        /**
+         * Get the PHP upload error message for the given code
+         * @param  int $code the error code
+         * @return string the error message
+         */
+        private function getPhpUploadErrorMessageByCode($code){
+            if(! is_int($code) || $code <= 0){
+                return null;
+            }
+            switch ($code) {
+                case 1:
+                    return $this->error_messages['upload_err_ini_size'];
+                break;
+                case 2:
+                    return $this->error_messages['upload_err_form_size'];
+                break;
+                case 3:
+                    return $this->error_messages['upload_err_partial'];
+                break;
+                case 4:
+                    return $this->error_messages['upload_err_no_file'];
+                break;
+                case 6:
+                    return $this->error_messages['upload_err_no_tmp_dir'];
+                break;
+                case 7:
+                    return $this->error_messages['upload_err_cant_write'];
+                break;
+                case 8:
+                    return $this->error_messages['upload_err_extension'];
+                break;
+                default:
+                    return null;
+                break;
+            }
         }
     }

@@ -83,3 +83,11 @@
 	* before returning an error in case he does not find it.
 	*/
 	$autoload['functions'] = array();
+	
+	/**
+	* If you have system or personal language to load automatically, specify them in the following array.
+	* For example :
+	*
+	* 	$autoload['languages'] = array('lang1', 'lang2');
+	*/
+	$autoload['languages'] = array();
