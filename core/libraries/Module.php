@@ -100,6 +100,56 @@
 			}
 			return $configs;
 		}
+		
+		/**
+		 * Get the list of the custom autoload configuration from module if exists
+		 * @return array|boolean the autoload configurations list or false if no module contains the autoload configuration values
+		 */
+		public static function getModulesAutoloadConfig(){
+			$logger = static::getLogger();
+			if(! static::hasModule()){
+				$logger->info('No module was loaded skipping.');
+				return false;
+			}
+			$autoloads['libraries'] = array();
+			$autoloads['config'] = array();
+			$autoloads['models'] = array();
+			$autoloads['functions'] = array();
+			$autoloads['languages'] = array();
+			foreach (static::$list as $module) {
+				$file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
+				if(file_exists($file)){
+					require_once $file;
+					if(!empty($autoload) && is_array($autoload)){
+						//libraries autoload
+						if(!empty($autoload['libraries']) && is_array($autoload['libraries'])){
+							$autoloads['libraries'] = array_merge($autoloads['libraries'], $autoload['libraries']);
+						}
+						//config autoload
+						if(!empty($autoload['config']) && is_array($autoload['config'])){
+							$autoloads['config'] = array_merge($autoloads['config'], $autoload['config']);
+						}
+						//models autoload
+						if(!empty($autoload['models']) && is_array($autoload['models'])){
+							$autoloads['models'] = array_merge($autoloads['models'], $autoload['models']);
+						}
+						//functions autoload
+						if(!empty($autoload['functions']) && is_array($autoload['functions'])){
+							$autoloads['functions'] = array_merge($autoloads['functions'], $autoload['functions']);
+						}
+						//languages autoload
+						if(!empty($autoload['languages']) && is_array($autoload['languages'])){
+							$autoloads['languages'] = array_merge($autoloads['languages'], $autoload['languages']);
+						}
+						unset($autoload);
+					}
+					else{
+						show_error('No autoload configuration found in autoload.php for module [' .$module. ']');
+					}
+				}
+			}
+			return $autoloads;
+		}
 
 		/**
 		 * Get the list of the custom routes configuration from module if exists

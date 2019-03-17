@@ -41,52 +41,79 @@
 			//add the resources already loaded during application bootstrap
 			//in the list to prevent duplicate or loading the resources again.
 			static::$loaded = class_loaded();
-
+			$autoloads = array();
 			//loading of the resources in autoload.php configuration file
 			if(file_exists(CONFIG_PATH . 'autoload.php')){
 				require_once CONFIG_PATH . 'autoload.php';
 				if(!empty($autoload) && is_array($autoload)){
-					//libraries autoload
-					if(!empty($autoload['libraries'])){
-						foreach($autoload['libraries'] as $library){
-							Loader::library($library);
-						}
-					}
-					//config autoload
-					if(!empty($autoload['config'])){
-						foreach($autoload['config'] as $c){
-							Loader::config($c);
-						}
-					}
-					//models autoload
-					if(!empty($autoload['models'])){
-						foreach($autoload['models'] as $model){
-							Loader::model($model);
-						}
-					}
-					//functions autoload
-					if(!empty($autoload['functions'])){
-						foreach($autoload['functions'] as $function){
-							Loader::functions($function);
-						}
-					}
-					//functions autoload
-					if(!empty($autoload['languages'])){
-						foreach($autoload['languages'] as $language){
-							Loader::lang($language);
-						}
-					}
+					$autoloads = $autoload;
+					unset($autoload);
 				}
 				else{
 					show_error('No autoload configuration found in autoload.php');
 				}
 			}
+			//loading autoload configuration for module
+			$modulesAutoloads = Module::getModulesAutoloadConfig();
+			if($modulesAutoloads && is_array($modulesAutoloads)){
+				//libraries autoload
+				if(!empty($modulesAutoloads['libraries']) && is_array($modulesAutoloads['libraries'])){
+					$autoloads['libraries'] = array_merge($autoloads['libraries'], $modulesAutoloads['libraries']);
+				}
+				//config autoload
+				if(!empty($modulesAutoloads['config']) && is_array($modulesAutoloads['config'])){
+					$autoloads['config'] = array_merge($autoloads['config'], $modulesAutoloads['config']);
+				}
+				//models autoload
+				if(!empty($modulesAutoloads['models']) && is_array($modulesAutoloads['models'])){
+					$autoloads['models'] = array_merge($autoloads['models'], $modulesAutoloads['models']);
+				}
+				//functions autoload
+				if(!empty($modulesAutoloads['functions']) && is_array($modulesAutoloads['functions'])){
+					$autoloads['functions'] = array_merge($autoloads['functions'], $modulesAutoloads['functions']);
+				}
+				//languages autoload
+				if(!empty($modulesAutoloads['languages']) && is_array($modulesAutoloads['languages'])){
+					$autoloads['languages'] = array_merge($autoloads['languages'], $modulesAutoloads['languages']);
+				}
+			}
+			//libraries autoload
+			if(!empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
+				foreach($autoloads['libraries'] as $library){
+					Loader::library($library);
+				}
+			}
+			//config autoload
+			if(!empty($autoloads['config']) && is_array($autoloads['config'])){
+				foreach($autoloads['config'] as $c){
+					Loader::config($c);
+				}
+			}
+			//before load models check if database library is loaded and then load model library
 			//if Database is loaded load the required library
 			if(isset(static::$loaded['database'])){
 				//Model
 				require_once CORE_LIBRARY_PATH . 'Model.php';
 				//track of loaded class
 				class_loaded('Model');
+			}
+			//models autoload
+			if(!empty($autoloads['models']) && is_array($autoloads['models'])){
+				foreach($autoloads['models'] as $model){
+					Loader::model($model);
+				}
+			}
+			//functions autoload
+			if(!empty($autoloads['functions']) && is_array($autoloads['functions'])){
+				foreach($autoloads['functions'] as $function){
+					Loader::functions($function);
+				}
+			}
+			//languages autoload
+			if(!empty($autoloads['languages']) && is_array($autoloads['languages'])){
+				foreach($autoloads['languages'] as $language){
+					Loader::lang($language);
+				}
 			}
 		}
 
