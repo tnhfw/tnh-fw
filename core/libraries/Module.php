@@ -3,7 +3,7 @@
 	/**
      * TNH Framework
      *
-     * A simple PHP framework created using the concept of codeigniter with bootstrap twitter
+     * A simple PHP framework using HMVC architecture
      *
      * This content is released under the GNU GPL License (GPL)
      *
