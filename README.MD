@@ -1,5 +1,5 @@
 ## TNH FRAMEWORK 1.0.0-dev
-**A simple PHP framework created using the concept of codeigniter using the default design: Bootstrap framework 3.3.6**
+**A simple PHP framework using HMVC architecture**
 ## Requirements
 
  - Any web server **(Apache, nginx, lighttp, etc.)**
@@ -9,11 +9,3 @@
  - Downlaod the framework using the following link [https://github.com/nguereza-tony/tnh-fw/archive/1.0.0-dev.zip](https://github.com/nguereza-tony/tnh-fw/archive/1.0.0-dev.zip)
  - Extract the downloaded file in your web directory (**www, htdocs, web, etc.)** for example **/www/tnh-fw** or your application name **/www/my-apps**
  - Now launch your browser with your url like **http://localhost/tnh-fw** or **http://localhost/my-apps** change localhost with your real IP address or domain name if your are not in local.
- - 
-## Configuration
-
-
-## Best practice for security
-
-
-## Troubleshooting
