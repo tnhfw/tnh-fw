@@ -101,6 +101,7 @@
 			return $configs;
 		}
 		
+		
 		/**
 		 * Get the list of the custom autoload configuration from module if exists
 		 * @return array|boolean the autoload configurations list or false if no module contains the autoload configuration values

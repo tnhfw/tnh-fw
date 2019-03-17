@@ -77,6 +77,7 @@
 					$autoloads['languages'] = array_merge($autoloads['languages'], $modulesAutoloads['languages']);
 				}
 			}
+			
 			//libraries autoload
 			if(!empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
 				foreach($autoloads['libraries'] as $library){
