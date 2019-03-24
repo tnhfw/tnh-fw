@@ -190,7 +190,7 @@
         );
 
         /**
-         * The upload erro message
+         * The upload error message
          * @var array
          */
         public $error_messages = array();

@@ -260,7 +260,7 @@
 				$uriList = str_ireplace($pattern, $replace, $uriList);
 				// Check for an existant matching URI
 				if (preg_match("#^$uriList$#", $uri, $args)) {
-					$this->logger->info('Route found for request URI [' .$uri. '] using the predefined configuration');
+					$this->logger->info('Route found for request URI [' .$uri. '] using the predefined configuration [' .$this->pattern[$index]. '] --> [' .$this->callback[$index]. ']');
 					array_shift($args);
 					//check if this contains an module
 					$moduleControllerMethod = explode('#', $this->callback[$index]);
@@ -314,7 +314,7 @@
 							$this->method = $segment[0];
 							array_shift($segment);
 						}
-						//arg
+						//args
 						$this->args = $segment;
 					}
 					else{
@@ -346,14 +346,17 @@
 						}
 						else{
 							$this->logger->info('The current request information is not found in the module list');
+							//controller
 							if(isset($segment[0])){
 								$this->controller = $segment[0];
 								array_shift($segment);
 							}
+							//method
 							if(isset($segment[0])){
 								$this->method = $segment[0];
 								array_shift($segment);
 							}
+							//args
 							$this->args = $segment;
 						}
 					}
@@ -378,13 +381,6 @@
 			$this->logger->info('The routing information are: module [' .$this->getModule(). '], controller [' .$controller. '], method [' .$this->getMethod(). '], args [' .stringfy_vars($this->args). ']');
 			$classFilePath = $this->getControllerPath();
 			$this->logger->debug('Loading controller [' . $controller . '], the file path is [' .$classFilePath. ']...');
-			$this->logger->debug('Check if the controller [' . $controller . '] is in module');
-			if($this->getModule() && $classFilePath){
-				$this->logger->info('Found controller [' . $controller . '] in module [' .$this->getModule(). '], the file path is [' .$classFilePath. '] we will used it');
-			}
-			else{
-				$this->logger->info('Cannot find controller [' . $controller . '] in module [' .$this->getModule(). ']');
-			}
 			$ben->mark('ROUTING_PROCESS_END');
 			$e404 = false;
 			if(file_exists($classFilePath)){
@@ -402,11 +398,7 @@
 					}
 					else{
 						if($this->getModule()){
-							$this->logger->info('The controller [' .$controller. '] belongs in the module [' .$this->getModule(). ']');
 							$c->module_name = $this->getModule();
-						}
-						else{
-							$this->logger->info('The controller [' .$controller. '] not belongs in the module list skipping');
 						}
 						$this->logger->info('Routing data is set correctly now GO!');
 						call_user_func_array(array($c, $m), $this->getArgs());
