@@ -99,7 +99,7 @@
 		/**
 		 * Construct the new Router instance
 		 */
-		function __construct(){
+		public function __construct(){
 			$this->logger =& class_loader('Log');
 	        $this->logger->setLogger('Library::Router');
 	        $routes_path = CONFIG_PATH . 'routes.php';
