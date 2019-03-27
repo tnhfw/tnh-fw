@@ -47,8 +47,7 @@
 	/**
 	* The path to the directory of your cache files.
 	*
-	* This feature is available currently for database.
-	* You can help us do it if you are nice or want to see the developed framework.
+	* This feature is available currently for database and views.
 	*/
 	define('CACHE_PATH', ROOT_PATH . 'cache' . DS);
 
