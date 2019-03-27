@@ -54,7 +54,7 @@
 	/**
 	 *  The date of publication or release of the framework
 	 */
-	define('TNH_BUILD_DATE', '05/02/2017');
+	define('TNH_RELEASE_DATE', '05/02/2017');
 
 	/**
 	 *  The author of the framework, the person who developed the framework.
