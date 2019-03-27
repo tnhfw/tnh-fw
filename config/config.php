@@ -25,8 +25,8 @@
 	
 	/**
 	* This file contains the main configuration of your application
-	* web address, front-end controller, error logging level, 
-	* number of data to be displayed per page, session parameters, etc.
+	* web address, front controller, error logging, session parameters, CSRF, Cache, 
+	* Whitelist IP access, etc.
 	*/
 	
 	/*+---------------------------------------------------------------+
@@ -50,7 +50,6 @@
 	*/
 	$config['base_url'] = '';
 	
-
 	/**
 	* The front controller
 	*
@@ -92,7 +91,6 @@
 	 * )
 	 */
 	$config['languages'] = array('en' => 'english');
-
 
 	/**
 	 * the default language to use if can not find the client language
@@ -144,7 +142,6 @@
 	* website.
 	*/	
 	$config['log_save_path'] = '';
-	
 	
 	
 	/*+---------------------------------------------------------------+
@@ -255,6 +252,12 @@
 	 */
 	$config['csrf_expire'] = 120;
 	
+	
+	/*+---------------------------------------------------------------+
+	* Cache configuration section
+	+------------------------------------------------------------------+
+	*/
+	
 	/**
 	 * Cache status
 	 *
@@ -277,13 +280,12 @@
 	* currently the possible values are "FileCache".
 	*/
 	$config['cache_handler'] = 'FileCache';
-
+	
 	
 	/*+---------------------------------------------------------------+
 	* White list IP access configuration section
 	+------------------------------------------------------------------+
 	*/
-	
 	
 	/**
 	 * White list ip status
@@ -292,11 +294,10 @@
 	 */
 	$config['white_list_ip_enable'] = false;
 	
-	
 	/**
 	 * White listed ip addresses
 	 *
-	 * add the allowed ip address to access to this application.
+	 * add the allowed ip address list to access this application.
 	 * You can use the wildcard address
 	 * @example: '18.90.09.*', '10.*.*.*', '*'
 	 * 
