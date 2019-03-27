@@ -92,26 +92,6 @@
 	
 
 	$LOGGER->debug('Begin to load the required resources');
-	$BENCHMARK->mark('LOADING_REQUIRED_HELPERS_START');
-	
-	/**
-	* Loading "string" helper that contains most of the character 
-	* string processing functions : attributes_to_string, get_random_string, etc.
-	*/
-	require_once CORE_FUNCTIONS_PATH . 'function_string.php';
-	
-	/**
-	* Helper loader "url" which contains most of the URL 
-	* processing functions: is_https, is_url, etc.
-	*/
-	require_once CORE_FUNCTIONS_PATH . 'function_url.php';
-
-	/**
-	* Helper loader "lang" which the function for lang 
-	*/
-	require_once CORE_FUNCTIONS_PATH . 'function_lang.php';
-
-	$BENCHMARK->mark('LOADING_REQUIRED_HELPERS_END');
 
 	/**
 	* Event 

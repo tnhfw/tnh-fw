@@ -279,6 +279,18 @@
 	}
 	
 	/**
+	 *  This function is used to check the URL format of the given string argument. 
+	 *  The address is valid if the protocol is http, https, ftp, ftps, etc.
+	 *
+	 *  @param string $url the URL address to check
+	 *  
+	 *  @return boolean true if is a valid URL address or false.
+	 */
+	function is_url($url){
+		return preg_match('/^(http|https|ftp|ftps):\/\/(.*)/', $url);
+	}
+	
+	/**
 	 *  Function defined for handling PHP exception error message, 
 	 *  it displays an error message using the function "show_error"
 	 *  
