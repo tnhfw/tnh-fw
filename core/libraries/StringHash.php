@@ -24,14 +24,15 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class PasswordHash{
+	class StringHash{
 		 //blowfish
 		private static $algo = '$2a';
+		
 		// cost parameter
 		private static $cost = '$10';
 
 		/**
-		 * Get the unique salt for password hash
+		 * Get the unique salt for the string hash
 		 * @return string the unique generated salt
 		 */
 		private static function uniqueSalt() {
@@ -39,25 +40,25 @@
 		}
 
 		/**
-		 * Hash the given password
-		 * @param  string $password the plain password text to be hashed
-		 * @return string           the hashed password
+		 * Hash the given string
+		 * @param  string $value the plain string text to be hashed
+		 * @return string           the hashed string
 		 */
-		public static function hash($password) {
-			return crypt($password, self::$algo .
+		public static function hash($value) {
+			return crypt($value, self::$algo .
 					self::$cost .
 					'$' . self::uniqueSalt());
 		}
 
 		/**
-		 * Check if the hash and plain password is valid
-		 * @param  string $hash     the hashed password
-		 * @param  string $password the plain text password
+		 * Check if the hash and plain string is valid
+		 * @param  string $hash     the hashed string
+		 * @param  string $plain the plain text
 		 * @return boolean  true if is valid or false if not
 		 */
-		public static function check($hash, $password) {
+		public static function check($hash, $plain) {
 			$full_salt = substr($hash, 0, 29);
-			$new_hash = crypt($password, $full_salt);
-			return ($hash == $new_hash);
+			$new_hash = crypt($plain, $full_salt);
+			return ($hash === $new_hash);
 		}	
 	}

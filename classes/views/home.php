@@ -69,7 +69,7 @@
 					<div class = "panel-body">
 						<h4>Version : <b><?php echo TNH_VERSION;?></b></h4>
 						<h4>Required PHP version : <b>PHP >= <?php echo TNH_REQUIRED_PHP_MIN_VERSION;?>, PHP <= <?php echo TNH_REQUIRED_PHP_MAX_VERSION;?></b></h4>
-						<h4>Build date : <b><?php echo TNH_BUILD_DATE;?></b></h4>
+						<h4>Build date : <b><?php echo TNH_RELEASE_DATE;?></b></h4>
 						<h4>Author : <b><?php echo TNH_AUTHOR;?></b></h4>
 						<h4>Author E-mail : <b><?php echo TNH_AUTHOR_EMAIL;?></b></h4>
 						<h4>Loaded files : (<?php echo count(get_included_files());?> files)</h4>
