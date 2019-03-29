@@ -398,7 +398,8 @@
 				$str .= $key.' = "'.$value.'" ';
 			}
 		}
-		return $str;
+		//remove the space after using rtrim()
+		return rtrim($str);
 	}
 
 
