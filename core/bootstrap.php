@@ -90,7 +90,16 @@
 	 */
 	register_shutdown_function('php_shudown_handler');
 	
-
+	//if user have some composer package
+	$LOGGER->debug('Check for composer autoload');
+	if(file_exists(VENDOR_PATH . 'autoload.php')){
+		$LOGGER->info('The composer autoload file exists include it');
+		require_once VENDOR_PATH . 'autoload.php';
+	}
+	else{
+		$LOGGER->info('The composer autoload file does not exist');
+	}
+	
 	$LOGGER->debug('Begin to load the required resources');
 
 	/**
