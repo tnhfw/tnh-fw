@@ -78,12 +78,6 @@
 		protected $routes = array();
 
 		/**
-		 * The request object
-		 * @var object
-		 */
-		protected $request = null;
-
-		/**
 		 * The segments array for the current request
 		 * @var array
 		 */
@@ -131,14 +125,14 @@
 			}
 			$this->logger->info('The routes configuration are listed below: ' . stringfy_vars($this->routes));
 
-			$this->request =& class_loader('Request');
 			foreach($this->routes as $pattern => $callback){
 				$this->add($pattern, $callback);
 			}
 			//for performance remove all configuration routes array
 			$this->routes = array();
-
-			$uri = $this->getRequest()->requestUri();
+			
+			//here use directly the variable $_SERVER
+			$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] :'';
 			$this->logger->debug('Check if URL suffix is enabled in the configuration');
 			//remove url suffix from the request URI
 			if($suffix = get_config('url_suffix')){
@@ -211,14 +205,6 @@
 		}
 
 		/**
-		 * Get the request instance
-		 * @return object
-		 */
-		public function getRequest(){
-			return $this->request;
-		}
-
-		/**
 		 * Get the URL segments array
 		 * @return array
 		 */
@@ -240,14 +226,14 @@
 				array_shift($segment);
 				$this->segments = $segment;
 			}
-			$this->logger->debug('Check if the front controller is enabled in the configuration');
-			if(isset($segment[0]) && $segment[0] == get_config('front_controller')){
-				$this->logger->info('The front controller is enabled in the configuration, the value is [' .$segment[0]. ']' );
+			$this->logger->debug('Check if the request URI contains the front controller');
+			if(isset($segment[0]) && $segment[0] == SELF){
+				$this->logger->info('The request URI contains the front controller');
 				array_shift($segment);
 				$this->segments = $segment;
 			}
 			else{
-				$this->logger->info('The front controller is not enabled in the configuration' );
+				$this->logger->info('The The request URI does not contain the front controller');
 			}
 			$uri = implode('/', $segment);
 			$this->logger->info('The final Request URI is [' .$uri. ']' );

@@ -291,6 +291,18 @@
 	}
 	
 	/**
+	 *  Function defined to load controller
+	 *  
+	 *  @param string $controllerClass the controller class name to be loaded
+	 *  
+	 */
+	function autoload_controller($controllerClass){
+		if(file_exists($path = APPS_CONTROLLER_PATH . $controllerClass . '.php')){
+			require_once $path;
+		}
+	}
+	
+	/**
 	 *  Function defined for handling PHP exception error message, 
 	 *  it displays an error message using the function "show_error"
 	 *  

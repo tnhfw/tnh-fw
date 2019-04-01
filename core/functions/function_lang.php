@@ -33,8 +33,7 @@
 		 * @return string  the language value
 		 */
 		function __($key, $default = 'LANGUAGE_ERROR'){
-			$obj = & get_instance();
-			return $obj->lang->get($key, $default);
+			return get_instance()->lang->get($key, $default);
 		}
 
 	}

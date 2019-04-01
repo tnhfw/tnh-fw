@@ -49,10 +49,7 @@
 
 			require_once VENDOR_PATH.'dompdf/dompdf_config.inc.php';
 
-			$dompdf = new Dompdf();
-			$obj = & get_instance();
-			$obj->dompdf = $dompdf;
-			$this->dompdf = $dompdf;
+			$this->dompdf = new Dompdf();
 		}
 
 		/**
@@ -65,7 +62,7 @@
 		 * @return string|void               if $stream is true send PDF document to browser for download, else return the generated PDF
 		 * content like to join in Email attachment of for other purpose use.
 		 */
-		public function generate($html, $filename = '', $stream = true, $paper = 'A4', $orientation = 'portrait'){
+		public function generate($html, $filename, $stream = true, $paper = 'A4', $orientation = 'portrait'){
 			$this->logger->info('Generating of PDF document: filename [' .$filename. '], stream [' .($stream ? 'TRUE':'FALSE'). '], paper [' .$paper. '], orientation [' .$orientation. ']');
 			$this->dompdf->load_html($html);
 			$this->dompdf->set_paper($paper, $orientation);
@@ -76,6 +73,15 @@
 			else{
 				return $this->dompdf->output();
 			}
+		}
+		
+		/**
+		* Return the instance of Dompdf
+		*
+		* @return object the dompdf instance
+		*/
+		public function getDompdf(){
+			return $this->dompdf;
 		}
 		
 	}

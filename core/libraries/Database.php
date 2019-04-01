@@ -101,10 +101,11 @@
     			  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
     			}
     			catch (PDOException $e){
+				  $this->logger->fatal($e->getMessage());
     			  show_error('Cannot connect to Database.');
     			}
     			static::$config = $config;
-          $this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
+				$this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
     		}
     	}
     	else{

@@ -151,12 +151,9 @@
 	$LOGGER->info('Base Controller loaded successfully');
 
 	/*
-		check if application containing the user defined base controller
-	 */
-	if(file_exists(APPS_CONTROLLER_PATH . 'BaseController.php')){
-		require_once APPS_CONTROLLER_PATH . 'BaseController.php';
-	}
-
+	  Register controller autoload function
+	*/
+	 spl_autoload_register('autoload_controller');
 
 	if(get_config('cache_enable', false)){
 		/**

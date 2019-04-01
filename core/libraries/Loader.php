@@ -95,8 +95,6 @@
 			if(isset(static::$loaded['database'])){
 				//Model
 				require_once CORE_LIBRARY_PATH . 'Model.php';
-				//track of loaded class
-				class_loaded('Model');
 			}
 			//models autoload
 			if(!empty($autoloads['models']) && is_array($autoloads['models'])){

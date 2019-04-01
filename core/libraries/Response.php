@@ -133,8 +133,10 @@
 		 * @return void|string          if $return is true will return the view content otherwise
 		 * will display the view content.
 		 */
-		public function render($view, array $data = array(), $return = false){
+		public function render($view, $data = array(), $return = false){
 			$logger = static::getLogger();
+			//convert data to an array
+			$data = ! is_array($data) ? (array) $data : $data;
 			$view = str_ireplace('.php', '', $view);
 			$view = trim($view, '/\\');
 			$viewFile = $view . '.php';
