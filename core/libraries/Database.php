@@ -63,56 +63,55 @@
 
       	if(file_exists(CONFIG_PATH . 'database.php')){
           //here don't use require_once because somewhere user can create database instance directly
-      		require CONFIG_PATH . 'database.php';
+      	  require CONFIG_PATH . 'database.php';
           if(empty($db) || !is_array($db)){
       			show_error('No database configuration found in database.php');
-      		}
-      		else{
-                if(!empty($overwrite_config)){
-                  $db = array_merge($db, $overwrite_config);
-                }
-      			    $config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
-      			    $config['username']  = isset($db['username']) ? $db['username'] : 'root';
-              	$config['password']  = isset($db['password']) ? $db['password'] : '';
-              	$config['database']  = isset($db['database']) ? $db['database'] : '';
-              	$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
-              	$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
-              	$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
-              	$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
-                $config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
-              	$this->prefix        = $config['prefix'];
-              	$this->database = $config['database'];
-      	        $dsn = '';
-      	        if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
-      			      $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
-      					. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
-      					. 'dbname=' . $config['database'];
-      			}
-      			elseif ($config['driver'] == 'sqlite'){
-    			  $dsn = 'sqlite:' . $config['database'];
-    			}
-    			elseif($config['driver'] == 'oracle'){
-    			  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
-    			}
-    			try{
-    			  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
-    			  $this->pdo->exec("SET NAMES '".$config['charset']."' COLLATE '".$config['collation']."'");
-    			  $this->pdo->exec("SET CHARACTER SET '".$config['charset']."'");
-    			  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-    			}
-    			catch (PDOException $e){
+		  }
+		  else{
+				if(!empty($overwrite_config)){
+				  $db = array_merge($db, $overwrite_config);
+				}
+				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
+				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
+				$config['password']  = isset($db['password']) ? $db['password'] : '';
+				$config['database']  = isset($db['database']) ? $db['database'] : '';
+				$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
+				$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
+				$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
+				$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
+				$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
+				$this->prefix        = $config['prefix'];
+				$this->database = $config['database'];
+				$dsn = '';
+				if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
+					  $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
+						. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
+						. 'dbname=' . $config['database'];
+				}
+				else if ($config['driver'] == 'sqlite'){
+				  $dsn = 'sqlite:' . $config['database'];
+				}
+				else if($config['driver'] == 'oracle'){
+				  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
+				}
+				try{
+				  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
+				  $this->pdo->exec("SET NAMES '".$config['charset']."' COLLATE '".$config['collation']."'");
+				  $this->pdo->exec("SET CHARACTER SET '".$config['charset']."'");
+				  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+				}
+				catch (PDOException $e){
 				  $this->logger->fatal($e->getMessage());
-    			  show_error('Cannot connect to Database.');
-    			}
-    			static::$config = $config;
+				  show_error('Cannot connect to Database.');
+				}
+				static::$config = $config;
 				$this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
-    		}
+			}
     	}
     	else{
     		show_error('Unable to find database configuration');
     	}
     }
-
 
     public function from($table){
       if(is_array($table))
