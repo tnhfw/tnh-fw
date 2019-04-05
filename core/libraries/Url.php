@@ -75,9 +75,8 @@
 		 * @return string
 		 */
 		public static function current(){
-			$obj = & get_instance();
 			$current = '/';
-			$requestUri = $obj->request->requestUri();
+			$requestUri = get_instance()->request->requestUri();
 			if($requestUri){
 				$current = $requestUri;
 			}
@@ -128,7 +127,7 @@
 				$domain = $obj->request->server('SERVER_ADDR');
 			}
 			if($port && (is_https() && $port != 443 || !is_https() && $port != 80)){
-				//some server use SSL but the port doesn't equal 443 sometime is 80 if is the case put the port at this en
+				//some server use SSL but the port doesn't equal 443 sometime is 80 if is the case put the port at this end
 				//of the domain like https://my.domain.com:787
 				if(is_https() && $port != 80){
 					$domain .= ':'.$port;
@@ -142,7 +141,6 @@
 		 * @return string
 		 */
 		public static function queryString(){
-			$obj = & get_instance();
-			return $obj->request->server('QUERY_STRING');
+			return get_instance()->request->server('QUERY_STRING');
 		}
 	}

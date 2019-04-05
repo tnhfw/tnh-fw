@@ -301,7 +301,7 @@
             if ($data !== FALSE)
             {
                 $result = $this->_database->in($this->primary_key, $primary_values)
-                                   -> from($this->_table)
+                                   ->from($this->_table)
                                    ->update($data);
                 $this->trigger('after_update', array($data, $result));
                 return $result;
@@ -340,7 +340,7 @@
         public function update_all($data)
         {
             $data = $this->trigger('before_update', $data);
-            $result = $this->_database->from($this->_table)-> update($data);
+            $result = $this->_database->from($this->_table)->update($data);
             $this->trigger('after_update', array($data, $result));
             return $result;
         }
@@ -498,7 +498,7 @@
         /**
          * Retrieve and generate a form_dropdown friendly array
          */
-        function dropdown()
+        public function dropdown()
         {
             $args = func_get_args();
             if(count($args) == 2)
@@ -754,7 +754,7 @@
          * (which looks for an instance variable $this->event_name), an array of
          * parameters to pass through and an optional 'last in interation' boolean
          */
-        public function trigger($event, $data = FALSE, $last = TRUE)
+        protected function trigger($event, $data = FALSE, $last = TRUE)
         {
             if (isset($this->$event) && is_array($this->$event))
             {
@@ -776,7 +776,7 @@
         /**
          * Run validation on the passed data
          */
-        public function validate(array $data)
+        protected function validate(array $data)
         {
             if($this->skip_validation)
             {
@@ -880,6 +880,9 @@
             return $this->_temporary_return_type == 'array' ? $method . '_array' : $method;
         }
 
+		/**
+			Shortcut to controller
+		*/
         public function __get($key){
     		return get_instance()->{$key};
     	}

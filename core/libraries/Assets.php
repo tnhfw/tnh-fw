@@ -57,6 +57,36 @@
 
 
 		/**
+		 *  Generate the link of the assets file.
+		 *  
+		 *  Generates the absolute link of a file inside ASSETS_PATH folder.
+		 *  For example :
+		 *  	echo Assets::path('foo/bar/css/style.css'); => http://mysite.com/assets/foo/bar/css/style.css
+		 *  Note:
+		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+		 *  
+		 *  @param $asset the name of the assets file path with the extension.
+		 *  @return string|null the absolute path of the assets file, if it exists otherwise returns null if the file does not exist.
+		 */
+		public static function path($asset){
+			$logger = static::getLogger();
+			/*
+			* if the file name contains the ".css" extension, replace it with 
+			* an empty string for better processing.
+			*/
+			$path = ASSETS_PATH . $asset;
+			
+			$logger->debug('Including the Assets file [' .$path. ']');
+			//Check if the file exists
+			if(file_exists($path)){
+				$logger->info('Assets file [' .$path. '] included successfully');
+				return Url::base_url($path);
+			}
+			$logger->warning('Assets file [' .$path. '] does not exist');
+			return null;
+		}
+		
+		/**
 		 *  Generate the link of the css file.
 		 *  
 		 *  Generates the absolute link of a file containing the CSS style.
