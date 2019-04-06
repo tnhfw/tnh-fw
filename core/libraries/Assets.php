@@ -70,10 +70,7 @@
 		 */
 		public static function path($asset){
 			$logger = static::getLogger();
-			/*
-			* if the file name contains the ".css" extension, replace it with 
-			* an empty string for better processing.
-			*/
+			
 			$path = ASSETS_PATH . $asset;
 			
 			$logger->debug('Including the Assets file [' .$path. ']');
