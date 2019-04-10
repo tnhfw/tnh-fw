@@ -50,7 +50,7 @@
          * connection. This allows individual models to use different DBs
          * without overwriting CI's global $this->db connection.
          */
-        public $_database;
+        protected $_database;
 
         /**
          * This model's default primary key or unique identifier.
@@ -229,7 +229,7 @@
          * Insert a new row into the table. $data should be an associative array
          * of data to be inserted. Returns newly created ID.
          */
-        public function insert($data, $skip_validation = FALSE)
+        public function insert($data = array(), $skip_validation = FALSE, $escape = true)
         {
             if ($skip_validation === FALSE)
             {
@@ -239,7 +239,7 @@
             if ($data !== FALSE)
             {
                 $data = $this->trigger('before_create', $data);
-                $this->_database->from($this->_table)->insert($data);
+                $this->_database->from($this->_table)->insert($data, $escape);
                 $insert_id = $this->_database->insertId();
                 $this->trigger('after_create', $insert_id);
                 return $insert_id;
@@ -253,12 +253,12 @@
         /**
          * Insert multiple rows into the table. Returns an array of multiple IDs.
          */
-        public function insert_many($data, $skip_validation = FALSE)
+        public function insert_many($data = array(), $skip_validation = FALSE, $escape = true)
         {
             $ids = array();
             foreach ($data as $key => $row)
             {
-                $ids[] = $this->insert($row, $skip_validation, ($key == count($data) - 1));
+                $ids[] = $this->insert($row, $skip_validation, $escape);
             }
             return $ids;
         }
@@ -266,7 +266,7 @@
         /**
          * Updated a record based on the primary value.
          */
-        public function update($primary_value, $data, $skip_validation = FALSE)
+        public function update($primary_value, $data = array(), $skip_validation = FALSE, $escape = true)
         {
             $data = $this->trigger('before_update', $data);
             if ($skip_validation === FALSE)
@@ -278,7 +278,7 @@
             {
                 $result = $this->_database->where($this->primary_key, $primary_value)
                                    ->from($this->_table)
-                                   ->update($data);
+                                   ->update($data, $escape);
                 $this->trigger('after_update', array($data, $result));
                 return $result;
             }
@@ -291,7 +291,7 @@
         /**
          * Update many records, based on an array of primary values.
          */
-        public function update_many($primary_values, $data, $skip_validation = FALSE)
+        public function update_many($primary_values, $data = array(), $skip_validation = FALSE, $escape)
         {
             $data = $this->trigger('before_update', $data);
             if ($skip_validation === FALSE)
@@ -302,7 +302,7 @@
             {
                 $result = $this->_database->in($this->primary_key, $primary_values)
                                    ->from($this->_table)
-                                   ->update($data);
+                                   ->update($data, $escape);
                 $this->trigger('after_update', array($data, $result));
                 return $result;
             }
@@ -318,8 +318,17 @@
         public function update_by()
         {
             $args = func_get_args();
-            $data = array_pop($args);
-
+            $data = array();
+            if(count($args) == 2){
+                if(is_array($args[1])){
+                    $data = array_pop($args);
+                }
+            }
+            else if(count($args) == 3){
+                if(is_array($args[2])){
+                    $data = array_pop($args);
+                }
+            }
             $data = $this->trigger('before_update', $data);
             if ($this->validate($data) !== FALSE)
             {
@@ -337,10 +346,10 @@
         /**
          * Update all records
          */
-        public function update_all($data)
+        public function update_all($data = array(), $escape = true)
         {
             $data = $this->trigger('before_update', $data);
-            $result = $this->_database->from($this->_table)->update($data);
+            $result = $this->_database->from($this->_table)->update($data, $escape);
             $this->trigger('after_update', array($data, $result));
             return $result;
         }
@@ -580,7 +589,7 @@
             return (int) $this->_database->select('AUTO_INCREMENT')
                 ->from('information_schema.TABLES')
                 ->where('TABLE_NAME', $this->_table)
-                ->where('TABLE_SCHEMA', $this->_database->database)->get()->AUTO_INCREMENT;
+                ->where('TABLE_SCHEMA', $this->_database->getDatabaseName())->get()->AUTO_INCREMENT;
         }
 
         /**
@@ -745,6 +754,14 @@
             return $this;
         }
 
+        /**
+         * Return the database instance
+         * @return Database the database instance
+         */
+        public function getDatabaseInstance(){
+            return $this->_database;
+        }
+
         /* --------------------------------------------------------------
          * INTERNAL METHODS
          * ------------------------------------------------------------ */
@@ -824,7 +841,7 @@
                 {
                     if (is_array($filter))
                     {
-                        $this->_database->where_in($field, $filter);
+                        $this->_database->in($field, $filter);
                     }
                     else
                     {
@@ -862,7 +879,7 @@
             {
                 if (is_array($params[1]))
                 {
-                    $this->_database->where_in($params[0], $params[1]);
+                    $this->_database->in($params[0], $params[1]);
                 }
                 else
                 {
@@ -880,11 +897,11 @@
             return $this->_temporary_return_type == 'array' ? $method . '_array' : $method;
         }
 
-		/**
-			Shortcut to controller
-		*/
+        /**
+            Shortcut to controller
+        */
         public function __get($key){
-    		return get_instance()->{$key};
-    	}
+            return get_instance()->{$key};
+        }
 
     }

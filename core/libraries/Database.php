@@ -26,27 +26,26 @@
   class Database
   {
 
-    public $pdo = null;
-    public $database    = null;
-
-    private $select     = '*';
-    private $from       = null;
-    private $where      = null;
-    private $limit      = null;
-    private $join       = null;
-    private $orderBy    = null;
-    private $groupBy    = null;
-    private $having     = null;
-    private $grouped    = false;
-    private $numRows    = 0;
-    private $insertId   = null;
-    private $query      = null;
-    private $error      = null;
-    private $result     = array();
-    private $prefix     = null;
-    private $op         = array('=','!=','<','>','<=','>=','<>');
-    private $cacheExpire = 0;
-    private $queryCount = 0;
+    private $pdo = null;
+    private $databaseName  = null;
+    private $select        = '*';
+    private $from          = null;
+    private $where         = null;
+    private $limit         = null;
+    private $join          = null;
+    private $orderBy       = null;
+    private $groupBy       = null;
+    private $having        = null;
+    private $numRows       = 0;
+    private $insertId      = null;
+    private $query         = null;
+    private $error         = null;
+    private $result        = array();
+    private $prefix        = null;
+    private $op            = array('=','!=','<','>','<=','>=','<>');
+    private $cacheExpire   = 0;
+    private $queryCount    = 0;
+    private $data          = array();
     private static $config = array();
     private $logger;
 
@@ -68,45 +67,45 @@
       			show_error('No database configuration found in database.php');
 		  }
 		  else{
-				if(!empty($overwrite_config)){
-				  $db = array_merge($db, $overwrite_config);
-				}
-				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
-				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
-				$config['password']  = isset($db['password']) ? $db['password'] : '';
-				$config['database']  = isset($db['database']) ? $db['database'] : '';
-				$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
-				$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
-				$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
-				$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
-				$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
-				$this->prefix        = $config['prefix'];
-				$this->database = $config['database'];
-				$dsn = '';
-				if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
-					  $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
-						. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
-						. 'dbname=' . $config['database'];
-				}
-				else if ($config['driver'] == 'sqlite'){
-				  $dsn = 'sqlite:' . $config['database'];
-				}
-				else if($config['driver'] == 'oracle'){
-				  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
-				}
-				try{
-				  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
-				  $this->pdo->exec("SET NAMES '".$config['charset']."' COLLATE '".$config['collation']."'");
-				  $this->pdo->exec("SET CHARACTER SET '".$config['charset']."'");
-				  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-				}
-				catch (PDOException $e){
-				  $this->logger->fatal($e->getMessage());
-				  show_error('Cannot connect to Database.');
-				}
-				static::$config = $config;
-				$this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
-			}
+  				if(!empty($overwrite_config)){
+  				  $db = array_merge($db, $overwrite_config);
+  				}
+  				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
+  				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
+  				$config['password']  = isset($db['password']) ? $db['password'] : '';
+  				$config['database']  = isset($db['database']) ? $db['database'] : '';
+  				$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
+  				$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
+  				$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
+  				$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
+  				$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
+  				$this->prefix        = $config['prefix'];
+  				$this->databaseName = $config['database'];
+  				$dsn = '';
+  				if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
+  					  $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
+  						. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
+  						. 'dbname=' . $config['database'];
+  				}
+  				else if ($config['driver'] == 'sqlite'){
+  				  $dsn = 'sqlite:' . $config['database'];
+  				}
+  				else if($config['driver'] == 'oracle'){
+  				  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
+  				}
+  				try{
+  				  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
+  				  $this->pdo->exec("SET NAMES '".$config['charset']."' COLLATE '".$config['collation']."'");
+  				  $this->pdo->exec("SET CHARACTER SET '".$config['charset']."'");
+  				  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+  				}
+  				catch (PDOException $e){
+  				  $this->logger->fatal($e->getMessage());
+  				  show_error('Cannot connect to Database.');
+  				}
+  				static::$config = $config;
+  				$this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
+  			}
     	}
     	else{
     		show_error('Unable to find database configuration');
@@ -117,13 +116,15 @@
       if(is_array($table))
       {
         $f = '';
-        foreach($table as $key)
+        foreach($table as $key){
           $f .= $this->prefix . $key . ', ';
+        }
 
         $this->from = rtrim($f, ', ');
       }
-      else
+      else{
         $this->from = $this->prefix . $table;
+      }
 
       return $this;
     }
@@ -189,13 +190,16 @@
       $on = $field1;
       $table = $this->prefix . $table;
 
-      if(!is_null($op))
+      if(!is_null($op)){
         $on = (!in_array($op, $this->op) ? $this->prefix . $field1 . ' = ' . $this->prefix . $op : $this->prefix . $field1 . ' ' . $op . ' ' . $this->prefix . $field2);
+      }
 
-      if (is_null($this->join))
+      if (is_null($this->join)){
         $this->join = ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
-      else
+      }
+      else{
         $this->join = $this->join . ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
+      }
 
       return $this;
     }
@@ -276,14 +280,14 @@
     }
     
 
-    public function where($where, $op = null, $val = null, $type = '', $and_or = 'AND')
+    public function where($where, $op = null, $val = null, $type = '', $and_or = 'AND', $escape = true)
     {
       if (is_array($where))
       {
         $_where = array();
 
         foreach ($where as $column => $data){
-          $_where[] = $type . $column . '=' . $this->escape($data);
+          $_where[] = $type . $column . '=' . ($escape ? $this->escape($data) : $data);
         }
         $where = implode(' '.$and_or.' ', $_where);
       }
@@ -296,67 +300,101 @@
 
           foreach($x as $k => $v){
             if(!empty($v)){
-                $w .= $type . $v . (isset($op[$k]) ? $this->escape($op[$k]) : '');
+                $w .= $type . $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
             }
           }
           $where = $w;
         }
         elseif (!in_array((string)$op, $this->op)){
-          $where = $type . $where . ' = ' . $this->escape($op);
+          $where = $type . $where . ' = ' . ($escape ? $this->escape($op) : $op);
         }
         else{
-          $where = $type . $where . $op . $this->escape($val);
+          $where = $type . $where . $op . ($escape ? $this->escape($val) : $val);
         }
       }
 
-      if($this->grouped)
-      {
-        $where = '(' . $where;
-        $this->grouped = false;
+      if (is_null($this->where)){
+        $this->where = $where;
+      }
+      else{
+        if(substr($this->where, -1) == '('){
+          $this->where = $this->where . ' ' . $where;
+        }
+        else{
+          $this->where = $this->where . ' '.$and_or.' ' . $where;
+        }
       }
 
-      if (is_null($this->where))
-        $this->where = $where;
-      else
-        $this->where = $this->where . ' '.$and_or.' ' . $where;
-
       return $this;
     }
 
-    public function orWhere($where, $op = null, $val = null)
+    public function orWhere($where, $op = null, $val = null, $escape = true)
     {
-      $this->where($where, $op, $val, '', 'OR');
+      $this->where($where, $op, $val, '', 'OR', $escape);
       return $this;
     }
 
-    public function notWhere($where, $op = null, $val = null)
+    public function notWhere($where, $op = null, $val = null, $escape = true)
     {
-      $this->where($where, $op, $val, 'NOT ', 'AND');
+      $this->where($where, $op, $val, 'NOT ', 'AND', $escape);
       return $this;
     }
 
-    public function orNotWhere($where, $op = null, $val = null)
+    public function orNotWhere($where, $op = null, $val = null, $escape = true)
     {
-      $this->where($where, $op, $val, 'NOT ', 'OR');
+      $this->where($where, $op, $val, 'NOT ', 'OR', $escape);
       return $this;
     }
 
-    public function grouped(Closure $obj)
+    public function groupStart($type = '', $and_or = ' AND')
     {
-      $this->grouped = true;
-      call_user_func($obj);
+      if (is_null($this->where)){
+        $this->where = $type . ' (';
+      }
+      else{
+          if(substr($this->where, -1) == '('){
+            $this->where .= $type . ' (';
+          }
+          else{
+            $this->where .= $and_or . ' ' . $type . ' (';
+          }
+      }
+      return $this;
+    }
+
+    public function notGroupStart()
+    {
+      return $this->groupStart('NOT');
+    }
+
+    public function orGroupStart()
+    {
+      return $this->groupStart('', ' OR');
+    }
+
+    public function orNotGroupStart()
+    {
+      return $this->groupStart('NOT', ' OR');
+    }
+
+    public function groupEnd()
+    {
       $this->where .= ')';
       return $this;
     }
 
-    public function in($field, Array $keys, $type = '', $and_or = 'AND')
+    
+
+
+    public function in($field, array $keys, $type = '', $and_or = 'AND', $escape = true)
     {
       if (is_array($keys))
       {
         $_keys = array();
 
-        foreach ($keys as $k => $v)
-          $_keys[] = (is_numeric($v) ? $v : $this->escape($v));
+        foreach ($keys as $k => $v){
+          $_keys[] = (is_numeric($v) ? $v : ($escape ? $this->escape($v) : $v));
+        }
 
         $keys = implode(', ', $_keys);
 
@@ -364,87 +402,102 @@
           $this->where = $field . ' ' . $type . 'IN (' . $keys . ')';
         }
         else{
-          $this->where = $this->where . ' ' . $and_or . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
+          if(substr($this->where, -1) == '('){
+            $this->where = $this->where . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
+          }
+          else{
+            $this->where = $this->where . ' ' . $and_or . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
+          }
         }
       }
 
       return $this;
     }
 
-    public function notIn($field, Array $keys)
+    public function notIn($field, array $keys, $escape = true)
     {
-      $this->in($field, $keys, 'NOT ', 'AND');
+      $this->in($field, $keys, 'NOT ', 'AND', $escape);
       return $this;
     }
 
-    public function orIn($field, Array $keys)
+    public function orIn($field, array $keys, $escape = true)
     {
-      $this->in($field, $keys, '', 'OR');
+      $this->in($field, $keys, '', 'OR', $escape);
       return $this;
     }
 
-    public function orNotIn($field, Array $keys)
+    public function orNotIn($field, array $keys, $escape = true)
     {
-      $this->in($field, $keys, 'NOT ', 'OR');
+      $this->in($field, $keys, 'NOT ', 'OR', $escape);
       return $this;
     }
 
-    public function between($field, $value1, $value2, $type = '', $and_or = 'AND')
+    public function between($field, $value1, $value2, $type = '', $and_or = 'AND', $escape = true)
     {
       if (is_null($this->where)){
-        $this->where = $field . ' ' . $type . 'BETWEEN ' . $this->escape($value1) . ' AND ' . $this->escape($value2);
+        $this->where = $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
       }
       else{
-        $this->where = $this->where . ' ' . $and_or . ' ' . $field . ' ' . $type . 'BETWEEN ' . $this->escape($value1) . ' AND ' . $this->escape($value2);
+        if(substr($this->where, -1) == '('){
+          $this->where = $this->where . ' ' . $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
+        }
+        else{
+          $this->where = $this->where . ' ' . $and_or . ' ' . $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
+        }
       }
       return $this;
     }
 
-    public function notBetween($field, $value1, $value2)
+    public function notBetween($field, $value1, $value2, $escape = true)
     {
-      $this->between($field, $value1, $value2, 'NOT ', 'AND');
+      $this->between($field, $value1, $value2, 'NOT ', 'AND', $escape);
       return $this;
     }
 
-    public function orBetween($field, $value1, $value2)
+    public function orBetween($field, $value1, $value2, $escape = true)
     {
-      $this->between($field, $value1, $value2, '', 'OR');
+      $this->between($field, $value1, $value2, '', 'OR', $escape);
       return $this;
     }
 
-    public function orNotBetween($field, $value1, $value2)
+    public function orNotBetween($field, $value1, $value2, $escape = true)
     {
-      $this->between($field, $value1, $value2, 'NOT ', 'OR');
+      $this->between($field, $value1, $value2, 'NOT ', 'OR', $escape);
       return $this;
     }
 
-    public function like($field, $data, $type = '', $and_or = 'AND')
+    public function like($field, $data, $type = '', $and_or = 'AND', $escape = true)
     {
-      $like = $this->escape($data);
+      $like = $escape ? $this->escape($data) : $data;
       if (is_null($this->where)){
         $this->where = $field . ' ' . $type . 'LIKE ' . $like;
       }
       else{
-        $this->where = $this->where . ' '.$and_or.' ' . $field . ' ' . $type . 'LIKE ' . $like;
+        if(substr($this->where, -1) == '('){
+          $this->where = $this->where . ' ' . $field . ' ' . $type . 'LIKE ' . $like;
+        }
+        else{
+          $this->where = $this->where . ' '.$and_or.' ' . $field . ' ' . $type . 'LIKE ' . $like;
+        }
       }
       return $this;
     }
 
-    public function orLike($field, $data)
+    public function orLike($field, $data, $escape = true)
     {
-      $this->like($field, $data, '', 'OR');
+      $this->like($field, $data, '', 'OR', $escape);
       return $this;
     }
 
-    public function notLike($field, $data)
+    public function notLike($field, $data, $escape = true)
     {
-      $this->like($field, $data, 'NOT ', 'AND');
+      $this->like($field, $data, 'NOT ', 'AND', $escape);
       return $this;
     }
 
-    public function orNotLike($field, $data)
+    public function orNotLike($field, $data, $escape = true)
     {
-      $this->like($field, $data, 'NOT ', 'OR');
+      $this->like($field, $data, 'NOT ', 'OR', $escape);
       return $this;
     }
 
@@ -486,22 +539,22 @@
       return $this;
     }
 
-    public function having($field, $op = null, $val = null)
+    public function having($field, $op = null, $val = null, $escape = true)
     {
       if(is_array($op)){
         $x = explode('?', $field);
         $w = '';
         foreach($x as $k => $v)
           if(!empty($v)){
-            $w .= $v . (isset($op[$k]) ? $this->escape($op[$k]) : '');
+            $w .= $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
           }
         $this->having = $w;
       }
       elseif (!in_array($op, $this->op)){
-        $this->having = $field . ' > ' . $this->escape($op);
+        $this->having = $field . ' > ' . ($escape ? $this->escape($op) : $op);
       }
       else{
-        $this->having = $field . ' ' . $op . ' ' . $this->escape($val);
+        $this->having = $field . ' ' . $op . ' ' . ($escape ? $this->escape($val) : $val);
       }
       return $this;
     }
@@ -512,7 +565,6 @@
 
     public function insertId()
     {
-      $this->logger->info('The database last insert id: ' . $this->insertId);
       return $this->insertId;
     }
 
@@ -551,7 +603,6 @@
         $query .= ' HAVING ' . $this->having;
       }
 
-
       if (!is_null($this->orderBy)){
           $query .= ' ORDER BY ' . $this->orderBy;
       }
@@ -567,11 +618,20 @@
       }
     }
 
-    public function insert($data)
+    public function insert($data = array(), $escape = true)
     {
-      $columns = array_keys($data);
-      $column = implode(',', $columns);
-      $val = implode(', ', array_map([$this, 'escape'], $data));
+      $column = array();
+      $val = array();
+       if(! $data && $this->getData()){
+        $columns = array_keys($this->getData());
+        $column = implode(',', $columns);
+        $val = implode(', ', $this->getData());
+      }
+      else{
+        $columns = array_keys($data);
+        $column = implode(',', $columns);
+        $val = implode(', ', ($escape ? array_map(array($this, 'escape'), $data) : $data));
+      }
 
       $query = 'INSERT INTO ' . $this->from . ' (' . $column . ') VALUES (' . $val . ')';
       $query = $this->query($query);
@@ -586,13 +646,19 @@
       }
     }
 
-    public function update($data)
+    public function update($data = array(), $escape = true)
     {
       $query = 'UPDATE ' . $this->from . ' SET ';
-      $values =array();
-
-      foreach ($data as $column => $val){
-        $values[] = $column . '=' . $this->escape($val);
+      $values = array();
+      if(! $data && $this->getData()){
+        foreach ($this->getData() as $column => $val){
+          $values[] = $column . ' = ' . $val;
+        }
+      }
+      else{
+        foreach ($data as $column => $val){
+          $values[] = $column . '=' . ($escape ? $this->escape($val) : $val);
+        }
       }
 
       $query .= (is_array($data) ? implode(',', $values) : $data);
@@ -756,8 +822,52 @@
       return $this->query;
     }
 
-   private function reset()
-    {
+    /**
+     * Return the application database name
+     * @return string
+     */
+    public function getDatabaseName(){
+      return $this->databaseName;
+    }
+
+     /**
+     * Return the database configuration
+     * @return array
+     */
+    public static function getDatabaseConfiguration(){
+      return static::$config;
+    }
+
+    /**
+     * Return the PDO instance
+     * @return PDO
+     */
+    public function getPdo(){
+      return $this->pdo;
+    }
+
+    /**
+     * Return the data to be used for insert, update, etc.
+     * @return array
+     */
+    public function getData(){
+      return $this->data;
+    }
+
+
+    /**
+     * Set the data to be used for insert, update, etc.
+     * @param string $key the data key identified
+     * @param mixed $value the data value
+     * @param boolean $escape whether to escape or not the $value
+     */
+    public function setData($key, $value, $escape = true){
+      $this->data[$key] = $escape ? $this->escape($value) : $value;
+      return $this;
+    }
+
+  private function reset()
+  {
       $this->select  = '*';
       $this->from    = null;
       $this->where  = null;
@@ -766,17 +876,17 @@
       $this->groupBy  = null;
       $this->having  = null;
       $this->join    = null;
-      $this->grouped  = false;
       $this->numRows  = 0;
       $this->insertId  = null;
       $this->query  = null;
       $this->error  = null;
       $this->result  = array();
+      $this->data  = array();
       return;
-    }
-
-    function __destruct()
-    {
-      $this->pdo = null;
-   }
   }
+
+  function __destruct()
+  {
+    $this->pdo = null;
+  }
+}
