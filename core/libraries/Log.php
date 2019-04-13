@@ -37,8 +37,8 @@
 		const ALL = -9999999999;
 
 		/**
-		 * The logger instance
-		 * @var Log
+		 * The logger name
+		 * @var string
 		 */
 		private $logger = 'ROOT';
 		

@@ -328,6 +328,8 @@
       return $this;
     }
 
+    
+
     public function orWhere($where, $op = null, $val = null, $escape = true)
     {
       $this->where($where, $op, $val, '', 'OR', $escape);
