@@ -79,25 +79,6 @@
 		}
 
 		/**
-		 * Redirect user in the specified page
-		 * @param  string $path the URL or URI to be redirect to
-		 */
-		public static function redirect($path = ''){
-			$logger = static::getLogger();
-			$url = Url::site_url($path);
-			$logger->info('Redirect to URL [' .$url. ']');
-			if(!headers_sent()){
-				header('Location:'.$url);
-				exit;
-			}
-			else{
-				echo '<script>
-						location.href = "'.$url.'";
-					</script>';
-			}
-		}
-
-		/**
 		 * Get the header value for the given name
 		 * @param  string $name the header name
 		 * @return string       the header value
@@ -123,6 +104,25 @@
 		 */
 		public static function setHeaders(array $headers){
 			static::$headers = array_merge(static::getHeaders(), $headers);
+		}
+		
+		/**
+		 * Redirect user in the specified page
+		 * @param  string $path the URL or URI to be redirect to
+		 */
+		public static function redirect($path = ''){
+			$logger = static::getLogger();
+			$url = Url::site_url($path);
+			$logger->info('Redirect to URL [' .$url. ']');
+			if(!headers_sent()){
+				header('Location:'.$url);
+				exit;
+			}
+			else{
+				echo '<script>
+						location.href = "'.$url.'";
+					</script>';
+			}
 		}
 
 		/**
@@ -285,7 +285,10 @@
 				echo $output;
 			}
 			else{
-				show_error('The error view [' .$path. '] does not exist');
+				//can't use show_error() at this time because some dependencies not yet loaded
+				set_http_status_header(503);
+				echo 'The error view [' .$path. '] does not exist';
+				exit(1);
 			}
 		}
 	}

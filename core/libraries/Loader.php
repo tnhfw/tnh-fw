@@ -78,21 +78,30 @@
 				}
 			}
 			
-			//libraries autoload
-			if(!empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
-				foreach($autoloads['libraries'] as $library){
-					Loader::library($library);
-				}
-			}
 			//config autoload
 			if(!empty($autoloads['config']) && is_array($autoloads['config'])){
 				foreach($autoloads['config'] as $c){
 					Loader::config($c);
 				}
 			}
+			
+			//languages autoload
+			if(!empty($autoloads['languages']) && is_array($autoloads['languages'])){
+				foreach($autoloads['languages'] as $language){
+					Loader::lang($language);
+				}
+			}
+			
+			//libraries autoload
+			if(!empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
+				foreach($autoloads['libraries'] as $library){
+					Loader::library($library);
+				}
+			}
+			
 			//before load models check if database library is loaded and then load model library
 			//if Database is loaded load the required library
-			if(isset(static::$loaded['database'])){
+			if(isset(static::$loaded['database']) || !empty($autoloads['models'])){
 				//Model
 				require_once CORE_LIBRARY_PATH . 'Model.php';
 			}
@@ -108,12 +117,7 @@
 					Loader::functions($function);
 				}
 			}
-			//languages autoload
-			if(!empty($autoloads['languages']) && is_array($autoloads['languages'])){
-				foreach($autoloads['languages'] as $language){
-					Loader::lang($language);
-				}
-			}
+			
 		}
 
 		/**
@@ -400,7 +404,8 @@
 			$appLang = get_config('default_language');
 			//if the language exists in the cookie use it
 			$cfgKey = get_config('language_cookie_name');
-			$cLang = Cookie::get($cfgKey);
+			$oCookie = & class_loader('Cookie');
+			$cLang = $oCookie->get($cfgKey);
 			if($cLang){
 				$appLang = $cLang;
 			}

@@ -76,7 +76,8 @@
 			//if the language exists in cookie use it
 			$cfgKey = get_config('language_cookie_name');
 			$this->logger->debug('Getting current language from cookie [' .$cfgKey. ']');
-			$cLang = Cookie::get($cfgKey);
+			$oCookie = & class_loader('Cookie');
+			$cLang = $oCookie->get($cfgKey);
 			if($cLang && $this->isValid($cLang)){
 				$language = $cLang;
 				$this->current = $language;

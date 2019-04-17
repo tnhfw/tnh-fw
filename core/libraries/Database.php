@@ -514,17 +514,17 @@
       return $this;
     }
 
-    public function orderBy($orderBy, $order_dir = null)
+    public function orderBy($orderBy, $order_dir = ' ASC')
     {
       if (!is_null($order_dir)){
-        $this->orderBy = $orderBy . ' ' . strtoupper($order_dir);
+        $this->orderBy = ! $this->orderBy ? ($orderBy . ' ' . strtoupper($order_dir)) : $this->orderBy . ', ' . $orderBy . ' ' . strtoupper($order_dir);
       }
       else{
         if(stristr($orderBy, ' ') || $orderBy == 'rand()'){
-          $this->orderBy = $orderBy;
+          $this->orderBy = ! $this->orderBy ? $orderBy : $this->orderBy . ', ' . $orderBy;
         }
         else{
-          $this->orderBy = $orderBy . ' ASC';
+          $this->orderBy = ! $this->orderBy ? ($orderBy . ' ASC') : $this->orderBy . ', ' . ($orderBy . ' ASC');
         }
       }
       return $this;
@@ -579,7 +579,7 @@
       $this->limit = 1;
       $query = $this->getAll(true);
 
-      if($type == true){
+      if($type === true){
         return $query;
       }
       else{
@@ -593,6 +593,7 @@
       if (!is_null($this->join)){
         $query .= $this->join;
       }
+	  
       if (!is_null($this->where)){
         $query .= ' WHERE ' . $this->where;
       }
@@ -612,7 +613,8 @@
       if(!is_null($this->limit)){
       	$query .= ' LIMIT ' . $this->limit;
       }
-    	if($type == true){
+	  
+	  if($type === true){
     	      return $query;
       }
       else{

@@ -70,7 +70,8 @@
 	*/
 	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
 		show_error('Your PHP Version ['.phpversion().'] is less than ['.TNH_REQUIRED_PHP_MIN_VERSION.'], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
-	}else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
+	}
+	else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
 		show_error('Your PHP Version ['.phpversion().'] is greather than ['.TNH_REQUIRED_PHP_MAX_VERSION.'] please install a PHP version that is compatible.', 'PHP Error environment');	
 	}
 	$LOGGER->info('PHP version [' .phpversion(). '] is OK [REQUIRED MINIMUM: ' .TNH_REQUIRED_PHP_MIN_VERSION. ', REQUIRED MAXIMUM: ' .TNH_REQUIRED_PHP_MAX_VERSION. '], application can work without any issue');
@@ -117,7 +118,6 @@
 	/*
 	* Load configurations using the 
 	* static method "init" of the Config class.
-	* here the Loader class is not instancied so just use require_once
 	*/
 	$CONFIG =& class_loader('Config');	
 	$CONFIG->init();
@@ -127,7 +127,6 @@
 	/*
 	* Load modules using the 
 	* static method "init" of the Module class.
-	* here the Loader class is not instancied so just use require_once
 	*/
 	$MODULE =& class_loader('Module');
 	$MODULE->init();
@@ -162,36 +161,13 @@
 		require_once CORE_LIBRARY_PATH . 'CacheInterface.php';
 		$CACHE =& class_loader(get_config('cache_handler'));
 	}
-
-	$BENCHMARK->mark('LOADING_REQUIRED_RESOURCES_START');
+	
 	/*
 		Loading Security class
 	*/
 	$SECURITY =& class_loader('Security');
 	$SECURITY->checkWhiteListIpAccess();
-
-	/*
-		Loading Assets class
-	*/
-	$ASSETS =& class_loader('Assets');
-
-	/*
-		Loading Cookie class
-	*/
-	$COOKIE =& class_loader('Cookie');
 	
-	/*
-		Loading Html class
-	*/
-	$HTML =& class_loader('Html');
-
-	/*
-		Loading Url class
-	*/
-	$URL =& class_loader('Url');
-
-	$BENCHMARK->mark('LOADING_REQUIRED_RESOURCES_END');
-
 	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/*
 	* Routing

@@ -175,8 +175,8 @@
     		$this->_set_where($where);
 
             $this->trigger('before_get');
-
-            $row = $this->_database->from($this->_table)->get();
+			$type = $this->_temporary_return_type == 'array' ? 'array':false;
+            $row = $this->_database->from($this->_table)->get($type);
             $this->_temporary_return_type = $this->return_type;
             $row = $this->trigger('after_get', $row);
             $this->_with = array();
@@ -213,8 +213,8 @@
             {
                 $this->_database->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
             }
-
-            $result = $this->_database->from($this->_table)->getAll();
+			$type = $this->_temporary_return_type == 'array' ? 'array':false;
+            $result = $this->_database->from($this->_table)->getAll($type);
             $this->_temporary_return_type = $this->return_type;
 
             foreach ($result as $key => &$row)
@@ -291,7 +291,7 @@
         /**
          * Update many records, based on an array of primary values.
          */
-        public function update_many($primary_values, $data = array(), $skip_validation = FALSE, $escape)
+        public function update_many($primary_values, $data = array(), $skip_validation = FALSE, $escape = true)
         {
             $data = $this->trigger('before_update', $data);
             if ($skip_validation === FALSE)
@@ -712,14 +712,26 @@
             {
                 if (is_object($row))
                 {
-                    unset($row->$attr);
+					if(isset($row->$attr)){
+						unset($row->$attr);
+					}
                 }
                 else
                 {
-                    unset($row[$attr]);
+					if(isset($row[$attr])){
+						unset($row[$attr]);
+					}
                 }
             }
             return $row;
+        }
+		
+		 /**
+         * Return the database instance
+         * @return Database the database instance
+         */
+        public function getDatabaseInstance(){
+            return $this->_database;
         }
 
         /* --------------------------------------------------------------
@@ -727,7 +739,7 @@
          * ------------------------------------------------------------ */
 
         /**
-         * A wrapper to $this->_database->order_by()
+         * A wrapper to $this->_database->orderBy()
          */
         public function order_by($criteria, $order = 'ASC')
         {
@@ -748,18 +760,10 @@
         /**
          * A wrapper to $this->_database->limit()
          */
-        public function limit($limit, $offset = 0)
+        public function limit($offset = 0, $limit = 10)
         {
-            $this->_database->limit($limit, $offset);
+            $this->_database->limit($offset, $limit);
             return $this;
-        }
-
-        /**
-         * Return the database instance
-         * @return Database the database instance
-         */
-        public function getDatabaseInstance(){
-            return $this->_database;
         }
 
         /* --------------------------------------------------------------
@@ -886,15 +890,6 @@
                     $this->_database->where($params[0], $params[1]);
                 }
             }
-        }
-
-        /**
-         * Return the method name for the current return type
-         */
-        protected function _return_type($multi = FALSE)
-        {
-            $method = ($multi) ? 'result' : 'row';
-            return $this->_temporary_return_type == 'array' ? $method . '_array' : $method;
         }
 
         /**

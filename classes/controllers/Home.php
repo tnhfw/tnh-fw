@@ -18,6 +18,9 @@
 		 * @return null
 		 */
 		function index() {
+			Loader::library('Assets');
+			Loader::library('Html');
+			Loader::library('Url');
 			$this->response->render('home');
 		}
 	}

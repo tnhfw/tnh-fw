@@ -225,13 +225,14 @@
 			else{
 				show_error('No HTTP status text found for your code please check it.');
 			}
-			if(strpos(php_sapi_name(), 'cgi') === 0){
-				header('Status: '.$code.' '.$text, TRUE);
-			}
-			else{
-				$proto = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
-				header($proto.' '.$code.' '.$text, TRUE, $code);
-			}
+		}
+		
+		if(strpos(php_sapi_name(), 'cgi') === 0){
+			header('Status: '.$code.' '.$text, TRUE);
+		}
+		else{
+			$proto = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
+			header($proto.' '.$code.' '.$text, TRUE, $code);
 		}
 	}
 
@@ -280,14 +281,14 @@
 	
 	/**
 	 *  This function is used to check the URL format of the given string argument. 
-	 *  The address is valid if the protocol is http, https, ftp, ftps, etc.
+	 *  The address is valid if the protocol is http, https, ftp, etc.
 	 *
 	 *  @param string $url the URL address to check
 	 *  
 	 *  @return boolean true if is a valid URL address or false.
 	 */
 	function is_url($url){
-		return preg_match('/^(http|https|ftp|ftps):\/\/(.*)/', $url);
+		return preg_match('/^(http|https|ftp):\/\/(.*)/', $url);
 	}
 	
 	/**
