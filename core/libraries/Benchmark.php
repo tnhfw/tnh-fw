@@ -32,13 +32,13 @@
 		 * The markers for excution time
 		 * @var array
 		 */
-		private $markers_time = array();
+		private $markersTime = array();
 		
 		/**
 		 * The markers for memory usage
 		 * @var array
 		 */
-		private $markers_memory = array();
+		private $markersMemory = array();
 		
 		/**
 		 * This method is used to mark one point for benchmark (execution time and memory usage)
@@ -46,44 +46,44 @@
 		 */
 		public function mark($name){
 			//Marker for execution time
-			$this->markers_time[$name] = microtime(true);
+			$this->markersTime[$name] = microtime(true);
 			//Marker for memory usage
-			$this->markers_memory[$name] = memory_get_usage(true);
+			$this->markersMemory[$name] = memory_get_usage(true);
 		}
 		
 		/**
 		 * This method is used to get the total excution time in second between two markers
-		 * @param  string  $begin the marker for start point
-		 * @param  string  $end   the marker for end point
-		 * @param  integer $dec   the number of decimal
+		 * @param  string  $startMarkerName the marker for start point
+		 * @param  string  $endMarkerName   the marker for end point
+		 * @param  integer $decimalCount   the number of decimal
 		 * @return double         the total execution time
 		 */
-		public function elapsed_time($begin = null, $end = null, $dec = 6){
-			if(! $begin || !isset($this->markers_time[$begin])){
+		public function elapsedTime($startMarkerName = null, $endMarkerName = null, $decimalCount = 6){
+			if(! $startMarkerName || !isset($this->markersTime[$startMarkerName])){
 				return 0;
 			}
 			
-			if(!isset($this->markers_time[$end])){
-				$this->markers_time[$end] = microtime(true);
+			if(!isset($this->markersTime[$endMarkerName])){
+				$this->markersTime[$endMarkerName] = microtime(true);
 			}
-			return number_format($this->markers_time[$end] - $this->markers_time[$begin], $dec);
+			return number_format($this->markersTime[$endMarkerName] - $this->markersTime[$startMarkerName], $decimalCount);
 		}
 		
 		/**
 		 * This method is used to get the total memory usage in byte between two markers
-		 * @param  string  $begin the marker for start point
-		 * @param  string  $end   the marker for end point
-		 * @param  integer $dec   the number of decimal
+		 * @param  string  $startMarkerName the marker for start point
+		 * @param  string  $endMarkerName   the marker for end point
+		 * @param  integer $decimalCount   the number of decimal
 		 * @return double         the total memory usage
 		 */
-		public function memory_usage($begin = null, $end = null, $dec = 6){
-			if(! $begin || !isset($this->markers_memory[$begin])){
+		public function memoryUsage($startMarkerName = null, $endMarkerName = null, $decimalCount = 6){
+			if(! $startMarkerName || !isset($this->markersMemory[$startMarkerName])){
 				return 0;
 			}
 			
-			if(!isset($this->markers_memory[$end])){
-				$this->markers_memory[$end] = microtime(true);
+			if(!isset($this->markersMemory[$endMarkerName])){
+				$this->markersMemory[$endMarkerName] = microtime(true);
 			}
-			return number_format($this->markers_memory[$end] - $this->markers_memory[$begin], $dec);
+			return number_format($this->markersMemory[$endMarkerName] - $this->markersMemory[$startMarkerName], $decimalCount);
 		}
 	}

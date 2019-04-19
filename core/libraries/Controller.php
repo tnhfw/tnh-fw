@@ -25,11 +25,12 @@
 	*/
 
 	class Controller{
+		
 		/**
 		 * The name of the module if this controller belong to an module
 		 * @var string
 		 */
-		public $module_name = null;
+		public $moduleName = null;
 
 		/**
 		 * The singleton of the super object

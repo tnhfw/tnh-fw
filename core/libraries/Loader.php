@@ -141,25 +141,35 @@
 		public static function model($class, $instance = null){
 			$logger = static::getLogger();
 			$class = str_ireplace('.php', '', $class);
+			$class = trim($class, '/\\');
 			$file = ucfirst($class).'.php';
 			$logger->debug('Loading model [' . $class . '] ...');
-			if(isset(static::$loaded[strtolower($class)])){
+			if(! $instance){
+				//for module
+				if(strpos($class, '/') !== false){
+					$path = explode('/', $class);
+					if(isset($path[1])){
+						$instance = strtolower($path[1]);
+					}
+				}
+				else{
+					$instance = strtolower($class);
+				}
+			}
+			if(isset(static::$loaded[$instance])){
 				$logger->info('Model [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
-			}
-			if(!$instance){
-				$instance = $class;
 			}
 			$classFilePath = APPS_MODEL_PATH . $file;
 			//first check if this model is in the module
 			$logger->debug('Checking model [' . $class . '] from module list ...');
-			$mod = null;
+			$searchModuleName = null;
 			$obj = & get_instance();
 			//check if the request class contains module name
 			if(strpos($class, '/') !== false){
 				$path = explode('/', $class);
 				if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
-					$mod = $path[0];
+					$searchModuleName = $path[0];
 					$class = ucfirst($path[1]);
 				}
 			}
@@ -167,12 +177,12 @@
 				$class = ucfirst($class);
 			}
 
-			if(! $mod && !empty($obj->module_name)){
-				$mod = $obj->module_name;
+			if(! $searchModuleName && !empty($obj->moduleName)){
+				$searchModuleName = $obj->moduleName;
 			}
-			$moduleModelFilePath = Module::findModelFullPath($class, $mod);
+			$moduleModelFilePath = Module::findModelFullPath($class, $searchModuleName);
 			if($moduleModelFilePath){
-				$logger->info('Found model [' . $class . '] from module [' .$mod. '], the file path is [' .$moduleModelFilePath. '] we will used it');
+				$logger->info('Found model [' . $class . '] from module [' .$searchModuleName. '], the file path is [' .$moduleModelFilePath. '] we will used it');
 				$classFilePath = $moduleModelFilePath;
 			}
 			else{
@@ -183,10 +193,9 @@
 				require_once $classFilePath;
 				if(class_exists($class)){
 					$c = new $class();
-					$instance = strtolower($instance);
 					$obj = & get_instance();
 					$obj->{$instance} = $c;
-					static::$loaded[strtolower($class)] = $class;
+					static::$loaded[$instance] = $class;
 					$logger->info('Model [' . $class . '] --> ' . $classFilePath . ' loaded successfully.');
 				}
 				else{
@@ -209,16 +218,25 @@
 		public static function library($class, $instance = null, $params = null){
 			$logger = static::getLogger();
 			$class = str_ireplace('.php', '', $class);
+			$class = trim($class, '/\\');
 			$file = ucfirst($class) .'.php';
 			$logger->debug('Loading library [' . $class . '] ...');
-			if(isset(static::$loaded[strtolower($class)])){
+			if(! $instance){
+				//for module
+				if(strpos($class, '/') !== false){
+					$path = explode('/', $class);
+					if(isset($path[1])){
+						$instance = strtolower($path[1]);
+					}
+				}
+				else{
+					$instance = strtolower($class);
+				}
+			}
+			if(isset(static::$loaded[$instance])){
 				$logger->info('Library [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
-			if(!$instance){
-				$instance = $class;
-			}
-			$instance = strtolower($instance);
 			$libraryFilePath = null;
 			$isSystem = false;
 			$logger->debug('Check if this is a system library ...');
@@ -232,25 +250,25 @@
 				$logger->info('This library is not a system library');	
 				//first check if this library is in the module
 				$logger->debug('Checking library [' . $class . '] from module list ...');
-				$mod = null;
+				$searchModuleName = null;
 				$obj = & get_instance();
 				//check if the request class contains module name
 				if(strpos($class, '/') !== false){
 					$path = explode('/', $class);
 					if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
-						$mod = $path[0];
+						$searchModuleName = $path[0];
 						$class = ucfirst($path[1]);
 					}
 				}
 				else{
 					$class = ucfirst($class);
 				}
-				if(! $mod && !empty($obj->module_name)){
-					$mod = $obj->module_name;
+				if(! $searchModuleName && !empty($obj->moduleName)){
+					$searchModuleName = $obj->moduleName;
 				}
-				$moduleLibraryPath = Module::findLibraryFullPath($class, $mod);
+				$moduleLibraryPath = Module::findLibraryFullPath($class, $searchModuleName);
 				if($moduleLibraryPath){
-					$logger->info('Found library [' . $class . '] from module [' .$mod. '], the file path is [' .$moduleLibraryPath. '] we will used it');
+					$logger->info('Found library [' . $class . '] from module [' .$searchModuleName. '], the file path is [' .$moduleLibraryPath. '] we will used it');
 					$libraryFilePath = $moduleLibraryPath;
 				}
 				else{
@@ -275,7 +293,7 @@
 					$c = $params ? new $class($params) : new $class();
 					$obj = & get_instance();
 					$obj->{$instance} = $c;
-					static::$loaded[strtolower($class)] = $class;
+					static::$loaded[$instance] = $class;
 					$logger->info('Library [' . $class . '] --> ' . $libraryFilePath . ' loaded successfully.');
 				}
 				else{
@@ -295,6 +313,7 @@
 		public static function functions($function){
 			$logger = static::getLogger();
 			$function = str_ireplace('.php', '', $function);
+			$function = trim($function, '/\\');
 			$function = str_ireplace('function_', '', $function);
 			$file = 'function_'.$function.'.php';
 			$logger->debug('Loading helper [' . $function . '] ...');
@@ -305,23 +324,23 @@
 			$functionFilePath = null;
 			//first check if this helper is in the module
 			$logger->debug('Checking helper [' . $function . '] from module list ...');
-			$mod = null;
+			$searchModuleName = null;
 			$obj = & get_instance();
 			//check if the request class contains module name
 			if(strpos($function, '/') !== false){
 				$path = explode('/', $function);
 				if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
-					$mod = $path[0];
+					$searchModuleName = $path[0];
 					$function = 'function_' . $path[1] . '.php';
 					$file = $path[0] . DS . 'function_'.$function.'.php';
 				}
 			}
-			if(! $mod && !empty($obj->module_name)){
-				$mod = $obj->module_name;
+			if(! $searchModuleName && !empty($obj->moduleName)){
+				$searchModuleName = $obj->moduleName;
 			}
-			$moduleFunctionPath = Module::findFunctionFullPath($function, $mod);
+			$moduleFunctionPath = Module::findFunctionFullPath($function, $searchModuleName);
 			if($moduleFunctionPath){
-				$logger->info('Found helper [' . $function . '] from module [' .$mod. '], the file path is [' .$moduleFunctionPath. '] we will used it');
+				$logger->info('Found helper [' . $function . '] from module [' .$searchModuleName. '], the file path is [' .$moduleFunctionPath. '] we will used it');
 				$functionFilePath = $moduleFunctionPath;
 			}
 			else{
@@ -357,29 +376,54 @@
 		public static function config($filename){
 			$logger = static::getLogger();
 			$filename = str_ireplace('.php', '', $filename);
+			$filename = trim($filename, '/\\');
 			$filename = str_ireplace('config_', '', $filename);
 			$file = 'config_'.$filename.'.php';
-			$path = CONFIG_PATH . $file;
-			$logger->debug('Loading configuration [' . $path . '] ...');
+			$logger->debug('Loading configuration [' . $filename . '] ...');
 			if(isset(static::$loaded['config_' . $filename])){
 				$logger->info('Configuration [' . $path . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
-			$logger->info('The config file path to be loaded is [' . $path . ']');
-			if(file_exists($path)){
-				require_once $path;
+			$configFilePath = CONFIG_PATH . $file;
+			//first check if this config is in the module
+			$logger->debug('Checking config [' . $filename . '] from module list ...');
+			$searchModuleName = null;
+			$obj = & get_instance();
+			//check if the request class contains module name
+			if(strpos($filename, '/') !== false){
+				$path = explode('/', $filename);
+				if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
+					$searchModuleName = $path[0];
+					$filename = $path[1] . '.php';
+					$file = $path[0] . DS .$filename;
+				}
+			}
+			if(! $searchModuleName && !empty($obj->moduleName)){
+				$searchModuleName = $obj->moduleName;
+			}
+			$moduleConfigPath = Module::findConfigFullPath($filename, $searchModuleName);
+			if($moduleConfigPath){
+				$logger->info('Found config [' . $filename . '] from module [' .$searchModuleName. '], the file path is [' .$moduleConfigPath. '] we will used it');
+				$configFilePath = $moduleConfigPath;
+			}
+			else{
+				$logger->info('Cannot find config [' . $filename . '] from modules using the default location');
+			}
+			$logger->info('The config file path to be loaded is [' . $configFilePath . ']');
+			if(file_exists($configFilePath)){
+				require_once $configFilePath;
 				if(!empty($config) && is_array($config)){
 					Config::setAll($config);
 				}
 				else{
-					show_error('No configuration found in ['. $path . ']');
+					show_error('No configuration found in ['. $configFilePath . ']');
 				}
 			}
 			else{
-				show_error('Unable to find config file ['. $path . ']');
+				show_error('Unable to find config file ['. $configFilePath . ']');
 			}
-			static::$loaded['config_' . $filename] = $path;
-			$logger->info('configuration [' . $path . '] loaded successfully.');
+			static::$loaded['config_' . $filename] = $configFilePath;
+			$logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
 			$logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
 			unset($config);
 		}
@@ -393,6 +437,7 @@
 		public static function lang($language){
 			$logger = static::getLogger();
 			$language = str_ireplace('.php', '', $language);
+			$language = trim($language, '/\\');
 			$language = str_ireplace('lang_', '', $language);
 			$file = 'lang_'.$language.'.php';
 			$logger->debug('Loading language [' . $language . '] ...');
@@ -412,23 +457,23 @@
 			$languageFilePath = null;
 			//first check if this language is in the module
 			$logger->debug('Checking language [' . $language . '] from module list ...');
-			$mod = null;
+			$searchModuleName = null;
 			$obj = & get_instance();
 			//check if the request class contains module name
 			if(strpos($language, '/') !== false){
 				$path = explode('/', $language);
 				if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
-					$mod = $path[0];
+					$searchModuleName = $path[0];
 					$language = 'lang_' . $path[1] . '.php';
 					$file = $path[0] . DS . 'lang_'.$language.'.php';
 				}
 			}
-			if(! $mod && !empty($obj->module_name)){
-				$mod = $obj->module_name;
+			if(! $searchModuleName && !empty($obj->moduleName)){
+				$searchModuleName = $obj->moduleName;
 			}
-			$moduleLanguagePath = Module::findLanguageFullPath($language, $mod, $appLang);
+			$moduleLanguagePath = Module::findLanguageFullPath($language, $searchModuleName, $appLang);
 			if($moduleLanguagePath){
-				$logger->info('Found language [' . $language . '] from module [' .$mod. '], the file path is [' .$moduleLanguagePath. '] we will used it');
+				$logger->info('Found language [' . $language . '] from module [' .$searchModuleName. '], the file path is [' .$moduleLanguagePath. '] we will used it');
 				$languageFilePath = $moduleLanguagePath;
 			}
 			else{

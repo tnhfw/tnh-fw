@@ -186,8 +186,8 @@
 						$viewFile = $view . '.php';
 					}
 				}
-				if(! $mod && !empty($obj->module_name)){
-					$mod = $obj->module_name;
+				if(! $mod && !empty($obj->moduleName)){
+					$mod = $obj->moduleName;
 				}
 				if($mod){
 					$moduleViewPath = Module::findViewFullPath($view, $mod);

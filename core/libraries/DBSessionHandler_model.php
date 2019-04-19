@@ -28,6 +28,7 @@
 	 * DB session handler class
 	 */
  	abstract class DBSessionHandler_model extends Model {
+		
 		/**
 		 * The session table columns to use
 		 * @var array

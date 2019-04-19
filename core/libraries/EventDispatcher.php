@@ -30,6 +30,7 @@
 	 */
 	
 	class EventDispatcher{
+		
 		/**
 		 * The list of the registered listeners
 		 * @var array
@@ -105,10 +106,19 @@
 		}
 		
 		/**
+		 * Get the list of listener for this event
+		 * @param string $eventName the event name
+		 * @return array the listeners for this event or empty array if this event does not contain any listener
+		 */
+		public function getListeners($eventName){
+			return isset($this->listeners[$eventName]) ? $this->listeners[$eventName] : array();
+		}
+		
+		/**
 		 * Dispatch the event to the registered listeners.
 		 * @param  string $eventName the name of the event to dispatch
 		 * @param  mixed|Event $e  the event information
-		 * @return void|Event if event need return, will return the final Event instance.
+		 * @return void|Event if event need return, will return the final Event object.
 		 */	
 		public function dispatch($eventName, $e = null){
 			$this->logger->debug('Dispatch to the Event Listener, the event name [' .$eventName. '], event data [' .stringfy_vars($e). ']');
@@ -126,14 +136,6 @@
 			}
 		}
 		
-		/**
-		 * Get the list of listener for this event
-		 * @param string $eventName the event name
-		 * @return array the listeners for this event or empty array if this event does not contain any listener
-		 */
-		public function getListeners($eventName){
-			return isset($this->listeners[$eventName]) ? $this->listeners[$eventName] : array();
-		}
 		
 		/**
 		 * Dispatch the event to the registered listeners.

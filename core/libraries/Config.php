@@ -25,6 +25,7 @@
 	*/
 
 	class Config{
+		
 		/**
 		 * The list of loaded configuration
 		 * @var array
@@ -56,27 +57,29 @@
 			$logger = static::getLogger();
 			$logger->debug('Initialization of the configuration');
 			static::$config = & load_configurations();
-			if(!static::$config['base_url'] || !is_url(static::$config['base_url'])){
-				$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
-				$base_url = null;
+			if(! static::$config['base_url'] || ! is_url(static::$config['base_url'])){
+				if(ENVIRONMENT == 'production'){
+					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
+				}
+				$baseUrl = null;
 				if (isset($_SERVER['SERVER_ADDR'])){
+					//check if the server is running under IPv6
 					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE){
-						$base_url = '['.$_SERVER['SERVER_ADDR'].']';
+						$baseUrl = '['.$_SERVER['SERVER_ADDR'].']';
 					}
 					else{
-						$base_url = $_SERVER['SERVER_ADDR'];
+						$baseUrl = $_SERVER['SERVER_ADDR'];
 					}
-
-					$base_url = (is_https() ? 'https' : 'http').'://'.$base_url
-						.substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
+					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl
+						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
 				}
 				else{
 					$logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
-					$base_url = 'http://localhost/';
+					$baseUrl = 'http://localhost/';
 				}
-				self::set('base_url', $base_url);
+				self::set('base_url', $baseUrl);
 			}
-			static::$config['base_url'] = rtrim(static::$config['base_url'], '/').'/';
+			static::$config['base_url'] = rtrim(static::$config['base_url'], '/') .'/';
 			if(ENVIRONMENT == 'production' && (strtolower(static::$config['log_level']) == 'debug' || strtolower(static::$config['log_level']) == 'info' || strtolower(static::$config['log_level']) == 'all')){
 				$logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
 			}
@@ -140,7 +143,7 @@
 		}
 
 		/**
-		 * Load the configuration file. This an alias with the Loader::config
+		 * Load the configuration file. This an alias with the Loader::config()
 		 * @param  string $config the config name to be loaded
 		 */
 		public static function load($config){

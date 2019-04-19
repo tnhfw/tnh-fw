@@ -384,7 +384,7 @@
 					}
 					else{
 						if($this->getModule()){
-							$c->module_name = $this->getModule();
+							$c->moduleName = $this->getModule();
 						}
 						$this->logger->info('Routing data is set correctly now GO!');
 						call_user_func_array(array($c, $m), $this->getArgs());

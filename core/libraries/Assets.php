@@ -39,7 +39,11 @@
 	 *  @filesource
 	 */
 	class Assets{
-
+		
+		/**
+		 * The logger instance
+		 * @var Log
+		 */
 		private static $logger;
 
 		/**
@@ -48,7 +52,7 @@
 		 */
 		private static function getLogger(){
 			if(static::$logger == null){
-				//can't assign reference to static varibale
+				//can't assign reference to static variable
 				static::$logger[0] =& class_loader('Log');
 				static::$logger[0]->setLogger('Library::Assets');
 			}
@@ -69,17 +73,16 @@
 		 *  @return string|null the absolute path of the assets file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function path($asset){
-			$logger = static::getLogger();
-			
+			$logger = static::getLogger();	
 			$path = ASSETS_PATH . $asset;
 			
-			$logger->debug('Including the Assets file [' .$path. ']');
+			$logger->debug('Including the Assets file [' . $path . ']');
 			//Check if the file exists
 			if(file_exists($path)){
-				$logger->info('Assets file [' .$path. '] included successfully');
+				$logger->info('Assets file [' . $path . '] included successfully');
 				return Url::base_url($path);
 			}
-			$logger->warning('Assets file [' .$path. '] does not exist');
+			$logger->warning('Assets file [' . $path . '] does not exist');
 			return null;
 		}
 		
@@ -102,15 +105,15 @@
 			* an empty string for better processing.
 			*/
 			$path = str_ireplace('.css', '', $path);
-			$path = ASSETS_PATH.'css/'.$path.'.css';
+			$path = ASSETS_PATH . 'css/' . $path . '.css';
 			
-			$logger->debug('Including the Assets file [' .$path. '] for CSS');
+			$logger->debug('Including the Assets file [' . $path . '] for CSS');
 			//Check if the file exists
 			if(file_exists($path)){
-				$logger->info('Assets file [' .$path. '] for CSS included successfully');
+				$logger->info('Assets file [' . $path . '] for CSS included successfully');
 				return Url::base_url($path);
 			}
-			$logger->warning('Assets file [' .$path. '] for CSS does not exist');
+			$logger->warning('Assets file [' . $path . '] for CSS does not exist');
 			return null;
 		}
 
@@ -129,13 +132,13 @@
 		public static function js($path){
 			$logger = static::getLogger();
 			$path = str_ireplace('.js', '', $path);
-			$path = ASSETS_PATH.'js/'.$path.'.js';
-			$logger->debug('Including the Assets file [' .$path. '] for javascript');
+			$path = ASSETS_PATH . 'js/' . $path . '.js';
+			$logger->debug('Including the Assets file [' . $path . '] for javascript');
 			if(file_exists($path)){
-				$logger->info('Assets file [' .$path. '] for Javascript included successfully');
+				$logger->info('Assets file [' . $path . '] for Javascript included successfully');
 				return Url::base_url($path);
 			}
-			$logger->warning('Assets file [' .$path. '] for Javascript does not exist');
+			$logger->warning('Assets file [' . $path . '] for Javascript does not exist');
 			return null;
 		}
 
@@ -153,13 +156,13 @@
 		 */
 		public static function img($path){
 			$logger = static::getLogger();
-			$path = ASSETS_PATH.'images/'.$path;
-			$logger->debug('Including the Assets file [' .$path. '] for image');
+			$path = ASSETS_PATH . 'images/' . $path;
+			$logger->debug('Including the Assets file [' . $path . '] for image');
 			if(file_exists($path)){
-				$logger->info('Assets file [' .$path. '] for image included successfully');
+				$logger->info('Assets file [' . $path . '] for image included successfully');
 				return Url::base_url($path);
 			}
-			$logger->warning('Assets file [' .$path. '] for image does not exist');
+			$logger->warning('Assets file [' . $path . '] for image does not exist');
 			return null;
 		}
 	}

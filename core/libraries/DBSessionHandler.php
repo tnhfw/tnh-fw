@@ -32,6 +32,7 @@
 	}
 
 	class DBSessionHandler implements SessionHandlerInterface{
+		
 		/**
 		 * The encryption method to use to encrypt session data in database
 		 * @const string
@@ -88,17 +89,17 @@
 
 			$secret = get_config('session_secret', false);
 			//try to check if session secret is set and the length is >= SESSION_SECRET_MIN_LENGTH
-			if(!$secret || strlen($secret) < self::SESSION_SECRET_MIN_LENGTH){
+			if(! $secret || strlen($secret) < self::SESSION_SECRET_MIN_LENGTH){
 				show_error('Session secret is not set or the length is below to '.self::SESSION_SECRET_MIN_LENGTH.' caracters');
 			}
 			$this->logger->info('Session secret: ' . $secret);
 
 			$modelName = get_config('session_save_path');
 			$this->logger->info('The database session model: ' . $modelName);
-			Loader::model($modelName);
+			Loader::model($modelName, 'dbsessionhanlderinstance');
 
 			//set model instance name
-			$this->modelInstanceName = $this->OBJ->{strtolower($modelName)};
+			$this->modelInstanceName = $this->OBJ->dbsessionhanlderinstance;
 
 			if(! $this->modelInstanceName instanceof DBSessionHandler_model){
 				show_error('To use database session handler, your class model "'.$modelName.'" need extends "DBSessionHandler_model"');
@@ -113,7 +114,7 @@
 			$this->logger->info('Database session, the model columns are listed below: ' . stringfy_vars($this->sessionTableColumns));
 
 			$this->sessionSecret = $secret;
-			$key = base64_decode($this->sessionSecret);
+			$key = base64_decode($secret);
 			
 			$iv_length = openssl_cipher_iv_length(self::DB_SESSION_HASH_METHOD);
 			$this->iv = substr(hash('sha256', $key), 0, $iv_length);
@@ -130,7 +131,7 @@
 		 * @return boolean 
 		 */
 		public function open($savePath, $sessionName){
-			$this->logger->debug('Opening database session handler');
+			$this->logger->debug('Opening database session handler for [' . $sessionName . ']');
 			return true;
 		}
 

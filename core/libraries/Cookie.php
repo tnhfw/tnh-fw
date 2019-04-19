@@ -25,6 +25,7 @@
 	*/
 
 	class Cookie{
+		
 		/**
 		 * The logger instance
 		 * @var Log

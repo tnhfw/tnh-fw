@@ -98,7 +98,7 @@
 		require_once VENDOR_PATH . 'autoload.php';
 	}
 	else{
-		$LOGGER->info('The composer autoload file does not exist');
+		$LOGGER->info('The composer autoload file does not exist skipping');
 	}
 	
 	$LOGGER->debug('Begin to load the required resources');
@@ -130,16 +130,6 @@
 	*/
 	$MODULE =& class_loader('Module');
 	$MODULE->init();
-	
-	$LOGGER->debug('Loading modules configuration ...');
-	$cfg = Module::getModulesConfig();
-	if($cfg && is_array($cfg)){
-		Config::setAll($cfg);
-		$LOGGER->info('Configurations for all modules loaded successfully');
-	}
-	else{
-		$LOGGER->info('No configuration found for all modules skipping.');
-	}
 	$BENCHMARK->mark('MODULE_INIT_END');
 
 	$LOGGER->debug('Loading Base Controller ...');
@@ -167,6 +157,11 @@
 	*/
 	$SECURITY =& class_loader('Security');
 	$SECURITY->checkWhiteListIpAccess();
+	
+	/*
+		Loading Url class
+	*/
+	$URL =& class_loader('Url');
 	
 	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/*

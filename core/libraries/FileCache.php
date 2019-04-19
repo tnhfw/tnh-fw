@@ -25,11 +25,13 @@
 	*/
 
 	class FileCache implements CacheInterface{
+		
 		/**
 		 * Whether to enable compression of the cache data file.
 		 * @var boolean
 		 */
 		private $compressCacheData = true;
+		
 		/**
 		 * The logger instance
 		 * @var Log
@@ -72,7 +74,7 @@
 		    $data = file_get_contents($filePath);
       		fclose($handle);
       		$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
-      		if (!$data) {
+      		if (! $data) {
       			$logger->error('Can not unserialize the cache data for the key ['. $key .'], return false');
 		         // If unserializing somehow didn't work out, we'll delete the file
 		         unlink($filePath);
@@ -85,7 +87,7 @@
 		        return false;
 		     }
 		     else{
-		     	$logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' .date('Y-m-d H:i:s', $data[0]). ']');
+		     	$logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $data[0]) . ']');
 		     	return $data[1];
 		     }
 			return false;
@@ -99,9 +101,9 @@
 		 * @param integer $ttl  the cache life time
 		 */
 		public function set($key, $data, $ttl = 0){
-			$expire = time() + $ttl;
 			$logger = static::getLogger();
-			$logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' .$expire. ']');
+			$expire = time() + $ttl;
+			$logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
 			$filePath = $this->getFilePath($key);
 			$handle = fopen($filePath,'w');
 			if( ! $handle){
@@ -157,20 +159,20 @@
 				$logger->info('No cache files were found skipping');
 			}
 			else{
-				$logger->info('Found [' .count($list). '] cache files to remove if expired');
+				$logger->info('Found [' . count($list) . '] cache files to remove if expired');
 				foreach ($list as $file) {
-					$logger->debug('Processing the cache file [' .$file. ']');
+					$logger->debug('Processing the cache file [' . $file . ']');
 					$data = file_get_contents($file);
 		      		$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
 		      		if(! $data){
-		      			$logger->warning('Can not unserialize the cache data for file [' .$file. ']');
+		      			$logger->warning('Can not unserialize the cache data for file [' . $file . ']');
 		      		}
 		      		else if(time() > $data[0]){
-		      			$logger->info('The cache data for file [' .$file. '] already expired remove it');
+		      			$logger->info('The cache data for file [' . $file . '] already expired remove it');
 		      			@unlink($file);
 		      		}
 		      		else{
-		      			$logger->info('The cache data for file [' .$file. '] not yet expired skip it');
+		      			$logger->info('The cache data for file [' . $file . '] not yet expired skip it');
 		      		}
 				}
 			}
@@ -187,14 +189,20 @@
 				$logger->info('No cache files were found skipping');
 			}
 			else{
-				$logger->info('Found [' .count($list). '] cache files to remove');
+				$logger->info('Found [' . count($list) . '] cache files to remove');
 				foreach ($list as $file) {
-					$logger->debug('Processing the cache file [' .$file. ']');
+					$logger->debug('Processing the cache file [' . $file . ']');
 					@unlink($file);
 				}
 			}
 		}
 
+		/**
+		* Get the cache file full path for the given key
+		*
+		* @param $key the cache item key
+		* @return string the full cache file path for this key
+		*/
 		private function getFilePath($key){
 			return CACHE_PATH . md5($key) . '.cache';
 		}
@@ -211,7 +219,7 @@
 	     *
 	     * @return self
 	     */
-	    public function setCompressCacheData($compressCacheData){
-	        $this->compressCacheData = $compressCacheData;
+	    public function setCompressCacheData($status = true){
+	        $this->compressCacheData = $status;
 	    }
 	}

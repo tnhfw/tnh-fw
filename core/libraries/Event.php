@@ -28,6 +28,7 @@
 	 * This class represent the event detail to dispatch to correspond listener
 	 */
 	class Event{
+		
 		/**
 		 * The event name
 		 * @var string

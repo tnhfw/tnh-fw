@@ -25,6 +25,7 @@
     */
    
 	class Module{
+		
 		/**
 		 * list of loaded module
 		 * @var array
@@ -73,34 +74,6 @@
 				$logger->info('The application contains no module skipping');
 			}
 		}
-
-		/**
-		 * Get the list of the custom configuration from module if exists
-		 * @return array|boolean the configurations list or false if no module contains the configuration values
-		 */
-		public static function getModulesConfig(){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
-				$logger->info('No module was loaded skipping.');
-				return false;
-			}
-			$configs = array();
-			foreach (static::$list as $module) {
-				$file = MODULE_PATH . $module . DS . 'config' . DS . 'config.php';
-				if(file_exists($file)){
-					require_once $file;
-					if(!empty($config) && is_array($config)){
-						$configs = array_merge($configs, $config);
-						unset($config);
-					}
-					else{
-						show_error('No configuration found in config.php for module [' .$module. ']');
-					}
-				}
-			}
-			return $configs;
-		}
-		
 		
 		/**
 		 * Get the list of the custom autoload configuration from module if exists
@@ -232,6 +205,29 @@
 			else{
 				$logger->info('Model [' . $class . '] does not exist in the module [' .$module. ']');
 				return false;
+			}
+			return false;
+		}
+		
+		/**
+		 * Check if in module list can have this config
+		 * @param  string $configuration the config name
+		 * @param string $module the module name
+		 * @return boolean|string  false or null if no module have this configuration,  return the full path of this configuration
+		 */
+		public static function findConfigFullPath($configuration, $module = null){
+			$logger = static::getLogger();
+			if(! static::hasModule()){
+				$logger->info('No module was loaded skiping.');
+				return false;
+			}
+			$configuration = str_ireplace('.php', '', $configuration);
+			$file = $configuration.'.php';
+			$logger->debug('Checking configuration [' . $configuration . '] in module [' .$module. '] ...');
+			$filePath = MODULE_PATH . $module . DS . 'config' . DS . $file;
+			if(file_exists($filePath)){
+				$logger->info('Found configuration [' . $configuration . '] in module [' .$module. '], the file path is [' .$filePath. ']');
+				return $filePath;
 			}
 			return false;
 		}

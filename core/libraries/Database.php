@@ -571,7 +571,9 @@
     }
 
     public function error(){
-  	   show_error('Query: "'.$this->query.'" Error: '.$this->error, 'Database Error');
+		if($this->error){
+			show_error('Query: "'.$this->query.'" Error: '.$this->error, 'Database Error');
+		}
     }
 
     public function get($type = false)
@@ -718,84 +720,104 @@
       }
 
       $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
-      $str = stristr($this->query, 'SELECT');
+      $sqlSELECTQuery = stristr($this->query, 'SELECT');
 
       $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . ($all ? 'YES':'NO'));
-      $cacheExpire = $this->cacheExpire;
+      //cache expire time
+	  $cacheExpire = $this->cacheExpire;
+	  //config for cache
       $cacheEnable = get_config('cache_enable');
+	  
+	  //the database cache content
       $cacheContent = null;
+	  
+	  //this database query cache key
       $cacheKey = null;
+	  
+	  //the cache manager instance
       $cacheInstance = null;
+	  
+	  //the instance of the super controller
       $obj = & get_instance();
-      if ($cacheEnable && $cacheExpire > 0 && $str){
+	  
+	  //if can use cache feature for this query
+	  $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
+	  
+      if ($dbCacheStatus && $sqlSELECTQuery){
         $this->logger->info('The cache is enabled for this database query, try to get the database result from cache'); 
         $cacheKey = md5($query . $all . $array);
         $cacheInstance = $obj->{strtolower(get_config('cache_handler'))};
         $cacheContent = $cacheInstance->get($cacheKey);        
       }
       else{
-        $this->logger->info('The cache is not enabled for this database query, get the query result directly from real database');
+        $this->logger->info('The cache is not enabled for this database query or is not the SELECT query, get the query result directly from real database');
       }
       
-      if (!$cacheContent && $str)
+      if (!$cacheContent && $sqlSELECTQuery)
       {
-        $benchmark_marker_key = md5($query . $all . $array);
-        $obj->benchmark->mark('DATABASE_QUERY_START(' . $benchmark_marker_key . ')');
-        $sql = $this->pdo->query($this->query);
-        $obj->benchmark->mark('DATABASE_QUERY_END(' . $benchmark_marker_key . ')');
-        $response_time = $obj->benchmark->elapsed_time('DATABASE_QUERY_START(' . $benchmark_marker_key . ')', 'DATABASE_QUERY_END(' . $benchmark_marker_key . ')');
+		//for database query execution time
+        $benchmarkMarkerKey = md5($query . $all . $array);
+        $obj->benchmark->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');
+        //Now execute the query
+		$sqlQuery = $this->pdo->query($this->query);
+        $obj->benchmark->mark('DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
+		
+		//get response time for this query
+        $response_time = $obj->benchmark->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
+		//TODO use the configuration value for the high response time currently is 1 second
         if($response_time >= 1 ){
             $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$response_time. '] sec.');
         }
-        if ($sql)
+        if ($sqlQuery)
         {
-          $this->numRows = $sql->rowCount();
+          $this->numRows = $sqlQuery->rowCount();
           if (($this->numRows > 0))
           {
+			//if need return all result like list of record
             if ($all)
             {
-              $q = array();
-              while ($result = ($array == false) ? $sql->fetchAll(PDO::FETCH_OBJ) : $sql->fetchAll(PDO::FETCH_ASSOC)){
-                $q[] = $result;
-              }
-              $this->result = $q[0];
-            }
+              $this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
+		    }
             else
             {
-              $q = ($array == false) ? $sql->fetch(PDO::FETCH_OBJ) : $sql->fetch(PDO::FETCH_ASSOC);
-              $this->result = $q;
+				$this->result = ($array == false) ? $sqlQuery->fetch(PDO::FETCH_OBJ) : $sqlQuery->fetch(PDO::FETCH_ASSOC);
             }
           }
-          if ($cacheEnable && $cacheExpire > 0 && $str){
+          if ($dbCacheStatus && $sqlSELECTQuery){
             $this->logger->info('Save the query result [' .$this->query. '] into cache for future use');
             $cacheInstance->set($cacheKey, $this->result, $cacheExpire);
           }
         }
         else
         {
-          $this->error = $this->pdo->errorInfo();
-          $this->error = $this->error[2];
-          $this->logger->error('The database query execution get error: [' . $this->error . ']');
-          return $this->error();
+          $error = $this->pdo->errorInfo();
+          $this->error = $error[2];
+          $this->logger->fatal('The database query execution got error: ' . stringfy_vars($error));
+          $this->error();
         }
       }
-      else if ((!$cacheContent && !$str) || ($cacheContent && !$str))
+      else if ((!$cacheContent && !$sqlSELECTQuery) || ($cacheContent && !$sqlSELECTQuery))
       {
-        $this->result = $this->pdo->query($this->query);
+		$queryStr = $this->pdo->query($this->query);
+		if($queryStr){
+			$this->result = $queryStr->rowCount() >= 0;
+			$this->numRows = $queryStr->rowCount();
+		}
         if (!$this->result)
         {
-          $this->error = $this->pdo->errorInfo();
-          $this->error = $this->error[2];
-          return $this->error();
+          $error = $this->pdo->errorInfo();
+          $this->error = $error[2];
+          $this->logger->fatal('The database query execution got error: ' . stringfy_vars($error));
+          $this->error();
         }
       }
       else
       {
         $this->logger->info('The query result for [' .$this->query. '] already cached use it');
         $this->result = $cacheContent;
+		$this->numRows = count($this->result);
       }
       $this->queryCount++;
-      $this->numRows = count($this->result);
       if(!$this->result){
         $this->logger->info('No result where found for the query [' . $query . ']');
       }
