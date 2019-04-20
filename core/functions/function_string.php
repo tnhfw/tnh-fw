@@ -39,7 +39,7 @@
 	 *  @filesource
 	 */
 
-	if(!function_exists('get_random_string')){
+	if(! function_exists('get_random_string')){
 		/**
 		 * Generate a random string
 		 * @param  string $type the type of generation. It can take the values: "alpha" for alphabetic characters,

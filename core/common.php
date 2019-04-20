@@ -69,17 +69,18 @@
 		if(! $found){
 			//can't use show_error() at this time because some dependencies not yet loaded
 			set_http_status_header(503);
-			echo 'Cannot find the class [' .$class. ']';
+			echo 'Cannot find the class [' . $class . ']';
 			exit(1);
 		}
 		class_loaded($class);
 		$classes[$class] = isset($params) ? new $class($params) : new $class();
+		
 		/*
-			TODO use the best method to get the log
+		   TODO use the best method to get the log
 		 */
 		if($class == 'Log'){
-			$l = new Log();
-			return $l;
+			$log = new Log();
+			return $log;
 		}
 		return $classes[$class];
 	}
@@ -111,16 +112,15 @@
 				require_once $file;
 				$found = true;
 			}
-
 			if(! $found){
 				set_http_status_header(503);
-				echo 'Unable to find the configuration file [' .$file. ']';
+				echo 'Unable to find the configuration file [' . $file . ']';
 				exit(1);
 			}
 
-			if(!isset($config) || ! is_array($config)){
+			if(! isset($config) || ! is_array($config)){
 				set_http_status_header(503);
-				echo 'No configuration found in file [' .$file. ']';
+				echo 'No configuration found in file ['  . $file . ']';
 				exit(1);
 			}
 		}
@@ -141,7 +141,7 @@
 		if(empty($cfg)){
 			$cfg[0] = & load_configurations();
 		}
-		return isset($cfg[0][$key]) ? $cfg[0][$key] : $default;
+		return array_key_exists($key, $cfg[0]) ? $cfg[0][$key] : $default;
 	}
 
 	/**
@@ -228,11 +228,11 @@
 		}
 		
 		if(strpos(php_sapi_name(), 'cgi') === 0){
-			header('Status: '.$code.' '.$text, TRUE);
+			header('Status: ' . $code . ' ' . $text, TRUE);
 		}
 		else{
 			$proto = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
-			header($proto.' '.$code.' '.$text, TRUE, $code);
+			header($proto . ' ' . $code . ' ' . $text, TRUE, $code);
 		}
 	}
 
@@ -250,8 +250,8 @@
 		if($logging){
 			save_to_log('error', '['.$title.'] '.strip_tags($msg), 'GLOBAL::ERROR');
 		}
-		$resp = & class_loader('Response');
-		$resp->sendError($data);
+		$response = & class_loader('Response');
+		$response->sendError($data);
 		die();
 	}
 
@@ -313,12 +313,11 @@
 	 *  
 	 */
 	function php_exception_handler($ex){
-		if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors')))
-		{
-			show_error('An exception is occured in file '.$ex->getFile().' at line '.$ex->getLine().' raison : '.$ex->getMessage(), 'PHP Exception #'.$ex->getCode());
+		if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
+			show_error('An exception is occured in file '. $ex->getFile() .' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
 		}
 		else{
-			save_to_log('error', 'An exception is occured in file '.$ex->getFile().' at line '.$ex->getLine().' raison : '.$ex->getMessage(), 'PHP Exception');
+			save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
 		}
 		exit(1);
 		return true;
@@ -336,33 +335,33 @@
 	 *  
 	 */
 	function php_error_handler($errno , $errstr, $errfile , $errline, array $errcontext = array()){
-		$is_error = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
-		if($is_error){
+		$isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
+		if($isError){
 			set_http_status_header(500);
 		}
 		if (!(error_reporting() & $errno)) {
-			save_to_log('error', 'An error is occurred in the file '.$errfile.' at line '.$errline.' raison : '.$errstr, 'PHP '.$error_type, 'PHP ERROR');
+			save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ' . $error_type, 'PHP ERROR');
 			return;
 		}
 		if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
-			$error_type = 'error';
+			$errorType = 'error';
 			switch ($errno) {
 				case E_USER_ERROR:
-					$error_type = 'error';
+					$errorType = 'error';
 					break;
 				case E_USER_WARNING:
-					$error_type = 'warning';
+					$errorType = 'warning';
 					break;
 				case E_USER_NOTICE:
-					$error_type = 'notice';
+					$errorType = 'notice';
 					break;
 				default:
-					$error_type = 'error';
+					$errorType = 'error';
 					break;
 			}
-			show_error('An error is occurred in the file <b>'.$errfile.'</b> at line <b>'.$errline.'</b> raison : '.$errstr, 'PHP '.$error_type);
+			show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline .'</b> raison : ' . $errstr, 'PHP ' . $errorType);
 		}
-		if ($is_error){
+		if ($isError){
 			exit(1);
 		}
 		return true;
@@ -372,10 +371,10 @@
 	 * This function is used to run in shutdown situation of the script
 	 */
 	function php_shudown_handler(){
-		$last_error = error_get_last();
-		if (isset($last_error) &&
-			($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))){
-			php_error_handler($last_error['type'], $last_error['message'], $last_error['file'], $last_error['line']);
+		$lastError = error_get_last();
+		if (isset($lastError) &&
+			($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))){
+			php_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
 		}
 	}
 
@@ -437,11 +436,11 @@
 			$str = array_map('clean_input', $str);
 		}
 		else if(is_object($str)){
-			$o = $str;
+			$obj = $str;
 			foreach ($str as $var => $value) {
-				$o->$var = clean_input($value);
+				$obj->$var = clean_input($value);
 			}
-			$str = $o;
+			$str = $obj;
 		}
 		else{
 			$str = htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
@@ -457,25 +456,25 @@
 		$logger =& class_loader('Log');
 		$logger->setLogger('PHPSession');
 		//set session params
-		$session_handler = get_config('session_handler', 'files'); //the default is to store in the files
-		$session_name = get_config('session_name');
-		if($session_name){
-			session_name($session_name);
+		$sessionHandler = get_config('session_handler', 'files'); //the default is to store in the files
+		$sessionName = get_config('session_name');
+		if($sessionName){
+			session_name($sessionName);
 		}
-		$logger->info('Session handler: ' . $session_handler);
-		$logger->info('Session name: ' . $session_name);
+		$logger->info('Session handler: ' . $sessionHandler);
+		$logger->info('Session name: ' . $sessionName);
 
-		if($session_handler == 'files'){
-			$session_save_path = get_config('session_save_path');
-			if($session_save_path){
-				if(!is_dir($session_save_path)){
-					mkdir($session_save_path, 1773);
+		if($sessionHandler == 'files'){
+			$sessionSavePath = get_config('session_save_path');
+			if($sessionSavePath){
+				if(! is_dir($sessionSavePath)){
+					mkdir($sessionSavePath, 1773);
 				}
-				session_save_path($session_save_path);
-				$logger->info('Session save path: ' . $session_save_path);
+				session_save_path($sessionSavePath);
+				$logger->info('Session save path: ' . $sessionSavePath);
 			}
 		}
-		else if($session_handler == 'database'){
+		else if($sessionHandler == 'database'){
 			//load database session handle library
 			//Model
 			require_once CORE_LIBRARY_PATH . 'Model.php';

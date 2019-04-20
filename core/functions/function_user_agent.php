@@ -41,7 +41,7 @@
 	 */
 	
 	 
-	if(!function_exists('get_ip')){
+	if(! function_exists('get_ip')){
 		/**
 		 *  Retrieves the user's IP address
 		 *  

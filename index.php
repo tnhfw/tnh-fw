@@ -23,7 +23,6 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-
 	/**
 	* the directory separator, under windows it is \ and unix, linux /
 	*/
@@ -67,7 +66,6 @@
 	*/
 	define('APPS_CONTROLLER_PATH', APPS_PATH . 'controllers' . DS);
 
-
 	/**
 	* The path to the directory of your model classes of your application. 
 	*
@@ -93,7 +91,6 @@
 	*/
 	define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
 
-
 	/** 
 	* The core directory
 	*
@@ -109,7 +106,6 @@
 	*/
 	define('CORE_FUNCTIONS_PATH', CORE_PATH . 'functions' . DS);
 
-
 	/**
 	* The path to the core directory of languages files. 
 	*
@@ -123,7 +119,6 @@
 	* core directory it is advisable to put it out of the root directory of your application.
 	*/
 	define('CORE_LIBRARY_PATH', CORE_PATH . 'libraries' . DS);
-
 
 	/**
 	* The path to the system view directory.
@@ -157,7 +152,6 @@
 	* because it is recalled in case of updating the system you might have surprises.
 	*/
 	define('LIBRARY_PATH', ROOT_PATH . 'libraries' . DS);
-
 
 	/**
 	* The path to the directory that contains the log files.
@@ -196,7 +190,6 @@
 	*/
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
-
 	/**
 	* The environment of your application (production, test, development). 
 	*
@@ -209,22 +202,22 @@
 	define('ENVIRONMENT', 'development');
 
 	/* ---------------------------------------------------------------------------------- */
-	////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////
 	/******************** DO NOT CHANGE THE LINES BELOW *********************************/
-	////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 
 	switch (ENVIRONMENT) {
 		case 'development':
 			error_reporting(-1);
 			ini_set('display_errors', 1);
 		break;
-
 		case 'testing':
 		case 'production':
 			ini_set('display_errors', 0);
 			if (version_compare(PHP_VERSION, '5.3', '>=')) {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-			}else {
+			}
+			else{
 				error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
 			}
 		break;
@@ -233,6 +226,7 @@
 			echo 'The application environment is not set correctly.';
 			exit(1);
 	}
+	
 	/**
 	* let's go.
 	* Everything is OK now we launch our application.
