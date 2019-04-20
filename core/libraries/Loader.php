@@ -24,6 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 	class Loader{
+		
 		/**
 		 * List of loaded resources
 		 * @var array
@@ -41,6 +42,7 @@
 			//add the resources already loaded during application bootstrap
 			//in the list to prevent duplicate or loading the resources again.
 			static::$loaded = class_loaded();
+			
 			$autoloads = array();
 			//loading of the resources in autoload.php configuration file
 			if(file_exists(CONFIG_PATH . 'autoload.php')){
@@ -53,7 +55,7 @@
 					show_error('No autoload configuration found in autoload.php');
 				}
 			}
-			//loading autoload configuration for module
+			//loading autoload configuration for modules
 			$modulesAutoloads = Module::getModulesAutoloadConfig();
 			if($modulesAutoloads && is_array($modulesAutoloads)){
 				//libraries autoload
@@ -101,16 +103,17 @@
 			
 			//before load models check if database library is loaded and then load model library
 			//if Database is loaded load the required library
-			if(isset(static::$loaded['database']) || !empty($autoloads['models'])){
-				//Model
+			if(isset(static::$loaded['database']) || ! empty($autoloads['models'])){
 				require_once CORE_LIBRARY_PATH . 'Model.php';
 			}
+			
 			//models autoload
 			if(!empty($autoloads['models']) && is_array($autoloads['models'])){
 				foreach($autoloads['models'] as $model){
 					Loader::model($model);
 				}
 			}
+			
 			//functions autoload
 			if(!empty($autoloads['functions']) && is_array($autoloads['functions'])){
 				foreach($autoloads['functions'] as $function){
@@ -134,8 +137,10 @@
 
 		/**
 		 * Load the model class
+		 *
 		 * @param  string $class    the class name to be loaded
 		 * @param  string $instance the name of the instance to use in super object
+		 *
 		 * @return void
 		 */
 		public static function model($class, $instance = null){
@@ -210,9 +215,11 @@
 
 		/**
 		 * Load the library class
+		 *
 		 * @param  string $class    the library class name to be loaded
 		 * @param  string $instance the instance name to use in super object
 		 * @param mixed $params the arguments to pass to the constructor
+		 *
 		 * @return void
 		 */
 		public static function library($class, $instance = null, $params = null){
@@ -276,8 +283,8 @@
 				}
 			}
 			if(! $libraryFilePath){
-				$search_dir = array(LIBRARY_PATH);
-				foreach($search_dir as $dir){
+				$searchDir = array(LIBRARY_PATH);
+				foreach($searchDir as $dir){
 					$filePath = $dir . $file;
 					if(file_exists($filePath)){
 						$libraryFilePath = $filePath;
@@ -307,7 +314,9 @@
 
 		/**
 		 * Load the helper
+		 *
 		 * @param  string $function the helper name to be loaded
+		 *
 		 * @return void
 		 */
 		public static function functions($function){
@@ -347,8 +356,8 @@
 				$logger->info('Cannot find helper [' . $function . '] from modules using the default location');
 			}
 			if(! $functionFilePath){
-				$search_dir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
-				foreach($search_dir as $dir){
+				$searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
+				foreach($searchDir as $dir){
 					$filePath = $dir . $file;
 					if(file_exists($filePath)){
 						$functionFilePath = $filePath;
@@ -370,7 +379,9 @@
 
 		/**
 		 * Load the configuration file
-		 * @param  string $filename the configuration filename located at CONFIG_PATH
+		 *
+		 * @param  string $filename the configuration filename located at CONFIG_PATH or MODULE_PATH/config
+		 *
 		 * @return void
 		 */
 		public static function config($filename){
@@ -412,7 +423,7 @@
 			$logger->info('The config file path to be loaded is [' . $configFilePath . ']');
 			if(file_exists($configFilePath)){
 				require_once $configFilePath;
-				if(!empty($config) && is_array($config)){
+				if(! empty($config) && is_array($config)){
 					Config::setAll($config);
 				}
 				else{
@@ -431,7 +442,9 @@
 
 		/**
 		 * Load the language
+		 *
 		 * @param  string $language the language name to be loaded
+		 *
 		 * @return void
 		 */
 		public static function lang($language){
@@ -449,10 +462,10 @@
 			$appLang = get_config('default_language');
 			//if the language exists in the cookie use it
 			$cfgKey = get_config('language_cookie_name');
-			$oCookie = & class_loader('Cookie');
-			$cLang = $oCookie->get($cfgKey);
-			if($cLang){
-				$appLang = $cLang;
+			$objCookie = & class_loader('Cookie');
+			$cookieLang = $objCookie->get($cfgKey);
+			if($cookieLang){
+				$appLang = $cookieLang;
 			}
 			$languageFilePath = null;
 			//first check if this language is in the module
@@ -480,8 +493,8 @@
 				$logger->info('Cannot find language [' . $language . '] from modules using the default location');
 			}
 			if(! $languageFilePath){
-				$search_dir = array(APP_LANG_PATH, CORE_LANG_PATH);
-				foreach($search_dir as $dir){
+				$searchDir = array(APP_LANG_PATH, CORE_LANG_PATH);
+				foreach($searchDir as $dir){
 					$filePath = $dir . $appLang . DS . $file;
 					if(file_exists($filePath)){
 						$languageFilePath = $filePath;
@@ -493,7 +506,7 @@
 			$logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
 			if($languageFilePath){
 				require_once $languageFilePath;
-				if(!empty($lang) && is_array($lang)){
+				if(! empty($lang) && is_array($lang)){
 					$logger->info('Language file  [' .$languageFilePath. '] contains the valide languages keys add them to language list');
 					//Note: may be here the class 'Lang' not yet loaded
 					$langObj =& class_loader('Lang');

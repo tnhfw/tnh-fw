@@ -49,14 +49,14 @@
 				return $path;
 			}
 			$path = rtrim($path, '/');
-			$base_url = get_config('base_url');
-			$front_controller = get_config('front_controller');
-			$url = $base_url;
-			if($front_controller){
-				$url .= $front_controller.'/';
+			$baseUrl = get_config('base_url');
+			$frontController = get_config('front_controller');
+			$url = $baseUrl;
+			if($frontController){
+				$url .= $frontController . '/';
 			}
 			if(($suffix = get_config('url_suffix')) && $path){
-				if(strpos($path, '?') != false){
+				if(strpos($path, '?') !== false){
 					$query = explode('?', $path);
 					$query[0] = str_ireplace($suffix, '', $query[0]);
 					$query[0] = rtrim($query[0], '/');
@@ -67,7 +67,7 @@
 					$path .= $suffix;
 				}
 			}
-			return $url.$path;
+			return $url . $path;
 		}
 
 		/**

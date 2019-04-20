@@ -28,6 +28,7 @@
 	 * For application languages management
 	 */
 	class Lang{
+		
 		/**
 		 * The supported available language for this application.
 		 * @example "en" => "english" 
@@ -76,12 +77,12 @@
 			//if the language exists in cookie use it
 			$cfgKey = get_config('language_cookie_name');
 			$this->logger->debug('Getting current language from cookie [' .$cfgKey. ']');
-			$oCookie = & class_loader('Cookie');
-			$cLang = $oCookie->get($cfgKey);
-			if($cLang && $this->isValid($cLang)){
-				$language = $cLang;
+			$objCookie = & class_loader('Cookie');
+			$cookieLang = $objCookie->get($cfgKey);
+			if($cookieLang && $this->isValid($cookieLang)){
+				$language = $cookieLang;
 				$this->current = $language;
-				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid so we will set the language using the cookie value [' .$cLang. ']');
+				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid so we will set the language using the cookie value [' .$cookieLang. ']');
 			}
 			else{
 				$this->logger->info('Language from cookie [' .$cfgKey. '] is not set, use the default value [' .$this->getDefault(). ']');
@@ -91,6 +92,7 @@
 
 		/**
 		 * Get the all languages messages
+		 *
 		 * @return array the language message list
 		 */
 		public function getAll(){
@@ -99,6 +101,7 @@
 
 		/**
 		 * Set the language message
+		 *
 		 * @param string $key the language key to identify
 		 * @param string $value the language message value
 		 */
@@ -107,9 +110,11 @@
 		}
 
 		/**
-		 * Get the language message for the given key if can not find return the default value
+		 * Get the language message for the given key. If can't find return the default value
+		 *
 		 * @param  string $key the message language key
 		 * @param  string $default the default value to return if can not found the language message key
+		 *
 		 * @return string the language message value
 		 */
 		public function get($key, $default = 'LANGUAGE_ERROR'){
@@ -122,12 +127,14 @@
 
 		/**
 		 * Check whether the language file for given name exists
+		 *
 		 * @param  string  $language the language name like "fr", "en", etc.
-		 * @return boolean true if the language file exist, false or not
+		 *
+		 * @return boolean true if the language directory exists, false or not
 		 */
 		public function isValid($language){
-			$search_dir = array(CORE_LANG_PATH, APP_LANG_PATH);
-			foreach($search_dir as $dir){
+			$searchDir = array(CORE_LANG_PATH, APP_LANG_PATH);
+			foreach($searchDir as $dir){
 				if(file_exists($dir . $language) && is_dir($dir . $language)){
 					return true;
 				}
@@ -137,6 +144,7 @@
 
 		/**
 		 * Get the default language value like "en" , "fr", etc.
+		 *
 		 * @return string the default language
 		 */
 		public function getDefault(){
@@ -145,6 +153,7 @@
 
 		/**
 		 * Get the current language defined by cookie or the default value
+		 *
 		 * @return string the current language
 		 */
 		public function getCurrent(){
@@ -152,9 +161,10 @@
 		}
 
 		/**
-		 * Add new supported language
+		 * Add new supported or available language
+		 *
 		 * @param string $name the short language name like "en", "fr".
-		 * @param string $desc the human readable descrition of this language
+		 * @param string $descrition the human readable descrition of this language
 		 */
 		public function addLang($name, $descrition){
 			if(isset($this->availables[$name])){
@@ -170,6 +180,7 @@
 
 		/**
 		 * Get the list of the application supported language
+		 *
 		 * @return array the list of the application language
 		 */
 		public function getSupported(){
@@ -178,7 +189,8 @@
 
 		/**
 		 * Add new language messages
-		 * @param array $langs the languages array of messages to be added
+		 *
+		 * @param array $langs the languages array of the messages to be added
 		 */
 		public function addLangMessages(array $langs){
 			foreach ($langs as $key => $value) {

@@ -25,6 +25,7 @@
 	*/
 
 	class Log{
+		
 		/**
 		 * The defined constante for Log level
 		 */
@@ -34,13 +35,13 @@
 		const WARNING = 300;
 		const INFO = 200;
 		const DEBUG = 100;
-		const ALL = -9999999999;
+		const ALL = -99999999;
 
 		/**
 		 * The logger name
 		 * @var string
 		 */
-		private $logger = 'ROOT';
+		private $logger = 'ROOT_LOGGER';
 		
 		/**
 		 * List of valid log level to be checked for the configuration
@@ -56,10 +57,10 @@
 
 		/**
 		 * Set the logger to identify each message in the log
-		 * @param string $newlogger the logger name
+		 * @param string $logger the logger name
 		 */
-		public  function setLogger($newlogger){
-			$this->logger = $newlogger;
+		public  function setLogger($logger){
+			$this->logger = $logger;
 		}
 
 		/**
@@ -115,71 +116,79 @@
 		 * to allow check the log level threshold.
 		 */
 		public function writeLog($message, $level = self::INFO){
-			$log_level = get_config('log_level');
-			if(! $log_level){
+			$configLogLevel = get_config('log_level');
+			if(! $configLogLevel){
 				//so means no need log just stop here
 				return;
 			}
 			//check config log level
-			if(!static::isValidConfigLevel($log_level)){
+			if(! static::isValidConfigLevel($configLogLevel)){
 				//NOTE: here need put the show_error() "logging" to false to prevent loop
-				show_error('Invalid config log level, the value must be one of the following: ' . implode(', ', array_map('strtoupper', static::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
+				show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', static::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
 			}
 
 			//if $level is not an integer
-			if(!is_numeric($level)){
+			if(! is_numeric($level)){
 				$level = static::getLevelValue($level);
 			}
+			
 			//check if can logging regarding the log level config
-			$configLevel = static::getLevelValue($log_level);
+			$configLevel = static::getLevelValue($configLogLevel);
 			if($configLevel > $level){
 				//can't log
 				return;
 			}
 			
-			$log_save_path = get_config('log_save_path');
-			if(!$log_save_path){
-				$log_save_path = LOGS_PATH;
+			$logSavePath = get_config('log_save_path');
+			if(! $logSavePath){
+				$logSavePath = LOGS_PATH;
 			}
 			
-			if(!is_dir($log_save_path) || !is_writable($log_save_path)){
+			if(! is_dir($logSavePath) || !is_writable($logSavePath)){
 				//NOTE: here need put the show_error() "logging" to false to prevent loop
 				show_error('Error : the log dir does not exists or is not writable', $title = 'Log directory error', $logging = false);
 			}
-			$file = 'logs-'.date('d-m-Y').'.log';
-			$path = $log_save_path . $file;
-			if(!file_exists($path)){
+			
+			$path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
+			if(! file_exists($path)){
 				@touch($path);
 			}
 			//may be at this time helper user_agent not yet included
 			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
+			
 			///////////////////// date //////////////
-			$timestamp_with_micro = microtime(true);
-			$microtime = sprintf("%06d", ($timestamp_with_micro - floor($timestamp_with_micro)) * 1000000);
-			$d = new DateTime(date('Y-m-d H:i:s.' . $microtime, $timestamp_with_micro));
-			$date = $d->format("Y-m-d H:i:s.u"); 
+			$timestampWithMicro = microtime(true);
+			$microtime = sprintf('%06d', ($timestampWithMicro - floor($timestampWithMicro)) * 1000000);
+			$dateTime = new DateTime(date('Y-m-d H:i:s.' . $microtime, $timestampWithMicro));
+			$logDate = $dateTime->format('Y-m-d H:i:s.u'); 
 			//ip
 			$ip = get_ip();
 			//level name
 			$levelName = static::getLevelName($level);
+			
 			//debug info
 			$dtrace = debug_backtrace();
 			array_shift($dtrace); //remove the first element
+			
 			$fileInfo = array_shift($dtrace);//use the second index that contains the caller info
-			$str = $date . ' [' .str_pad($levelName, 7 /*warning len*/) . '] '. ' [' .str_pad($ip, 15) . '] '.$this->logger . ' : ' . $message . ' ' . '['.$fileInfo['file'] . '::' .$fileInfo['line']. ']'."\n";
-			$fp = fopen($path, "a+");
+			
+			$str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
+			$fp = fopen($path, 'a+');
 			flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
 			fwrite($fp, $str);
 			fclose($fp);
 		}		
+		
 		/**
 		 * Check if the given log level is valid
+		 *
 		 * @param  string  $level the log level
+		 *
 		 * @return boolean        true if the given log level is valid, false if not
 		 */
 		private static function isValidConfigLevel($level){
-			$l = strtolower($level);
-			return in_array($l, static::$validConfigLevel);
+			$level = strtolower($level);
+			return in_array($level, static::$validConfigLevel);
 		}
 
 		/**
@@ -188,52 +197,53 @@
 		 * @return int        the log level in integer format using the predefinied constants
 		 */
 		private static function getLevelValue($level){
-			$l = strtolower($level);
+			$level = strtolower($level);
 			$value = self::NONE;
+			
 			//the default value is NONE, so means no need test for NONE
-			if($l == 'fatal'){
+			if($level == 'fatal'){
 				$value = self::FATAL;
 			}
-			else if($l == 'error'){
+			else if($level == 'error'){
 				$value = self::ERROR;
 			}
-			else if($l == 'warning' || $l == 'warn'){
+			else if($level == 'warning' || $level == 'warn'){
 				$value = self::WARNING;
 			}
-			else if($l == 'info'){
+			else if($level == 'info'){
 				$value = self::INFO;
 			}
-			else if($l == 'debug'){
+			else if($level == 'debug'){
 				$value = self::DEBUG;
 			}
-			else if($l == 'all'){
+			else if($level == 'all'){
 				$value = self::ALL;
 			}
 			return $value;
 		}
 
 		/**
-		 * Get the log level string for the given level integer
+		 * Get the log level string for the given log level integer
 		 * @param  integer $level the log level in integer format
 		 * @return int        the log level in string format
 		 */
 		private static function getLevelName($level){
-			$l = strtolower($level);
 			$value = '';
+			
 			//the default value is NONE, so means no need test for NONE
-			if($l == self::FATAL){
+			if($level == self::FATAL){
 				$value = 'FATAL';
 			}
-			else if($l == self::ERROR){
+			else if($level == self::ERROR){
 				$value = 'ERROR';
 			}
-			else if($l == self::WARNING){
+			else if($level == self::WARNING){
 				$value = 'WARNING';
 			}
-			else if($l == self::INFO){
+			else if($level == self::INFO){
 				$value = 'INFO';
 			}
-			else if($l == self::DEBUG){
+			else if($level == self::DEBUG){
 				$value = 'DEBUG';
 			}
 			//no need for ALL

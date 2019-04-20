@@ -25,6 +25,7 @@
 	*/
 
 	class Security{
+		
 		/**
 		 * The logger instance
 		 * @var Log
@@ -51,32 +52,22 @@
 		public static function generateCSRF(){
 			$logger = static::getLogger();
 			$logger->debug('Generation of CSRF ...');
-			$logger->debug('Check if CSRF is enabled in the configuration ...');
-			//first check if enable in configuration (false by default if not enable)
-			$isEnable = get_config('csrf_enable', false);
-			if($isEnable){
-				$logger->info('CSRF is enabled in the configuration');
-				$key = get_config('csrf_key', 'csrf_key');
-				$expire = get_config('csrf_expire', 60);
-				$keyExpire = 'csrf_expire';
-				$currentTime = time();
-				if(Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) > $currentTime){
-					$logger->info('The CSRF token not yet expire just return it');
-					return Session::get($key);
-				}
-				else{
-					$newTime = $currentTime + $expire;
-					$token = sha1(uniqid()).sha1(uniqid());
-					$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. '], token [' .$token. ']');
-					Session::set($keyExpire, $newTime);
-					Session::set($key, $token);
-					return Session::get($key);
-				}
+			
+			$key = get_config('csrf_key', 'csrf_key');
+			$expire = get_config('csrf_expire', 60);
+			$keyExpire = 'csrf_expire';
+			$currentTime = time();
+			if(Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) > $currentTime){
+				$logger->info('The CSRF token not yet expire just return it');
+				return Session::get($key);
 			}
 			else{
-				$logger->info('CSRF is not enabled in the configuration');
-				//not enable in configuration
-				return null;
+				$newTime = $currentTime + $expire;
+				$token = sha1(uniqid()) . sha1(uniqid());
+				$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. '], token [' .$token. ']');
+				Session::set($keyExpire, $newTime);
+				Session::set($key, $token);
+				return Session::get($key);
 			}
 		}
 
@@ -87,38 +78,30 @@
 		public static function validateCSRF(){
 			$logger = static::getLogger();
 			$logger->debug('Validation of CSRF ...');
-			$logger->debug('Check if CSRF is enabled in the configuration ...');
-			$isEnable = get_config('csrf_enable', false);
-			if($isEnable){
-				$logger->info('CSRF is enabled in the configuration');
-				$key = get_config('csrf_key', 'csrf_key');
-				$expire = get_config('csrf_expire', 60);
-				$keyExpire = 'csrf_expire';
-				$currentTime = time();
-				$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. ']');
-				if(!Session::exists($key) || Session::get($keyExpire) <= $currentTime){
-					$logger->warning('The CSRF session data is not valide');
+				
+			$key = get_config('csrf_key', 'csrf_key');
+			$expire = get_config('csrf_expire', 60);
+			$keyExpire = 'csrf_expire';
+			$currentTime = time();
+			$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. ']');
+			if(! Session::exists($key) || Session::get($keyExpire) <= $currentTime){
+				$logger->warning('The CSRF session data is not valide');
+				return false;
+			}
+			else{
+				//perform form data
+				//need use request->query() for best retrieve
+				//super instance
+				$obj = & get_instance();
+				$token = $obj->request->query($key);
+				if(! $token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime){
+					$logger->warning('The CSRF data [' .$token. '] is not valide may be attacker do his job');
 					return false;
 				}
 				else{
-					//perform form data
-					//need use request->query() for best retrieve
-					//super instance
-					$obj = & get_instance();
-					$token = $obj->request->query($key);
-					if(!$token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime){
-						$logger->warning('The CSRF data [' .$token. '] is not valide may be attacker do his job');
-						return false;
-					}
-					else{
-						$logger->info('The CSRF data [' .$token. '] is valide the form data is safe continue');
-						return true;
-					}
+					$logger->info('The CSRF data [' .$token. '] is valide the form data is safe continue');
+					return true;
 				}
-			}
-			else{
-				$logger->info('CSRF is not enabled in the configuration, ignore checking');
-				return false; //TODO no need to return false if CSRF not enable no need to call this method
 			}
 		}
 		
@@ -133,7 +116,7 @@
 			if($isEnable){
 				$logger->info('Whitelist IP access is enabled in the configuration');
 				$list = get_config('white_list_ip_addresses', array());
-				if(!empty($list)){
+				if(! empty($list)){
 					//may be at this time helper user_agent not yet included
 					require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 					$ip = get_ip();
@@ -146,14 +129,14 @@
 						// go through all whitelisted ips
 						foreach ($list as $ipaddr) {
 							// find the wild card * in whitelisted ip (f.e. find position in "127.0.*" or "127*")
-							$wildcardPosition = strpos($ipaddr, "*");
+							$wildcardPosition = strpos($ipaddr, '*');
 							if ($wildcardPosition === false) {
 								// no wild card in whitelisted ip --continue searching
 								continue;
 							}
 							// cut ip at the position where we got the wild card on the whitelisted ip
 							// and add the wold card to get the same pattern
-							if (substr($ip, 0, $wildcardPosition) . "*" === $ipaddr) {
+							if (substr($ip, 0, $wildcardPosition) . '*' === $ipaddr) {
 								// f.e. we got
 								//  ip "127.0.0.1"
 								//  whitelisted ip "127.0.*"

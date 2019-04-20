@@ -56,19 +56,20 @@
 		public function init(){
 			$logger = static::getLogger();
 			$logger->debug('Check if the application contains the modules ...');
-			$module_dir = opendir(MODULE_PATH);
-			while(($module = readdir($module_dir)) !== false){
+			$moduleDir = opendir(MODULE_PATH);
+			while(($module = readdir($moduleDir)) !== false){
 				if($module != '.' && $module != '..'  && preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
 					static::$list[] = $module;
 				}
 				else{
-					$logger->info('Skipping [' .$module. '], may be this is not a directory or does not exists or is invalid');
+					$logger->info('Skipping [' .$module. '], may be this is not a directory or does not exists or is invalid name');
 				}
 			}
-			closedir($module_dir);
+			closedir($moduleDir);
 			ksort(static::$list);
+			
 			if(static::hasModule()){
-				$logger->info('The application contains the module below [' .implode(', ', static::getModuleList()). ']');
+				$logger->info('The application contains the module below [' . implode(', ', static::getModuleList()) . ']');
 			}
 			else{
 				$logger->info('The application contains no module skipping');
@@ -86,33 +87,34 @@
 				return false;
 			}
 			$autoloads['libraries'] = array();
-			$autoloads['config'] = array();
-			$autoloads['models'] = array();
+			$autoloads['config']    = array();
+			$autoloads['models']    = array();
 			$autoloads['functions'] = array();
 			$autoloads['languages'] = array();
+			
 			foreach (static::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
 				if(file_exists($file)){
 					require_once $file;
-					if(!empty($autoload) && is_array($autoload)){
+					if(! empty($autoload) && is_array($autoload)){
 						//libraries autoload
-						if(!empty($autoload['libraries']) && is_array($autoload['libraries'])){
+						if(! empty($autoload['libraries']) && is_array($autoload['libraries'])){
 							$autoloads['libraries'] = array_merge($autoloads['libraries'], $autoload['libraries']);
 						}
 						//config autoload
-						if(!empty($autoload['config']) && is_array($autoload['config'])){
+						if(! empty($autoload['config']) && is_array($autoload['config'])){
 							$autoloads['config'] = array_merge($autoloads['config'], $autoload['config']);
 						}
 						//models autoload
-						if(!empty($autoload['models']) && is_array($autoload['models'])){
+						if(! empty($autoload['models']) && is_array($autoload['models'])){
 							$autoloads['models'] = array_merge($autoloads['models'], $autoload['models']);
 						}
 						//functions autoload
-						if(!empty($autoload['functions']) && is_array($autoload['functions'])){
+						if(! empty($autoload['functions']) && is_array($autoload['functions'])){
 							$autoloads['functions'] = array_merge($autoloads['functions'], $autoload['functions']);
 						}
 						//languages autoload
-						if(!empty($autoload['languages']) && is_array($autoload['languages'])){
+						if(! empty($autoload['languages']) && is_array($autoload['languages'])){
 							$autoloads['languages'] = array_merge($autoloads['languages'], $autoload['languages']);
 						}
 						unset($autoload);
@@ -140,12 +142,12 @@
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'routes.php';
 				if(file_exists($file)){
 					require_once $file;
-					if(!empty($route) && is_array($route)){
+					if(! empty($route) && is_array($route)){
 						$routes = array_merge($routes, $route);
 						unset($route);
 					}
 					else{
-						show_error('No routing configuration found in [' .$file. '] for module [' .$module. ']');
+						show_error('No routing configuration found in [' .$file. '] for module [' . $module . ']');
 					}
 				}
 			}
@@ -178,7 +180,6 @@
 				$logger->info('Controller [' . $class . '] does not exist in the module [' .$module. ']');
 				return false;
 			}
-			return false;
 		}
 
 		/**
@@ -206,7 +207,6 @@
 				$logger->info('Model [' . $class . '] does not exist in the module [' .$module. ']');
 				return false;
 			}
-			return false;
 		}
 		
 		/**
@@ -229,7 +229,10 @@
 				$logger->info('Found configuration [' . $configuration . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			return false;
+			else{
+				$logger->info('Configuration [' . $configuration . '] does not exist in the module [' .$module. ']');
+				return false;
+			}
 		}
 
 		/**
@@ -253,7 +256,10 @@
 				$logger->info('Found helper [' . $helper . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			return false;
+			else{
+				$logger->info('Helper [' . $helper . '] does not exist in the module [' .$module. ']');
+				return false;
+			}
 		}
 
 
@@ -277,7 +283,10 @@
 				$logger->info('Found library [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			return false;
+			else{
+				$logger->info('Library [' . $class . '] does not exist in the module [' .$module. ']');
+				return false;
+			}
 		}
 
 
@@ -303,7 +312,10 @@
 				$logger->info('Found view [' . $view . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			return false;
+			else{
+				$logger->info('View [' . $view . '] does not exist in the module [' .$module. ']');
+				return false;
+			}
 		}
 
 		/**
@@ -328,7 +340,10 @@
 				$logger->info('Found language [' . $language . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			return false;
+			else{
+				$logger->info('Language [' . $language . '] does not exist in the module [' .$module. ']');
+				return false;
+			}
 		}
 
 		/**

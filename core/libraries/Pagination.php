@@ -25,7 +25,8 @@
 	*/
 
     class Pagination{
-        /**
+        
+		/**
          * The list of loaded config
          * @var array
          */
@@ -33,18 +34,22 @@
 
         /**
          * Create an instance of pagination
-         * @param array $overwrite_config the list of configuration to overwrite the defined configuration in config_pagination.php
+         * @param array $overwriteConfig the list of configuration to overwrite the defined configuration in config_pagination.php
          */
-        public function __construct($overwrite_config = array()){
+        public function __construct($overwriteConfig = array()){
             if(file_exists(CONFIG_PATH . 'config_pagination.php')){
                 require_once CONFIG_PATH . 'config_pagination.php';
                 if(empty($config) || ! is_array($config)){
                     show_error('No configuration found in ' . CONFIG_PATH . 'config_pagination.php');
                 }
-                $this->config = $config;
-                Config::setAll($config);
-                unset($config);
-                $this->setConfig($overwrite_config);
+				else{
+					if(! empty($overwriteConfig)){
+						$config = array_merge($config, $overwriteConfig);
+					}
+					$this->config = $config;
+					Config::setAll($config);
+					unset($config);
+				}
             }
             else{
                 show_error('Unable to find the pagination configuration file');
@@ -54,7 +59,7 @@
 
         /**
          * Set the pagination custom configuration to overwrite the default configuration in
-         * config_pagination
+         * config_pagination.php
          * @param array $config the configuration to set
          */
         public function setConfig(array $config = array()){
@@ -66,102 +71,102 @@
 
         /**
          * Generate the pagination link
-         * @param  int $total the total number of data
-         * @param  int $current_page_no the current page number
+         * @param  int $totalRows the total number of data
+         * @param  int $currentPageNumber the current page number
          * @return string the pagination link
          */
-        public function getLink($total, $current_page_no){
+        public function getLink($totalRows, $currentPageNumber){
             $pageQueryName = $this->config['page_query_string_name'];
-            $nb_link = $this->config['nb_link'];
-			$nb_per_page = $this->config['pagination_per_page'];
+            $numberOfLink = $this->config['nb_link'];
+			$numberOfRowPerPage = $this->config['pagination_per_page'];
             $queryString = Url::queryString();
-            $current = Url::current();
+            $currentUrl = Url::current();
             if($queryString == ''){
-                $query = '?'.$pageQueryName.'=';
+                $query = '?' . $pageQueryName . '=';
             }
             else{
-                $tab = explode($pageQueryName.'=', $queryString);
+                $tab = explode($pageQueryName . '=', $queryString);
                 $nb = count($tab);
                 if($nb == 1){
-                    $query = '?'.$queryString.'&'.$pageQueryName.'=';
-                 }
+                    $query = '?' . $queryString . '&' . $pageQueryName . '=';
+                }
                 else{
                     if($tab[0] == ''){
-                        $query = '?'.$pageQueryName.'=';
+                        $query = '?' . $pageQueryName . '=';
                     }
                     else{
-                        $query = '?'.$tab[0].''.$pageQueryName.'=';
+                        $query = '?' . $tab[0] . '' . $pageQueryName . '=';
                     }
                 }
             }
-            $temp = explode('?', $current);
-            $query = $temp[0].$query;
+            $temp = explode('?', $currentUrl);
+            $query = $temp[0] . $query;
             $navbar = '';
-            $nb_page = ceil($total/$nb_per_page);
-            if($nb_page <= 1 || $nb_link <= 0 || $nb_per_page <= 0 ||
-                $current_page_no <= 0 || !is_numeric($nb_link) || !is_numeric($nb_per_page)
+            $numberOfPage = ceil($totalRows / $numberOfRowPerPage);
+            if($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0 ||
+                $currentPageNumber <= 0 || !is_numeric($numberOfLink) || !is_numeric($numberOfRowPerPage)
             ){
                 return $navbar;
             }
-            if($nb_link % 2 == 0){
-                $start = $current_page_no - ($nb_link/2) + 1;
-                $end = $current_page_no + ($nb_link/2);
+            if($numberOfLink % 2 == 0){
+                $start = $currentPageNumber - ($numberOfLink / 2) + 1;
+                $end = $currentPageNumber + ($numberOfLink / 2);
             }
             else{
-                $start = $current_page_no - floor($nb_link/2);
-                $end = $current_page_no + floor($nb_link/2);
+                $start = $currentPageNumber - floor($numberOfLink / 2);
+                $end = $currentPageNumber + floor($numberOfLink / 2);
             }
             if($start <= 1){
                 $begin = 1;
-                $end = $nb_link;
+                $end = $numberOfLink;
             }
-            else if($start > 1 && $end < $nb_page){
+            else if($start > 1 && $end < $numberOfPage){
                 $begin = $start;
                 $end = $end;
             }
             else{
-                $begin = ($nb_page-$nb_link) + 1;
-                $end = $nb_page;
+                $begin = ($numberOfPage - $numberOfLink) + 1;
+                $end = $numberOfPage;
             }
-            if($nb_page <= $nb_link){
+            if($numberOfPage <= $numberOfLink){
                 $begin = 1;
-                $end = $nb_page;
+                $end = $numberOfPage;
             }
-            if($current_page_no == 1){
+            if($currentPageNumber == 1){
                 for($i = $begin; $i <= $end; $i++){
-                    if($i == $current_page_no){
-                        $navbar .= $this->config['active_link_open'].$current_page_no.$this->config['active_link_close'];
+                    if($i == $currentPageNumber){
+                        $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
                     }
                     else{
-                        $navbar .= $this->config['digit_open']."<a href='$query".$i."' ".attributes_to_string($this->config['attributes']).">$i</a>".$this->config['digit_close'];
+                        $navbar .= $this->config['digit_open'] . '<a href="' . $query . $i . '" ' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' . $this->config['digit_close'];
                     }
                 }
-                $navbar .= $this->config['next_open']."<a href='$query".($current_page_no+1)."'>".$this->config['next_text']."</a>".$this->config['next_close'];
+                $navbar .= $this->config['next_open'] . '<a href="' . $query . ($currentPageNumber + 1) . '">' . $this->config['next_text'] . '</a>' . $this->config['next_close'];
             }
-            else if($current_page_no > 1 && $current_page_no < $nb_page){
-                $navbar .= $this->config['previous_open']."<a href='$query".($current_page_no-1)."'>".$this->config['previous_text']."</a>".$this->config['previous_close'];
+            else if($currentPageNumber > 1 && $currentPageNumber < $numberOfPage){
+                $navbar .= $this->config['previous_open'] . '<a href="' . $query . ($currentPageNumber - 1) . '">' . $this->config['previous_text'] . '</a>' . $this->config['previous_close'];
                 for($i = $begin; $i <= $end; $i++){
-                    if($i == $current_page_no){
-                        $navbar .= $this->config['active_link_open'].$current_page_no.$this->config['active_link_close'];
+                    if($i == $currentPageNumber){
+                        $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
                     }
                     else{
-                        $navbar .= $this->config['digit_open']."<a href='$query".$i."' ".attributes_to_string($this->config['attributes']).">$i</a>".$this->config['digit_close'];
+                        $navbar .= $this->config['digit_open'] . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i .'</a>' . $this->config['digit_close'];
                     }
                 }
-                $navbar .= $this->config['next_open']."<a href='$query".($current_page_no+1)."'>".$this->config['next_text']."</a>".$this->config['next_close'];
+                $navbar .= $this->config['next_open']."<a href='$query".($currentPageNumber + 1)."'>".$this->config['next_text']."</a>".$this->config['next_close'];
             }
-            else if($current_page_no == $nb_page){
-                $navbar .= $this->config['previous_open']."<a href='$query".($current_page_no-1)."'>".$this->config['previous_text']."</a>".$this->config['previous_close'];
+            else if($currentPageNumber == $numberOfPage){
+                $navbar .= $this->config['previous_open'] . '<a href="' . $query . ($currentPageNumber - 1) . '">' . $this->config['previous_text'] . '</a>' . $this->config['previous_close'];
                 for($i = $begin; $i <= $end; $i++){
-                    if($i == $current_page_no){
-                        $navbar .= $this->config['active_link_open'].$current_page_no.$this->config['active_link_close'];
+                    if($i == $currentPageNumber){
+                        $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
                     }
                     else{
-                        $navbar .= $this->config['digit_open']."<a href='$query".$i."' ".attributes_to_string($this->config['attributes']).">$i</a>".$this->config['digit_close'];
+                        $navbar .= $this->config['digit_open'] . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' . $this->config['digit_close'];
                     }
                 }
             }
-            $navbar = $this->config['pagination_open'].$navbar.$this->config['pagination_close'];
+            $navbar = $this->config['pagination_open'] . $navbar . $this->config['pagination_close'];
             return $navbar;
         }
     }

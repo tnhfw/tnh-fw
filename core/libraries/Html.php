@@ -32,13 +32,14 @@
 		 * @param  string $anchor     the displayed anchor
 		 * @param  array  $attributes the additional attributes to be added
 		 * @param boolean $return whether need return the generated html or just display it directly
+		 *
 		 * @return string|void             the anchor link generated html if $return is true or display it if not
 		 */
 		public static function a($link = '', $anchor = null, array $attributes = array(), $return = true){
-			if(!is_url($link)){
+			if(! is_url($link)){
 				$link = Url::site_url($link);
 			}
-			if(!$anchor){
+			if(! $anchor){
 				$anchor = $link;
 			}
 			$str = null;
@@ -60,10 +61,11 @@
 		 * @param  string $anchor     the displayed value of the link
 		 * @param  array  $attributes the additional attributes to be added
 		 * @param boolean $return whether need return the generated html or just display it directly
+		 *
 		 * @return string|void             the generated html for mailto link if $return is true or display it if not
 		 */
 		public static function mailto($link = '', $anchor = null, array $attributes = array(), $return = true){
-			if(!$anchor){
+			if(! $anchor){
 				$anchor = $link;
 			}
 			$str = null;
@@ -81,9 +83,10 @@
 
 		/**
 		 * Generate the html "br" tag  
-		 * @param  integer $nb the number of generated "br"
+		 * @param  integer $nb the number of generated "<br />" tag
 		 * @param boolean $return whether need return the generated html or just display it directly
-		 * @return string|void      the generated "br" html  if $return is true or display it if not
+		 *
+		 * @return string|void      the generated "br" html if $return is true or display it if not
 		 */
 		public static function br($nb = 1, $return = true){
 			if(! is_numeric($nb) || $nb <= 0){
@@ -102,10 +105,11 @@
 
 		/**
 		 * Generate the html content for tag "hr"
-		 * @param integer $nb the number of generated "hr" tag
+		 * @param integer $nb the number of generated "<hr />" tag
 		 * @param  array   $attributes the tag attributes
 		 * @param  boolean $return    whether need return the generated html or just display it directly
-		 * @return string|void the generated "hr" html  if $return is true or display it if not.
+		 *
+		 * @return string|void the generated "hr" html if $return is true or display it if not.
 		 */
 		public static function hr($nb = 1, array $attributes = array(), $return = true){
 			if(! is_numeric($nb) || $nb <= 0){
@@ -115,7 +119,6 @@
 			for ($i = 1; $i <= $nb; $i++) {
 				$str .= '<hr' .attributes_to_string($attributes). '/>';
 			}
-
 			if($return){
 				return $str;
 			}
@@ -126,10 +129,11 @@
 		 * Generate the html content for tag like h1, h2, h3, h4, h5 and h6
 		 * @param  integer $type       the tag type 1 mean h1, 2 h2, etc,
 		 * @param  string  $text       the display text
-		 * @param integer $nb the number of generated "h{1,2,3,4,5,6}"
+		 * @param integer $nb the number of generated "<h{1,2,3,4,5,6}>"
 		 * @param  array   $attributes the tag attributes
 		 * @param  boolean $return    whether need return the generated html or just display it directly
-		 * @return string|void the generated header html  if $return is true or display it if not.
+		 *
+		 * @return string|void the generated header html if $return is true or display it if not.
 		 */
 		public static function head($type = 1, $text = null, $nb = 1, array $attributes = array(), $return = true){
 			if(! is_numeric($nb) || $nb <= 0){
@@ -142,7 +146,6 @@
 			for ($i = 1; $i <= $nb; $i++) {
 				$str .= '<h' . $type . attributes_to_string($attributes). '>' .$text. '</h' . $type . '>';
 			}
-
 			if($return){
 				return $str;
 			}
@@ -155,14 +158,15 @@
 		 * @param  array   $attributes   the "ul" properties attribute use the array index below for each tag:
 		 *  for ul "ul", for li "li".
 		 * @param  boolean $return whether need return the generated html or just display it directly
+		 *
 		 * @return string|void the generated "ul" html  if $return is true or display it if not.
 		 */
 		public static function ul($data = array(), $attributes = array(), $return = true){
 			$data = (array) $data;
 			$str = null;
-			$str .= '<ul' . (!empty($attributes['ul']) ? attributes_to_string($attributes['ul']):'') . '>';
+			$str .= '<ul' . (! empty($attributes['ul']) ? attributes_to_string($attributes['ul']):'') . '>';
 			foreach ($data as $row) {
-				$str .= '<li' . (!empty($attributes['li']) ? attributes_to_string($attributes['li']):'') .'>' .$row. '</li>';
+				$str .= '<li' . (! empty($attributes['li']) ? attributes_to_string($attributes['li']):'') .'>' .$row. '</li>';
 			}
 			$str .= '</ul>';
 			if($return){
@@ -209,12 +213,12 @@
 			$headers = (array) $headers;
 			$body = (array) $body;
 			$str = null;
-			$str .= '<table' . (!empty($attributes['table']) ? attributes_to_string($attributes['table']):'') . '>';
-			if(!empty($headers)){
-				$str .= '<thead' . (!empty($attributes['thead']) ? attributes_to_string($attributes['thead']):'') .'>';
-				$str .= '<tr' . (!empty($attributes['thead_tr']) ? attributes_to_string($attributes['thead_tr']):'') .'>';
+			$str .= '<table' . (! empty($attributes['table']) ? attributes_to_string($attributes['table']):'') . '>';
+			if(! empty($headers)){
+				$str .= '<thead' . (! empty($attributes['thead']) ? attributes_to_string($attributes['thead']):'') .'>';
+				$str .= '<tr' . (! empty($attributes['thead_tr']) ? attributes_to_string($attributes['thead_tr']):'') .'>';
 				foreach ($headers as $value) {
-					$str .= '<th' . (!empty($attributes['thead_th']) ? attributes_to_string($attributes['thead_th']):'') .'>' .$value. '</th>';
+					$str .= '<th' . (! empty($attributes['thead_th']) ? attributes_to_string($attributes['thead_th']):'') .'>' .$value. '</th>';
 				}
 				$str .= '</tr>';
 				$str .= '</thead>';
@@ -223,22 +227,22 @@
 				//no need check for footer
 				$use_footer = false;
 			}
-			$str .= '<tbody' . (!empty($attributes['tbody']) ? attributes_to_string($attributes['tbody']):'') .'>';
+			$str .= '<tbody' . (! empty($attributes['tbody']) ? attributes_to_string($attributes['tbody']):'') .'>';
 			foreach ($body as $row) {
 				if(is_array($row)){
-					$str .= '<tr' . (!empty($attributes['tbody_tr']) ? attributes_to_string($attributes['tbody_tr']):'') .'>';
+					$str .= '<tr' . (! empty($attributes['tbody_tr']) ? attributes_to_string($attributes['tbody_tr']):'') .'>';
 					foreach ($row as $value) {
-						$str .= '<td' . (!empty($attributes['tbody_td']) ? attributes_to_string($attributes['tbody_td']):'') .'>' .$value. '</td>';	
+						$str .= '<td' . (! empty($attributes['tbody_td']) ? attributes_to_string($attributes['tbody_td']):'') .'>' .$value. '</td>';	
 					}
 					$str .= '</tr>';
 				}
 			}
 			$str .= '</tbody>';
 			if($use_footer){
-				$str .= '<tfoot' . (!empty($attributes['tfoot']) ? attributes_to_string($attributes['tfoot']):'') .'>';
-				$str .= '<tr' . (!empty($attributes['tfoot_tr']) ? attributes_to_string($attributes['tfoot_tr']):'') .'>';
+				$str .= '<tfoot' . (! empty($attributes['tfoot']) ? attributes_to_string($attributes['tfoot']):'') .'>';
+				$str .= '<tr' . (! empty($attributes['tfoot_tr']) ? attributes_to_string($attributes['tfoot_tr']):'') .'>';
 				foreach ($headers as $value) {
-					$str .= '<th' . (!empty($attributes['tfoot_th']) ? attributes_to_string($attributes['tfoot_th']):'') .'>' .$value. '</th>';
+					$str .= '<th' . (! empty($attributes['tfoot_th']) ? attributes_to_string($attributes['tfoot_th']):'') .'>' .$value. '</th>';
 				}
 				$str .= '</tr>';
 				$str .= '</tfoot>';
@@ -249,5 +253,4 @@
 			}
 			echo $str;
 		}
-
 	}

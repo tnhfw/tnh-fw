@@ -221,5 +221,6 @@
 	     */
 	    public function setCompressCacheData($status = true){
 	        $this->compressCacheData = $status;
+			return $this;
 	    }
 	}

@@ -51,9 +51,9 @@
 
     /**
      * Construct new database
-     * @param array $overwrite_config the config to overwrite the config set in database.php
+     * @param array $overwriteConfig the config to overwrite the config set in database.php
      */
-    public function __construct($overwrite_config = array()){
+    public function __construct($overwriteConfig = array()){
         /**
          * instance of the Log class
          */
@@ -67,8 +67,8 @@
       			show_error('No database configuration found in database.php');
 		  }
 		  else{
-  				if(!empty($overwrite_config)){
-  				  $db = array_merge($db, $overwrite_config);
+  				if(! empty($overwriteConfig)){
+  				  $db = array_merge($db, $overwriteConfig);
   				}
   				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
   				$config['username']  = isset($db['username']) ? $db['username'] : 'root';

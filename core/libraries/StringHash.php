@@ -25,10 +25,11 @@
 	*/
 
 	class StringHash{
+		 
 		 //blowfish
 		private static $algo = '$2a';
 		
-		// cost parameter
+		//cost parameter
 		private static $cost = '$10';
 
 		/**

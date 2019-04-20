@@ -25,6 +25,7 @@
 	*/
 
 	class Response{
+
 		/**
 		 * The list of request header to send with response
 		 * @var array
@@ -57,13 +58,13 @@
 
 		/**
 		 * Send the HTTP Response headers
-		 * @param  integer $http_code the HTTP status code
-		 * @param  array   $headers   the additional headers to add to the existing header list
+		 * @param  integer $httpCode the HTTP status code
+		 * @param  array   $headers   the additional headers to add to the existing headers list
 		 */
-		public static function sendHeaders($http_code = 200, array $headers = array()){
-			set_http_status_header($http_code);
+		public static function sendHeaders($httpCode = 200, array $headers = array()){
+			set_http_status_header($httpCode);
 			static::setHeaders($headers);
-			if(!headers_sent()){
+			if(! headers_sent()){
 				foreach(static::getHeaders() as $key => $value){
 					header($key .':'.$value);
 				}
@@ -84,7 +85,7 @@
 		 * @return string       the header value
 		 */
 		public static function getHeader($name){
-			return isset(static::$headers[$name])?static::$headers[$name] : null;
+			return array_key_exists($name, static::$headers) ? static::$headers[$name] : null;
 		}
 
 
@@ -93,7 +94,7 @@
 		 * @param string $name  the header name
 		 * @param string $value the header value to be set
 		 */
-		public static function setHeader($name,$value){
+		public static function setHeader($name, $value){
 			static::$headers[$name] = $value;
 		}
 
@@ -114,7 +115,7 @@
 			$logger = static::getLogger();
 			$url = Url::site_url($path);
 			$logger->info('Redirect to URL [' .$url. ']');
-			if(!headers_sent()){
+			if(! headers_sent()){
 				header('Location:'.$url);
 				exit;
 			}
@@ -159,7 +160,7 @@
 					$logger->info('The view [' . $view . '] content already cached just use it');
 					//dispatch
 					$event = $dispatcher->dispatch('VIEW_LOADED', new Event('VIEW_LOADED', $content, true));
-					$content = (!empty($event->payload) && $event instanceof Event) ? $event->payload: null;
+					$content = (! empty($event->payload) && $event instanceof Event) ? $event->payload : null;
 					if(empty($content)){
 						$logger->warning('The view content is empty after dispatch to Event Listeners.');
 					}
@@ -207,7 +208,7 @@
 				if(file_exists($path)){
 					$obj = & get_instance();
 					foreach($obj as $key => $value){
-						if(!isset($this->{$key})){
+						if(! isset($this->{$key})){
 							$this->{$key} = & $obj->{$key};
 						}
 					}
@@ -221,7 +222,7 @@
 					}
 					//dispatch
 					$event = $dispatcher->dispatch('VIEW_LOADED', new Event('VIEW_LOADED', $content, true));
-					$content = (!empty($event->payload) && $event instanceof Event) ? $event->payload: null;
+					$content = (! empty($event->payload) && $event instanceof Event) ? $event->payload : null;
 					if(empty($content)){
 						$logger->warning('The view content is empty after dispatch to Event Listeners.');
 					}
@@ -231,7 +232,7 @@
 					echo $content;
 					$found = true;
 				}
-				if(!$found){
+				if(! $found){
 					show_error('Unable to find view [' .$view . ']');
 				}
 			}
@@ -246,15 +247,15 @@
 			//can't use $obj = & get_instance()  here because the global super object will be available until
 			//the main controller is loaded even for Loader::library('xxxx');
 			$logger = static::getLogger();
-			$r =& class_loader('Request');
-			$b =& class_loader('Browser');
-			$browser = $b->getPlatform().', '.$b->getBrowser().' '.$b->getVersion();
+			$request =& class_loader('Request');
+			$userAgent =& class_loader('Browser');
+			$browser = $userAgent->getPlatform().', '.$userAgent->getBrowser().' '.$userAgent->getVersion();
 			
 			//here can't use Loader::functions just include the helper manually
 			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 
 			$str = '[404 page not found] : ';
-			$str .= ' Unable to find the request page ['.$r->requestUri().']. The visitor IP address ['.get_ip(). '], browser ['.$browser.']';
+			$str .= ' Unable to find the request page [' . $request->requestUri() . ']. The visitor IP address [' . get_ip() . '], browser [' . $browser . ']';
 			$logger->error($str);
 			/***********************************/
 			$path = CORE_VIEWS_PATH . '404.php';
@@ -285,7 +286,7 @@
 				echo $output;
 			}
 			else{
-				//can't use show_error() at this time because some dependencies not yet loaded
+				//can't use show_error() at this time because some dependencies not yet loaded and to prevent loop
 				set_http_status_header(503);
 				echo 'The error view [' .$path. '] does not exist';
 				exit(1);

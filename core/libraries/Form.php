@@ -42,25 +42,26 @@
 			$method = strtoupper($method);
 			$str = null;
 			$str .= '<form action = "'.$path.'" method = "'.$method.'"';
-			if(!empty($enctype)){
+			if(! empty($enctype)){
 				$str .= ' enctype = "'.$enctype.'" ';
 			}
-			if(!isset($attributes['accept-charset'])){
+			if(! isset($attributes['accept-charset'])){
 				$attributes['accept-charset'] = get_config('charset', 'utf-8');
 			}
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
 			$obj = & get_instance();
-			$check_csrf = false;
+			$checkCsrf = false;
 			//check if the user set the checking of CSRF manually
 			if($method != 'POST' && isset($attributes['csrf'])){
-				if(isset($obj->formvalidation)){
-					$obj->formvalidation->enable_csrf_check = true;
-					$check_csrf = true;
+				if(! isset($obj->formvalidation)){
+					Loader::library('FormValidation');
 				}
+				$obj->formvalidation->enableCsrfCheck = true;
+				$checkCsrf = true;
 			}
-			//if CSRF enable
-			if( get_config('csrf_enable', false) && ($method != 'GET' || $check_csrf)){
+			//if CSRF enable or is set manually
+			if( get_config('csrf_enable', false) || ($method != 'POST' && $checkCsrf)){
 				$csrfValue = Security::generateCSRF();
 				$csrfName = get_config('csrf_key', 'csrf_key');
 				$str .= static::hidden($csrfName, $csrfValue);
@@ -73,7 +74,7 @@
 		 * @see Form::open() for more details
 		 * @return string the generated multipart form html
 		 */
-		public static function open_multipart($path = null, array $attributes = array(), $method = 'POST'){
+		public static function openMultipart($path = null, array $attributes = array(), $method = 'POST'){
 			return self::open($path, $attributes, $method, 'multipart/form-data');
 		}
 
@@ -99,7 +100,7 @@
 		 * Generate the fieldset close tag
 		 * @return string the generated html for fieldset close
 		 */
-		public static function fieldset_close(){
+		public static function fieldsetClose(){
 			return '</fieldset>';
 		}
 
@@ -113,11 +114,10 @@
 			$return = null;
 			$obj = & get_instance();
 			if(isset($obj->formvalidation)){
-				$validation = $obj->formvalidation;
-				$errors = $validation->returnErrors();
-				$error =  isset($errors[$name])?$errors[$name]:null;
+				$errors = $obj->formvalidation->returnErrors();
+				$error =  isset($errors[$name]) ? $errors[$name] : null;
 				if($error){
-					list($errorStart, $errorEnd) = $validation->getErrorDelimiter();
+					list($errorStart, $errorEnd) = $obj->formvalidation->getErrorDelimiter();
 					$return = $errorStart . $error . $errorEnd;
 				}
 			}
@@ -131,7 +131,7 @@
 		 * @return mixed the form field value if is set, otherwise return the default value.
 		 */
 		public static function value($name, $default = null){
-			return isset($_POST[$name])?$_POST[$name]:$default;
+			return isset($_POST[$name]) ? $_POST[$name] : $default;
 		}
 
 		/**
@@ -141,7 +141,7 @@
 		 * @param  array  $attributes the additional attributes to be added
 		 * @return string the generated label html content
 		 */
-		public static function label($label, $for = '',  array $attributes = array()){
+		public static function label($label, $for = '', array $attributes = array()){
 			$str = null;
 			$str .= '<label for = "'.$for.'" ';
 			$str .= attributes_to_string($attributes);
@@ -158,7 +158,7 @@
 		 * @param  string $type       the type of the form field (password, text, submit, button, etc.)
 		 * @return string             the generated form field html content for the input
 		 */
-		public static function input($name, $value = null,  array $attributes = array(), $type = 'text'){
+		public static function input($name, $value = null, array $attributes = array(), $type = 'text'){
 			$str = null;
 			$str .= '<input name = "'.$name.'" value = "'.$value.'" type = "'.$type.'" ';
 			$str .= attributes_to_string($attributes);
@@ -170,7 +170,7 @@
 		 * Generate the form field for "password"
 		 * @see Form::input() for more details
 		 */
-		public static function password($name, $value = null,  array $attributes = array()){
+		public static function password($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'password');
 		}
 
@@ -178,7 +178,7 @@
 		 * Generate the form field for "text"
 		 * @see Form::input() for more details
 		 */
-		public static function text($name, $value = null,  array $attributes = array()){
+		public static function text($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'text');
 		}
 
@@ -216,7 +216,7 @@
 		 * Generate the form field for "number"
 		 * @see Form::input() for more details
 		 */
-		public static function number($name, $value = null,  array $attributes = array()){
+		public static function number($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'number');
 		}
 
@@ -224,7 +224,7 @@
 		 * Generate the form field for "phone"
 		 * @see Form::input() for more details
 		 */
-		public static function phone($name, $value = null,  array $attributes = array()){
+		public static function phone($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'phone');
 		}
 
@@ -232,7 +232,7 @@
 		 * Generate the form field for "email"
 		 * @see Form::input() for more details
 		 */
-		public static function email($name, $value = null,  array $attributes = array()){
+		public static function email($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'email');
 		}
 
@@ -240,7 +240,7 @@
 		 * Generate the form field for "submit"
 		 * @see Form::input() for more details
 		 */
-		public static function submit($name, $value = null,  array $attributes = array()){
+		public static function submit($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'submit');
 		}
 
@@ -248,7 +248,7 @@
 		 * Generate the form field for "button"
 		 * @see Form::input() for more details
 		 */
-		public static function button($name, $value = null,  array $attributes = array()){
+		public static function button($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'button');
 		}
 
@@ -256,7 +256,7 @@
 		 * Generate the form field for "hidden"
 		 * @see Form::input() for more details
 		 */
-		public static function hidden($name, $value = null,  array $attributes = array()){
+		public static function hidden($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'hidden');
 		}
 
@@ -264,27 +264,27 @@
 		 * Generate the form field for "reset"
 		 * @see Form::input() for more details
 		 */
-		public static function reset($name, $value = null,  array $attributes = array()){
+		public static function reset($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'reset');
 		}
 
 		/**
 		 * Generate the form field for select
 		 * @param  string $name       the name of the form field
-		 * @param  mixed|array $value      the value used to populate the "option" tags
+		 * @param  mixed|array $values      the values used to populate the "option" tags
 		 * @param  mixed $selected   the selected value in the option list
 		 * @param  array  $attributes the additional attribute to be added
 		 * @return string             the generated form field html content for select
 		 */
-		public static function select($name, $value = null,  $selected = null, array $attributes = array()){
-			if(!is_array($value)){
-				$value = array('' => $value);
+		public static function select($name, $values = null, $selected = null, array $attributes = array()){
+			if(!is_array($values)){
+				$values = array('' => $values);
 			}
 			$str = null;
 			$str .= '<select name = "'.$name.'" ';
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
-			foreach($value as $key => $val){
+			foreach($values as $key => $val){
 				$select = '';
 				if($key == $selected){
 					$select = 'selected';
@@ -302,7 +302,7 @@
 		 * @param  array  $attributes the additional attributes to be added
 		 * @return string             the generated textarea form html content
 		 */
-		public static function textarea($name, $value = '',  array $attributes = array()){
+		public static function textarea($name, $value = '', array $attributes = array()){
 			$str = null;
 			$str .= '<textarea name = "'.$name.'" ';
 			$str .= attributes_to_string($attributes);

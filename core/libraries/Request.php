@@ -25,6 +25,7 @@
 	*/
 
 	class Request{
+		
 		/**
 		 * The value for the super global $_GET
 		 * @var array
@@ -56,16 +57,16 @@
 		public $file = null;
 
 		/**
-		 * The session instance
-		 * @var Session
-		 */
-		public $session = null;
-
-		/**
 		 * The value for the super global $_REQUEST
 		 * @var array
 		 */
 		public $query = null;
+		
+		/**
+		 * The session instance
+		 * @var Session
+		 */
+		public $session = null;
 
 		/**
 		 * The current request method 'GET', 'POST', 'PUT', etc.
@@ -129,12 +130,12 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function query($key, $xss = true){
+		public function query($key = null, $xss = true){
 			if(empty($key)){
 				//return all
 				return $xss ? clean_input($this->query) : $this->query;
 			}
-			$query = isset($this->query[$key])?$this->query[$key]:null;
+			$query = array_key_exists($key, $this->query) ? $this->query[$key] : null;
 			if($xss){
 				$query = clean_input($query);
 			}
@@ -147,12 +148,12 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function get($key, $xss = true){
+		public function get($key = null, $xss = true){
 			if(empty($key)){
 				//return all
 				return $xss ? clean_input($this->get) : $this->get;
 			}
-			$get = isset($this->get[$key])?$this->get[$key]:null;
+			$get = array_key_exists($key, $this->get) ? $this->get[$key] : null;
 			if($xss){
 				$get = clean_input($get);
 			}
@@ -165,12 +166,12 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function post($key, $xss = true){
+		public function post($key = null, $xss = true){
 			if(empty($key)){
 				//return all
 				return $xss ? clean_input($this->post) : $this->post;
 			}
-			$post = isset($this->post[$key])?$this->post[$key]:null;
+			$post = array_key_exists($key, $this->post) ? $this->post[$key] : null;
 			if($xss){
 				$post = clean_input($post);
 			}
@@ -183,12 +184,12 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function server($key, $xss = true){
+		public function server($key = null, $xss = true){
 			if(empty($key)){
 				//return all
 				return $xss ? clean_input($this->server) : $this->server;
 			}
-			$server = isset($this->server[$key])?$this->server[$key]:null;
+			$server = array_key_exists($key, $this->server) ? $this->server[$key] : null;
 			if($xss){
 				$server = clean_input($server);
 			}
@@ -201,12 +202,12 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function cookie($key, $xss = true){
+		public function cookie($key = null, $xss = true){
 			if(empty($key)){
 				//return all
 				return $xss ? clean_input($this->cookie) : $this->cookie;
 			}
-			$cookie = isset($this->cookie[$key])?$this->cookie[$key]:null;
+			$cookie = array_key_exists($key, $this->cookie) ? $this->cookie[$key] : null;
 			if($xss){
 				$cookie = clean_input($cookie);
 			}
@@ -220,7 +221,7 @@
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
 		public function file($key, $xss = true){
-			$file = isset($this->file[$key])?$this->file[$key]:null;
+			$file = array_key_exists($key, $this->file) ? $this->file[$key] : null;
 			return $file;
 		}
 		
@@ -245,7 +246,7 @@
 		 * @return mixed       the item value if the key exists or null if the key does not exists
 		 */
 		public function header($key, $xss = true){
-			$header = isset($this->header[$key])?$this->header[$key]:null;
+			$header = array_key_exists($key, $this->header) ? $this->header[$key] : null;
 			if($xss){
 				$header = clean_input($header);
 			}
