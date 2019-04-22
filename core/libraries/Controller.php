@@ -51,17 +51,17 @@
 			$this->logger =& class_loader('Log');
 			$this->logger->setLogger('MainController');
 			self::$instance = & $this;
+			
+			$this->logger->debug('Adding the loaded classes to the super instance');
+			foreach (class_loaded() as $var => $class){
+				$this->$var =& class_loader($class);
+			}
 
 			$this->logger->debug('Loading the required classes into super instance');
 			$this->loader =& class_loader('Loader');
 			$this->request =& class_loader('Request');
 			$this->response =& class_loader('Response');
 			$this->lang =& class_loader('Lang');
-			
-			$this->logger->debug('Adding the loaded classes to the super instance');
-			foreach (class_loaded() as $var => $class){
-				$this->$var =& class_loader($class);
-			}
 			
 			$this->logger->debug('Setting the supported languages');
 			//add the supported languages ('key', 'display name')
