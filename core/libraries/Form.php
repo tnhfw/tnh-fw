@@ -61,7 +61,7 @@
 				$checkCsrf = true;
 			}
 			//if CSRF enable or is set manually
-			if( get_config('csrf_enable', false) || ($method != 'POST' && $checkCsrf)){
+			if((get_config('csrf_enable', false) && $method == 'POST') || ($method != 'POST' && $checkCsrf)){
 				$csrfValue = Security::generateCSRF();
 				$csrfName = get_config('csrf_key', 'csrf_key');
 				$str .= static::hidden($csrfName, $csrfValue);
