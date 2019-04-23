@@ -37,6 +37,17 @@
 		 * @var Log
 		 */
 		private static $logger;
+		
+		
+		public function __construct(){
+			if(! $this->isSupported()){
+				show_error('The cache for file system is not available. Check the cache directory if is exists or is writable.');
+			}
+			//if Zlib extension is not loaded set to compressCacheData to false
+			if(! extension_loaded('zlib')){
+				$this->compressCacheData = false;
+			}
+		}
 
 		/**
 		 * Get the logger singleton instance
@@ -122,6 +133,7 @@
 		    else{
 		    	$logger->info('Cache data saved into file [' .$filePath. '] for the key ['. $key .']');
 		    	fclose($handle);
+				chmod($filePath, 0640);
 		    }
 		}	
 
@@ -220,7 +232,24 @@
 	     * @return self
 	     */
 	    public function setCompressCacheData($status = true){
-	        $this->compressCacheData = $status;
+			//if Zlib extension is not loaded set to compressCacheData to false
+			if($status === true && ! extension_loaded('zlib')){
+				$logger = static::getLogger();
+				$logger->warning('The Zlib extension is not loaded set cache compress data to FALSE');
+				$this->compressCacheData = false;
+			}
+			else{
+				$this->compressCacheData = $status;
+			}
 			return $this;
 	    }
+		
+		/**
+		 * Check whether the cache feature for the handle is supported
+		 *
+		 * @return bool
+		 */
+		public function isSupported(){
+			return CACHE_PATH && is_dir(CACHE_PATH) && is_writable(CACHE_PATH);
+		}
 	}

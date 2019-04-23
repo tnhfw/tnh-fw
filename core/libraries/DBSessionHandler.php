@@ -101,8 +101,8 @@
 			//set model instance name
 			$this->modelInstanceName = $this->OBJ->dbsessionhanlderinstance;
 
-			if(! $this->modelInstanceName instanceof DBSessionHandler_model){
-				show_error('To use database session handler, your class model "'.$modelName.'" need extends "DBSessionHandler_model"');
+			if(! $this->modelInstanceName instanceof DBSessionHandlerModel){
+				show_error('To use database session handler, your class model "'.$modelName.'" need extends "DBSessionHandlerModel"');
 			}
 
 			//set session tables columns

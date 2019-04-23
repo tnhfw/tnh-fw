@@ -27,7 +27,7 @@
 	/**
 	 * DB session handler class
 	 */
- 	abstract class DBSessionHandler_model extends Model {
+ 	abstract class DBSessionHandlerModel extends Model {
 		
 		/**
 		 * The session table columns to use

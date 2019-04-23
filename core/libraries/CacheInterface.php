@@ -61,4 +61,12 @@
 		 * Remove all cache data
 		 */
 		public function clean();
+		
+		
+		/**
+		 * Check whether the cache feature for the handle is supported
+		 *
+		 * @return bool
+		 */
+		public function isSupported();
 	}

@@ -480,7 +480,7 @@
 			require_once CORE_LIBRARY_PATH . 'Model.php';
 
 			//Database Session handler Model
-			require_once CORE_LIBRARY_PATH . 'DBSessionHandler_model.php';
+			require_once CORE_LIBRARY_PATH . 'DBSessionHandlerModel.php';
 
 			$DBS =& class_loader('DBSessionHandler');
 			session_set_save_handler($DBS, true);
