@@ -126,7 +126,24 @@
 				//NOTE: here need put the show_error() "logging" to false to prevent loop
 				show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', static::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
 			}
-
+			
+			//check if config log_logger_name is set
+			if($this->logger){
+				$configLoggerName = get_config('log_logger_name', '');
+				if($configLoggerName){
+					if (is_array($configLoggerName)){
+						//for best comparaison put all string to lowercase
+						$configLoggerName = array_map('strtolower', $configLoggerName);
+						if(! in_array(strtolower($this->logger), $configLoggerName)){
+							return;
+						}
+					}
+					else if(strtolower($this->logger) !== strtolower($configLoggerName)){
+						return; 
+					}
+				}
+			}
+			
 			//if $level is not an integer
 			if(! is_numeric($level)){
 				$level = static::getLevelValue($level);
