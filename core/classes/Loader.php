@@ -104,7 +104,7 @@
 			//before load models check if database library is loaded and then load model library
 			//if Database is loaded load the required library
 			if(isset(static::$loaded['database']) || ! empty($autoloads['models'])){
-				require_once CORE_LIBRARY_PATH . 'Model.php';
+				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
 			}
 			
 			//models autoload
@@ -129,7 +129,7 @@
 		 */
 		private static function getLogger(){
 			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log');
+				static::$logger[0] =& class_loader('Log', 'classes');
 				static::$logger[0]->setLogger('Library::Loader');
 			}
 			return static::$logger[0];
@@ -244,6 +244,16 @@
 				$logger->info('Library [' . $class . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
+			$obj = & get_instance();
+			//TODO for Database library
+			if(strtolower($class) == 'database'){
+				$logger->info('This is the Database library ...');
+				$dbInstance = & class_loader('Database', 'classes', $params);
+				$obj->{$instance} = $dbInstance;
+				static::$loaded[$instance] = $class;
+				$logger->info('Library Database loaded successfully.');
+				return;
+			}
 			$libraryFilePath = null;
 			$isSystem = false;
 			$logger->debug('Check if this is a system library ...');
@@ -258,7 +268,6 @@
 				//first check if this library is in the module
 				$logger->debug('Checking library [' . $class . '] from module list ...');
 				$searchModuleName = null;
-				$obj = & get_instance();
 				//check if the request class contains module name
 				if(strpos($class, '/') !== false){
 					$path = explode('/', $class);
@@ -509,7 +518,7 @@
 				if(! empty($lang) && is_array($lang)){
 					$logger->info('Language file  [' .$languageFilePath. '] contains the valide languages keys add them to language list');
 					//Note: may be here the class 'Lang' not yet loaded
-					$langObj =& class_loader('Lang');
+					$langObj =& class_loader('Lang', 'classes');
 					$langObj->addLangMessages($lang);
 					//free the memory
 					unset($lang);

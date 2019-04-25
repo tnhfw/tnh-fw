@@ -68,7 +68,7 @@
 		 * Construct new Lang instance
 		 */
 		public function __construct(){
-	        $this->logger =& class_loader('Log');
+	        $this->logger =& class_loader('Log', 'classes');
 	        $this->logger->setLogger('Library::Lang');
 
 			$this->default = get_config('default_language', 'en');

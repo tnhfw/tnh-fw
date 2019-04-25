@@ -93,7 +93,7 @@
 		 * Construct the new Router instance
 		 */
 		public function __construct(){
-			$this->logger =& class_loader('Log');
+			$this->logger =& class_loader('Log', 'classes');
 	        $this->logger->setLogger('Library::Router');
 	        $routesPath = CONFIG_PATH . 'routes.php';
 	        $this->logger->debug('Loading of routes configuration file --> ' . $routesPath . ' ...');
@@ -387,6 +387,9 @@
 						}
 						$this->logger->info('Routing data is set correctly now GO!');
 						call_user_func_array(array($controllerInstance, $controllerMethod), $this->getArgs());
+						$obj = & get_instance();
+						//render the final page to user
+						$obj->response->renderFinalPage();
 					}
 				}
 			}
@@ -395,7 +398,7 @@
 				$e404 = true;
 			}
 			if($e404){
-				$response =& class_loader('Response');
+				$response =& class_loader('Response', 'classes');
 				$response->send404();
 			}
 		}

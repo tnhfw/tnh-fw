@@ -45,7 +45,7 @@
 		 * Create PDF library instance
 		 */
 		public function __construct(){
-	        $this->logger =& class_loader('Log');
+	        $this->logger =& class_loader('Log', 'classes');
 	        $this->logger->setLogger('Library::PDF');
 
 			require_once VENDOR_PATH.'dompdf/dompdf_config.inc.php';

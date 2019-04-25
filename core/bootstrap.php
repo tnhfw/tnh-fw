@@ -57,10 +57,11 @@
 	 */
 	$BENCHMARK =& class_loader('Benchmark');
 	
+	$BENCHMARK->mark('APP_EXECUTION_START');
 	 /**
      * instance of the Log class
      */
-    $LOGGER =& class_loader('Log');
+    $LOGGER =& class_loader('Log', 'classes');
 
     $LOGGER->setLogger('ApplicationBootstrap');
 
@@ -106,20 +107,20 @@
 	/**
 	* Event 
 	*/
-	require_once CORE_LIBRARY_PATH . 'Event.php';
+	require_once CORE_CLASSES_PATH . 'Event.php';
 
 	/**
 	 * Load the event dispatcher
 	 * @var EventDispatcher
 	 */
-	$DISPATCHER =& class_loader('EventDispatcher');
+	$DISPATCHER =& class_loader('EventDispatcher', 'classes');
 
 	$BENCHMARK->mark('CONFIG_INIT_START');
 	/*
 	* Load configurations using the 
 	* static method "init" of the Config class.
 	*/
-	$CONFIG =& class_loader('Config');	
+	$CONFIG =& class_loader('Config', 'classes');	
 	$CONFIG->init();
 	$BENCHMARK->mark('CONFIG_INIT_END');
 
@@ -128,7 +129,7 @@
 	* Load modules using the 
 	* static method "init" of the Module class.
 	*/
-	$MODULE =& class_loader('Module');
+	$MODULE =& class_loader('Module', 'classes');
 	$MODULE->init();
 	$BENCHMARK->mark('MODULE_INIT_END');
 
@@ -136,7 +137,7 @@
 	/**
 	 *  include file containing the Base Controller class 
 	 */
-	require_once CORE_LIBRARY_PATH . 'Controller.php';
+	require_once CORE_CLASSES_PATH . 'Controller.php';
 	$LOGGER->info('Base Controller loaded successfully');
 
 	/*
@@ -144,29 +145,45 @@
 	*/
 	 spl_autoload_register('autoload_controller');
 
-	if(get_config('cache_enable', false)){
-		/**
-		 * Cache interface
-		 */
-		require_once CORE_LIBRARY_PATH . 'CacheInterface.php';
-		$CACHE =& class_loader(get_config('cache_handler'));
-	}
-	
 	/*
 		Loading Security class
 	*/
-	$SECURITY =& class_loader('Security');
+	$SECURITY =& class_loader('Security', 'classes');
 	$SECURITY->checkWhiteListIpAccess();
 	
 	/*
 		Loading Url class
 	*/
-	$URL =& class_loader('Url');
+	$URL =& class_loader('Url', 'classes');
+	
+	if(get_config('cache_enable', false)){
+		/**
+		 * Cache interface
+		 */
+		require_once CORE_CLASSES_CACHE_PATH . 'CacheInterface.php';
+		$cacheHandler = get_config('cache_handler');
+		if(! $cacheHandler){
+			show_error('The cache feature is enabled in the configuration but the cache handler class is not set.');
+		}
+		$CACHE = null;
+		//first check if the cache handler is the system driver
+		if(file_exists(CORE_CLASSES_CACHE_PATH . $cacheHandler . '.php')){
+			$CACHE =& class_loader($cacheHandler, 'classes/cache');
+		}
+		else{
+			//it's not a system driver use user personnal library
+			$CACHE =& class_loader($cacheHandler);
+		}
+		if(! empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET'){
+			$RESPONSE = & class_loader('Response', 'classes');
+			$RESPONSE->renderFinalPageFromCache($CACHE);
+		}
+	}
 	
 	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/*
 	* Routing
 	* instantiation of the "Router" class and user request routing processing.
 	*/
-	$ROUTER = & class_loader('Router');
+	$ROUTER = & class_loader('Router', 'classes');
 	$ROUTER->run();

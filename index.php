@@ -98,6 +98,27 @@
 	* you should not change its content because in case of update you could lose the modified files.
 	*/
 	define('CORE_PATH', ROOT_PATH . 'core' . DS);
+	
+	/**
+	* The path to the directory of core classes that used by the system.
+	*
+	* It contains PHP classes that are used by the framework internally.
+	*/
+	define('CORE_CLASSES_PATH', CORE_PATH . 'classes' . DS);
+	
+	/**
+	* The path to the directory of core classes for the cache used by the system.
+	*
+	* It contains PHP classes for the cache drivers.
+	*/
+	define('CORE_CLASSES_CACHE_PATH', CORE_CLASSES_PATH . 'cache' . DS);
+	
+	/**
+	* The path to the directory of core classes for the model used by the system.
+	*
+	* It contains PHP classes for the models.
+	*/
+	define('CORE_CLASSES_MODEL_PATH', CORE_CLASSES_PATH . 'model' . DS);
 
 	/**
 	* The path to the directory of functions or helper systems.

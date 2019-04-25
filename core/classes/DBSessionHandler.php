@@ -83,7 +83,7 @@
 		private $logger;
 
 		public function __construct(){
-		    $this->logger =& class_loader('Log'); 
+		    $this->logger =& class_loader('Log', 'classes'); 
 		    $this->logger->setLogger('Library::DBSessionHandler');
 			$this->OBJ = & get_instance();
 

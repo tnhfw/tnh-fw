@@ -48,7 +48,7 @@
 		 * Class constructor
 		 */
 		public function __construct(){
-			$this->logger =& class_loader('Log');
+			$this->logger =& class_loader('Log', 'classes');
 			$this->logger->setLogger('MainController');
 			self::$instance = & $this;
 			
@@ -58,10 +58,10 @@
 			}
 
 			$this->logger->debug('Loading the required classes into super instance');
-			$this->loader =& class_loader('Loader');
-			$this->request =& class_loader('Request');
-			$this->response =& class_loader('Response');
-			$this->lang =& class_loader('Lang');
+			$this->loader =& class_loader('Loader', 'classes');
+			$this->request =& class_loader('Request', 'classes');
+			$this->response =& class_loader('Response', 'classes', 'classes');
+			$this->lang =& class_loader('Lang', 'classes');
 			
 			$this->logger->debug('Setting the supported languages');
 			//add the supported languages ('key', 'display name')

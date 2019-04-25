@@ -57,7 +57,7 @@
         /**
          * instance of the Log class
          */
-        $this->logger =& class_loader('Log');
+        $this->logger =& class_loader('Log', 'classes');
         $this->logger->setLogger('Library::Database');
 
       	if(file_exists(CONFIG_PATH . 'database.php')){

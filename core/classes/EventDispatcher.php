@@ -45,8 +45,8 @@
 		private $logger;
 
 		public function __construct(){
-			$this->logger =& class_loader('Log');
-			$this->logger->setLogger('EventDispatcher');
+			$this->logger =& class_loader('Log', 'classes');
+			$this->logger->setLogger('Library::EventDispatcher');
 		}
 
 		/**

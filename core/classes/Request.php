@@ -96,7 +96,7 @@
 			$this->query = $_REQUEST;
 			$this->cookie = $_COOKIE;
 			$this->file = $_FILES;
-			$this->session =& class_loader('Session');
+			$this->session =& class_loader('Session', 'classes');
 			$this->method = $this->server('REQUEST_METHOD');
 			$this->requestUri = $this->server('REQUEST_URI');
 			$this->header = array();

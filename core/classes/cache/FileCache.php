@@ -55,7 +55,7 @@
 		 */
 		private static function getLogger(){
 			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log');
+				static::$logger[0] =& class_loader('Log', 'classes');
 				static::$logger[0]->setLogger('Library::FileCache');
 			}
 			return static::$logger[0];
@@ -235,7 +235,7 @@
 			//if Zlib extension is not loaded set to compressCacheData to false
 			if($status === true && ! extension_loaded('zlib')){
 				$logger = static::getLogger();
-				$logger->warning('The Zlib extension is not loaded set cache compress data to FALSE');
+				$logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
 				$this->compressCacheData = false;
 			}
 			else{

@@ -53,7 +53,7 @@
 		private static function getLogger(){
 			if(static::$logger == null){
 				//can't assign reference to static variable
-				static::$logger[0] =& class_loader('Log');
+				static::$logger[0] =& class_loader('Log', 'classes');
 				static::$logger[0]->setLogger('Library::Assets');
 			}
 			return static::$logger[0];

@@ -72,16 +72,20 @@
 			echo 'Cannot find the class [' . $class . ']';
 			exit(1);
 		}
-		class_loaded($class);
-		$classes[$class] = isset($params) ? new $class($params) : new $class();
 		
 		/*
-		   TODO use the best method to get the log
+		   TODO use the best method to get the Log instance
 		 */
 		if($class == 'Log'){
 			$log = new Log();
 			return $log;
 		}
+		//track of loaded classes
+		class_loaded($class);
+		
+		//record the class instance
+		$classes[$class] = isset($params) ? new $class($params) : new $class();
+		
 		return $classes[$class];
 	}
 
@@ -153,7 +157,7 @@
 	function save_to_log($level, $message, $logger = null){
 		static $_log;
 		if($_log == null){
-			$_log[0] =& class_loader('Log');
+			$_log[0] =& class_loader('Log', 'classes');
 		}
 		if($logger){
 			$_log[0]->setLogger($logger);
@@ -250,7 +254,7 @@
 		if($logging){
 			save_to_log('error', '['.$title.'] '.strip_tags($msg), 'GLOBAL::ERROR');
 		}
-		$response = & class_loader('Response');
+		$response = & class_loader('Response', 'classes');
 		$response->sendError($data);
 		die();
 	}
@@ -453,7 +457,7 @@
 	 * This function is used to set the initial session config regarding the configuration
 	 */
 	function set_session_config(){
-		$logger =& class_loader('Log');
+		$logger =& class_loader('Log', 'classes');
 		$logger->setLogger('PHPSession');
 		//set session params
 		$sessionHandler = get_config('session_handler', 'files'); //the default is to store in the files
@@ -477,12 +481,12 @@
 		else if($sessionHandler == 'database'){
 			//load database session handle library
 			//Model
-			require_once CORE_LIBRARY_PATH . 'Model.php';
+			require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
 
 			//Database Session handler Model
-			require_once CORE_LIBRARY_PATH . 'DBSessionHandlerModel.php';
+			require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
 
-			$DBS =& class_loader('DBSessionHandler');
+			$DBS =& class_loader('DBSessionHandler', 'classes');
 			session_set_save_handler($DBS, true);
 			$logger->info('session save path: ' . get_config('session_save_path'));
 		}

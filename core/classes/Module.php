@@ -44,7 +44,7 @@
 		 */
 		private static function getLogger(){
 			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log');
+				static::$logger[0] =& class_loader('Log', 'classes');
 				static::$logger[0]->setLogger('Library::Module');
 			}
 			return static::$logger[0];

@@ -99,7 +99,7 @@
          * @return void
          */
         public function __construct() {
-            $this->logger =& class_loader('Log');
+            $this->logger =& class_loader('Log', 'classes');
             $this->logger->setLogger('Library::FormValidation');
            
 		   //Load form validation language message
