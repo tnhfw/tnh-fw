@@ -43,7 +43,8 @@
     private $result        = array();
     private $prefix        = null;
     private $op            = array('=','!=','<','>','<=','>=','<>');
-    private $cacheExpire   = 0;
+    private $cacheTtl   = 0;
+    private $temporaryCacheTtl   = 0;
     private $queryCount    = 0;
     private $data          = array();
     private static $config = array();
@@ -104,6 +105,7 @@
   				  show_error('Cannot connect to Database.');
   				}
   				static::$config = $config;
+				$this->temporaryCacheTtl = $this->cacheTtl;
   				$this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
   			}
     	}
@@ -648,7 +650,7 @@
         return $this->insertId();
       }
       else{
-        return false;
+		  return false;
       }
     }
 
@@ -724,7 +726,11 @@
 
       $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . ($all ? 'YES':'NO'));
       //cache expire time
-	  $cacheExpire = $this->cacheExpire;
+	  $cacheExpire = $this->temporaryCacheTtl;
+	  
+	  //return to the initial cache time
+	  $this->temporaryCacheTtl = $this->cacheTtl;
+	  
 	  //config for cache
       $cacheEnable = get_config('cache_enable');
 	  
@@ -744,29 +750,28 @@
 	  $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
 	  
       if ($dbCacheStatus && $sqlSELECTQuery){
-        $this->logger->info('The cache is enabled for this database query, try to get the database result from cache'); 
+        $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
         $cacheKey = md5($query . $all . $array);
         $cacheInstance = $obj->{strtolower(get_config('cache_handler'))};
         $cacheContent = $cacheInstance->get($cacheKey);        
       }
       else{
-        $this->logger->info('The cache is not enabled for this database query or is not the SELECT query, get the query result directly from real database');
+		  $this->logger->info('The cache is not enabled for this query or is not the SELECT query, get the result directly from real database');
       }
       
-      if (!$cacheContent && $sqlSELECTQuery)
+      if (! $cacheContent && $sqlSELECTQuery)
       {
 		//for database query execution time
         $benchmarkMarkerKey = md5($query . $all . $array);
         $obj->benchmark->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');
         //Now execute the query
 		$sqlQuery = $this->pdo->query($this->query);
-        $obj->benchmark->mark('DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
-		
+        
 		//get response time for this query
-        $response_time = $obj->benchmark->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
+        $responseTime = $obj->benchmark->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
 		//TODO use the configuration value for the high response time currently is 1 second
-        if($response_time >= 1 ){
-            $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$response_time. '] sec.');
+        if($responseTime >= 1 ){
+            $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$responseTime. '] sec.');
         }
         if ($sqlQuery)
         {
@@ -776,7 +781,7 @@
 			//if need return all result like list of record
             if ($all)
             {
-              $this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
+				$this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
 		    }
             else
             {
@@ -796,14 +801,14 @@
           $this->error();
         }
       }
-      else if ((!$cacheContent && !$sqlSELECTQuery) || ($cacheContent && !$sqlSELECTQuery))
+      else if ((! $cacheContent && !$sqlSELECTQuery) || ($cacheContent && !$sqlSELECTQuery))
       {
 		$queryStr = $this->pdo->query($this->query);
 		if($queryStr){
-			$this->result = $queryStr->rowCount() >= 0;
+			$this->result = $queryStr->rowCount() >= 0; //to test the result for the query like UPDATE, INSERT, DELETE
 			$this->numRows = $queryStr->rowCount();
 		}
-        if (!$this->result)
+        if (! $this->result)
         {
           $error = $this->pdo->errorInfo();
           $this->error = $error[2];
@@ -818,7 +823,7 @@
 		$this->numRows = count($this->result);
       }
       $this->queryCount++;
-      if(!$this->result){
+      if(! $this->result){
         $this->logger->info('No result where found for the query [' . $query . ']');
       }
       return $this->result;
@@ -826,8 +831,19 @@
 
     public function setCache($ttl = 0){
       if($ttl > 0){
-        $this->cacheExpire = $ttl;
+        $this->cacheTtl = $ttl;
+		$this->temporaryCacheTtl = $ttl;
       }
+    }
+	
+	/**
+	* Enabled cache temporary
+	*/
+	public function cached($ttl = 0){
+      if($ttl > 0){
+        $this->temporaryCacheTtl = $ttl;
+      }
+	  return $this;
     }
 
     public function escape($data)

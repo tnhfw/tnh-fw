@@ -377,7 +377,7 @@
 				else{
 					$controllerInstance = new $controller();
 					$controllerMethod = $this->getMethod();
-					if(!method_exists($controllerInstance, $controllerMethod)){
+					if(! method_exists($controllerInstance, $controllerMethod)){
 						$e404 = true;
 						$this->logger->info('The controller [' . $controller . '] exist but does not contain the method [' . $controllerMethod . ']');
 					}

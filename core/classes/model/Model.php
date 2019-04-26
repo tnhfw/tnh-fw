@@ -563,6 +563,16 @@
             $this->_database->from($this->_table)->getAll();
             return $this->_database->numRows();
         }
+		
+		/**
+		* Enabled cache temporary
+		*/
+		public function cached($ttl = 0){
+		  if($ttl > 0){
+			$this->_database = $this->_database->cached($ttl);
+		  }
+		  return $this;
+		}
 
         /**
          * Tell the class to skip the insert validation

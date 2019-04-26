@@ -47,7 +47,7 @@
 			//loading of the resources in autoload.php configuration file
 			if(file_exists(CONFIG_PATH . 'autoload.php')){
 				require_once CONFIG_PATH . 'autoload.php';
-				if(!empty($autoload) && is_array($autoload)){
+				if(! empty($autoload) && is_array($autoload)){
 					$autoloads = $autoload;
 					unset($autoload);
 				}
@@ -59,43 +59,43 @@
 			$modulesAutoloads = Module::getModulesAutoloadConfig();
 			if($modulesAutoloads && is_array($modulesAutoloads)){
 				//libraries autoload
-				if(!empty($modulesAutoloads['libraries']) && is_array($modulesAutoloads['libraries'])){
+				if(! empty($modulesAutoloads['libraries']) && is_array($modulesAutoloads['libraries'])){
 					$autoloads['libraries'] = array_merge($autoloads['libraries'], $modulesAutoloads['libraries']);
 				}
 				//config autoload
-				if(!empty($modulesAutoloads['config']) && is_array($modulesAutoloads['config'])){
+				if(! empty($modulesAutoloads['config']) && is_array($modulesAutoloads['config'])){
 					$autoloads['config'] = array_merge($autoloads['config'], $modulesAutoloads['config']);
 				}
 				//models autoload
-				if(!empty($modulesAutoloads['models']) && is_array($modulesAutoloads['models'])){
+				if(! empty($modulesAutoloads['models']) && is_array($modulesAutoloads['models'])){
 					$autoloads['models'] = array_merge($autoloads['models'], $modulesAutoloads['models']);
 				}
 				//functions autoload
-				if(!empty($modulesAutoloads['functions']) && is_array($modulesAutoloads['functions'])){
+				if(! empty($modulesAutoloads['functions']) && is_array($modulesAutoloads['functions'])){
 					$autoloads['functions'] = array_merge($autoloads['functions'], $modulesAutoloads['functions']);
 				}
 				//languages autoload
-				if(!empty($modulesAutoloads['languages']) && is_array($modulesAutoloads['languages'])){
+				if(! empty($modulesAutoloads['languages']) && is_array($modulesAutoloads['languages'])){
 					$autoloads['languages'] = array_merge($autoloads['languages'], $modulesAutoloads['languages']);
 				}
 			}
 			
 			//config autoload
-			if(!empty($autoloads['config']) && is_array($autoloads['config'])){
+			if(! empty($autoloads['config']) && is_array($autoloads['config'])){
 				foreach($autoloads['config'] as $c){
 					Loader::config($c);
 				}
 			}
 			
 			//languages autoload
-			if(!empty($autoloads['languages']) && is_array($autoloads['languages'])){
+			if(! empty($autoloads['languages']) && is_array($autoloads['languages'])){
 				foreach($autoloads['languages'] as $language){
 					Loader::lang($language);
 				}
 			}
 			
 			//libraries autoload
-			if(!empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
+			if(! empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
 				foreach($autoloads['libraries'] as $library){
 					Loader::library($library);
 				}
@@ -108,14 +108,14 @@
 			}
 			
 			//models autoload
-			if(!empty($autoloads['models']) && is_array($autoloads['models'])){
+			if(! empty($autoloads['models']) && is_array($autoloads['models'])){
 				foreach($autoloads['models'] as $model){
 					Loader::model($model);
 				}
 			}
 			
 			//functions autoload
-			if(!empty($autoloads['functions']) && is_array($autoloads['functions'])){
+			if(! empty($autoloads['functions']) && is_array($autoloads['functions'])){
 				foreach($autoloads['functions'] as $function){
 					Loader::functions($function);
 				}

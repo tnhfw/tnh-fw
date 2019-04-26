@@ -52,10 +52,10 @@
 		 */
 		public static function get($item, $default = null){
 			$logger = static::getLogger();
-			if(isset($_COOKIE[$item])){
+			if(array_key_exists($item, $_COOKIE)){
 				return $_COOKIE[$item];
 			}
-			$logger->warning('Cannot find cookie item ['.$item.'], using the default value ['.$default.']');
+			$logger->warning('Cannot find cookie item [' . $item . '], using the default value [' . $default . ']');
 			return $default;
 		}
 
@@ -103,7 +103,7 @@
 		 * @return boolean       true if the cookie item is set, false or not
 		 */
 		public static function exists($item){
-			return isset($_COOKIE[$item]);
+			return array_key_exists($item, $_COOKIE);
 		}
 
 	}

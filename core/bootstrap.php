@@ -174,6 +174,7 @@
 			//it's not a system driver use user personnal library
 			$CACHE =& class_loader($cacheHandler);
 		}
+		//check if the page already cached
 		if(! empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET'){
 			$RESPONSE = & class_loader('Response', 'classes');
 			$RESPONSE->renderFinalPageFromCache($CACHE);

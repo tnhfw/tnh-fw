@@ -95,7 +95,7 @@
 		 */
 		public static function get($item, $default = null){
 			$logger = static::getLogger();
-			if(isset(static::$config[$item])){
+			if(array_key_exists($item, static::$config)){
 				return static::$config[$item];
 			}
 			$logger->warning('Cannot find config item ['.$item.'] using the default value ['.$default.']');
@@ -133,7 +133,7 @@
 		 */
 		public static function delete($item){
 			$logger = static::getLogger();
-			if(isset(static::$config[$item])){
+			if(array_key_exists($item, static::$config)){
 				$logger->info('Delete config item ['.$item.']');
 				unset(static::$config[$item]);
 			}
