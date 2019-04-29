@@ -106,7 +106,7 @@
   				}
   				static::$config = $config;
 				$this->temporaryCacheTtl = $this->cacheTtl;
-  				$this->logger->info('The database configuration are listed below: ' . stringfy_vars($config));
+  				$this->logger->info('The database configuration are listed below: ' . stringfy_vars(array_merge($config, array('password' => string_hidden($config['password'])))));
   			}
     	}
     	else{
@@ -789,7 +789,7 @@
             }
           }
           if ($dbCacheStatus && $sqlSELECTQuery){
-            $this->logger->info('Save the query result [' .$this->query. '] into cache for future use');
+            $this->logger->info('Save the result for query [' .$this->query. '] into cache for future use');
             $cacheInstance->set($cacheKey, $this->result, $cacheExpire);
           }
         }
@@ -818,7 +818,7 @@
       }
       else
       {
-        $this->logger->info('The query result for [' .$this->query. '] already cached use it');
+        $this->logger->info('The result for query [' .$this->query. '] already cached use it');
         $this->result = $cacheContent;
 		$this->numRows = count($this->result);
       }

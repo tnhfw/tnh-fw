@@ -39,7 +39,12 @@
 	 *  @version 1.0.0
 	 *  @filesource
 	 */
-
+	 
+	 //check if user run the application with CLI
+	if(stripos('cli', php_sapi_name()) !== false){
+		exit('Currently, you can not running this application in CLI mode.');
+	}
+		
 	/**
 	*  inclusion of global constants of the environment that contain : name of the framework,
 	*  version, build date, version of PHP required, etc.

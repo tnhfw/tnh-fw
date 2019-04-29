@@ -124,7 +124,8 @@
                         'exists'       => $obj->lang->get('fv_exists'),
                         'regex'        => $obj->lang->get('fv_regex'),
                         'in_list'      => $obj->lang->get('fv_in_list'),
-                        'numeric'      => $obj->lang->get('fv_numeric')
+                        'numeric'      => $obj->lang->get('fv_numeric'),
+                        'callback'     => $obj->lang->get('fv_callback'),
                     );
             $this->_resetValidation();
             $this->setData($obj->request->post(null));
@@ -544,7 +545,7 @@
                 $key = $i - 1;
                 $rulePhrase = str_replace('%' . $i, $replacements[$key], $rulePhrase);
             }
-            if (!array_key_exists($inputName, $this->_errors)) {
+            if (! array_key_exists($inputName, $this->_errors)) {
                 $this->_errors[$inputName] = $rulePhrase;
             }
         }
@@ -552,7 +553,7 @@
         /**
          * Used to run a callback for the callback rule, as well as pass in a default
          * argument of the post value. For example the username field having a rule:
-         * callback[userExists] will eval userExists($_POST[username]) - Note the use
+         * callback[userExists] will eval userExists(data[username]) - Note the use
          * of eval over call_user_func is in case the function is not user defined.
          *
          * @param type $inputArg
@@ -561,7 +562,7 @@
          * @return anything
          */
         protected function _runCallback($inputArg, $callbackFunc) {
-            return eval($callbackFunc . '("' . $inputArg . '");');
+			return eval('return ' . $callbackFunc . '("' . $inputArg . '");');
         }
 
         /**
@@ -587,16 +588,32 @@
         protected function _getLabel($inputName) {
             return (array_key_exists($inputName, $this->_labels)) ? $this->_labels[$inputName] : $inputName;
         }
+		
+		 protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
+            $inputVal = $this->post($inputName);
+            if(array_key_exists(1, $ruleArgs) && function_exists($ruleArgs[1])) {
+                $callbackReturn = $this->_runEmptyCallback($ruleArgs[1]);
+                if ($inputVal == '' && $callbackReturn == true) {
+                    $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
+                }
+            } 
+			else if($inputVal == '') {
+				$this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
+            }
+        }
 
         protected function _validateHoneypot($inputName, $ruleName, array $ruleArgs) {
-            if ($_POST[$inputName] != '') {
+            if ($this->data[$inputName] != '') {
                 $this->_forceFail = true;
             }
         }
 
         protected function _validateCallback($inputName, $ruleName, array $ruleArgs) {
             if (function_exists($ruleArgs[1]) && !empty($this->data[$inputName])) {
-                $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
+				$result = $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
+				if(! $result){
+					$this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+				}
             }
         }
 
@@ -789,16 +806,4 @@
             }
         }
         
-        protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if(array_key_exists(1, $ruleArgs) && function_exists($ruleArgs[1])) {
-                $callbackReturn = $this->_runEmptyCallback($ruleArgs[1]);
-                if ($inputVal == '' && $callbackReturn == true) {
-                    $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
-                }
-            } 
-			else if($inputVal == '') {
-				$this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
-            }
-        }
     }

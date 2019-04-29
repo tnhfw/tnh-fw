@@ -43,8 +43,10 @@
 			if(! $this->isSupported()){
 				show_error('The cache for file system is not available. Check the cache directory if is exists or is writable.');
 			}
-			//if Zlib extension is not loaded set to compressCacheData to false
+			//if Zlib extension is not loaded set compressCacheData to false
 			if(! extension_loaded('zlib')){
+				$logger = static::getLogger();
+				$logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
 				$this->compressCacheData = false;
 			}
 		}
@@ -232,7 +234,7 @@
 	     * @return self
 	     */
 	    public function setCompressCacheData($status = true){
-			//if Zlib extension is not loaded set to compressCacheData to false
+			//if Zlib extension is not loaded set compressCacheData to false
 			if($status === true && ! extension_loaded('zlib')){
 				$logger = static::getLogger();
 				$logger->warning('The zlib extension is not loaded set cache compress data to FALSE');

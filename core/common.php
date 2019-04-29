@@ -451,8 +451,46 @@
 		}
 		return $str;
 	}
-
-
+	
+	/**
+	 * This function is used to hidden some part of the given string. Helpful if you need hide some confidential 
+	 * Information like credit card number, password, etc.
+	 *
+	 * @param  string $str the string you want to hide some part
+	 * @param  int $startCount the length of non hidden for the beginning char
+	 * @param  int $endCount the length of non hidden for the ending char
+	 * @param  string $hiddenChar the char used to hide the given string
+	 *
+	 * @return string the string with the hidden part.
+	 */
+	function string_hidden($str, $startCount = 0, $endCount = 0, $hiddenChar = '*'){
+		//get the string length
+		$len = strlen($str);
+		//if str is empty
+		if($len <= 0){
+			return str_repeat($hiddenChar, 6);
+		}
+		//if the length is less than startCount and endCount
+		//or the startCount and endCount length is 0
+		//or startCount is negative or endCount is negative
+		//return the full string hidden
+		
+		if((($startCount + $endCount) > $len) || ($startCount == 0 && $endCount == 0) || ($startCount < 0 || $endCount < 0)){
+			return str_repeat($hiddenChar, $len);
+		}
+		//the start non hidden string
+		$startNonHiddenStr = substr($str, 0, $startCount);
+		//the end non hidden string
+		$endNonHiddenStr = null;
+		if($endCount > 0){
+			$endNonHiddenStr = substr($str, - $endCount);
+		}
+		//the hidden string
+		$hiddenStr = str_repeat($hiddenChar, $len - ($startCount + $endCount));
+		
+		return $startNonHiddenStr . $hiddenStr . $endNonHiddenStr;
+	}
+	
 	/**
 	 * This function is used to set the initial session config regarding the configuration
 	 */

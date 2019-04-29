@@ -20,4 +20,5 @@
     $lang['fv_regex']	   			= 'The value of the field %1 does not use the correct format.';
     $lang['fv_in_list']	   			= 'The value of field %1 must be in the list (%2).';
     $lang['fv_numeric']	   			= 'The value of field %1 must be a number.';
+    $lang['fv_callback']	   		= 'The value of field %1 is not valid.';
  	
