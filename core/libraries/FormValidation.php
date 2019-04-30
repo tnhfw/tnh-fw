@@ -92,7 +92,6 @@
          */
         public $enableCsrfCheck = false;
 
-
         /**
          * Set all errors and rule sets empty, and sets success to false.
          *
@@ -106,26 +105,26 @@
             Loader::lang('form_validation');
             $obj = & get_instance();
             $this->_errorsMessages  = array(
-                        'required'     => $obj->lang->get('fv_required'),
-                        'min_length'   => $obj->lang->get('fv_min_length'),
-                        'max_length'   => $obj->lang->get('fv_max_length'),
-                        'exact_length' => $obj->lang->get('fv_exact_length'),
-                        'less_than'    => $obj->lang->get('fv_less_than'),
-                        'greater_than' => $obj->lang->get('fv_greater_than'),
-                        'matches'      => $obj->lang->get('fv_matches'),
-                        'valid_email'  => $obj->lang->get('fv_valid_email'),
-                        'not_equal'    => array(
+                        'required'         => $obj->lang->get('fv_required'),
+                        'min_length'       => $obj->lang->get('fv_min_length'),
+                        'max_length'       => $obj->lang->get('fv_max_length'),
+                        'exact_length'     => $obj->lang->get('fv_exact_length'),
+                        'less_than'        => $obj->lang->get('fv_less_than'),
+                        'greater_than'     => $obj->lang->get('fv_greater_than'),
+                        'matches'          => $obj->lang->get('fv_matches'),
+                        'valid_email'      => $obj->lang->get('fv_valid_email'),
+                        'not_equal'        => array(
                                                 'post:key' => $obj->lang->get('fv_not_equal_post_key'),
                                                 'string'   => $obj->lang->get('fv_not_equal_string')
                                             ),
-                        'depends'      => $obj->lang->get('fv_depends'),
-                        'is_unique'    => $obj->lang->get('fv_is_unique'),
-                        'is_unique_update'    => $obj->lang->get('fv_is_unique_update'),
-                        'exists'       => $obj->lang->get('fv_exists'),
-                        'regex'        => $obj->lang->get('fv_regex'),
-                        'in_list'      => $obj->lang->get('fv_in_list'),
-                        'numeric'      => $obj->lang->get('fv_numeric'),
-                        'callback'     => $obj->lang->get('fv_callback'),
+                        'depends'          => $obj->lang->get('fv_depends'),
+                        'is_unique'        => $obj->lang->get('fv_is_unique'),
+                        'is_unique_update' => $obj->lang->get('fv_is_unique_update'),
+                        'exists'           => $obj->lang->get('fv_exists'),
+                        'regex'            => $obj->lang->get('fv_regex'),
+                        'in_list'          => $obj->lang->get('fv_in_list'),
+                        'numeric'          => $obj->lang->get('fv_numeric'),
+                        'callback'         => $obj->lang->get('fv_callback'),
                     );
             $this->_resetValidation();
             $this->setData($obj->request->post(null));
@@ -195,9 +194,9 @@
         }
 
         /**
-         * Runs _run once POST data has been submitted or data is set manully.
+         * Runs _run once POST data has been submitted or data is set manually.
          *
-         * @return void
+         * @return boolean
          */
         public function run() {
             if ($this->canDoValidation()) {
@@ -589,7 +588,13 @@
             return (array_key_exists($inputName, $this->_labels)) ? $this->_labels[$inputName] : $inputName;
         }
 		
-		 protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
+        /**
+         * Peform validation for the rule "required"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("required")
+         * @param  array  $ruleArgs  the rules argument
+         */
+		protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if(array_key_exists(1, $ruleArgs) && function_exists($ruleArgs[1])) {
                 $callbackReturn = $this->_runEmptyCallback($ruleArgs[1]);
@@ -602,12 +607,24 @@
             }
         }
 
+        /**
+         * Perform validation for the honey pot so means for the validation to be failed
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateHoneypot($inputName, $ruleName, array $ruleArgs) {
             if ($this->data[$inputName] != '') {
                 $this->_forceFail = true;
             }
         }
 
+        /**
+         * Peform validation for the rule "callback"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("callback")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateCallback($inputName, $ruleName, array $ruleArgs) {
             if (function_exists($ruleArgs[1]) && !empty($this->data[$inputName])) {
 				$result = $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
@@ -617,12 +634,24 @@
             }
         }
 
+        /**
+         * Peform validation for the rule "depends"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("depends")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateDepends($inputName, $ruleName, array $ruleArgs) {
             if (array_key_exists($ruleArgs[1], $this->_errors)) {
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
 
+        /**
+         * Peform validation for the rule "not_equal"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("not_equal")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateNotEqual($inputName, $ruleName, array $ruleArgs) {
             $canNotEqual = explode(',', $ruleArgs[1]);
             foreach ($canNotEqual as $doNotEqual) {
@@ -642,6 +671,12 @@
             }
         }
 
+        /**
+         * Peform validation for the rule "matches"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("matches")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateMatches($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if ($inputVal != $this->data[$ruleArgs[1]]) {
@@ -649,119 +684,178 @@
             }
         }
 
+        /**
+         * Peform validation for the rule "valid_email"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("valid_email")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateValidEmail($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if (!preg_match("/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i", $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+            if (! preg_match("/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i", $inputVal)) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
             }
         }
 
+        /**
+         * Peform validation for the rule "exact_length"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("exact_length")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateExactLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) != $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
 
+        /**
+         * Peform validation for the rule "max_length"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("max_length")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateMaxLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) > $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
 
+        /**
+         * Peform validation for the rule "min_length"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("min_length")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateMinLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) < $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
     	
+        /**
+         * Peform validation for the rule "less_than"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("less_than")
+         * @param  array  $ruleArgs  the rules argument
+         */
     	protected function _validateLessThan($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if ($inputVal >= $ruleArgs[1]) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+            if ($inputVal >= $ruleArgs[1]) { 
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
     	
+        /**
+         * Peform validation for the rule "greater_than"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("greater_than")
+         * @param  array  $ruleArgs  the rules argument
+         */
     	protected function _validateGreaterThan($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if ($inputVal <= $ruleArgs[1]) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
     	
-    	 protected function _validateNumeric($inputName, $ruleName, array $ruleArgs) {
+        /**
+         * Peform validation for the rule "numeric"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("numeric")
+         * @param  array  $ruleArgs  the rules argument
+         */
+    	protected function _validateNumeric($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if (!is_numeric($inputVal)) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+            if (! is_numeric($inputVal)) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
 		
+        /**
+         * Peform validation for the rule "exists"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("exists")
+         * @param  array  $ruleArgs  the rules argument
+         */
 		protected function _validateExists($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
     		$obj = & get_instance();
-    		if(!isset($obj->database)){
+    		if(! isset($obj->database)){
     			return;
     		}
     		list($table, $column) = explode('.', $ruleArgs[1]);
     		$obj->database->from($table)
-    			->where($column, $inputVal)
-    			->get();
+    			          ->where($column, $inputVal)
+    			          ->get();
     		$nb = $obj->database->numRows();
             if ($nb == 0) {
                 if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
-
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
 
+        /**
+         * Peform validation for the rule "is_unique"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("is_unique")
+         * @param  array  $ruleArgs  the rules argument
+         */
     	protected function _validateIsUnique($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
     		$obj = & get_instance();
-    		if(!isset($obj->database)){
+    		if(! isset($obj->database)){
     			return;
     		}
     		list($table, $column) = explode('.', $ruleArgs[1]);
     		$obj->database->from($table)
-    			->where($column, $inputVal)
-    			->get();
+    			          ->where($column, $inputVal)
+    			          ->get();
     		$nb = $obj->database->numRows();
             if ($nb != 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
     	
+        /**
+         * Peform validation for the rule "is_unique_update"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("is_unique_update")
+         * @param  array  $ruleArgs  the rules argument
+         */
     	protected function _validateIsUniqueUpdate($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
     		$obj = & get_instance();
-    		if(!isset($obj->database)){
+    		if(! isset($obj->database)){
     			return;
     		}
     		$data = explode(',', $ruleArgs[1]);
@@ -771,18 +865,24 @@
     		list($table, $column) = explode('.', $data[0]);
     		list($field, $val) = explode('=', $data[1]);
     		$obj->database->from($table)
-    			->where($column, $inputVal)
-    			->where($field, '!=', trim($val))
-    			->get();
+    			          ->where($column, $inputVal)
+                		  ->where($field, '!=', trim($val))
+                		  ->get();
     		$nb = $obj->database->numRows();
             if ($nb != 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
 
+        /**
+         * Peform validation for the rule "in_list"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("in_list")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateInList($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
     		$list = explode(',', $ruleArgs[1]);
@@ -795,6 +895,12 @@
             }
         }
 
+        /**
+         * Peform validation for the rule "regex"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("regex")
+         * @param  array  $ruleArgs  the rules argument
+         */
         protected function _validateRegex($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
     		$regex = $ruleArgs[1];

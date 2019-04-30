@@ -15,7 +15,7 @@
     $lang['fv_not_equal_string']    = 'Field %1 must not contain the value %2.';
     $lang['fv_depends']      		= 'Field %1 depends on field %2 which is not valid.';
 	$lang['fv_is_unique']	   		= 'The value of field %1 already exists.';
-	$lang['fv_is_unique_update']	= 'The value of field %1 already exists.';
+	$lang['fv_is_unique_update']	= 'The value of field %1 already exists for another record.';
     $lang['fv_exists']	   			= 'The value of the field %1 does not exist.';
     $lang['fv_regex']	   			= 'The value of the field %1 does not use the correct format.';
     $lang['fv_in_list']	   			= 'The value of field %1 must be in the list (%2).';
