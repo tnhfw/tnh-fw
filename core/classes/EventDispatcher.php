@@ -126,6 +126,9 @@
 				$this->logger->info('The event data is not set or is not an instance of "Event" create the default "Event" object to use instead of.');
 				$e = new Event($eventName);
 			}
+			if(! $e->name){
+				$e->name = $eventName;
+			}
 			if($e->returnBack){
 				$this->logger->info('This event need return back, return the result for future use');
 				return $this->dispatchToListerners($eventName, $e);

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name = "keywords" content = "tnh, framework, php, HTML, Javascript, CSS3" />
-    <meta name="description" content="A PHP simple framework created using the concept of codeigniter with bootstrap twitter">
+    <meta name="description" content="A simple PHP framework using HMVC architecture">
     <meta name="author" content="Tony NGUEREZA">
     <title>TNH Framework</title>
     <link href="<?php echo Assets::css('bootstrap.min');?>" rel="stylesheet" type = "text/css" >
@@ -33,7 +33,7 @@
 					<div class = "panel-body">
 						<img src = "<?php echo Assets::img('logo.png');?>" class = "img-responsive" style = "float:left;" />
 						<h3>
-							A simple PHP framework created using the concept of codeigniter with bootstrap twitter
+							A simple PHP framework using HMVC architecture
 						</h3>
 						<br />
 						<p><?php echo Html::a('http://github.com/nguereza-tony/tnh-fw', 'Framework on Github', array('class' => 'btn btn-default', 'target' => '_blank'));?></p>
