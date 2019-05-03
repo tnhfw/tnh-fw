@@ -130,15 +130,18 @@
 		/**
 		 * Delete the configuration item in the list
 		 * @param  string $item the config item name to be deleted
+		 * @return boolean true if the item exists and is deleted successfully otherwise will return false.
 		 */
 		public static function delete($item){
 			$logger = static::getLogger();
 			if(array_key_exists($item, static::$config)){
 				$logger->info('Delete config item ['.$item.']');
 				unset(static::$config[$item]);
+				return true;
 			}
 			else{
 				$logger->warning('Config item ['.$item.'] to be deleted does not exists');
+				return false;
 			}
 		}
 

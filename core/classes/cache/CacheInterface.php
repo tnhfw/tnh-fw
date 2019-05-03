@@ -39,6 +39,7 @@
 		 * @param string  $key  the key to identify this cache data
 		 * @param mixed  $data the cache data to be saved
 		 * @param integer $ttl  the cache life time
+		 * @return boolean true if success otherwise will return false
 		 */
 		public function set($key, $data, $ttl = 0);
 

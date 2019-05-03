@@ -66,7 +66,7 @@
 		 * @param integer $expire   the time to live for this cookie
 		 * @param string  $path     the path that the cookie will be available
 		 * @param string  $domain   the domain that the cookie will be available
-		 * @param boolean $secure   if this cookie will be available on secure mode or not
+		 * @param boolean $secure   if this cookie will be available on secure connection or not
 		 * @param boolean $httponly if this cookie will be available under HTTP protocol.
 		 */
 		public static function set($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = false){
@@ -85,15 +85,18 @@
 		/**
 		 * Delete the cookie item in the list
 		 * @param  string $item the cookie item name to be cleared
+		 * @return boolean true if the item exists and is deleted successfully otherwise will return false.
 		 */
-		public static function clear($item){
+		public static function delete($item){
 			$logger = static::getLogger();
-			if(isset($_COOKIE[$item])){
+			if(array_key_exists($item, $_COOKIE)){
 				$logger->info('Delete cookie item ['.$item.']');
 				unset($_COOKIE[$item]);
+				return true;
 			}
 			else{
 				$logger->warning('Cookie item ['.$item.'] to be deleted does not exists');
+				return false;
 			}
 		}
 
