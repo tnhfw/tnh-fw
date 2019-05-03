@@ -3,7 +3,7 @@
 ## Requirements
 
  - Any web server **(Apache, nginx, lighttp, etc.)**
- - **PHP 5.4**, **PHP 7**
+ - **PHP >= 5.4**, **PHP 7**
 
 ## Quick start
  - Download the framework using the following link [https://github.com/nguereza-tony/tnh-fw](https://github.com/nguereza-tony/tnh-fw/)
