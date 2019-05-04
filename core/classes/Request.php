@@ -67,24 +67,25 @@
 		 * @var Session
 		 */
 		public $session = null;
-
-		/**
-		 * The current request method 'GET', 'POST', 'PUT', etc.
-		 * @var null
-		 */
-		public $method = null;
-
-		/**
-		 * The current request URI
-		 * @var string
-		 */
-		public $requestUri = null;
-
+		
 		/**
 		 * The request headers
 		 * @var array
 		 */
 		public $header = null;
+
+		/**
+		 * The current request method 'GET', 'POST', 'PUT', etc.
+		 * @var null
+		 */
+		private $method = null;
+
+		/**
+		 * The current request URI
+		 * @var string
+		 */
+		private $requestUri = null;
+		
 		
 		/**
 		 * Construct new request instance

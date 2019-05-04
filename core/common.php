@@ -42,7 +42,7 @@
 	/**
 	 * This function is the class loader helper if the library "Loader" not yet loaded
 	 * he load the class once
-	 * @param  strin $class  the class name to be loaded
+	 * @param  string $class  the class name to be loaded
 	 * @param  string $dir    the directory where to find the class
 	 * @param  mixed $params the parameter to pass as argument to the constructor of the class
 	 * @return object         the instance of the loaded class
@@ -51,7 +51,7 @@
 		//put the first letter of class to upper case 
 		$class = ucfirst($class);
 		static $classes = array();
-		if(isset($classes[$class]) /*hack for duplicate log Logger*/ && $class != 'Log'){
+		if(isset($classes[$class]) /*hack for duplicate log Logger name*/ && $class != 'Log'){
 			return $classes[$class];
 		}
 		$found = false;
@@ -91,7 +91,7 @@
 
 	/**
 	 * This function is the helper to record the loaded classes
-	 * @param  strin $class the loaded class name
+	 * @param  string $class the loaded class name
 	 * @return array        the list of the loaded classes
 	 */
 	function & class_loaded($class = null){
@@ -155,14 +155,11 @@
 	 * @param  string $logger  the logger to use if is set
 	 */
 	function save_to_log($level, $message, $logger = null){
-		static $_log;
-		if($_log == null){
-			$_log[0] =& class_loader('Log', 'classes');
-		}
+		$log =& class_loader('Log', 'classes');
 		if($logger){
-			$_log[0]->setLogger($logger);
+			$log->setLogger($logger);
 		}
-		$_log[0]->writeLog($message, $level);
+		$log->writeLog($message, $level);
 	}
 
 	/**
@@ -171,7 +168,7 @@
 	 * @param string  $text the HTTP status text
 	 */
 	function set_http_status_header($code = 200, $text = null){
-		if(!$code || ! is_numeric($code)){
+		if(! $code || ! is_numeric($code)){
 			show_error('HTTP status code must be an integer');
 		}
 		if(empty($text)){
@@ -343,7 +340,7 @@
 		if($isError){
 			set_http_status_header(500);
 		}
-		if (!(error_reporting() & $errno)) {
+		if (! (error_reporting() & $errno)) {
 			save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ' . $error_type, 'PHP ERROR');
 			return;
 		}
@@ -397,7 +394,7 @@
 	function attributes_to_string(array $attributes){
 		$str = ' ';
 		//we check that the array passed as an argument is not empty.
-		if(!empty($attributes)){
+		if(! empty($attributes)){
 			foreach($attributes as $key => $value){
 				$key = trim(htmlspecialchars($key));
 				$value = trim(htmlspecialchars($value));

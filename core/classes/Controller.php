@@ -59,14 +59,16 @@
 
 			$this->logger->debug('Loading the required classes into super instance');
 			$this->loader =& class_loader('Loader', 'classes');
-			$this->request =& class_loader('Request', 'classes');
-			$this->response =& class_loader('Response', 'classes', 'classes');
 			$this->lang =& class_loader('Lang', 'classes');
+			$this->request =& class_loader('Request', 'classes');
+			//dispatch the request instance created
+			$this->eventdispatcher->dispatch('REQUEST_CREATED');
+			$this->response =& class_loader('Response', 'classes', 'classes');
 			
 			$this->logger->debug('Setting the supported languages');
 			//add the supported languages ('key', 'display name')
 			$languages = get_config('languages', null);
-			if(!empty($languages)){
+			if(! empty($languages)){
 				foreach($languages as $k => $v){
 					$this->lang->addLang($k, $v);
 				}
