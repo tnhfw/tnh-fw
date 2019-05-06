@@ -129,6 +129,10 @@
 			if(! $e->name){
 				$e->name = $eventName;
 			}
+			if(isset($e->stop) && $e->stop){
+				$this->logger->info('This event need stopped, no need call any listener');
+				return;
+			}
 			if($e->returnBack){
 				$this->logger->info('This event need return back, return the result for future use');
 				return $this->dispatchToListerners($eventName, $e);

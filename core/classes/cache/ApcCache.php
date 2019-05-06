@@ -120,6 +120,30 @@
 			}
 			return false;
 		}
+		
+		/**
+		 * Get the cache information for given key
+		 * @param  string $key the key for cache to get the information for
+		 * @return array|boolean    the cache information if exists of false if not
+		 */
+		public function getInfo($key){
+			$logger = static::getLogger();
+			$logger->debug('Getting of cache info for key [' .$key. ']');
+			$cacheInfos = $this->_getCacheInfo($key);
+			if($cacheInfos){
+				$data = array(
+							'mtime' => $cacheInfos['creation_time'],
+							'expire' => $cacheInfos['creation_time'] + $cacheInfos['ttl'],
+							'data' => $this->get($key),
+							'ttl' => $cacheInfos['ttl']
+							);
+				return $data;
+			}
+			else{
+				$logger->info('This cache does not exists skipping');
+				return false;
+			}
+		}
 
 
 		/**

@@ -93,15 +93,15 @@
 		         unlink($filePath);
 		         return false;
 	      	}
-	      	if (time() > $data[0]) {
+	      	if (time() > $data['expire']) {
 	      		$logger->info('The cache data for the key ['. $key .'] already expired delete the cache file [' .$filePath. ']');
 		        // Unlinking when the file was expired
 		        unlink($filePath);
 		        return false;
 		     }
 		     else{
-		     	$logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $data[0]) . ']');
-		     	return $data[1];
+		     	$logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
+		     	return $data['data'];
 		     }
 			return false;
 		}
@@ -126,8 +126,14 @@
 			}
 			flock($handle, LOCK_EX); // exclusive lock, will get released when the file is closed
 			//Serializing along with the TTL
-		    $data = serialize(array($expire, $data));		   
-		    $result = fwrite($handle, $this->compressCacheData ? gzdeflate($data, 9) : $data);
+		    $cacheData = serialize(array(
+									'mtime' => time(),
+									'expire' => $expire,
+									'data' => $data,
+									'ttl' => $ttl
+									)
+								);		   
+		    $result = fwrite($handle, $this->compressCacheData ? gzdeflate($cacheData, 9) : $cacheData);
 		    if(! $result){
 		    	$logger->error('Can not write cache data into file [' .$filePath. '] for the key ['. $key .'], return false');
 		    	fclose($handle);
@@ -163,6 +169,35 @@
 				return true;
 			}
 		}
+		
+		/**
+		 * Get the cache information for given key
+		 * @param  string $key the key for cache to get the information for
+		 * @return array|boolean    the cache information if exists of false if not
+		 */
+		public function getInfo($key){
+			$logger = static::getLogger();
+			$logger->debug('Getting of cache info for key [' .$key. ']');
+			$filePath = $this->getFilePath($key);
+			$logger->info('The file path for the key [' .$key. '] is [' .$filePath. ']');
+			if(! file_exists($filePath)){
+				$logger->info('This cache file does not exists skipping');
+				return false;
+			}
+			else{
+				$logger->info('Found cache file [' .$filePath. '] check the validity');
+	      		$data = file_get_contents($filePath);
+				$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
+				if(! $data){
+					$logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
+					return false;
+				}
+				else{
+					$logger->info('This cache data is OK');
+					return $data;
+				}
+			}
+		}
 
 
 		/**
@@ -184,7 +219,7 @@
 		      		if(! $data){
 		      			$logger->warning('Can not unserialize the cache data for file [' . $file . ']');
 		      		}
-		      		else if(time() > $data[0]){
+		      		else if(time() > $data['expire']){
 		      			$logger->info('The cache data for file [' . $file . '] already expired remove it');
 		      			@unlink($file);
 		      		}
@@ -212,16 +247,6 @@
 					@unlink($file);
 				}
 			}
-		}
-
-		/**
-		* Get the cache file full path for the given key
-		*
-		* @param $key the cache item key
-		* @return string the full cache file path for this key
-		*/
-		private function getFilePath($key){
-			return CACHE_PATH . md5($key) . '.cache';
 		}
 	
 	    /**
@@ -256,5 +281,15 @@
 		 */
 		public function isSupported(){
 			return CACHE_PATH && is_dir(CACHE_PATH) && is_writable(CACHE_PATH);
+		}
+		
+		/**
+		* Get the cache file full path for the given key
+		*
+		* @param $key the cache item key
+		* @return string the full cache file path for this key
+		*/
+		private function getFilePath($key){
+			return CACHE_PATH . md5($key) . '.cache';
 		}
 	}

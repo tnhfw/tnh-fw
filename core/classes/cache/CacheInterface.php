@@ -51,6 +51,14 @@
 		 * the cache or the cache with the given key not exist
 		 */
 		public function delete($key);
+		
+		
+		/**
+		 * Get the cache information for given key
+		 * @param  string $key the key for cache to get the information for
+		 * @return array    the cache information
+		 */
+		public function getInfo($key);
 
 
 		/**

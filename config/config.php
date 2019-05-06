@@ -292,7 +292,7 @@
 	*
 	* The cache handler class inside (CORE_CLASSES_CACHE_PATH, LIBRARY_PATH) directories that implements 
 	* the interface "CacheInterface" that we will use to manage the cache.
-	* currently the possible values are "FileCache".
+	* currently the possible values are "FileCache", "ApcCache".
 	*/
 	$config['cache_handler'] = 'FileCache';
 	

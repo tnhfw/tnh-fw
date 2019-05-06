@@ -57,6 +57,12 @@
 		private $_currentUrlCacheKey = null;
 		
 		/**
+		* Whether the we can compress the output
+		* @var boolean
+		*/
+		private static $_canCompressOutput = false;
+		
+		/**
 		 * Construct new response instance
 		 */
 		public function __construct(){
@@ -66,6 +72,11 @@
 			//to prevent to display the same cache data to each user we user the variable $_SERVER['REMOTE_ADDR'] and session_id()
 			//to make the difference between each user
 			$this->_currentUrlCacheKey = md5($this->_currentUrl . $_SERVER['REMOTE_ADDR'] . session_id());
+			
+			static::$_canCompressOutput = isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
+										  && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false 
+										  && extension_loaded('zlib')
+										  && ini_get('zlib.output_compression') != 1;
 		}
 
 		/**
@@ -90,7 +101,7 @@
 			static::setHeaders($headers);
 			if(! headers_sent()){
 				foreach(static::getHeaders() as $key => $value){
-					header($key .':'.$value);
+					header($key .': '.$value);
 				}
 			}
 		}
@@ -247,6 +258,12 @@
 				$cacheKey = $this->_currentUrlCacheKey;
 				$logger->debug('Save the page content for URL [' . $url . '] into the cache ...');
 				$cacheInstance->set($cacheKey, $content, $viewCacheTtl ? $viewCacheTtl : get_config('cache_ttl'));
+				$expire = time() + ($viewCacheTtl ? $viewCacheTtl : get_config('cache_ttl'));
+				$maxAge = $expire - $_SERVER['REQUEST_TIME'];
+				static::setHeader('Pragma', 'public');
+				static::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+				static::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
+				static::setHeader('Last-modified', gmdate('D, d M Y H:i:s', time()).' GMT');				
 			}
 			
 			// Parse out the elapsed time and memory usage,
@@ -254,7 +271,17 @@
 			$elapsedTime = $obj->benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
 			$memoryUsage	= round($obj->benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
 			$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
+			
+			//compress the output if exists
+			if (static::$_canCompressOutput){
+				ob_start('ob_gzhandler');
+			}
+			else{
+				ob_start();
+			}
+			static::sendHeaders(200);
 			echo $content;
+			@ob_end_flush();
 		}
 		
 		/**
@@ -278,12 +305,38 @@
 				$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
 				
 				///display the final output
+				//compress the output if exists
+				if (static::$_canCompressOutput){
+					ob_start('ob_gzhandler');
+				}
+				else{
+					ob_start();
+				}
+				$cacheInfo = $cache->getInfo($pageCacheKey);
+				if($cacheInfo){
+					$lastModified = $cacheInfo['mtime'];
+					$maxAge = $cacheInfo['expire'] - $_SERVER['REQUEST_TIME'];
+					if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $lastModified <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
+						static::sendHeaders(304);
+						exit;
+					}
+				}
 				echo $content;
+				@ob_end_flush();
 				exit;
 			}
 			else{
 				$logger->info('The page cache content for the URL [' . $url . '] is not valid may be already expired');
+				$cache->delete($pageCacheKey);
 			}
+		}
+		
+		/**
+		* Get the final page to be render
+		* @return string
+		*/
+		public function getFinalPageRendered(){
+			return $this->_pageRender;
 		}
 
 		/**
@@ -308,10 +361,16 @@
 			/***********************************/
 			$path = CORE_VIEWS_PATH . '404.php';
 			if(file_exists($path)){
-				static::sendHeaders(404);
-				ob_start();
+				//compress the output if exists
+				if (static::$_canCompressOutput){
+					ob_start('ob_gzhandler');
+				}
+				else{
+					ob_start();
+				}
 				require_once $path;
 				$output = ob_get_clean();
+				static::sendHeaders(404);
 				echo $output;
 			}
 			else{
@@ -326,11 +385,17 @@
 		public static function sendError(array $data = array()){
 			$path = CORE_VIEWS_PATH . 'errors.php';
 			if(file_exists($path)){
-				static::sendHeaders(503);
-				ob_start();
+				//compress the output if exists
+				if (static::$_canCompressOutput){
+					ob_start('ob_gzhandler');
+				}
+				else{
+					ob_start();
+				}
 				extract($data);
 				require_once $path;
 				$output = ob_get_clean();
+				static::sendHeaders(503);
 				echo $output;
 			}
 			else{
