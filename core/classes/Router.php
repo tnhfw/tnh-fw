@@ -389,6 +389,7 @@
 						call_user_func_array(array($controllerInstance, $controllerMethod), $this->getArgs());
 						$obj = & get_instance();
 						//render the final page to user
+						$this->logger->info('Render the final output to the browser');
 						$obj->response->renderFinalPage();
 					}
 				}

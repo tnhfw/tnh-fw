@@ -57,7 +57,7 @@
 		private $_currentUrlCacheKey = null;
 		
 		/**
-		* Whether the we can compress the output
+		* Whether we can compress the output using Gzip
 		* @var boolean
 		*/
 		private static $_canCompressOutput = false;
@@ -66,17 +66,18 @@
 		 * Construct new response instance
 		 */
 		public function __construct(){
-			$this->_currentUrl = (! empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '' )
+			$this->_currentUrl =  (! empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '' )
 					. (! empty($_SERVER['QUERY_STRING']) ? ('?' . $_SERVER['QUERY_STRING']) : '' );
 					
-			//to prevent to display the same cache data to each user we user the variable $_SERVER['REMOTE_ADDR'] and session_id()
+			//to prevent to display the same cache data to each user we use the variable $_SERVER['REMOTE_ADDR'] and session_id()
 			//to make the difference between each user
-			$this->_currentUrlCacheKey = md5($this->_currentUrl . $_SERVER['REMOTE_ADDR'] . session_id());
+			$this->_currentUrlCacheKey = md5($this->_currentUrl /*. $_SERVER['REMOTE_ADDR'] . session_id()*/);
 			
-			static::$_canCompressOutput = isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
-										  && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false 
+			static::$_canCompressOutput = get_config('compress_output')
+										  && isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
+										  && stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false 
 										  && extension_loaded('zlib')
-										  && ini_get('zlib.output_compression') != 1;
+										  && (bool) ini_get('zlib.output_compression') == false;
 		}
 
 		/**
@@ -151,7 +152,7 @@
 			$url = Url::site_url($path);
 			$logger->info('Redirect to URL [' .$url. ']');
 			if(! headers_sent()){
-				header('Location:'.$url);
+				header('Location: '.$url);
 				exit;
 			}
 			else{
@@ -162,7 +163,7 @@
 		}
 
 		/**
-		 * Render the view to display or return the content
+		 * Render the view to display later or return the content
 		 * @param  string  $view   the view name or path
 		 * @param  array   $data   the variable data to use in the view
 		 * @param  boolean $return whether to return the view generated content or display it directly
@@ -181,34 +182,36 @@
 			//super instance
 			$obj = & get_instance();
 			
-			//check in module first
-			$logger->debug('Checking the view [' . $view . '] from module list ...');
-			$mod = null;
-			//check if the request class contains module name
-			if(strpos($view, '/') !== false){
-				$viewPath = explode('/', $view);
-				if(isset($viewPath[0]) && in_array($viewPath[0], Module::getModuleList())){
-					$mod = $viewPath[0];
-					array_shift($viewPath);
-					$view = implode('/', $viewPath);
-					$viewFile = $view . '.php';
+			if(Module::hasModule()){
+				//check in module first
+				$logger->debug('Checking the view [' . $view . '] from module list ...');
+				$mod = null;
+				//check if the request class contains module name
+				if(strpos($view, '/') !== false){
+					$viewPath = explode('/', $view);
+					if(isset($viewPath[0]) && in_array($viewPath[0], Module::getModuleList())){
+						$mod = $viewPath[0];
+						array_shift($viewPath);
+						$view = implode('/', $viewPath);
+						$viewFile = $view . '.php';
+					}
 				}
-			}
-			if(! $mod && !empty($obj->moduleName)){
-				$mod = $obj->moduleName;
-			}
-			if($mod){
-				$moduleViewPath = Module::findViewFullPath($view, $mod);
-				if($moduleViewPath){
-					$path = $moduleViewPath;
-					$logger->info('Found view [' . $view . '] in module [' .$mod. '], the file path is [' .$moduleViewPath. '] we will used it');
+				if(! $mod && !empty($obj->moduleName)){
+					$mod = $obj->moduleName;
+				}
+				if($mod){
+					$moduleViewPath = Module::findViewFullPath($view, $mod);
+					if($moduleViewPath){
+						$path = $moduleViewPath;
+						$logger->info('Found view [' . $view . '] in module [' .$mod. '], the file path is [' .$moduleViewPath. '] we will used it');
+					}
+					else{
+						$logger->info('Cannot find view [' . $view . '] in module [' .$mod. '] using the default location');
+					}
 				}
 				else{
-					$logger->info('Cannot find view [' . $view . '] in module [' .$mod. '] using the default location');
+					$logger->info('The current request does not use module using the default location.');
 				}
-			}
-			else{
-				$logger->info('The current request does not use module using the default location.');
 			}
 			$logger->info('The view file path to be loaded is [' . $path . ']');
 			$found = false;
@@ -220,7 +223,7 @@
 				}
 				ob_start();
 				extract($data);
-				//need use require instead of require_once because can load this view many time
+				//need use require() instead of require_once because can load this view many time
 				require $path;
 				$content = ob_get_clean();
 				if($return){
@@ -246,24 +249,36 @@
 			
 			//dispatch
 			$event = $dispatcher->dispatch('VIEW_LOADED', new Event('VIEW_LOADED', $content, true));
-			$content = (! empty($event->payload) && $event instanceof Event) ? $event->payload : null;
+			$content = ! empty($event->payload) ? $event->payload : null;
 			if(empty($content)){
 				$logger->warning('The view content is empty after dispatch to Event Listeners.');
 			}
 			
+			//check whether need save the page into cache.
 			if($cachePageStatus){
+				//current page URL
 				$url = $this->_currentUrl;
-				$viewCacheTtl = !empty($obj->view_cache_ttl) ? $obj->view_cache_ttl : 0;
+				//Cache view Time to live in second
+				$viewCacheTtl = !empty($obj->view_cache_ttl) ? $obj->view_cache_ttl : get_config('cache_ttl');
+				//the cache handler instance
 				$cacheInstance = $obj->{strtolower(get_config('cache_handler'))};;
+				//the current page cache key for identification
 				$cacheKey = $this->_currentUrlCacheKey;
+				
 				$logger->debug('Save the page content for URL [' . $url . '] into the cache ...');
-				$cacheInstance->set($cacheKey, $content, $viewCacheTtl ? $viewCacheTtl : get_config('cache_ttl'));
-				$expire = time() + ($viewCacheTtl ? $viewCacheTtl : get_config('cache_ttl'));
-				$maxAge = $expire - $_SERVER['REQUEST_TIME'];
-				static::setHeader('Pragma', 'public');
-				static::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
-				static::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
-				static::setHeader('Last-modified', gmdate('D, d M Y H:i:s', time()).' GMT');				
+				$cacheInstance->set($cacheKey, $content, $viewCacheTtl);
+				
+				//get the cache information to prepare header to send to browser
+				$cacheInfo = $cacheInstance->getInfo($cacheKey);
+				if($cacheInfo){
+					$lastModified = $cacheInfo['mtime'];
+					$expire = $cacheInfo['expire'];
+					$maxAge = $expire - time();
+					static::setHeader('Pragma', 'public');
+					static::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+					static::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
+					static::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified).' GMT');	
+				}
 			}
 			
 			// Parse out the elapsed time and memory usage,
@@ -272,7 +287,7 @@
 			$memoryUsage	= round($obj->benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
 			$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
 			
-			//compress the output if exists
+			//compress the output is available
 			if (static::$_canCompressOutput){
 				ob_start('ob_gzhandler');
 			}
@@ -285,49 +300,63 @@
 		}
 		
 		/**
-		* Send the final page output to user
+		* Send the final page output to user if is cached
 		*/
 		public function renderFinalPageFromCache(&$cache){
 			$logger = static::getLogger();
-			$url = $this->_currentUrl;
-					
-			$logger->debug('Checking if the page content for the URL [' . $url . '] is cached ...');
+			$url = $this->_currentUrl;					
+			//the current page cache key for identification
 			$pageCacheKey = $this->_currentUrlCacheKey;
-			$content = $cache->get($pageCacheKey);
-			if($content){
-				$logger->info('The page content for the URL [' . $url . '] already cached just display it');
-				$benchmark = & class_loader('Benchmark');
-				
-				// Parse out the elapsed time and memory usage,
-				// then swap the pseudo-variables with the data
-				$elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-				$memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
-				$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
-				
-				///display the final output
-				//compress the output if exists
-				if (static::$_canCompressOutput){
-					ob_start('ob_gzhandler');
+			
+			$logger->debug('Checking if the page content for the URL [' . $url . '] is cached ...');
+			//get the cache information to prepare header to send to browser
+			$cacheInfo = $cache->getInfo($pageCacheKey);
+			if($cacheInfo){
+				$lastModified = $cacheInfo['mtime'];
+				$expire = $cacheInfo['expire'];
+				$maxAge = $expire - $_SERVER['REQUEST_TIME'];
+				static::setHeader('Pragma', 'public');
+				static::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+				static::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
+				static::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified).' GMT');
+				if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $lastModified <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
+					$logger->info('The cache page content is not yet expire for the URL [' . $url . '] send 304 header to browser');
+					static::sendHeaders(304);
+					exit;
 				}
 				else{
-					ob_start();
-				}
-				$cacheInfo = $cache->getInfo($pageCacheKey);
-				if($cacheInfo){
-					$lastModified = $cacheInfo['mtime'];
-					$maxAge = $cacheInfo['expire'] - $_SERVER['REQUEST_TIME'];
-					if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $lastModified <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
-						static::sendHeaders(304);
+					$logger->info('The cache page content is expired or the browser don\'t send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $url . '] send cache headers to tell the browser');
+					static::sendHeaders(200);
+					//get the cache content
+					$content = $cache->get($pageCacheKey);
+					if($content){
+						$logger->info('The page content for the URL [' . $url . '] already cached just display it');
+						//load benchmark class
+						$benchmark = & class_loader('Benchmark');
+						
+						// Parse out the elapsed time and memory usage,
+						// then swap the pseudo-variables with the data
+						$elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+						$memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
+						$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
+						
+						///display the final output
+						//compress the output if exists
+						if (static::$_canCompressOutput){
+							ob_start('ob_gzhandler');
+						}
+						else{
+							ob_start();
+						}
+						echo $content;
+						@ob_end_flush();
 						exit;
 					}
+					else{
+						$logger->info('The page cache content for the URL [' . $url . '] is not valid may be already expired');
+						$cache->delete($pageCacheKey);
+					}
 				}
-				echo $content;
-				@ob_end_flush();
-				exit;
-			}
-			else{
-				$logger->info('The page cache content for the URL [' . $url . '] is not valid may be already expired');
-				$cache->delete($pageCacheKey);
 			}
 		}
 		

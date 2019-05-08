@@ -193,8 +193,15 @@
 					return false;
 				}
 				else{
-					$logger->info('This cache data is OK');
-					return $data;
+					$logger->info('This cache data is OK check for expire');
+					if(isset($data['expire']) && $data['expire'] > time()){
+						$logger->info('This cache not yet expired return cache informations');
+						return $data;
+					}
+					else{
+						$logger->info('This cache already expired return false');
+						return false;
+					}
 				}
 			}
 		}
