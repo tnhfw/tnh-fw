@@ -56,7 +56,15 @@
 			foreach (class_loaded() as $var => $class){
 				$this->$var =& class_loader($class);
 			}
-
+			
+			$this->logger->debug('Setting the cache handler instance');
+			//set cache hanlder instance
+			if(get_config('cache_enable', false)){
+				if(isset($this->{strtolower(get_config('cache_handler'))})){
+					$this->cache = $this->{strtolower(get_config('cache_handler'))};
+					unset($this->{strtolower(get_config('cache_handler'))});
+				} 
+			}
 			$this->logger->debug('Loading the required classes into super instance');
 			$this->loader =& class_loader('Loader', 'classes');
 			$this->lang =& class_loader('Lang', 'classes');
@@ -77,6 +85,8 @@
 			//set session config
 			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
+			//dispatch the loaded instance of super controller
+			$this->eventdispatcher->dispatch('SUPER_CONTROLLER_CREATED');
 		}
 
 

@@ -56,7 +56,10 @@
 		/**
 		 * Get the cache information for given key
 		 * @param  string $key the key for cache to get the information for
-		 * @return array    the cache information
+		 * @return array    the cache information. The associative array and must contains the following information:
+		 * 'mtime' => creation time of the cache (Unix timestamp),
+		 * 'expire' => expiration time of the cache (Unix timestamp),
+		 * 'ttl' => the time to live of the cache in second
 		 */
 		public function getInfo($key);
 

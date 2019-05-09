@@ -261,7 +261,7 @@
 				//Cache view Time to live in second
 				$viewCacheTtl = !empty($obj->view_cache_ttl) ? $obj->view_cache_ttl : get_config('cache_ttl');
 				//the cache handler instance
-				$cacheInstance = $obj->{strtolower(get_config('cache_handler'))};;
+				$cacheInstance = $obj->cache;
 				//the current page cache key for identification
 				$cacheKey = $this->_currentUrlCacheKey;
 				

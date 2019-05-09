@@ -173,7 +173,10 @@
 		/**
 		 * Get the cache information for given key
 		 * @param  string $key the key for cache to get the information for
-		 * @return array|boolean    the cache information if exists of false if not
+		 * @return array    the cache information. The associative array and must contains the following information:
+		 * 'mtime' => creation time of the cache (Unix timestamp),
+		 * 'expire' => expiration time of the cache (Unix timestamp),
+		 * 'ttl' => the time to live of the cache in second
 		 */
 		public function getInfo($key){
 			$logger = static::getLogger();
@@ -196,7 +199,12 @@
 					$logger->info('This cache data is OK check for expire');
 					if(isset($data['expire']) && $data['expire'] > time()){
 						$logger->info('This cache not yet expired return cache informations');
-						return $data;
+						$info = array(
+							'mtime' => $data['mtime'],
+							'expire' => $data['expire'],
+							'ttl' => $data['ttl']
+							);
+						return $info;
 					}
 					else{
 						$logger->info('This cache already expired return false');

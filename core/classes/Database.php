@@ -966,7 +966,7 @@
           $values[] = $column . '=' . ($escape ? $this->escape($val) : $val);
         }
       }
-      $query .= (is_array($data) ? implode(',', $values) : $data);
+      $query .= (is_array($data) ? implode(', ', $values) : $data);
       if (! is_null($this->where)){
         $query .= ' WHERE ' . $this->where;
       }
@@ -1056,7 +1056,7 @@
       if ($dbCacheStatus && $sqlSELECTQuery){
         $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
         $cacheKey = md5($query . $all . $array);
-        $cacheInstance = $obj->{strtolower(get_config('cache_handler'))};
+        $cacheInstance = $obj->cache;
         $cacheContent = $cacheInstance->get($cacheKey);        
       }
       else{
