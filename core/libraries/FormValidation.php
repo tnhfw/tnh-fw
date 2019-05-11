@@ -25,7 +25,7 @@
     */
 
 
-     class FormValidation {
+     class FormValidation{
 		 
         /**
          * The form validation status

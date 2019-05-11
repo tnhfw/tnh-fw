@@ -89,11 +89,16 @@
 		/**
 		 * Generate the form fieldset & legend
 		 * @param  string $legend the legend tag value
+		 * @param  array  $fieldsetAttributes the fieldset additional HTML attributes
+		 * @param  array  $legendAttributes the legend additional HTML attributes. Is used only is $legend is not empty
 		 * @return string         the generated fieldset value
 		 */
-		public static function fieldset($legend = ''){
-			return '<fieldset>
-						<legend>'.$legend.'</legend>';
+		public static function fieldset($legend = '', array $fieldsetAttributes = array(), array $legendAttributes = array()){
+			$str = '<fieldset' . attributes_to_string($fieldsetAttributes) . '>';
+			if($legend){
+				$str .= '<legend' . attributes_to_string($legendAttributes) . '>'.$legend.'</legend>';
+			}
+			return $str;
 		}
 
 		/**
@@ -165,15 +170,7 @@
 			$str .= '/>';
 			return $str;
 		}
-
-		/**
-		 * Generate the form field for "password"
-		 * @see Form::input() for more details
-		 */
-		public static function password($name, $value = null, array $attributes = array()){
-			return self::input($name, $value, $attributes, 'password');
-		}
-
+		
 		/**
 		 * Generate the form field for "text"
 		 * @see Form::input() for more details
@@ -183,11 +180,11 @@
 		}
 
 		/**
-		 * Generate the form field for "file"
+		 * Generate the form field for "password"
 		 * @see Form::input() for more details
 		 */
-		public static function file($name, array $attributes = array()){
-			return self::input($name, null, $attributes, 'file');
+		public static function password($name, $value = null, array $attributes = array()){
+			return self::input($name, $value, $attributes, 'password');
 		}
 
 		/**
@@ -235,7 +232,39 @@
 		public static function email($name, $value = null, array $attributes = array()){
 			return self::input($name, $value, $attributes, 'email');
 		}
-
+		
+		/**
+		 * Generate the form field for "hidden"
+		 * @see Form::input() for more details
+		 */
+		public static function hidden($name, $value = null, array $attributes = array()){
+			return self::input($name, $value, $attributes, 'hidden');
+		}
+		
+		/**
+		 * Generate the form field for "file"
+		 * @see Form::input() for more details
+		 */
+		public static function file($name, array $attributes = array()){
+			return self::input($name, null, $attributes, 'file');
+		}
+		
+		/**
+		 * Generate the form field for "button"
+		 * @see Form::input() for more details
+		 */
+		public static function button($name, $value = null, array $attributes = array()){
+			return self::input($name, $value, $attributes, 'button');
+		}
+		
+		/**
+		 * Generate the form field for "reset"
+		 * @see Form::input() for more details
+		 */
+		public static function reset($name, $value = null, array $attributes = array()){
+			return self::input($name, $value, $attributes, 'reset');
+		}
+		
 		/**
 		 * Generate the form field for "submit"
 		 * @see Form::input() for more details
@@ -245,29 +274,21 @@
 		}
 
 		/**
-		 * Generate the form field for "button"
-		 * @see Form::input() for more details
+		 * Generate the form field for textarea
+		 * @param  string $name       the name of the textarea field
+		 * @param  string $value      the textarea field value
+		 * @param  array  $attributes the additional attributes to be added
+		 * @return string             the generated textarea form html content
 		 */
-		public static function button($name, $value = null, array $attributes = array()){
-			return self::input($name, $value, $attributes, 'button');
+		public static function textarea($name, $value = '', array $attributes = array()){
+			$str = null;
+			$str .= '<textarea name = "'.$name.'" ';
+			$str .= attributes_to_string($attributes);
+			$str .= '>';
+			$str .= $value.'</textarea>';
+			return $str;
 		}
-
-		/**
-		 * Generate the form field for "hidden"
-		 * @see Form::input() for more details
-		 */
-		public static function hidden($name, $value = null, array $attributes = array()){
-			return self::input($name, $value, $attributes, 'hidden');
-		}
-
-		/**
-		 * Generate the form field for "reset"
-		 * @see Form::input() for more details
-		 */
-		public static function reset($name, $value = null, array $attributes = array()){
-			return self::input($name, $value, $attributes, 'reset');
-		}
-
+		
 		/**
 		 * Generate the form field for select
 		 * @param  string $name       the name of the form field
@@ -295,19 +316,4 @@
 			return $str;
 		}
 
-		/**
-		 * Generate the form field for textarea
-		 * @param  string $name       the name of the textarea field
-		 * @param  string $value      the textarea field value
-		 * @param  array  $attributes the additional attributes to be added
-		 * @return string             the generated textarea form html content
-		 */
-		public static function textarea($name, $value = '', array $attributes = array()){
-			$str = null;
-			$str .= '<textarea name = "'.$name.'" ';
-			$str .= attributes_to_string($attributes);
-			$str .= '>';
-			$str .= $value.'</textarea>';
-			return $str;
-		}
 	}

@@ -27,7 +27,7 @@
 	/**
 	 *  @file common.php
 	 *  
-	 *  Contains most of the utility functions used by the system
+	 *  Contains most of the commons functions used by the system
 	 *  
 	 *  @package	core
 	 *  @author	Tony NGUEREZA
@@ -40,7 +40,7 @@
 	
 
 	/**
-	 * This function is the class loader helper if the library "Loader" not yet loaded
+	 * This function is the class loader helper is used if the library "Loader" not yet loaded
 	 * he load the class once
 	 * @param  string $class  the class name to be loaded
 	 * @param  string $dir    the directory where to find the class
@@ -77,6 +77,8 @@
 		   TODO use the best method to get the Log instance
 		 */
 		if($class == 'Log'){
+			//can't use the instruction like "return new Log()" 
+			//because we need return the reference instance of the loaded class.
 			$log = new Log();
 			return $log;
 		}
@@ -122,7 +124,7 @@
 				exit(1);
 			}
 
-			if(! isset($config) || ! is_array($config)){
+			if(! isset($config) || !is_array($config)){
 				set_http_status_header(503);
 				echo 'No configuration found in file ['  . $file . ']';
 				exit(1);
@@ -168,7 +170,7 @@
 	 * @param string  $text the HTTP status text
 	 */
 	function set_http_status_header($code = 200, $text = null){
-		if(! $code || ! is_numeric($code)){
+		if(! $code || !is_numeric($code)){
 			show_error('HTTP status code must be an integer');
 		}
 		if(empty($text)){
@@ -258,7 +260,6 @@
 
 	/**
 	 *  Check whether the protocol used is "https" or not
-	 *  
 	 *  That is, the web server is configured to use a secure connection.
 	 *  
 	 *  @return boolean true if the web server uses the https protocol, false if not.
@@ -285,7 +286,6 @@
 	 *  The address is valid if the protocol is http, https, ftp, etc.
 	 *
 	 *  @param string $url the URL address to check
-	 *  
 	 *  @return boolean true if is a valid URL address or false.
 	 */
 	function is_url($url){
@@ -296,7 +296,6 @@
 	 *  Function defined to load controller
 	 *  
 	 *  @param string $controllerClass the controller class name to be loaded
-	 *  
 	 */
 	function autoload_controller($controllerClass){
 		if(file_exists($path = APPS_CONTROLLER_PATH . $controllerClass . '.php')){
@@ -308,10 +307,8 @@
 	 *  Function defined for handling PHP exception error message, 
 	 *  it displays an error message using the function "show_error"
 	 *  
-	 *  
 	 *  @param object $ex instance of the "Exception" class or a derived class
 	 *  @return boolean
-	 *  
 	 */
 	function php_exception_handler($ex){
 		if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
@@ -333,7 +330,6 @@
 	 *  @param int $errline the line number where the error occurred
 	 *  @param array $errcontext the context
 	 *  @return boolean	
-	 *  
 	 */
 	function php_error_handler($errno , $errstr, $errfile , $errline, array $errcontext = array()){
 		$isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
@@ -562,8 +558,7 @@
 	* For example :
 	* $obj = & get_instance();
 	*  
-	*  @return object the instance of the "Controller" class
-	*  
+	* @return object the instance of the "Controller" class
 	*/
 	function & get_instance(){
 		return Controller::get_instance();

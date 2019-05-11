@@ -46,8 +46,7 @@
 		 * @return array all the supported languages
 		 */
 		function get_languages(){
-			$obj = & get_instance();
-			return $obj->lang->getSupported();
+			return get_instance()->lang->getSupported();
 		}
 
 	}

@@ -27,8 +27,8 @@
 	/**
 	 *  @file bootstrap.php
 	 *  
-	 *  Contains the loading process: loading of constants, functions and libraries essential 
-	 *  to the good functioning of the application, the loading of the configurations,
+	 *  Contains the loading process: loading of constants, common functions, libraries 
+	 *  configurations, etc
 	 *  verification of the environment and the routing of the request.
 	 *  
 	 *  @package	core	
@@ -40,20 +40,20 @@
 	 *  @filesource
 	 */
 	 
-	 //check if user run the application with CLI
+	 //Check if user run the application under CLI
 	if(stripos('cli', php_sapi_name()) !== false){
 		exit('Currently, you can not running this application in CLI mode.');
 	}
 		
 	/**
 	*  inclusion of global constants of the environment that contain : name of the framework,
-	*  version, build date, version of PHP required, etc.
+	*  version, release date, version of PHP required, etc.
 	*/
 	require_once CORE_PATH . 'constants.php';	
 	
 	/**
-	 *  include file containing useful methods: show_error, 
-	 *  exception_handler, error_handler, get_instance, etc.
+	 *  include file containing commons functions used in the framework such: show_error, 
+	 *  php_exception_handler, php_error_handler, get_instance, etc.
 	 */
 	require_once CORE_PATH . 'common.php';
 
@@ -63,15 +63,17 @@
 	$BENCHMARK =& class_loader('Benchmark');
 	
 	$BENCHMARK->mark('APP_EXECUTION_START');
-	 /**
-     * instance of the Log class
-     */
+	
+	/**
+    * instance of the Log class
+    */
     $LOGGER =& class_loader('Log', 'classes');
 
     $LOGGER->setLogger('ApplicationBootstrap');
 
     $LOGGER->debug('Checking PHP version ...');	
-	/*
+	
+	/**
 	* Verification of the PHP environment: minimum and maximum version
 	*/
 	if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
@@ -83,21 +85,21 @@
 	$LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_REQUIRED_PHP_MIN_VERSION . ', REQUIRED MAXIMUM: ' . TNH_REQUIRED_PHP_MAX_VERSION . '], application can work without any issue');
 
 	/**
-	* Definition of the PHP error message handling function
+	* Setting of the PHP error message handling function
 	*/
 	set_error_handler('php_error_handler');
 
-	/*
-	* Definition of the PHP error exception handling function
+	/**
+	* Setting of the PHP error exception handling function
 	*/
 	set_exception_handler('php_exception_handler');
 
 	/**
-	 * function handler for shutdown
+	 * Setting of the PHP shutdown handling function
 	 */
 	register_shutdown_function('php_shudown_handler');
 	
-	//if user have some composer package
+	//if user have some composer packages
 	$LOGGER->debug('Check for composer autoload');
 	if(file_exists(VENDOR_PATH . 'autoload.php')){
 		$LOGGER->info('The composer autoload file exists include it');
@@ -110,29 +112,29 @@
 	$LOGGER->debug('Begin to load the required resources');
 
 	/**
-	* Event 
-	*/
+	 * Load the Event class file
+	 */
 	require_once CORE_CLASSES_PATH . 'Event.php';
 
 	/**
-	 * Load the event dispatcher
+	 * Load the EventDispatcher class
 	 * @var EventDispatcher
 	 */
 	$DISPATCHER =& class_loader('EventDispatcher', 'classes');
 
 	$BENCHMARK->mark('CONFIG_INIT_START');
-	/*
-	* Load configurations using the 
-	* static method "init" of the Config class.
+	/**
+	* Load configurations and using the 
+	* static method "init()" to initialize the Config class .
 	*/
 	$CONFIG =& class_loader('Config', 'classes');	
 	$CONFIG->init();
 	$BENCHMARK->mark('CONFIG_INIT_END');
 
 	$BENCHMARK->mark('MODULE_INIT_START');
-	/*
-	* Load modules using the 
-	* static method "init" of the Module class.
+	/**
+	* Load modules and using the 
+	* static method "init()" to initialize the Module class.
 	*/
 	$MODULE =& class_loader('Module', 'classes');
 	$MODULE->init();
@@ -140,30 +142,30 @@
 
 	$LOGGER->debug('Loading Base Controller ...');
 	/**
-	 *  include file containing the Base Controller class 
+	 * Include of the file containing the Base Controller class 
 	 */
 	require_once CORE_CLASSES_PATH . 'Controller.php';
 	$LOGGER->info('Base Controller loaded successfully');
 
-	/*
-	  Register controller autoload function
+	/**
+	* Register controllers autoload function
 	*/
 	 spl_autoload_register('autoload_controller');
 
-	/*
-		Loading Security class
+	/**
+	* Loading Security class
 	*/
 	$SECURITY =& class_loader('Security', 'classes');
 	$SECURITY->checkWhiteListIpAccess();
 	
-	/*
-		Loading Url class
+	/**
+	* Loading Url class
 	*/
 	$URL =& class_loader('Url', 'classes');
 	
 	if(get_config('cache_enable', false)){
 		/**
-		 * Cache interface
+		 * Load Cache interface file
 		 */
 		require_once CORE_CLASSES_CACHE_PATH . 'CacheInterface.php';
 		$cacheHandler = get_config('cache_handler');
@@ -176,7 +178,7 @@
 			$CACHE =& class_loader($cacheHandler, 'classes/cache');
 		}
 		else{
-			//it's not a system driver use user personnal library
+			//it's not a system driver use user library
 			$CACHE =& class_loader($cacheHandler);
 		}
 		//check if the page already cached
@@ -187,7 +189,7 @@
 	}
 	
 	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
-	/*
+	/**
 	* Routing
 	* instantiation of the "Router" class and user request routing processing.
 	*/

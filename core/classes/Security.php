@@ -117,7 +117,7 @@
 				$logger->info('Whitelist IP access is enabled in the configuration');
 				$list = get_config('white_list_ip_addresses', array());
 				if(! empty($list)){
-					//may be at this time helper user_agent not yet included
+					//Can't use Loader::functions() at this time because teh "Loader" library is loader after the security prossessing
 					require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 					$ip = get_ip();
 					if(count($list) == 1 && $list[0] == '*' || in_array($ip, $list)){
