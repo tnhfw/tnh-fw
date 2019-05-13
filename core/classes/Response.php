@@ -248,7 +248,7 @@
 			$content = $this->_pageRender;
 			
 			//dispatch
-			$event = $dispatcher->dispatch('VIEW_LOADED', new Event('VIEW_LOADED', $content, true));
+			$event = $dispatcher->dispatch(new Event('FINAL_VIEW_READY', $content, true));
 			$content = ! empty($event->payload) ? $event->payload : null;
 			if(empty($content)){
 				$logger->warning('The view content is empty after dispatch to Event Listeners.');

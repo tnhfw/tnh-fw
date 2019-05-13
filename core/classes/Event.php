@@ -54,7 +54,7 @@
 		 */
 		public $stop;
 		
-		public function __construct($name = null, $payload = array(), $returnBack = false, $stop = false){
+		public function __construct($name, $payload = array(), $returnBack = false, $stop = false){
 			$this->name = $name;
 			$this->payload = $payload;
 			$this->returnBack = $returnBack;

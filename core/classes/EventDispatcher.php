@@ -116,73 +116,68 @@
 		
 		/**
 		 * Dispatch the event to the registered listeners.
-		 * @param  string $eventName the name of the event to dispatch
-		 * @param  mixed|Event $e  the event information
+		 * @param  mixed|Event $event  the event information
 		 * @return void|Event if event need return, will return the final Event object.
 		 */	
-		public function dispatch($eventName, $e = null){
-			$this->logger->debug('Dispatch to the Event Listener, the event name [' .$eventName. '], event data [' .stringfy_vars($e). ']');
-			if($e == null || ! $e instanceof Event){
-				$this->logger->info('The event data is not set or is not an instance of "Event" create the default "Event" object to use instead of.');
-				$e = new Event($eventName);
-			}
-			if(! $e->name){
-				$e->name = $eventName;
-			}
-			if(isset($e->stop) && $e->stop){
+		public function dispatch($event){
+			if(! $event || !$event instanceof Event){
+				$this->logger->info('The event is not set or is not an instance of "Event" create the default "Event" object to use instead of.');
+				$event = new Event((string) $event);
+			}			
+			$this->logger->debug('Dispatch to the Event Listener, the event [' .stringfy_vars($event). ']');
+			if(isset($event->stop) && $event->stop){
 				$this->logger->info('This event need stopped, no need call any listener');
 				return;
 			}
-			if($e->returnBack){
+			if($event->returnBack){
 				$this->logger->info('This event need return back, return the result for future use');
-				return $this->dispatchToListerners($eventName, $e);
+				return $this->dispatchToListerners($event);
 			}
 			else{
 				$this->logger->info('This event no need return back the result, just dispatch it');
-				$this->dispatchToListerners($eventName, $e);
+				$this->dispatchToListerners($event);
 			}
 		}
 		
 		
 		/**
 		 * Dispatch the event to the registered listeners.
-		 * @param  string $eventName the name of the event to dispatch
-		 * @param  Event $e  the event information
+		 * @param  Event $event  the event information
 		 * @return void|Event if event need return, will return the final Event instance.
 		 */	
-		private function dispatchToListerners($eventName, Event $e){
-			$eBackup = $e;
-			$list = $this->getListeners($eventName);
+		private function dispatchToListerners(Event $event){
+			$eBackup = $event;
+			$list = $this->getListeners($event->name);
 			if(empty($list)){
-				$this->logger->info('No event listener is registered for the event [' .$eventName. '] skipping.');
-				if($e->returnBack){
-					return $e;
+				$this->logger->info('No event listener is registered for the event [' .$event->name. '] skipping.');
+				if($event->returnBack){
+					return $event;
 				}
 				return;
 			}
 			else{
-				$this->logger->info('Found the registered Event listener for the event [' .$eventName. '] the list are: ' . stringfy_vars($list));
+				$this->logger->info('Found the registered Event listener for the event [' .$event->name. '] the list are: ' . stringfy_vars($list));
 			}
 			foreach($list as $listener){
 				if($eBackup->returnBack){
-					$returnedEvent = call_user_func_array($listener, array($e));
+					$returnedEvent = call_user_func_array($listener, array($event));
 					if($returnedEvent instanceof Event){
-						$e = $returnedEvent;
+						$event = $returnedEvent;
 					}
 					else{
-						show_error('This event [' .$eventName. '] need you return the event object after processing');
+						show_error('This event [' .$event->name. '] need you return the event object after processing');
 					}
 				}
 				else{
-					call_user_func_array($listener, array($e));
+					call_user_func_array($listener, array($event));
 				}
-				if($e->stop){
+				if($event->stop){
 					break;
 				}
 			}
 			//only test for original event may be during the flow some listeners change this parameter
 			if($eBackup->returnBack){
-				return $e;
+				return $event;
 			}
 		}
 	}
