@@ -80,7 +80,7 @@
 					unset($this->listeners[$eventName][$index]);
 				}
 				else{
-					$this->logger->info('Cannot found this listener in the even listener list');
+					$this->logger->info('Cannot found this listener in the event listener list');
 				}
 			}
 			else{
@@ -138,7 +138,6 @@
 				$this->dispatchToListerners($event);
 			}
 		}
-		
 		
 		/**
 		 * Dispatch the event to the registered listeners.

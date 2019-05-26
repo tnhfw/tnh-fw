@@ -69,9 +69,7 @@
 			$this->_currentUrl =  (! empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '' )
 					. (! empty($_SERVER['QUERY_STRING']) ? ('?' . $_SERVER['QUERY_STRING']) : '' );
 					
-			//to prevent to display the same cache data to each user we use the variable $_SERVER['REMOTE_ADDR'] and session_id()
-			//to make the difference between each user
-			$this->_currentUrlCacheKey = md5($this->_currentUrl /*. $_SERVER['REMOTE_ADDR'] . session_id()*/);
+			$this->_currentUrlCacheKey = md5($this->_currentUrl);
 			
 			static::$_canCompressOutput = get_config('compress_output')
 										  && isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
@@ -287,7 +285,7 @@
 			$memoryUsage	= round($obj->benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
 			$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
 			
-			//compress the output is available
+			//compress the output if is available
 			if (static::$_canCompressOutput){
 				ob_start('ob_gzhandler');
 			}
@@ -341,7 +339,7 @@
 						$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
 						
 						///display the final output
-						//compress the output if exists
+						//compress the output if is available
 						if (static::$_canCompressOutput){
 							ob_start('ob_gzhandler');
 						}
@@ -390,7 +388,7 @@
 			/***********************************/
 			$path = CORE_VIEWS_PATH . '404.php';
 			if(file_exists($path)){
-				//compress the output if exists
+				//compress the output if is available
 				if (static::$_canCompressOutput){
 					ob_start('ob_gzhandler');
 				}

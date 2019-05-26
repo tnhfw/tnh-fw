@@ -70,7 +70,8 @@
 					else{
 						$baseUrl = $_SERVER['SERVER_ADDR'];
 					}
-					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl
+					$port = ((isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80' && ! is_https() || $_SERVER['SERVER_PORT'] != '443' && is_https()) ) ? $_SERVER['SERVER_PORT'] : '');
+					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl . $port
 						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
 				}
 				else{
@@ -80,7 +81,7 @@
 				self::set('base_url', $baseUrl);
 			}
 			static::$config['base_url'] = rtrim(static::$config['base_url'], '/') .'/';
-			if(ENVIRONMENT == 'production' && (strtolower(static::$config['log_level']) == 'debug' || strtolower(static::$config['log_level']) == 'info' || strtolower(static::$config['log_level']) == 'all')){
+			if(ENVIRONMENT == 'production' && in_array(strtolower(static::$config['log_level']), array('debug', 'info','all'))){
 				$logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
 			}
 			$logger->info('Configuration initialized successfully');
