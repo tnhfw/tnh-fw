@@ -70,7 +70,7 @@
 					else{
 						$baseUrl = $_SERVER['SERVER_ADDR'];
 					}
-					$port = ((isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80' && ! is_https() || $_SERVER['SERVER_PORT'] != '443' && is_https()) ) ? $_SERVER['SERVER_PORT'] : '');
+					$port = ((isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80' && ! is_https() || $_SERVER['SERVER_PORT'] != '443' && is_https()) ) ? ':' . $_SERVER['SERVER_PORT'] : '');
 					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl . $port
 						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
 				}
