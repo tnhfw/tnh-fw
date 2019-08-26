@@ -359,7 +359,7 @@
 		}
 		
 		/**
-		* Get the final page to be render
+		* Get the final page to be rendered
 		* @return string
 		*/
 		public function getFinalPageRendered(){

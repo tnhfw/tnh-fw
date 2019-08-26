@@ -222,7 +222,7 @@
 		 *
 		 * @return void
 		 */
-		public static function library($class, $instance = null, $params = null){
+		public static function library($class, $instance = null, array $params = array()){
 			$logger = static::getLogger();
 			$class = str_ireplace('.php', '', $class);
 			$class = trim($class, '/\\');
@@ -516,7 +516,7 @@
 			if($languageFilePath){
 				require_once $languageFilePath;
 				if(! empty($lang) && is_array($lang)){
-					$logger->info('Language file  [' .$languageFilePath. '] contains the valide languages keys add them to language list');
+					$logger->info('Language file  [' .$languageFilePath. '] contains the valid languages keys add them to language list');
 					//Note: may be here the class 'Lang' not yet loaded
 					$langObj =& class_loader('Lang', 'classes');
 					$langObj->addLangMessages($lang);

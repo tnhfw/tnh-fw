@@ -50,10 +50,10 @@
 			}
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
-			$obj = & get_instance();
 			$checkCsrf = false;
 			//check if the user set the checking of CSRF manually
 			if($method != 'POST' && isset($attributes['csrf'])){
+				$obj = & get_instance();
 				if(! isset($obj->formvalidation)){
 					Loader::library('FormValidation');
 				}
@@ -136,7 +136,8 @@
 		 * @return mixed the form field value if is set, otherwise return the default value.
 		 */
 		public static function value($name, $default = null){
-			return isset($_POST[$name]) ? $_POST[$name] : $default;
+			$value = get_instance()->request->query($name);
+			return $value ? $value : $default;
 		}
 
 		/**
@@ -147,8 +148,10 @@
 		 * @return string the generated label html content
 		 */
 		public static function label($label, $for = '', array $attributes = array()){
-			$str = null;
-			$str .= '<label for = "'.$for.'" ';
+			$str = '<label';
+			if($for){
+				$str .= ' for = "'.$for.'"';
+			}
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
 			$str .= $label.'</label>';
@@ -165,7 +168,7 @@
 		 */
 		public static function input($name, $value = null, array $attributes = array(), $type = 'text'){
 			$str = null;
-			$str .= '<input name = "'.$name.'" value = "'.$value.'" type = "'.$type.'" ';
+			$str .= '<input name = "'.$name.'" value = "'.$value.'" type = "'.$type.'"';
 			$str .= attributes_to_string($attributes);
 			$str .= '/>';
 			return $str;
@@ -234,6 +237,14 @@
 		}
 		
 		/**
+		 * Generate the form field for "search"
+		 * @see Form::input() for more details
+		 */
+		public static function search($name, $value = null, array $attributes = array()){
+			return self::input($name, $value, $attributes, 'search');
+		}
+		
+		/**
 		 * Generate the form field for "hidden"
 		 * @see Form::input() for more details
 		 */
@@ -282,7 +293,7 @@
 		 */
 		public static function textarea($name, $value = '', array $attributes = array()){
 			$str = null;
-			$str .= '<textarea name = "'.$name.'" ';
+			$str .= '<textarea name = "'.$name.'"';
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
 			$str .= $value.'</textarea>';
@@ -298,11 +309,11 @@
 		 * @return string             the generated form field html content for select
 		 */
 		public static function select($name, $values = null, $selected = null, array $attributes = array()){
-			if(!is_array($values)){
+			if(! is_array($values)){
 				$values = array('' => $values);
 			}
 			$str = null;
-			$str .= '<select name = "'.$name.'" ';
+			$str .= '<select name = "'.$name.'"';
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
 			foreach($values as $key => $val){

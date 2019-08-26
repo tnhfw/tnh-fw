@@ -147,10 +147,13 @@
         /**
          * Set the form validation data
          * @param array $data the values to be validated
+		 *
+         * @return FormValidation Current instance of object.
          */
         public function setData(array $data){
             $this->logger->debug('Setting the form validation data, the values are: ' . stringfy_vars($data));
             $this->data = $data;
+			return $this;
         }
 
         /**

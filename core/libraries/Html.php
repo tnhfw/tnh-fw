@@ -64,7 +64,7 @@
 		 *
 		 * @return string|void             the generated html for mailto link if $return is true or display it if not
 		 */
-		public static function mailto($link = '', $anchor = null, array $attributes = array(), $return = true){
+		public static function mailto($link, $anchor = null, array $attributes = array(), $return = true){
 			if(! $anchor){
 				$anchor = $link;
 			}
@@ -117,7 +117,7 @@
 			}
 			$str = null;
 			for ($i = 1; $i <= $nb; $i++) {
-				$str .= '<hr' .attributes_to_string($attributes). '/>';
+				$str .= '<hr' .attributes_to_string($attributes). ' />';
 			}
 			if($return){
 				return $str;

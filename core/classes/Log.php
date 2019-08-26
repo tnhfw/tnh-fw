@@ -185,9 +185,7 @@
 			
 			//debug info
 			$dtrace = debug_backtrace();
-			array_shift($dtrace); //remove the first element
-			
-			$fileInfo = array_shift($dtrace);//use the second index that contains the caller info
+			$fileInfo = $dtrace[0]['file'] == __FILE__ ? $dtrace[1] : $dtrace[0];
 			
 			$str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
 			$fp = fopen($path, 'a+');

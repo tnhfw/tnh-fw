@@ -103,8 +103,10 @@
             $query = $temp[0] . $query;
             $navbar = '';
             $numberOfPage = ceil($totalRows / $numberOfRowPerPage);
-            if($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0 ||
-                $currentPageNumber <= 0 || !is_numeric($numberOfLink) || !is_numeric($numberOfRowPerPage)
+			if(! is_numeric ($currentPageNumber) || $currentPageNumber <= 0){
+				$currentPageNumber = 1;
+			}
+            if($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0 || !is_numeric($numberOfLink) || !is_numeric($numberOfRowPerPage)
             ){
                 return $navbar;
             }

@@ -80,13 +80,12 @@
 			$objCookie = & class_loader('Cookie');
 			$cookieLang = $objCookie->get($cfgKey);
 			if($cookieLang && $this->isValid($cookieLang)){
-				$language = $cookieLang;
-				$this->current = $language;
+				$this->current = $cookieLang;
 				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid so we will set the language using the cookie value [' .$cookieLang. ']');
 			}
 			else{
 				$this->logger->info('Language from cookie [' .$cfgKey. '] is not set, use the default value [' .$this->getDefault(). ']');
-				$language = $this->getDefault();
+				$this->current = $this->getDefault();
 			}
 		}
 
@@ -164,14 +163,14 @@
 		 * Add new supported or available language
 		 *
 		 * @param string $name the short language name like "en", "fr".
-		 * @param string $descrition the human readable descrition of this language
+		 * @param string $description the human readable description of this language
 		 */
-		public function addLang($name, $descrition){
+		public function addLang($name, $description){
 			if(isset($this->availables[$name])){
 				return; //already added cost in performance
 			}
 			if($this->isValid($name)){
-				$this->availables[$name] = $descrition;
+				$this->availables[$name] = $description;
 			}
 			else{
 				show_error('The language [' . $name . '] is not valid or does not exists.');

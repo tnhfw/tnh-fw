@@ -69,7 +69,7 @@
 			$this->loader =& class_loader('Loader', 'classes');
 			$this->lang =& class_loader('Lang', 'classes');
 			$this->request =& class_loader('Request', 'classes');
-			//dispatch the request instance created
+			//dispatch the request instance created event
 			$this->eventdispatcher->dispatch('REQUEST_CREATED');
 			$this->response =& class_loader('Response', 'classes', 'classes');
 			
@@ -77,15 +77,15 @@
 			//add the supported languages ('key', 'display name')
 			$languages = get_config('languages', null);
 			if(! empty($languages)){
-				foreach($languages as $k => $v){
-					$this->lang->addLang($k, $v);
+				foreach($languages as $key => $displayName){
+					$this->lang->addLang($key, $displayName);
 				}
 			}
 			unset($languages);
 			//set session config
 			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
-			//dispatch the loaded instance of super controller
+			//dispatch the loaded instance of super controller event
 			$this->eventdispatcher->dispatch('SUPER_CONTROLLER_CREATED');
 		}
 
