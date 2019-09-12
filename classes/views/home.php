@@ -36,7 +36,7 @@
 							A simple PHP framework using HMVC architecture
 						</h3>
 						<br />
-						<p><?php echo Html::a('http://github.com/nguereza-tony/tnh-fw', 'Framework on Github', array('class' => 'btn btn-default', 'target' => '_blank'));?></p>
+						<p><?php echo Html::a('https://github.com/tnhfw/tnh-fw', 'Framework on Github', array('class' => 'btn btn-default', 'target' => '_blank'));?></p>
 					</div>
 				</div>
 				<div class = "panel panel-primary">
