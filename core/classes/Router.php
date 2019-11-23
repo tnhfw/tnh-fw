@@ -382,9 +382,6 @@
 						$this->logger->info('The controller [' . $controller . '] exist but does not contain the method [' . $controllerMethod . ']');
 					}
 					else{
-						if($this->getModule()){
-							$controllerInstance->moduleName = $this->getModule();
-						}
 						$this->logger->info('Routing data is set correctly now GO!');
 						call_user_func_array(array($controllerInstance, $controllerMethod), $this->getArgs());
 						$obj = & get_instance();

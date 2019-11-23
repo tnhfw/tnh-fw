@@ -85,6 +85,11 @@
 			//set session config
 			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
+			
+			//determine the current module
+			if($this->router->getModule()){
+				$this->moduleName = $this->router->getModule();
+			}
 			//dispatch the loaded instance of super controller event
 			$this->eventdispatcher->dispatch('SUPER_CONTROLLER_CREATED');
 		}
