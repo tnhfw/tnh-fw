@@ -398,13 +398,9 @@
         public function setAllowMimeType($mime)
         {
             if (!empty($mime) && is_string($mime)) {
-                if (preg_match('#^[-\w\+]+/[-\w\+]+$#', $mime)) {
-                    $this->allowed_mime_types[] = strtolower($mime);
-                    $this->file['allowed_mime_types'][] = strtolower($mime);
-                } else {
-                    return $this->setMimeHelping($mime);
-                }
-            }
+                $this->allowed_mime_types[] = strtolower($mime);
+                $this->file['allowed_mime_types'][] = strtolower($mime);
+            } 
             return $this;
         }
         /**
@@ -777,6 +773,7 @@
          * @param string $message the upload error message to set
          */
         public function setError($message){
+            $this->logger->info('The upload got error : ' . $message);
             $this->error = $message;
         }
 
