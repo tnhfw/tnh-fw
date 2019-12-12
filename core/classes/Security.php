@@ -100,6 +100,9 @@
 				}
 				else{
 					$logger->info('The CSRF data [' .$token. '] is valide the form data is safe continue');
+					//remove the token from session
+					Session::clear($key);
+					Session::clear($keyExpire);
 					return true;
 				}
 			}
