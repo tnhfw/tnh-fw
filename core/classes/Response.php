@@ -244,7 +244,10 @@
 			$cachePageStatus = get_config('cache_enable', false) && !empty($obj->view_cache_enable);
 			$dispatcher = $obj->eventdispatcher;
 			$content = $this->_pageRender;
-			
+			if(! $content){
+				$logger->warning('The final view content is empty.');
+				return;
+			}
 			//dispatch
 			$event = $dispatcher->dispatch(new Event('FINAL_VIEW_READY', $content, true));
 			$content = ! empty($event->payload) ? $event->payload : null;
