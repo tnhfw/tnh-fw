@@ -1,0 +1,16 @@
+{
+    "name": "tnhfw/tnh-fw",
+    "description": "A simple PHP framework using HMVC architecture",
+    "type": "Framework",
+    "require": {
+        "php": "5.4.*"
+    },
+    "license": "GPL3",
+    "authors": [
+        {
+            "name": "NGUEREZA Tony",
+            "email": "nguerezatony@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}

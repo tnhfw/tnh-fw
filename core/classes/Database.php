@@ -441,7 +441,7 @@
     public function whereIsNotNull($field, $andOr = 'AND'){
       if(is_array($field)){
         foreach($field as $f){
-          $this->whereIsNull($f, $andOr);
+          $this->whereIsNotNull($f, $andOr);
         }
       }
       else{
