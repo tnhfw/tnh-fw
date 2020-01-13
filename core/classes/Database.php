@@ -469,6 +469,9 @@
       if (is_array($where)){
         $_where = array();
         foreach ($where as $column => $data){
+          if(is_null($data)){
+            $data = '';
+          }
           $_where[] = $type . $column . '=' . ($escape ? $this->escape($data) : $data);
         }
         $where = implode(' '.$andOr.' ', $_where);
@@ -479,15 +482,24 @@
           $w = '';
           foreach($x as $k => $v){
             if(! empty($v)){
+                if(isset($op[$k]) && is_null($op[$k])){
+                  $op[$k] = '';
+                }
                 $w .= $type . $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
             }
           }
           $where = $w;
         }
         else if (! in_array((string)$op, $this->operatorList)){
+          if(is_null($op)){
+            $op = '';
+          }
         	$where = $type . $where . ' = ' . ($escape ? $this->escape($op) : $op);
         }
         else{
+          if(is_null($val)){
+            $val = '';
+          }
         	$where = $type . $where . $op . ($escape ? $this->escape($val) : $val);
         }
       }
@@ -603,6 +615,9 @@
       if (is_array($keys)){
         $_keys = array();
         foreach ($keys as $k => $v){
+          if(is_null($v)){
+            $v = '';
+          }
           $_keys[] = (is_numeric($v) ? $v : ($escape ? $this->escape($v) : $v));
         }
         $keys = implode(', ', $_keys);
@@ -659,6 +674,12 @@
      * @return object        the current Database instance
      */
     public function between($field, $value1, $value2, $type = '', $andOr = 'AND', $escape = true){
+      if(is_null($value1)){
+        $value1 = '';
+      }
+      if(is_null($value2)){
+        $value2 = '';
+      }
       if (is_null($this->where)){
       	$this->where = $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
       }
@@ -710,6 +731,9 @@
      * @return object        the current Database instance
      */
     public function like($field, $data, $type = '', $andOr = 'AND', $escape = true){
+      if(is_null($data)){
+        $data = '';
+      }
       $like = $escape ? $this->escape($data) : $data;
       if (is_null($this->where)){
         $this->where = $field . ' ' . $type . 'LIKE ' . $like;
@@ -760,6 +784,9 @@
      * @return object        the current Database instance
      */
     public function limit($limit, $limitEnd = null){
+      if(is_null($limit)){
+        return;
+      }
       if (! is_null($limitEnd)){
         $this->limit = $limit . ', ' . $limitEnd;
       }
@@ -818,16 +845,25 @@
         $x = explode('?', $field);
         $w = '';
         foreach($x as $k => $v){
-	      if(!empty($v)){
-	      	$w .= $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
-	      }
+  	      if(!empty($v)){
+            if(isset($op[$k]) && is_null($op[$k])){
+              $op[$k] = '';
+            }
+  	      	$w .= $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
+  	      }
       	}
         $this->having = $w;
       }
       else if (! in_array($op, $this->operatorList)){
+        if(is_null($op)){
+          $op = '';
+        }
         $this->having = $field . ' > ' . ($escape ? $this->escape($op) : $op);
       }
       else{
+        if(is_null($val)){
+          $val = '';
+        }
         $this->having = $field . ' ' . $op . ' ' . ($escape ? $this->escape($val) : $val);
       }
       return $this;
@@ -853,9 +889,9 @@
      * Show an error got from the current query (SQL command synthax error, database driver returned error, etc.)
      */
     public function error(){
-		if($this->error){
-			show_error('Query: "' . $this->query . '" Error: ' . $this->error, 'Database Error');
-		}
+  		if($this->error){
+  			show_error('Query: "' . $this->query . '" Error: ' . $this->error, 'Database Error');
+  		}
     }
 
     /**
@@ -1030,28 +1066,28 @@
       $sqlSELECTQuery = stristr($this->query, 'SELECT');
       $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . ($all ? 'YES':'NO'));
       //cache expire time
-	  $cacheExpire = $this->temporaryCacheTtl;
-	  
-	  //return to the initial cache time
-	  $this->temporaryCacheTtl = $this->cacheTtl;
-	  
-	  //config for cache
-      $cacheEnable = get_config('cache_enable');
-	  
-	  //the database cache content
-      $cacheContent = null;
-	  
-	  //this database query cache key
-      $cacheKey = null;
-	  
-	  //the cache manager instance
-      $cacheInstance = null;
-	  
-	  //the instance of the super controller
+  	  $cacheExpire = $this->temporaryCacheTtl;
+  	  
+  	  //return to the initial cache time
+  	  $this->temporaryCacheTtl = $this->cacheTtl;
+  	  
+  	  //config for cache
+        $cacheEnable = get_config('cache_enable');
+  	  
+  	  //the database cache content
+        $cacheContent = null;
+  	  
+  	  //this database query cache key
+        $cacheKey = null;
+  	  
+  	  //the cache manager instance
+        $cacheInstance = null;
+  	  
+  	  //the instance of the super controller
       $obj = & get_instance();
-	  
-	  //if can use cache feature for this query
-	  $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
+  	  
+  	  //if can use cache feature for this query
+  	  $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
 	  
       if ($dbCacheStatus && $sqlSELECTQuery){
         $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
@@ -1063,29 +1099,28 @@
 		  $this->logger->info('The cache is not enabled for this query or is not the SELECT query, get the result directly from real database');
       }
       
-      if (! $cacheContent && $sqlSELECTQuery)
-      {
-		//for database query execution time
+      if (! $cacheContent && $sqlSELECTQuery){
+		    //for database query execution time
         $benchmarkMarkerKey = md5($query . $all . $array);
         $obj->benchmark->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');
         //Now execute the query
-		$sqlQuery = $this->pdo->query($this->query);
+		    $sqlQuery = $this->pdo->query($this->query);
         
-		//get response time for this query
+    		//get response time for this query
         $responseTime = $obj->benchmark->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
-		//TODO use the configuration value for the high response time currently is 1 second
+	     	//TODO use the configuration value for the high response time currently is 1 second
         if($responseTime >= 1 ){
             $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$responseTime. '] sec.');
         }
         if ($sqlQuery){
           $this->numRows = $sqlQuery->rowCount();
           if (($this->numRows > 0)){
-			//if need return all result like list of record
+		    	//if need return all result like list of record
             if ($all){
-				$this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
-		    }
+    				$this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
+    		    }
             else{
-				$this->result = ($array == false) ? $sqlQuery->fetch(PDO::FETCH_OBJ) : $sqlQuery->fetch(PDO::FETCH_ASSOC);
+				        $this->result = ($array == false) ? $sqlQuery->fetch(PDO::FETCH_OBJ) : $sqlQuery->fetch(PDO::FETCH_ASSOC);
             }
           }
           if ($dbCacheStatus && $sqlSELECTQuery){
@@ -1101,11 +1136,11 @@
         }
       }
       else if ((! $cacheContent && !$sqlSELECTQuery) || ($cacheContent && !$sqlSELECTQuery)){
-		$queryStr = $this->pdo->query($this->query);
-		if($queryStr){
-			$this->result = $queryStr->rowCount() >= 0; //to test the result for the query like UPDATE, INSERT, DELETE
-			$this->numRows = $queryStr->rowCount();
-		}
+    		$queryStr = $this->pdo->query($this->query);
+    		if($queryStr){
+    			$this->result = $queryStr->rowCount() >= 0; //to test the result for the query like UPDATE, INSERT, DELETE
+    			$this->numRows = $queryStr->rowCount();
+    		}
         if (! $this->result){
           $error = $this->pdo->errorInfo();
           $this->error = $error[2];
@@ -1116,7 +1151,7 @@
       else{
         $this->logger->info('The result for query [' .$this->query. '] already cached use it');
         $this->result = $cacheContent;
-		$this->numRows = count($this->result);
+	     	$this->numRows = count($this->result);
       }
       $this->queryCount++;
       if(! $this->result){
@@ -1133,7 +1168,7 @@
     public function setCache($ttl = 0){
       if($ttl > 0){
         $this->cacheTtl = $ttl;
-		$this->temporaryCacheTtl = $ttl;
+		    $this->temporaryCacheTtl = $ttl;
       }
       return $this;
     }
