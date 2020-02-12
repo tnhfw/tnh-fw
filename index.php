@@ -210,6 +210,11 @@
 	* of your framework folder : "htaccess.txt" rename it to ".htaccess".
 	*/
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
+	
+	/**
+	 * Check if user run the application under CLI
+	 */
+	define('IS_CLI', stripos('cli', php_sapi_name()) !== false);
 
 	/**
 	* The environment of your application (production, test, development). 

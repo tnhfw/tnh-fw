@@ -193,7 +193,7 @@
          * @return boolean Whether or not the form has been submitted or the data is available for validation.
          */
         public function canDoValidation() {
-            return $_SERVER['REQUEST_METHOD'] === 'POST' || ! empty($this->data);
+            return get_instance()->request->method() === 'POST' || ! empty($this->data);
         }
 
         /**
@@ -215,7 +215,7 @@
          * afterwards.
          */
         protected function _run() {
-            if($_SERVER['REQUEST_METHOD'] == 'POST' || $this->enableCsrfCheck){
+            if(get_instance()->request->method() == 'POST' || $this->enableCsrfCheck){
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
                 if( get_config('csrf_enable', false) || $this->enableCsrfCheck){

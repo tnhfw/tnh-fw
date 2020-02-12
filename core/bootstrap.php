@@ -39,10 +39,10 @@
 	 *  @version 1.0.0
 	 *  @filesource
 	 */
-	 
-	 //Check if user run the application under CLI
-	if(stripos('cli', php_sapi_name()) !== false){
-		exit('Currently, you can not running this application in CLI mode.');
+	
+	//if the application is running in CLI mode $_SESSION global variable is not available
+	if(IS_CLI){
+		$_SESSION = array();
 	}
 		
 	/**

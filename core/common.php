@@ -488,67 +488,70 @@
 	 * This function is used to set the initial session config regarding the configuration
 	 */
 	function set_session_config(){
-		$logger =& class_loader('Log', 'classes');
-		$logger->setLogger('PHPSession');
-		//set session params
-		$sessionHandler = get_config('session_handler', 'files'); //the default is to store in the files
-		$sessionName = get_config('session_name');
-		if($sessionName){
-			session_name($sessionName);
-		}
-		$logger->info('Session handler: ' . $sessionHandler);
-		$logger->info('Session name: ' . $sessionName);
-
-		if($sessionHandler == 'files'){
-			$sessionSavePath = get_config('session_save_path');
-			if($sessionSavePath){
-				if(! is_dir($sessionSavePath)){
-					mkdir($sessionSavePath, 1773);
-				}
-				session_save_path($sessionSavePath);
-				$logger->info('Session save path: ' . $sessionSavePath);
+		//$_SESSION is not available on cli mode 
+		if(! IS_CLI){
+			$logger =& class_loader('Log', 'classes');
+			$logger->setLogger('PHPSession');
+			//set session params
+			$sessionHandler = get_config('session_handler', 'files'); //the default is to store in the files
+			$sessionName = get_config('session_name');
+			if($sessionName){
+				session_name($sessionName);
 			}
-		}
-		else if($sessionHandler == 'database'){
-			//load database session handle library
-			//Model
-			require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
+			$logger->info('Session handler: ' . $sessionHandler);
+			$logger->info('Session name: ' . $sessionName);
 
-			//Database Session handler Model
-			require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
+			if($sessionHandler == 'files'){
+				$sessionSavePath = get_config('session_save_path');
+				if($sessionSavePath){
+					if(! is_dir($sessionSavePath)){
+						mkdir($sessionSavePath, 1773);
+					}
+					session_save_path($sessionSavePath);
+					$logger->info('Session save path: ' . $sessionSavePath);
+				}
+			}
+			else if($sessionHandler == 'database'){
+				//load database session handle library
+				//Model
+				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
 
-			$DBS =& class_loader('DBSessionHandler', 'classes');
-			session_set_save_handler($DBS, true);
-			$logger->info('session save path: ' . get_config('session_save_path'));
-		}
-		else{
-			show_error('Invalid session handler configuration');
-		}
-		$lifetime = get_config('session_cookie_lifetime', 0);
-		$path = get_config('session_cookie_path', '/');
-		$domain = get_config('session_cookie_domain', '');
-		$secure = get_config('session_cookie_secure', false);
-		session_set_cookie_params(
-			$lifetime,
-			$path,
-			$domain,
-			$secure,
-			$httponly = true /*for security for access to cookie via javascript or XSS attack*/
-		);
-		//to prevent attack of Session Fixation 
-		//thank to https://www.phparch.com/2018/01/php-sessions-in-depth/
-		ini_set('session.use_strict_mode ', 1);
-		ini_set('session.use_only_cookies', 1);
-		ini_set('session.use_trans_sid ', 0);
-		
-		$logger->info('Session lifetime: ' . $lifetime);
-		$logger->info('Session cookie path: ' . $path);
-		$logger->info('Session domain: ' . $domain);
-		$logger->info('Session is secure: ' . ($secure ? 'TRUE':'FALSE'));
-		
-		if((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()){
-			$logger->info('Session not yet start, start it now');
-			session_start();
+				//Database Session handler Model
+				require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
+
+				$DBS =& class_loader('DBSessionHandler', 'classes');
+				session_set_save_handler($DBS, true);
+				$logger->info('session save path: ' . get_config('session_save_path'));
+			}
+			else{
+				show_error('Invalid session handler configuration');
+			}
+			$lifetime = get_config('session_cookie_lifetime', 0);
+			$path = get_config('session_cookie_path', '/');
+			$domain = get_config('session_cookie_domain', '');
+			$secure = get_config('session_cookie_secure', false);
+			session_set_cookie_params(
+				$lifetime,
+				$path,
+				$domain,
+				$secure,
+				$httponly = true /*for security for access to cookie via javascript or XSS attack*/
+			);
+			//to prevent attack of Session Fixation 
+			//thank to https://www.phparch.com/2018/01/php-sessions-in-depth/
+			ini_set('session.use_strict_mode ', 1);
+			ini_set('session.use_only_cookies', 1);
+			ini_set('session.use_trans_sid ', 0);
+			
+			$logger->info('Session lifetime: ' . $lifetime);
+			$logger->info('Session cookie path: ' . $path);
+			$logger->info('Session domain: ' . $domain);
+			$logger->info('Session is secure: ' . ($secure ? 'TRUE':'FALSE'));
+			
+			if((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()){
+				$logger->info('Session not yet start, start it now');
+				session_start();
+			}
 		}
 	}
 	

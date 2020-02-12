@@ -487,7 +487,7 @@
 				if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
 					$searchModuleName = $path[0];
 					$language = 'lang_' . $path[1] . '.php';
-					$file = $path[0] . DS . 'lang_'.$language.'.php';
+					$file = $path[0] . DS .$language;
 				}
 			}
 			if(! $searchModuleName && !empty($obj->moduleName)){
