@@ -3,7 +3,7 @@
     "description": "A simple PHP framework using HMVC architecture",
     "type": "Framework",
     "require": {
-        "php": ">=5.4.*"
+        "php": ">=5.4 <7.1"
     },
     "license": "GPL-3.0-only",
     "authors": [
