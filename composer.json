@@ -1,19 +1,25 @@
 {
     "name": "tnhfw/tnh-fw",
     "description": "A simple PHP framework using HMVC architecture",
-    "type": "framework",
-    "license": "GPL-3.0-only",
+    "type": "project",
+    "license": "GPL-3.0-or-later",
+	"keywords": ["application", "website", "development", "framework", "PHP"],
     "authors": [
         {
             "name": "NGUEREZA Tony",
-            "email": "nguerezatony@gmail.com"
+            "email": "nguerezatony@gmail.com",
+			 "homepage": "http://www.iacademy.cf",
+			 "role": "developer"
         }
     ],
+	
 	"require": {
         "php": ">=5.4 <7.1"
     },
+	
 	"require-dev": {
 		"phpunit/phpunit": ">=4"
-	  },
+	},
+	
     "minimum-stability": "dev"
 }
