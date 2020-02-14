@@ -1,10 +1,7 @@
 {
     "name": "tnhfw/tnh-fw",
     "description": "A simple PHP framework using HMVC architecture",
-    "type": "Framework",
-    "require": {
-        "php": ">=5.4 <7.1"
-    },
+    "type": "framework",
     "license": "GPL-3.0-only",
     "authors": [
         {
@@ -12,5 +9,11 @@
             "email": "nguerezatony@gmail.com"
         }
     ],
+	"require": {
+        "php": ">=5.4 <7.1"
+    },
+	"require-dev": {
+		"phpunit/phpunit": ">=4"
+	  },
     "minimum-stability": "dev"
 }
