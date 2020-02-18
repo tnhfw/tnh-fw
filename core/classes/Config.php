@@ -43,12 +43,13 @@
 		 * @return Object the Log instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
+			if(self::$logger == null){
+				$logger = array();
 				$logger[0] =& class_loader('Log', 'classes');
 				$logger[0]->setLogger('Library::Config');
-				static::$logger = $logger[0];
+				self::$logger = $logger[0];
 			}
-			return static::$logger;			
+			return self::$logger;			
 		}
 
 		/**
@@ -57,8 +58,8 @@
 		 * @return Log the log instance
 		 */
 		public static function setLogger($logger){
-			static::$logger = $logger;
-			return static::$logger;
+			self::$logger = $logger;
+			return self::$logger;
 		}
 
 		/**
@@ -67,8 +68,8 @@
 		public static function init(){
 			$logger = static::getLogger();
 			$logger->debug('Initialization of the configuration');
-			static::$config = & load_configurations();
-			if(! static::$config['base_url'] || ! is_url(static::$config['base_url'])){
+			self::$config = & load_configurations();
+			if(! self::$config['base_url'] || ! is_url(self::$config['base_url'])){
 				if(ENVIRONMENT == 'production'){
 					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
 				}
@@ -91,12 +92,12 @@
 				}
 				self::set('base_url', $baseUrl);
 			}
-			static::$config['base_url'] = rtrim(static::$config['base_url'], '/') .'/';
-			if(ENVIRONMENT == 'production' && in_array(strtolower(static::$config['log_level']), array('debug', 'info','all'))){
+			self::$config['base_url'] = rtrim(self::$config['base_url'], '/') .'/';
+			if(ENVIRONMENT == 'production' && in_array(strtolower(self::$config['log_level']), array('debug', 'info','all'))){
 				$logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
 			}
 			$logger->info('Configuration initialized successfully');
-			$logger->info('The application configuration are listed below: ' . stringfy_vars(static::$config));
+			$logger->info('The application configuration are listed below: ' . stringfy_vars(self::$config));
 		}
 
 		/**
@@ -107,8 +108,8 @@
 		 */
 		public static function get($item, $default = null){
 			$logger = static::getLogger();
-			if(array_key_exists($item, static::$config)){
-				return static::$config[$item];
+			if(array_key_exists($item, self::$config)){
+				return self::$config[$item];
 			}
 			$logger->warning('Cannot find config item ['.$item.'] using the default value ['.$default.']');
 			return $default;
@@ -120,7 +121,7 @@
 		 * @param mixed $value the config item value
 		 */
 		public static function set($item, $value){
-			static::$config[$item] = $value;
+			self::$config[$item] = $value;
 		}
 
 		/**
@@ -128,7 +129,7 @@
 		 * @return array the config values
 		 */
 		public static function getAll(){
-			return static::$config;
+			return self::$config;
 		}
 
 		/**
@@ -136,7 +137,7 @@
 		 * @param array $config the config values to add in the configuration list
 		 */
 		public static function setAll(array $config = array()){
-			static::$config = array_merge(static::$config, $config);
+			self::$config = array_merge(self::$config, $config);
 		}
 
 		/**
@@ -146,9 +147,9 @@
 		 */
 		public static function delete($item){
 			$logger = static::getLogger();
-			if(array_key_exists($item, static::$config)){
+			if(array_key_exists($item, self::$config)){
 				$logger->info('Delete config item ['.$item.']');
-				unset(static::$config[$item]);
+				unset(self::$config[$item]);
 				return true;
 			}
 			else{

@@ -204,7 +204,6 @@
             }
 			
 			$ip = get_ip();
-			$keyValue = $instance->getKeyValue();
 			$host = @gethostbyaddr($ip) or null;
 			$browser = $this->OBJ->browser->getPlatform().', '.$this->OBJ->browser->getBrowser().' '.$this->OBJ->browser->getVersion();
 			
@@ -287,7 +286,7 @@
 
 		/**
 		 * Clean the expire session data to save espace
-		 * @param  ineteger $maxLifetime the max lifetime
+		 * @param  integer $maxLifetime the max lifetime
 		 * @return boolean
 		 */
 		public function gc($maxLifetime){
@@ -326,7 +325,7 @@
 		
 		/**
          * Return the loader instance
-         * @return Loader the loader instance
+         * @return object Loader the loader instance
          */
         public function getLoader(){
             return $this->loader;
@@ -334,7 +333,7 @@
 
         /**
          * set the loader instance for future use
-         * @param Loader $loader the loader object
+         * @param object Loader $loader the loader object
          */
          public function setLoader($loader){
             $this->loader = $loader;
@@ -343,7 +342,7 @@
 
         /**
          * Return the model instance
-         * @return DBSessionHandlerModel the model instance
+         * @return object DBSessionHandlerModel the model instance
          */
         public function getModelInstance(){
             return $this->modelInstanceName;

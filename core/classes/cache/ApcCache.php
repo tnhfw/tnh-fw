@@ -112,15 +112,14 @@
 			}
 			else{
 				$this->logger->info('Found cache data for the key [' .$key. '] remove it');
-	      		return apc_delete($key);
+	      		return apc_delete($key) === true;
 			}
-			return false;
 		}
 		
 		/**
 		 * Get the cache information for given key
 		 * @param  string $key the key for cache to get the information for
-		 * @return array    the cache information. The associative array and must contains the following information:
+		 * @return boolean|array    the cache information. The associative array and must contains the following information:
 		 * 'mtime' => creation time of the cache (Unix timestamp),
 		 * 'expire' => expiration time of the cache (Unix timestamp),
 		 * 'ttl' => the time to live of the cache in second
@@ -198,7 +197,7 @@
 		* Return the array of cache information
 		*
 		* @param string $key the cache key to get the cache information 
-		* @return array
+		* @return boolean|array
 		*/
 		private function _getCacheInfo($key){
 			$caches = apc_cache_info('user');

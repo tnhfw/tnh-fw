@@ -75,7 +75,7 @@
 			}
 			$this->logger->info('The cache file [' .$filePath. '] for the key ['. $key .'] exists, check if the cache data is valid');
 			$handle = fopen($filePath,'r');
-			if( ! $handle){
+			if(! is_resource($handle)){
 				$this->logger->error('Can not open the file cache [' .$filePath. '] for the key ['. $key .'], return false');
 				return false;
 			}
@@ -100,7 +100,6 @@
 		     	$this->logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
 		     	return $data['data'];
 		     }
-			return false;
 		}
 
 
@@ -116,7 +115,7 @@
 			$this->logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
 			$filePath = $this->getFilePath($key);
 			$handle = fopen($filePath,'w');
-			if( ! $handle){
+			if(! is_resource($handle)){
 				$this->logger->error('Can not open the file cache [' .$filePath. '] for the key ['. $key .'], return false');
 				return false;
 			}
@@ -160,7 +159,7 @@
 			}
 			else{
 				$this->logger->info('Found cache file [' .$filePath. '] remove it');
-	      		@unlink($filePath);
+	      		unlink($filePath);
 				return true;
 			}
 		}
@@ -168,7 +167,7 @@
 		/**
 		 * Get the cache information for given key
 		 * @param  string $key the key for cache to get the information for
-		 * @return array    the cache information. The associative array and must contains the following information:
+		 * @return boolean|array    the cache information. The associative array and must contains the following information:
 		 * 'mtime' => creation time of the cache (Unix timestamp),
 		 * 'expire' => expiration time of the cache (Unix timestamp),
 		 * 'ttl' => the time to live of the cache in second
@@ -229,7 +228,7 @@
 		      		}
 		      		else if(time() > $data['expire']){
 		      			$this->logger->info('The cache data for file [' . $file . '] already expired remove it');
-		      			@unlink($file);
+		      			unlink($file);
 		      		}
 		      		else{
 		      			$this->logger->info('The cache data for file [' . $file . '] not yet expired skip it');
