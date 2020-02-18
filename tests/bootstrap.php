@@ -36,8 +36,7 @@
 	*
 	* you can place this directory outside of your web directory, for example "/home/your_app", etc.
 	*/
-	define('ROOT_PATH', dirname(realpath(__FILE__)) . DS .'..' . DS);
-	
+	define('ROOT_PATH', dirname(realpath(__FILE__)) . DS . '..' . DS);
 	
 	//tests dir path
 	define('TESTS_PATH', dirname(realpath(__FILE__)) . DS);

@@ -113,7 +113,8 @@
 
 	
 	function show_error($msg, $title = 'error', $logging = true){
-		//throw new RuntimeException('TNHFW Error: '.$msg);
+		//show only and continue to help track of some error occured
+		echo 'TNHFW Error: '.$msg . "\n";
 	}
 
 	function is_https(){

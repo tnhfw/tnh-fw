@@ -6,17 +6,16 @@
 	{	
 	
 		private $dbConfig = array(
-								'driver'    =>  'mysql',
-								'username'  =>  'root',
-								'password'  =>  '',
-								'database'  =>  'db_gesco',
-								'hostname'  =>  'localhost:3307',
+								'driver'    =>  'sqlite',
+								'database'  =>  TESTS_PATH . 'assets/db_tests.db',
 								'charset'   => 'utf8',
 								'collation' => 'utf8_general_ci',
-								'prefix'    =>  '',
-								'port'      =>  3307
 							);
 		private $db = null;
+		
+		private $model = null;
+		
+		private $secret = 'bXlzZWNyZXQ';
 		
 		private static $config = null;
 		
@@ -37,19 +36,23 @@
 		{
 			$this->db = new Database($this->dbConfig);
 			$this->db->setBenchmark(new Benchmark());
+			$this->model = new DBSessionModel($this->db);
 		}
 
 		protected function tearDown()
 		{
+			//to prevent old data conflict
+			$this->model->truncate();
 		}
 
 		
 		
 		public function testUsingSessionConfiguration(){
-			$secret = 'bXlzZWNyZXQ';
+			$data = $this->model->get('tony');
+			//file_put_contents('D:\tnh.txt', stringfy_vars($data));
 			//using value in the configuration
 			static::$config->set('session_save_path', 'DBSessionModel');
-			static::$config->set('session_secret', $secret);
+			static::$config->set('session_secret', $this->secret);
 			$dbsh = new DBSessionHandler();
 			//assign Database instance manually
 			$o = &get_instance();
@@ -73,31 +76,21 @@
 		}
 		
 		public function testWhenDataIsExpired(){
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
-			$secret = 'bXlzZWNyZXQ';
-			$dbsh = new DBSessionHandler($model);
-			$dbsh->setSessionSecret($secret);
+			$dbsh = new DBSessionHandler($this->model);
+			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
-			$model->update('foo', array('s_time' => 1234567));
+			$this->model->update('foo', array('s_time' => 1234567));
 			$this->assertFalse($dbsh->read('foo'));
 		}
 		
 		public function testWhenDataAlreadyExistDoUpdate(){
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
-			$secret = 'bXlzZWNyZXQ';
-			$dbsh = new DBSessionHandler($model);
-			$dbsh->setSessionSecret($secret);
+			$dbsh = new DBSessionHandler($this->model);
+			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->write('foo', '444'));
@@ -109,14 +102,8 @@
 		}
 		
 		public function testUsingCustomModelInstance(){
-			
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
-			$secret = 'bXlzZWNyZXQ';
-			$dbsh = new DBSessionHandler($model);
-			$dbsh->setSessionSecret($secret);
+			$dbsh = new DBSessionHandler($this->model);
+			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
@@ -125,7 +112,7 @@
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
-			$model->update('foo', array('s_time' => 1234567));
+			$this->model->update('foo', array('s_time' => 1234567));
 			
 			$this->assertFalse($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
@@ -143,13 +130,8 @@
 			
 			
 		public function testUsingCustomLogInstance(){
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
-			$secret = 'bXlzZWNyZXQ';
-			$dbsh = new DBSessionHandler($model, new Log());
-			$dbsh->setSessionSecret($secret);
+			$dbsh = new DBSessionHandler($this->model, new Log());
+			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
@@ -158,7 +140,7 @@
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
-			$model->update('foo', array('s_time' => 1234567));
+			$this->model->update('foo', array('s_time' => 1234567));
 			
 			$this->assertFalse($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
@@ -175,13 +157,8 @@
 		}
 		
 		public function testUsingCustomLoaderInstance(){
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
-			$secret = 'bXlzZWNyZXQ';
-			$dbsh = new DBSessionHandler($model, null, new Loader());
-			$dbsh->setSessionSecret($secret);
+			$dbsh = new DBSessionHandler($this->model, null, new Loader());
+			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
@@ -190,7 +167,7 @@
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
-			$model->update('foo', array('s_time' => 1234567));
+			$this->model->update('foo', array('s_time' => 1234567));
 			
 			$this->assertFalse($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
@@ -206,14 +183,10 @@
 			$this->assertEquals($dbsh->decode($encoded), 'foo');
 		}
 		
+		
 		public function testWhenModelInsanceIsNotSet(){
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
-			$secret = 'bXlzZWNyZXQ';
 			$dbsh = new DBSessionHandler(null, null, new Loader());
-			$dbsh->setSessionSecret($secret);
+			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
@@ -222,12 +195,13 @@
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
-			$model->update('foo', array('s_time' => 1234567));
+			$this->model->update('foo', array('s_time' => 1234567));
 			
 			$this->assertFalse($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
+			$this->assertTrue($dbsh->write('tnh', '445'));
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
@@ -239,14 +213,11 @@
 		}
 		
 		public function testWhenModelTableColumnsIsNotSet(){
-			$model = new DBSessionModel($this->db);
-			//to prevent old data conflict
-			$model->truncate();
-			
 			//session table is empty
-			$model->setSessionTableColumns(array());
-			$dbsh = new DBSessionHandler($model);
+			$this->model->setSessionTableColumns(array());
+			$dbsh = new DBSessionHandler($this->model);
 			$this->assertTrue($dbsh->open(null, null));
-			
 		}
+		
+		
 	}

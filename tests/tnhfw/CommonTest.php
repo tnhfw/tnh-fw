@@ -47,14 +47,4 @@
 			$this->assertEquals($cfg, $expected);
 		}
 		
-		public function testVsStream(){
-		
-			$vfs =  vfsStream::setup('tnhfw');
-			$this->assertFalse($vfs->hasChild('test'));
-			mkdir(vfsStream::url('tnhfw') . DS . 'test');
-			$this->assertTrue($vfs->hasChild('test'));
-			echo vfsStream::url('test');
-			
-			
-		}
 	}

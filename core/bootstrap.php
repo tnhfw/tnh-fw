@@ -116,6 +116,7 @@
 	 */
 	require_once CORE_CLASSES_PATH . 'Event.php';
 
+
 	$BENCHMARK->mark('CONFIG_INIT_START');
 	/**
 	* Load configurations and using the 

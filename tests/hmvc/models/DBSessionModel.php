@@ -11,7 +11,7 @@
 			'shost' => 's_host', //VARCHAR(255)
 			'sip' => 's_ip', //VARCHAR(255) 
 			'sbrowser' => 's_browser', //VARCHAR(255) 
-			'skey' => 'usr_id' //VARCHAR(255) 
+			'skey' => 'test_id' //VARCHAR(255) 
 		);
 		
 		public function deleteByTime($time){

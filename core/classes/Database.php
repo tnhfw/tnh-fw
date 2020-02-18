@@ -203,6 +203,7 @@
 				if(! empty($overwriteConfig)){
 				  $db = array_merge($db, $overwriteConfig);
 				}
+        $config = array();
 				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
 				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
 				$config['password']  = isset($db['password']) ? $db['password'] : '';
@@ -215,11 +216,11 @@
         if(strstr($config['hostname'], ':')){
           $p = explode(':', $config['hostname']);
           $port = isset($p[1]) ? $p[1] : '';
+          $config['hostname'] = isset($p[0]) ? $p[0] : '';
         }
 				$config['port']      = $port;
 				
 		  	$this->setDatabaseConfiguration($config);
-
     		$this->temporaryCacheTtl = $this->cacheTtl;
     }
 
@@ -231,18 +232,19 @@
       $config = $this->getDatabaseConfiguration();
       if(! empty($config)){
         try{
-            $dsn = '';
-            if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
-                $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
-                . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
-                . 'dbname=' . $config['database'];
-            }
-            else if ($config['driver'] == 'sqlite'){
-              $dsn = 'sqlite:' . $config['database'];
-            }
-            else if($config['driver'] == 'oracle'){
-              $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
-            }
+            $driverDsnMap = array(
+              'mysql' => 'mysql:host=' . $config['hostname'] . ';' 
+                          . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '') 
+                          . 'dbname=' . $config['database'],
+              'pgsql' => 'pgsql:host=' . $config['hostname'] . ';' 
+                          . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
+                          . 'dbname=' . $config['database'],
+              'sqlite' => 'sqlite:' . $config['database'],
+              'oracle' => 'oci:dbname=' . $config['hostname'] 
+                          . (($config['port']) != '' ? ':' . $config['port'] : '')
+                          . '/' . $config['database']
+            );
+            $dsn = isset($driverDsnMap[$config['driver']]) ? $driverDsnMap[$config['driver']] : '';
             
             $this->pdo = new PDO($dsn, $config['username'], $config['password']);
             $this->pdo->exec("SET NAMES '" . $config['charset'] . "' COLLATE '" . $config['collation'] . "'");
@@ -1072,9 +1074,9 @@
     		$query .= ' LIMIT ' . $this->limit;
       	}
 
-    	if($query == 'DELETE FROM ' . $this->from){
+    	if($query == 'DELETE FROM ' . $this->from && $this->config['driver'] != 'sqlite'){  
     		$query = 'TRUNCATE TABLE ' . $this->from;
-      	}
+      }
     	return $this->query($query);
     }
 
@@ -1164,24 +1166,29 @@
             $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$responseTime. '] sec.');
         }
         if ($sqlQuery){
-          $this->numRows = $sqlQuery->rowCount();
-          if (($this->numRows > 0)){
-		    	//if need return all result like list of record
+            //if need return all result like list of record
             if ($all){
-    				$this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
+    				    $this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
     		    }
             else{
 				        $this->result = ($array == false) ? $sqlQuery->fetch(PDO::FETCH_OBJ) : $sqlQuery->fetch(PDO::FETCH_ASSOC);
             }
-          }
+            //Sqlite and pgsql always return 0 when using rowCount()
+            if(in_array($this->config['driver'], array('sqlite', 'pgsql'))){
+              $this->numRows = count($this->result);  
+            }
+            else{
+              $this->numRows = $sqlQuery->rowCount(); 
+            }
+
           if ($dbCacheStatus && $sqlSELECTQuery){
-            $this->logger->info('Save the result for query [' .$this->query. '] into cache for future use');
-            $cacheInstance->set($cacheKey, $this->result, $cacheExpire);
+              $this->logger->info('Save the result for query [' .$this->query. '] into cache for future use');
+              $cacheInstance->set($cacheKey, $this->result, $cacheExpire);
           }
         }
         else{
           $error = $this->pdo->errorInfo();
-          $this->error = $error[2];
+          $this->error = isset($error[2]) ? $error[2] : '';
           $this->logger->fatal('The database query execution got error: ' . stringfy_vars($error));
           $this->error();
         }
@@ -1189,12 +1196,19 @@
       else if ((! $cacheContent && !$sqlSELECTQuery) || ($cacheContent && !$sqlSELECTQuery)){
     		$queryStr = $this->pdo->query($this->query);
     		if($queryStr){
-    			$this->result = $queryStr->rowCount() >= 0; //to test the result for the query like UPDATE, INSERT, DELETE
-    			$this->numRows = $queryStr->rowCount();
+          //Sqlite and pgsql always return 0 when using rowCount()
+          if(in_array($this->config['driver'], array('sqlite', 'pgsql'))){
+            $this->result = 1; //to test the result for the query like UPDATE, INSERT, DELETE
+            $this->numRows = 1;  
+          }
+          else{
+              $this->result = $queryStr->rowCount() >= 0; //to test the result for the query like UPDATE, INSERT, DELETE
+              $this->numRows = $queryStr->rowCount(); 
+          }
     		}
         if (! $this->result){
           $error = $this->pdo->errorInfo();
-          $this->error = $error[2];
+          $this->error = isset($error[2]) ? $error[2] : '';
           $this->logger->fatal('The database query execution got error: ' . stringfy_vars($error));
           $this->error();
         }

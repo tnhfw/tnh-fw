@@ -479,7 +479,7 @@
                     }
                     chdir($destination_directory);
                 } elseif ($create_if_not_exist === true) {
-                    if (mkdir($destination_directory, $this->destination_permissions, true)) {
+                    if (mkdir($destination_directory, 0775, true)) {
                         if ($this->dirExists($destination_directory)) {
                             $this->destination_directory = $destination_directory;
                             if (substr($this->destination_directory, -1) != DIRECTORY_SEPARATOR) {
@@ -783,34 +783,15 @@
          * @return string the error message
          */
         private function getPhpUploadErrorMessageByCode($code){
-            if(! is_int($code) || $code <= 0){
-                return null;
-            }
-            switch ($code) {
-                case 1:
-                    return $this->error_messages['upload_err_ini_size'];
-                break;
-                case 2:
-                    return $this->error_messages['upload_err_form_size'];
-                break;
-                case 3:
-                    return $this->error_messages['upload_err_partial'];
-                break;
-                case 4:
-                    return $this->error_messages['upload_err_no_file'];
-                break;
-                case 6:
-                    return $this->error_messages['upload_err_no_tmp_dir'];
-                break;
-                case 7:
-                    return $this->error_messages['upload_err_cant_write'];
-                break;
-                case 8:
-                    return $this->error_messages['upload_err_extension'];
-                break;
-                default:
-                    return null;
-                break;
-            }
+            $codeMessageMaps = array(
+                1 => $this->error_messages['upload_err_ini_size'],
+                2 => $this->error_messages['upload_err_form_size'],
+                3 => $this->error_messages['upload_err_partial'],
+                4 => $this->error_messages['upload_err_no_file'],
+                6 => $this->error_messages['upload_err_no_tmp_dir'],
+                7 => $this->error_messages['upload_err_cant_write'],
+                8 => $this->error_messages['upload_err_extension'],
+            );
+            return isset($codeMessageMaps[$code]) ? $codeMessageMaps[$code] : null;
         }
     }
