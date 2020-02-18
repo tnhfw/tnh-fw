@@ -3,4 +3,5 @@ php:
     - '5.6'
     - '7.0'
     
-script: phpunit -c tests
+before_script: composer install
+script: vendor/bin/phpunit -c tests
