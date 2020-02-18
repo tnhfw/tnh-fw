@@ -48,8 +48,6 @@
 		
 		
 		public function testUsingSessionConfiguration(){
-			$data = $this->model->get('tony');
-			//file_put_contents('D:\tnh.txt', stringfy_vars($data));
 			//using value in the configuration
 			static::$config->set('session_save_path', 'DBSessionModel');
 			static::$config->set('session_secret', $this->secret);
