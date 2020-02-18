@@ -112,9 +112,9 @@
 	$LOGGER->debug('Begin to load the required resources');
 
 	/**
-	 * Load the Event class file
+	 * Load the EventInfo class file
 	 */
-	require_once CORE_CLASSES_PATH . 'Event.php';
+	require_once CORE_CLASSES_PATH . 'EventInfo.php';
 
 
 	$BENCHMARK->mark('CONFIG_INIT_START');

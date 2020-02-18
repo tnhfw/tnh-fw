@@ -27,7 +27,7 @@
 	/**
 	 * This class represent the event detail to dispatch to correspond listener
 	 */
-	class Event{
+	class EventInfo{
 		
 		/**
 		 * The event name

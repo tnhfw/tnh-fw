@@ -46,43 +46,28 @@
 
 		/**
 		 * Class constructor
+		 * @param object $logger the Log instance to use if is null will create one
 		 */
-		public function __construct(){
-			$this->logger =& class_loader('Log', 'classes');
-			$this->logger->setLogger('MainController');
+		public function __construct(Log $logger = null){
+			//setting the Log instance
+			$this->setLoggerFromParamOrCreateNewInstance(null);
+			
+			//instance of the super object
 			self::$instance = & $this;
 			
-			$this->logger->debug('Adding the loaded classes to the super instance');
-			foreach (class_loaded() as $var => $class){
-				$this->$var =& class_loader($class);
-			}
+			//load the required resources
+			$this->loadRequiredResources();
 			
-			$this->logger->debug('Setting the cache handler instance');
-			//set cache handler instance
-			if(get_config('cache_enable', false)){
-				if(isset($this->{strtolower(get_config('cache_handler'))})){
-					$this->cache = $this->{strtolower(get_config('cache_handler'))};
-					unset($this->{strtolower(get_config('cache_handler'))});
-				} 
-			}
-			$this->logger->debug('Loading the required classes into super instance');
-			$this->eventdispatcher =& class_loader('EventDispatcher', 'classes');
-			$this->loader =& class_loader('Loader', 'classes');
-			$this->lang =& class_loader('Lang', 'classes');
-			$this->request =& class_loader('Request', 'classes');
-			//dispatch the request instance created event
-			$this->eventdispatcher->dispatch('REQUEST_CREATED');
-			$this->response =& class_loader('Response', 'classes', 'classes');
+			//set the cache using the configuration
+			$this->setCacheFromParamOrConfig(null);
 			
-			
-			//set session config
+			//set application session configuration
 			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
 			
-			//determine the current module
-			if(isset($this->router) && $this->router->getModule()){
-				$this->moduleName = $this->router->getModule();
-			}
+			//set module using the router
+			$this->setModuleNameFromRouter();
+
 			//dispatch the loaded instance of super controller event
 			$this->eventdispatcher->dispatch('SUPER_CONTROLLER_CREATED');
 		}
@@ -95,4 +80,66 @@
 		public static function &get_instance(){
 			return self::$instance;
 		}
+
+		/**
+		 * This method is used to set the module name
+		 */
+		protected function setModuleNameFromRouter(){
+			//determine the current module
+			if(isset($this->router) && $this->router->getModule()){
+				$this->moduleName = $this->router->getModule();
+			}
+		}
+
+		/**
+		 * Set the cache using the argument otherwise will use the configuration
+		 * @param CacheInterface $cache the implementation of CacheInterface if null will use the configured
+		 */
+		protected function setCacheFromParamOrConfig(CacheInterface $cache = null){
+			$this->logger->debug('Setting the cache handler instance');
+			//set cache handler instance
+			if(get_config('cache_enable', false)){
+				if ($cache !== null){
+					$this->cache = $cache;
+				} else if (isset($this->{strtolower(get_config('cache_handler'))})){
+					$this->cache = $this->{strtolower(get_config('cache_handler'))};
+					unset($this->{strtolower(get_config('cache_handler'))});
+				} 
+			}
+		}
+
+		/**
+		 * Set the Log instance using argument or create new instance
+		 * @param object $logger the Log instance if not null
+		 */
+		protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
+			if($logger !== null){
+	          $this->logger = $logger;
+	        }
+	        else{
+	            $this->logger =& class_loader('Log', 'classes');
+				$this->logger->setLogger('MainController');
+	        }
+		}
+
+		/**
+		 * This method is used to load the required resources for framework to work
+		 * @return void 
+		 */
+		private function loadRequiredResources(){
+			$this->logger->debug('Adding the loaded classes to the super instance');
+			foreach (class_loaded() as $var => $class){
+				$this->$var =& class_loader($class);
+			}
+
+			$this->logger->debug('Loading the required classes into super instance');
+			$this->eventdispatcher =& class_loader('EventDispatcher', 'classes');
+			$this->loader =& class_loader('Loader', 'classes');
+			$this->lang =& class_loader('Lang', 'classes');
+			$this->request =& class_loader('Request', 'classes');
+			//dispatch the request instance created event
+			$this->eventdispatcher->dispatch('REQUEST_CREATED');
+			$this->response =& class_loader('Response', 'classes', 'classes');
+		}
+
 	}

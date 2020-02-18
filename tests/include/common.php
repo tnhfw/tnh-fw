@@ -129,12 +129,14 @@
 	}
 		
 	function php_exception_handler($ex){
-		throw new RuntimeException('PHP Exception : '.$ex->getMessage().' | '.$ex->getFile().' | '.$ex->getLine());
+		//show only and continue to help track of some error occured
+		echo 'TNHFW PHP Exception : '.$ex->getMessage().' | '.$ex->getFile().' | '.$ex->getLine();
 	}
 	
 	
 	function php_error_handler($errno , $errstr, $errfile , $errline, array $errcontext = array()){
-		throw new RuntimeException('TNHFW Exception Error : '.$errstr.' | '.$errfile.' | '.$errline);
+		//show only and continue to help track of some error occured
+		echo 'TNHFW PHP Error : '.$errstr.' | '.$errfile.' | '.$errline;
 	}
 
 	function php_shudown_handler(){

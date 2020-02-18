@@ -69,30 +69,7 @@
 			$logger = static::getLogger();
 			$logger->debug('Initialization of the configuration');
 			self::$config = & load_configurations();
-			if(! self::$config['base_url'] || ! is_url(self::$config['base_url'])){
-				if(ENVIRONMENT == 'production'){
-					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
-				}
-				$baseUrl = null;
-				if (isset($_SERVER['SERVER_ADDR'])){
-					//check if the server is running under IPv6
-					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE){
-						$baseUrl = '['.$_SERVER['SERVER_ADDR'].']';
-					}
-					else{
-						$baseUrl = $_SERVER['SERVER_ADDR'];
-					}
-					$port = ((isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80' && ! is_https() || $_SERVER['SERVER_PORT'] != '443' && is_https()) ) ? ':' . $_SERVER['SERVER_PORT'] : '');
-					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl . $port
-						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
-				}
-				else{
-					$logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
-					$baseUrl = 'http://localhost/';
-				}
-				self::set('base_url', $baseUrl);
-			}
-			self::$config['base_url'] = rtrim(self::$config['base_url'], '/') .'/';
+			self::setBaseUrlUsingServerVar();
 			if(ENVIRONMENT == 'production' && in_array(strtolower(self::$config['log_level']), array('debug', 'info','all'))){
 				$logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
 			}
@@ -164,5 +141,35 @@
 		 */
 		public static function load($config){
 			Loader::config($config);
+		}
+
+		/**
+		 * Set the configuration for "base_url" if is not set in the configuration
+		 */
+		private static function setBaseUrlUsingServerVar(){
+			if (! isset(self::$config['base_url']) || ! is_url(self::$config['base_url'])){
+				if(ENVIRONMENT == 'production'){
+					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
+				}
+				$baseUrl = null;
+				if (isset($_SERVER['SERVER_ADDR'])){
+					//check if the server is running under IPv6
+					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE){
+						$baseUrl = '['.$_SERVER['SERVER_ADDR'].']';
+					}
+					else{
+						$baseUrl = $_SERVER['SERVER_ADDR'];
+					}
+					$port = ((isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80' && ! is_https() || $_SERVER['SERVER_PORT'] != '443' && is_https()) ) ? ':' . $_SERVER['SERVER_PORT'] : '');
+					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl . $port
+						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
+				}
+				else{
+					$logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
+					$baseUrl = 'http://localhost/';
+				}
+				self::set('base_url', $baseUrl);
+			}
+			self::$config['base_url'] = rtrim(self::$config['base_url'], '/') .'/';
 		}
 	}

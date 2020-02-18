@@ -2,7 +2,7 @@
 
 	use PHPUnit\Framework\TestCase;
 
-	class EventTest extends TestCase
+	class EventInfoTest extends TestCase
 	{	
 	
 		public static function setUpBeforeClass()
@@ -26,7 +26,7 @@
 		
 		
 		public function testDefaultValue(){
-			$e = new Event('foo');
+			$e = new EventInfo('foo');
 			$this->assertSame($e->name, 'foo');
 			$this->assertSame($e->payload, array());
 			$this->assertFalse($e->returnBack);
@@ -34,7 +34,7 @@
 		}
 		
 		public function testPayloadValueIsSet(){
-			$e = new Event('foo', array('bar'));
+			$e = new EventInfo('foo', array('bar'));
 			$this->assertSame($e->name, 'foo');
 			$this->assertSame($e->payload, array('bar'));
 			$this->assertFalse($e->returnBack);
@@ -42,7 +42,7 @@
 		}
 		
 		public function testReturnBackValueIsSetToTrue(){
-			$e = new Event('foo', array('bar'), true);
+			$e = new EventInfo('foo', array('bar'), true);
 			$this->assertSame($e->name, 'foo');
 			$this->assertSame($e->payload, array('bar'));
 			$this->assertTrue($e->returnBack);
@@ -50,7 +50,7 @@
 		}
 		
 		public function testStopValueIsSetToTue(){
-			$e = new Event('foo', array('bar'), true, true);
+			$e = new EventInfo('foo', array('bar'), true, true);
 			$this->assertSame($e->name, 'foo');
 			$this->assertSame($e->payload, array('bar'));
 			$this->assertTrue($e->returnBack);

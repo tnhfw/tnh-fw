@@ -6,6 +6,7 @@
 			'ApcCache' => CORE_CLASSES_CACHE_PATH . 'ApcCache.php',
 			'CacheInterface' => CORE_CLASSES_CACHE_PATH . 'CacheInterface.php',
 			'FileCache' => CORE_CLASSES_CACHE_PATH . 'FileCache.php',
+			//models
 			'DBSessionHandlerModel' => CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php',
 			'Model' => CORE_CLASSES_MODEL_PATH . 'Model.php',
 			//Core classes
@@ -13,7 +14,7 @@
 			'Controller' => CORE_CLASSES_PATH . 'Controller.php',
 			'Database' => CORE_CLASSES_PATH . 'Database.php',
 			'DBSessionHandler' => CORE_CLASSES_PATH . 'DBSessionHandler.php',
-			'Event' => CORE_CLASSES_PATH . 'Event.php',
+			'EventInfo' => CORE_CLASSES_PATH . 'EventInfo.php',
 			'EventDispatcher' => CORE_CLASSES_PATH . 'EventDispatcher.php',
 			'Lang' => CORE_CLASSES_PATH . 'Lang.php',
 			'Loader' => CORE_CLASSES_PATH . 'Loader.php',

@@ -249,10 +249,10 @@
 				return;
 			}
 			//dispatch
-			$event = $dispatcher->dispatch(new Event('FINAL_VIEW_READY', $content, true));
+			$event = $dispatcher->dispatch(new EventInfo('FINAL_VIEW_READY', $content, true));
 			$content = ! empty($event->payload) ? $event->payload : null;
 			if(empty($content)){
-				$logger->warning('The view content is empty after dispatch to Event Listeners.');
+				$logger->warning('The view content is empty after dispatch to event listeners.');
 			}
 			
 			//check whether need save the page into cache.

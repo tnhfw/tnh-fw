@@ -180,47 +180,14 @@
     /**
      * Construct new database
      * @param array $overwriteConfig the config to overwrite with the config set in database.php
-     * @param object $logger the log instance
      */
-    public function __construct($overwriteConfig = array(), Log $logger = null){
-        /**
-         * instance of the Log class
-         */
-        if(is_object($logger)){
-          $this->logger = $logger;
-        }
-        else{
-            $this->logger =& class_loader('Log', 'classes');
-            $this->logger->setLogger('Library::Database');
-        }
+    public function __construct($overwriteConfig = array()){
+        //Set Log instance to use
+        $this->setLoggerFromParamOrCreateNewInstance(null);
 
-        $db = array();
-      	if(file_exists(CONFIG_PATH . 'database.php')){
-          //here don't use require_once because somewhere user can create database instance directly
-      	  require CONFIG_PATH . 'database.php';
-        }
-          
-				if(! empty($overwriteConfig)){
-				  $db = array_merge($db, $overwriteConfig);
-				}
-        $config = array();
-				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
-				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
-				$config['password']  = isset($db['password']) ? $db['password'] : '';
-				$config['database']  = isset($db['database']) ? $db['database'] : '';
-				$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
-				$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
-				$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
-				$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
-        $port = '';
-        if(strstr($config['hostname'], ':')){
-          $p = explode(':', $config['hostname']);
-          $port = isset($p[1]) ? $p[1] : '';
-          $config['hostname'] = isset($p[0]) ? $p[0] : '';
-        }
-				$config['port']      = $port;
-				
-		  	$this->setDatabaseConfiguration($config);
+        //Set global configuration using the config file
+        $this->setDatabaseConfigurationFromConfigFile($overwriteConfig);
+        
     		$this->temporaryCacheTtl = $this->cacheTtl;
     }
 
@@ -232,21 +199,7 @@
       $config = $this->getDatabaseConfiguration();
       if(! empty($config)){
         try{
-            $driverDsnMap = array(
-              'mysql' => 'mysql:host=' . $config['hostname'] . ';' 
-                          . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '') 
-                          . 'dbname=' . $config['database'],
-              'pgsql' => 'pgsql:host=' . $config['hostname'] . ';' 
-                          . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
-                          . 'dbname=' . $config['database'],
-              'sqlite' => 'sqlite:' . $config['database'],
-              'oracle' => 'oci:dbname=' . $config['hostname'] 
-                          . (($config['port']) != '' ? ':' . $config['port'] : '')
-                          . '/' . $config['database']
-            );
-            $dsn = isset($driverDsnMap[$config['driver']]) ? $driverDsnMap[$config['driver']] : '';
-            
-            $this->pdo = new PDO($dsn, $config['username'], $config['password']);
+            $this->pdo = new PDO($this->getDsnFromDriver(), $config['username'], $config['password']);
             $this->pdo->exec("SET NAMES '" . $config['charset'] . "' COLLATE '" . $config['collation'] . "'");
             $this->pdo->exec("SET CHARACTER SET '" . $config['charset'] . "'");
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
@@ -489,6 +442,86 @@
       }
       return $this;
     }
+
+    /**
+     * Get the SQL WHERE clause using array column => value
+     * @see Database::where
+     *
+     * @return string
+     */
+    protected function getWhereStrIfIsArray(array $where, $type = '', $andOr = 'AND', $escape = true){
+        $_where = array();
+        foreach ($where as $column => $data){
+          if(is_null($data)){
+            $data = '';
+          }
+          $_where[] = $type . $column . ' = ' . ($escape ? $this->escape($data) : $data);
+        }
+        $where = implode(' '.$andOr.' ', $_where);
+        return $where;
+    }
+
+     /**
+     * Get the SQL WHERE clause when operator argument is an array
+     * @see Database::where
+     *
+     * @return string
+     */
+    protected function getWhereStrIfOperatorIsArray($where, array $op, $type = '', $escape = true){
+       $x = explode('?', $where);
+       $w = '';
+        foreach($x as $k => $v){
+          if(! empty($v)){
+              if(isset($op[$k]) && is_null($op[$k])){
+                $op[$k] = '';
+              }
+              $w .= $type . $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
+          }
+        }
+        return $w;
+    }
+
+    /**
+     * Get the default SQL WHERE clause using operator = or the operator argument
+     * @see Database::where
+     *
+     * @return string
+     */
+    protected function getWhereStrForOperator($where, $op = null, $val = null, $type = '', $escape = true){
+       $w = '';
+       if (! in_array((string)$op, $this->operatorList)){
+          if(is_null($op)){
+            $op = '';
+          }
+          $w = $type . $where . ' = ' . ($escape ? $this->escape($op) : $op);
+        }
+        else{
+          if(is_null($val)){
+            $val = '';
+          }
+          $w = $type . $where . $op . ($escape ? $this->escape($val) : $val);
+        }
+        return $w;
+      }
+
+      /**
+       * Set the $this->where property 
+       * @param string $whereStr the WHERE clause string
+       * @param  string  $andOr the separator type used 'AND', 'OR', etc.
+       */
+      protected function setWhereStr($whereStr, $andOr = 'AND'){
+        if (empty($this->where)){
+          $this->where = $whereStr;
+        }
+        else{
+          if(substr($this->where, -1) == '('){
+            $this->where = $this->where . ' ' . $whereStr;
+          }
+          else{
+            $this->where = $this->where . ' '.$andOr.' ' . $whereStr;
+          }
+        }
+      }
     
     /**
      * Set the SQL WHERE CLAUSE statment
@@ -501,54 +534,18 @@
      * @return object        the current Database instance
      */
     public function where($where, $op = null, $val = null, $type = '', $andOr = 'AND', $escape = true){
+      $whereStr = '';
       if (is_array($where)){
-        $_where = array();
-        foreach ($where as $column => $data){
-          if(is_null($data)){
-            $data = '';
-          }
-          $_where[] = $type . $column . '=' . ($escape ? $this->escape($data) : $data);
-        }
-        $where = implode(' '.$andOr.' ', $_where);
+        $whereStr = $this->getWhereStrIfIsArray($where, $type, $andOr, $escape);
       }
       else{
         if(is_array($op)){
-          $x = explode('?', $where);
-          $w = '';
-          foreach($x as $k => $v){
-            if(! empty($v)){
-                if(isset($op[$k]) && is_null($op[$k])){
-                  $op[$k] = '';
-                }
-                $w .= $type . $v . (isset($op[$k]) ? ($escape ? $this->escape($op[$k]) : $op[$k]) : '');
-            }
-          }
-          $where = $w;
-        }
-        else if (! in_array((string)$op, $this->operatorList)){
-          if(is_null($op)){
-            $op = '';
-          }
-        	$where = $type . $where . ' = ' . ($escape ? $this->escape($op) : $op);
-        }
-        else{
-          if(is_null($val)){
-            $val = '';
-          }
-        	$where = $type . $where . $op . ($escape ? $this->escape($val) : $val);
+          $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
+        } else {
+          $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape = true);
         }
       }
-      if (empty($this->where)){
-        $this->where = $where;
-      }
-      else{
-        if(substr($this->where, -1) == '('){
-          $this->where = $this->where . ' ' . $where;
-        }
-        else{
-          $this->where = $this->where . ' '.$andOr.' ' . $where;
-        }
-      }
+      $this->setWhereStr($whereStr, $andOr);
       return $this;
     }
 
@@ -655,17 +652,8 @@
         $_keys[] = (is_numeric($v) ? $v : ($escape ? $this->escape($v) : $v));
       }
       $keys = implode(', ', $_keys);
-      if (empty($this->where)){
-        $this->where = $field . ' ' . $type . 'IN (' . $keys . ')';
-      }
-      else{
-        if(substr($this->where, -1) == '('){
-          $this->where = $this->where . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
-        }
-        else{
-          $this->where = $this->where . ' ' . $andOr . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
-        }
-      }
+      $whereStr = $field . ' ' . $type . ' IN (' . $keys . ')';
+      $this->setWhereStr($whereStr, $andOr);
       return $this;
     }
 
@@ -713,17 +701,8 @@
       if(is_null($value2)){
         $value2 = '';
       }
-      if (empty($this->where)){
-      	$this->where = $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
-      }
-      else{
-        if(substr($this->where, -1) == '('){
-          $this->where = $this->where . ' ' . $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
-        }
-        else{
-          $this->where = $this->where . ' ' . $andOr . ' ' . $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
-        }
-      }
+      $whereStr = $field . ' ' . $type . ' BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
+      $this->setWhereStr($whereStr, $andOr);
       return $this;
     }
 
@@ -1394,6 +1373,78 @@
     public function setData($key, $value, $escape = true){
       $this->data[$key] = $escape ? $this->escape($value) : $value;
       return $this;
+    }
+
+    /**
+     * Set the Log instance using argument or create new instance
+     * @param object $logger the Log instance if not null
+     */
+    protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
+      if($logger !== null){
+        $this->logger = $logger;
+      }
+      else{
+          $this->logger =& class_loader('Log', 'classes');
+          $this->logger->setLogger('Library::Database');
+      }
+    }
+
+   /**
+    * Setting the database configuration using the configuration file
+    * @param array $overwriteConfig the additional configuration to overwrite with the existing one
+    */
+    protected function setDatabaseConfigurationFromConfigFile(array $overwriteConfig = array()){
+        $db = array();
+        if(file_exists(CONFIG_PATH . 'database.php')){
+            //here don't use require_once because somewhere user can create database instance directly
+            require CONFIG_PATH . 'database.php';
+        }
+          
+        if(! empty($overwriteConfig)){
+          $db = array_merge($db, $overwriteConfig);
+        }
+        $config = array();
+        $config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
+        $config['username']  = isset($db['username']) ? $db['username'] : 'root';
+        $config['password']  = isset($db['password']) ? $db['password'] : '';
+        $config['database']  = isset($db['database']) ? $db['database'] : '';
+        $config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
+        $config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
+        $config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
+        $config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
+        $port = '';
+        if(strstr($config['hostname'], ':')){
+          $p = explode(':', $config['hostname']);
+          $port = isset($p[1]) ? $p[1] : '';
+          $config['hostname'] = isset($p[0]) ? $p[0] : '';
+        }
+        $config['port']      = $port;
+        $this->setDatabaseConfiguration($config);  
+    }
+
+    /**
+     * This method is used to get the PDO DSN string using th configured driver
+     * @return string the DSN string
+     */
+    protected function getDsnFromDriver(){
+      $config = $this->getDatabaseConfiguration();
+      if(! empty($config)){
+            $driverDsnMap = array(
+                                    'mysql' => 'mysql:host=' . $config['hostname'] . ';' 
+                                                . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '') 
+                                                . 'dbname=' . $config['database'],
+                                    'pgsql' => 'pgsql:host=' . $config['hostname'] . ';' 
+                                                . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
+                                                . 'dbname=' . $config['database'],
+                                    'sqlite' => 'sqlite:' . $config['database'],
+                                    'oracle' => 'oci:dbname=' . $config['hostname'] 
+                                                . (($config['port']) != '' ? ':' . $config['port'] : '')
+                                                . '/' . $config['database']
+                                  );
+            return isset($driverDsnMap[$config['driver']]) ? $driverDsnMap[$config['driver']] : '';
+      } 
+                            
+      return null;
     }
 
 

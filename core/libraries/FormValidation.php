@@ -505,6 +505,8 @@
             // Array to store args
             $ruleArgs = array();
 
+            preg_match('/\[(.*)\]/', $ruleName, $ruleArgs);
+
             // Get the rule arguments, realRule is just the base rule name
             // Like min_length instead of min_length[3]
             $ruleName = preg_replace('/\[(.*)\]/', '', $ruleName);
@@ -513,7 +515,6 @@
                 $methodToCall = $this->_toCallCase($ruleName);
                 call_user_func(array($this, $methodToCall), $inputName, $ruleName, $ruleArgs);
             }
-
             return;
         }
 
