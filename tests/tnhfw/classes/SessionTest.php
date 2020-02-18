@@ -28,9 +28,6 @@
 		{
 			Session::set('foo', 'bar');
 			$this->assertEquals('bar', Session::get('foo'));
-		}
-		
-		public function testExc(){
-			 //$this->expectException(InvalidArgumentException::class);
+			//$this->expectException(InvalidArgumentException::class);
 		}
 	}
