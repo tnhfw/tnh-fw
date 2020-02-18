@@ -22,7 +22,7 @@
 		
 		public static function setUpBeforeClass()
 		{
-			require 'hmvc/models/DBSessionModel.php';
+			require APPS_MODEL_PATH . 'DBSessionModel.php';
 			static::$config = new Config();
 			static::$config->init();
 		}

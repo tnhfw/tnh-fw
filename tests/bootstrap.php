@@ -38,6 +38,10 @@
 	*/
 	define('ROOT_PATH', dirname(realpath(__FILE__)) . DS .'..' . DS);
 	
+	
+	//tests dir path
+	define('TESTS_PATH', dirname(realpath(__FILE__)) . DS);
+
 
 	/**
 	* The path to the directory.
@@ -57,7 +61,7 @@
 	/**
 	* Custom application path for tests 
 	*/
-	define('APPS_PATH', dirname(realpath(__FILE__)) . DS .'hmvc' . DS);
+	define('APPS_PATH', TESTS_PATH .'hmvc' . DS);
 
 	/**
 	* The path to the controller directory of your application.
