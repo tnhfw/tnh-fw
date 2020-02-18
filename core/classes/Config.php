@@ -147,6 +147,7 @@
 		 * Set the configuration for "base_url" if is not set in the configuration
 		 */
 		private static function setBaseUrlUsingServerVar(){
+			$logger = static::getLogger();
 			if (! isset(self::$config['base_url']) || ! is_url(self::$config['base_url'])){
 				if(ENVIRONMENT == 'production'){
 					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
