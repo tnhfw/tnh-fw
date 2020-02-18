@@ -250,7 +250,7 @@
 				$this->logger->info('Found [' . count($list) . '] cache files to remove');
 				foreach ($list as $file) {
 					$this->logger->debug('Processing the cache file [' . $file . ']');
-					@unlink($file);
+					unlink($file);
 				}
 			}
 		}

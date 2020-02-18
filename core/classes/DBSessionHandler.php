@@ -59,7 +59,7 @@
 
 		/**
 		 * The model instance name to use after load model
-		 * @var string
+		 * @var object
 		 */
 		private $modelInstanceName = null;
 
@@ -150,16 +150,17 @@
 		public function open($savePath, $sessionName){
 			$this->logger->debug('Opening database session handler for [' . $sessionName . ']');
 			//try to check if session secret is set before
-			if(! $this->getSessionSecret()){
+			$secret = $this->getSessionSecret();
+			if(empty($secret)){
 				$secret = get_config('session_secret', false);
 				$this->setSessionSecret($secret);
 			}
-			$this->logger->info('Session secret: ' . $this->getSessionSecret());
+			$this->logger->info('Session secret: ' . $secret);
 
 			if(! $this->getModelInstance()){
 				$this->setModelInstanceFromConfig();
 			}
-			$this->setInitializerVector($this->getSessionSecret());
+			$this->setInitializerVector($secret);
 
 			//set session tables columns
 			$this->sessionTableColumns = $this->getModelInstance()->getSessionTableColumns();
@@ -188,7 +189,7 @@
 		/**
 		 * Get the session value for the given session id
 		 * @param  string $sid the session id to use
-		 * @return mixed      the session data in serialiaze format
+		 * @return string      the session data in serialiaze format
 		 */
 		public function read($sid){
 			$this->logger->debug('Reading database session data for SID: ' . $sid);
@@ -214,12 +215,12 @@
 				if($data->{$columns['stime']} < $timeInactivity){
 					$this->logger->info('Database session data for SID: ' . $sid . ' already expired, destroy it');
 					$this->destroy($sid);
-					return false;
+					return null;
 				}
 				return $this->decode($data->{$columns['sdata']});
 			}
 			$this->logger->info('Database session data for SID: ' . $sid . ' is not valid return false, may be the session ID is wrong');
-			return false;
+			return null;
 		}
 
 		/**

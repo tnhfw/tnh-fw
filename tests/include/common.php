@@ -36,7 +36,7 @@
 		foreach (array(ROOT_PATH, CORE_PATH) as $path) {
 			$file = $path . $dir . '/' . $class . '.php';
 			if(file_exists($file)){
-				if(class_exists($class, false) == false){
+				if(class_exists($class, false) === false){
 					require_once $file;
 				}
 				//already found
@@ -48,7 +48,7 @@
 			//can't use show_error() at this time because some dependencies not yet loaded
 			set_http_status_header(503);
 			echo 'Cannot find the class [' . $class . ']';
-			exit(1);
+			die();
 		}
 		
 		/*

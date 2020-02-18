@@ -381,7 +381,7 @@
       if(! is_null($op)){
         $on = (! in_array($op, $this->operatorList) ? $this->prefix . $field1 . ' = ' . $this->prefix . $op : $this->prefix . $field1 . ' ' . $op . ' ' . $this->prefix . $field2);
       }
-      if (is_null($this->join)){
+      if (empty($this->join)){
         $this->join = ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
       }
       else{
@@ -493,7 +493,7 @@
     /**
      * Set the SQL WHERE CLAUSE statment
      * @param  string|array  $where the where field or array of field list
-     * @param  string  $op     the condition operator. If is null the default will be "="
+     * @param  array|string  $op     the condition operator. If is null the default will be "="
      * @param  mixed  $val    the where value
      * @param  string  $type   the type used for this where clause (NOT, etc.)
      * @param  string  $andOr the separator type used 'AND', 'OR', etc.
@@ -538,7 +538,7 @@
         	$where = $type . $where . $op . ($escape ? $this->escape($val) : $val);
         }
       }
-      if (is_null($this->where)){
+      if (empty($this->where)){
         $this->where = $where;
       }
       else{
@@ -587,7 +587,7 @@
      * @return object        the current Database instance
      */
     public function groupStart($type = '', $andOr = ' AND'){
-      if (is_null($this->where)){
+      if (empty($this->where)){
         $this->where = $type . ' (';
       }
       else{
@@ -647,25 +647,23 @@
      * @return object        the current Database instance
      */
     public function in($field, array $keys, $type = '', $andOr = 'AND', $escape = true){
-      if (is_array($keys)){
-        $_keys = array();
-        foreach ($keys as $k => $v){
-          if(is_null($v)){
-            $v = '';
-          }
-          $_keys[] = (is_numeric($v) ? $v : ($escape ? $this->escape($v) : $v));
+      $_keys = array();
+      foreach ($keys as $k => $v){
+        if(is_null($v)){
+          $v = '';
         }
-        $keys = implode(', ', $_keys);
-        if (is_null($this->where)){
-          $this->where = $field . ' ' . $type . 'IN (' . $keys . ')';
+        $_keys[] = (is_numeric($v) ? $v : ($escape ? $this->escape($v) : $v));
+      }
+      $keys = implode(', ', $_keys);
+      if (empty($this->where)){
+        $this->where = $field . ' ' . $type . 'IN (' . $keys . ')';
+      }
+      else{
+        if(substr($this->where, -1) == '('){
+          $this->where = $this->where . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
         }
         else{
-          if(substr($this->where, -1) == '('){
-            $this->where = $this->where . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
-          }
-          else{
-            $this->where = $this->where . ' ' . $andOr . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
-          }
+          $this->where = $this->where . ' ' . $andOr . ' ' . $field . ' '.$type.'IN (' . $keys . ')';
         }
       }
       return $this;
@@ -715,7 +713,7 @@
       if(is_null($value2)){
         $value2 = '';
       }
-      if (is_null($this->where)){
+      if (empty($this->where)){
       	$this->where = $field . ' ' . $type . 'BETWEEN ' . ($escape ? $this->escape($value1) : $value1) . ' AND ' . ($escape ? $this->escape($value2) : $value2);
       }
       else{
@@ -766,11 +764,11 @@
      * @return object        the current Database instance
      */
     public function like($field, $data, $type = '', $andOr = 'AND', $escape = true){
-      if(is_null($data)){
+      if(empty($data)){
         $data = '';
       }
       $like = $escape ? $this->escape($data) : $data;
-      if (is_null($this->where)){
+      if (empty($this->where)){
         $this->where = $field . ' ' . $type . 'LIKE ' . $like;
       }
       else{
@@ -819,7 +817,7 @@
      * @return object        the current Database instance
      */
     public function limit($limit, $limitEnd = null){
-      if(is_null($limit)){
+      if(empty($limit)){
         return;
       }
       if (! is_null($limitEnd)){
@@ -838,7 +836,7 @@
      * @return object        the current Database instance
      */
     public function orderBy($orderBy, $orderDir = ' ASC'){
-      if (! is_null($orderDir)){
+      if (! empty($orderDir)){
         $this->orderBy = ! $this->orderBy ? ($orderBy . ' ' . strtoupper($orderDir)) : $this->orderBy . ', ' . $orderBy . ' ' . strtoupper($orderDir);
       }
       else{
@@ -954,35 +952,35 @@
      */
     public function getAll($returnSQLQueryOrResultType = false){
       $query = 'SELECT ' . $this->select . ' FROM ' . $this->from;
-      if (! is_null($this->join)){
+      if (! empty($this->join)){
         $query .= $this->join;
       }
 	  
-      if (! is_null($this->where)){
+      if (! empty($this->where)){
         $query .= ' WHERE ' . $this->where;
       }
 
-      if (! is_null($this->groupBy)){
+      if (! empty($this->groupBy)){
         $query .= ' GROUP BY ' . $this->groupBy;
       }
 
-      if (! is_null($this->having)){
+      if (! empty($this->having)){
         $query .= ' HAVING ' . $this->having;
       }
 
-      if (! is_null($this->orderBy)){
+      if (! empty($this->orderBy)){
           $query .= ' ORDER BY ' . $this->orderBy;
       }
 
-      if(! is_null($this->limit)){
+      if(! empty($this->limit)){
       	$query .= ' LIMIT ' . $this->limit;
       }
 	  
-	  if($returnSQLQueryOrResultType === true){
-    	return $query;
+	   if($returnSQLQueryOrResultType === true){
+      	return $query;
       }
       else{
-    	return $this->query($query, true, (($returnSQLQueryOrResultType == 'array') ? true : false) );
+    	   return $this->query($query, true, (($returnSQLQueryOrResultType == 'array') ? true : false) );
       }
     }
 
@@ -995,7 +993,7 @@
     public function insert($data = array(), $escape = true){
       $column = array();
       $val = array();
-      if(! $data && $this->getData()){
+      if(empty($data) && $this->getData()){
         $columns = array_keys($this->getData());
         $column = implode(',', $columns);
         $val = implode(', ', $this->getData());
@@ -1030,7 +1028,7 @@
     public function update($data = array(), $escape = true){
       $query = 'UPDATE ' . $this->from . ' SET ';
       $values = array();
-      if(! $data && $this->getData()){
+      if(empty($data) && $this->getData()){
         foreach ($this->getData() as $column => $val){
           $values[] = $column . ' = ' . $val;
         }
@@ -1040,16 +1038,16 @@
           $values[] = $column . '=' . ($escape ? $this->escape($val) : $val);
         }
       }
-      $query .= (is_array($data) ? implode(', ', $values) : $data);
-      if (! is_null($this->where)){
+      $query .= implode(', ', $values);
+      if (! empty($this->where)){
         $query .= ' WHERE ' . $this->where;
       }
 
-      if (! is_null($this->orderBy)){
+      if (! empty($this->orderBy)){
         $query .= ' ORDER BY ' . $this->orderBy;
       }
 
-      if (! is_null($this->limit)){
+      if (! empty($this->limit)){
         $query .= ' LIMIT ' . $this->limit;
       }
       return $this->query($query);
@@ -1062,15 +1060,15 @@
     public function delete(){
     	$query = 'DELETE FROM ' . $this->from;
 
-    	if (! is_null($this->where)){
+    	if (! empty($this->where)){
     		$query .= ' WHERE ' . $this->where;
       	}
 
-    	if (! is_null($this->orderBy)){
+    	if (! empty($this->orderBy)){
     	  $query .= ' ORDER BY ' . $this->orderBy;
       	}
 
-    	if (! is_null($this->limit)){
+    	if (! empty($this->limit)){
     		$query .= ' LIMIT ' . $this->limit;
       	}
 
@@ -1168,10 +1166,10 @@
         if ($sqlQuery){
             //if need return all result like list of record
             if ($all){
-    				    $this->result = ($array == false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
+    				    $this->result = ($array === false) ? $sqlQuery->fetchAll(PDO::FETCH_OBJ) : $sqlQuery->fetchAll(PDO::FETCH_ASSOC);
     		    }
             else{
-				        $this->result = ($array == false) ? $sqlQuery->fetch(PDO::FETCH_OBJ) : $sqlQuery->fetch(PDO::FETCH_ASSOC);
+				        $this->result = ($array === false) ? $sqlQuery->fetch(PDO::FETCH_OBJ) : $sqlQuery->fetch(PDO::FETCH_ASSOC);
             }
             //Sqlite and pgsql always return 0 when using rowCount()
             if(in_array($this->config['driver'], array('sqlite', 'pgsql'))){
@@ -1422,7 +1420,7 @@
   /**
    * The class destructor
    */
-  function __destruct(){
+  public function __destruct(){
     $this->pdo = null;
   }
 

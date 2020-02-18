@@ -5,12 +5,6 @@
 	class DBSessionHandlerTest extends TestCase
 	{	
 	
-		private $dbConfig = array(
-								'driver'    =>  'sqlite',
-								'database'  =>  TESTS_PATH . 'assets/db_tests.db',
-								'charset'   => 'utf8',
-								'collation' => 'utf8_general_ci',
-							);
 		private $db = null;
 		
 		private $model = null;
@@ -18,6 +12,16 @@
 		private $secret = 'bXlzZWNyZXQ';
 		
 		private static $config = null;
+		
+		public function __construct(){
+			$this->db = new Database(array(
+								'driver'    =>  'sqlite',
+								'database'  =>  TESTS_PATH . 'assets/db_tests.db',
+								'charset'   => 'utf8',
+								'collation' => 'utf8_general_ci',
+							));
+			$this->db->setBenchmark(new Benchmark());
+		}
 		
 		public static function setUpBeforeClass()
 		{
@@ -34,8 +38,6 @@
 		
 		protected function setUp()
 		{
-			$this->db = new Database($this->dbConfig);
-			$this->db->setBenchmark(new Benchmark());
 			$this->model = new DBSessionModel($this->db);
 		}
 
@@ -58,7 +60,7 @@
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
@@ -66,7 +68,7 @@
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 			$encoded = $dbsh->encode('foo');
 			$this->assertNotEmpty($encoded);
@@ -83,7 +85,7 @@
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 		}
 		
 		public function testWhenDataAlreadyExistDoUpdate(){
@@ -105,21 +107,21 @@
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
 			
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 			$encoded = $dbsh->encode('foo');
 			$this->assertNotEmpty($encoded);
@@ -133,21 +135,21 @@
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
 			
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 			$encoded = $dbsh->encode('foo');
 			$this->assertNotEmpty($encoded);
@@ -160,21 +162,21 @@
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
 			
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 			$encoded = $dbsh->encode('foo');
 			$this->assertNotEmpty($encoded);
@@ -188,14 +190,14 @@
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
 			
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
@@ -203,7 +205,7 @@
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertFalse($dbsh->read('foo'));
+			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 			$encoded = $dbsh->encode('foo');
 			$this->assertNotEmpty($encoded);
