@@ -45,12 +45,25 @@
 		 */
 		protected $sessionTableColumns = array();
 
-		public function __construct(){
-			parent::__construct();
+		public function __construct(Database $db = null){
+			parent::__construct($db);
 		}
 
+		/**
+		 * Return the session database table columns
+		 * @return array 
+		 */
 		public function getSessionTableColumns(){
 			return $this->sessionTableColumns;
+		}
+
+		/**
+		 * Set the session database table columns
+		 * @param array $columns the columns definition
+		 */
+		public function setSessionTableColumns(array $columns){
+			$this->sessionTableColumns = $columns;
+			return $this;
 		}
 
 		/**

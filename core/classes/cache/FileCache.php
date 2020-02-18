@@ -36,31 +36,29 @@
 		 * The logger instance
 		 * @var Log
 		 */
-		private static $logger;
+		private $logger;
 		
 		
-		public function __construct(){
+		public function __construct(Log $logger = null){
 			if(! $this->isSupported()){
 				show_error('The cache for file system is not available. Check the cache directory if is exists or is writable.');
 			}
+			/**
+	         * instance of the Log class
+	         */
+	        if(is_object($logger)){
+	          $this->logger = $logger;
+	        }
+	        else{
+	            $this->logger =& class_loader('Log', 'classes');
+	            $this->logger->setLogger('Library::FileCache');
+	        }
+			
 			//if Zlib extension is not loaded set compressCacheData to false
 			if(! extension_loaded('zlib')){
-				$logger = static::getLogger();
-				$logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
+				$this->logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
 				$this->compressCacheData = false;
 			}
-		}
-
-		/**
-		 * Get the logger singleton instance
-		 * @return Log the logger instance
-		 */
-		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::FileCache');
-			}
-			return static::$logger[0];
 		}
 
 		/**
@@ -69,17 +67,16 @@
 		 * @return mixed      the cache data if exists else return false
 		 */
 		public function get($key){
-			$logger = static::getLogger();
-			$logger->debug('Getting cache data for key ['. $key .']');
+			$this->logger->debug('Getting cache data for key ['. $key .']');
 			$filePath = $this->getFilePath($key);
 			if(! file_exists($filePath)){
-				$logger->info('No cache file found for the key ['. $key .'], return false');
+				$this->logger->info('No cache file found for the key ['. $key .'], return false');
 				return false;
 			}
-			$logger->info('The cache file [' .$filePath. '] for the key ['. $key .'] exists, check if the cache data is valid');
+			$this->logger->info('The cache file [' .$filePath. '] for the key ['. $key .'] exists, check if the cache data is valid');
 			$handle = fopen($filePath,'r');
 			if( ! $handle){
-				$logger->error('Can not open the file cache [' .$filePath. '] for the key ['. $key .'], return false');
+				$this->logger->error('Can not open the file cache [' .$filePath. '] for the key ['. $key .'], return false');
 				return false;
 			}
 			// Getting a shared lock 
@@ -88,19 +85,19 @@
       		fclose($handle);
       		$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
       		if (! $data) {
-      			$logger->error('Can not unserialize the cache data for the key ['. $key .'], return false');
+      			$this->logger->error('Can not unserialize the cache data for the key ['. $key .'], return false');
 		         // If unserializing somehow didn't work out, we'll delete the file
 		         unlink($filePath);
 		         return false;
 	      	}
 	      	if (time() > $data['expire']) {
-	      		$logger->info('The cache data for the key ['. $key .'] already expired delete the cache file [' .$filePath. ']');
+	      		$this->logger->info('The cache data for the key ['. $key .'] already expired delete the cache file [' .$filePath. ']');
 		        // Unlinking when the file was expired
 		        unlink($filePath);
 		        return false;
 		     }
 		     else{
-		     	$logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
+		     	$this->logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
 		     	return $data['data'];
 		     }
 			return false;
@@ -115,13 +112,12 @@
 		 * @return boolean true if success otherwise will return false
 		 */
 		public function set($key, $data, $ttl = 0){
-			$logger = static::getLogger();
 			$expire = time() + $ttl;
-			$logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
+			$this->logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
 			$filePath = $this->getFilePath($key);
 			$handle = fopen($filePath,'w');
 			if( ! $handle){
-				$logger->error('Can not open the file cache [' .$filePath. '] for the key ['. $key .'], return false');
+				$this->logger->error('Can not open the file cache [' .$filePath. '] for the key ['. $key .'], return false');
 				return false;
 			}
 			flock($handle, LOCK_EX); // exclusive lock, will get released when the file is closed
@@ -135,12 +131,12 @@
 								);		   
 		    $result = fwrite($handle, $this->compressCacheData ? gzdeflate($cacheData, 9) : $cacheData);
 		    if(! $result){
-		    	$logger->error('Can not write cache data into file [' .$filePath. '] for the key ['. $key .'], return false');
+		    	$this->logger->error('Can not write cache data into file [' .$filePath. '] for the key ['. $key .'], return false');
 		    	fclose($handle);
 		    	return false;
 		    }
 		    else{
-		    	$logger->info('Cache data saved into file [' .$filePath. '] for the key ['. $key .']');
+		    	$this->logger->info('Cache data saved into file [' .$filePath. '] for the key ['. $key .']');
 		    	fclose($handle);
 				chmod($filePath, 0640);
 				return true;
@@ -155,16 +151,15 @@
 		 * the cache or the cache with the given key not exist
 		 */
 		public function delete($key){
-			$logger = static::getLogger();
-			$logger->debug('Deleting of cache data for key [' .$key. ']');
+			$this->logger->debug('Deleting of cache data for key [' .$key. ']');
 			$filePath = $this->getFilePath($key);
-			$logger->info('The file path for the key [' .$key. '] is [' .$filePath. ']');
+			$this->logger->info('The file path for the key [' .$key. '] is [' .$filePath. ']');
 			if(! file_exists($filePath)){
-				$logger->info('This cache file does not exists skipping');
+				$this->logger->info('This cache file does not exists skipping');
 				return false;
 			}
 			else{
-				$logger->info('Found cache file [' .$filePath. '] remove it');
+				$this->logger->info('Found cache file [' .$filePath. '] remove it');
 	      		@unlink($filePath);
 				return true;
 			}
@@ -179,26 +174,25 @@
 		 * 'ttl' => the time to live of the cache in second
 		 */
 		public function getInfo($key){
-			$logger = static::getLogger();
-			$logger->debug('Getting of cache info for key [' .$key. ']');
+			$this->logger->debug('Getting of cache info for key [' .$key. ']');
 			$filePath = $this->getFilePath($key);
-			$logger->info('The file path for the key [' .$key. '] is [' .$filePath. ']');
+			$this->logger->info('The file path for the key [' .$key. '] is [' .$filePath. ']');
 			if(! file_exists($filePath)){
-				$logger->info('This cache file does not exists skipping');
+				$this->logger->info('This cache file does not exists skipping');
 				return false;
 			}
 			else{
-				$logger->info('Found cache file [' .$filePath. '] check the validity');
+				$this->logger->info('Found cache file [' .$filePath. '] check the validity');
 	      		$data = file_get_contents($filePath);
 				$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
 				if(! $data){
-					$logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
+					$this->logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
 					return false;
 				}
 				else{
-					$logger->info('This cache data is OK check for expire');
+					$this->logger->info('This cache data is OK check for expire');
 					if(isset($data['expire']) && $data['expire'] > time()){
-						$logger->info('This cache not yet expired return cache informations');
+						$this->logger->info('This cache not yet expired return cache informations');
 						$info = array(
 							'mtime' => $data['mtime'],
 							'expire' => $data['expire'],
@@ -207,7 +201,7 @@
 						return $info;
 					}
 					else{
-						$logger->info('This cache already expired return false');
+						$this->logger->info('This cache already expired return false');
 						return false;
 					}
 				}
@@ -219,27 +213,26 @@
 		 * Used to delete expired cache data
 		 */
 		public function deleteExpiredCache(){
-			$logger = static::getLogger();
-			$logger->debug('Deleting of expired cache files');
+			$this->logger->debug('Deleting of expired cache files');
 			$list = glob(CACHE_PATH . '*.cache');
 			if(! $list){
-				$logger->info('No cache files were found skipping');
+				$this->logger->info('No cache files were found skipping');
 			}
 			else{
-				$logger->info('Found [' . count($list) . '] cache files to remove if expired');
+				$this->logger->info('Found [' . count($list) . '] cache files to remove if expired');
 				foreach ($list as $file) {
-					$logger->debug('Processing the cache file [' . $file . ']');
+					$this->logger->debug('Processing the cache file [' . $file . ']');
 					$data = file_get_contents($file);
 		      		$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
 		      		if(! $data){
-		      			$logger->warning('Can not unserialize the cache data for file [' . $file . ']');
+		      			$this->logger->warning('Can not unserialize the cache data for file [' . $file . ']');
 		      		}
 		      		else if(time() > $data['expire']){
-		      			$logger->info('The cache data for file [' . $file . '] already expired remove it');
+		      			$this->logger->info('The cache data for file [' . $file . '] already expired remove it');
 		      			@unlink($file);
 		      		}
 		      		else{
-		      			$logger->info('The cache data for file [' . $file . '] not yet expired skip it');
+		      			$this->logger->info('The cache data for file [' . $file . '] not yet expired skip it');
 		      		}
 				}
 			}
@@ -249,16 +242,15 @@
 		 * Remove all file from cache folder
 		 */
 		public function clean(){
-			$logger = static::getLogger();
-			$logger->debug('Deleting of all cache files');
+			$this->logger->debug('Deleting of all cache files');
 			$list = glob(CACHE_PATH . '*.cache');
 			if(! $list){
-				$logger->info('No cache files were found skipping');
+				$this->logger->info('No cache files were found skipping');
 			}
 			else{
-				$logger->info('Found [' . count($list) . '] cache files to remove');
+				$this->logger->info('Found [' . count($list) . '] cache files to remove');
 				foreach ($list as $file) {
-					$logger->debug('Processing the cache file [' . $file . ']');
+					$this->logger->debug('Processing the cache file [' . $file . ']');
 					@unlink($file);
 				}
 			}
@@ -279,8 +271,8 @@
 	    public function setCompressCacheData($status = true){
 			//if Zlib extension is not loaded set compressCacheData to false
 			if($status === true && ! extension_loaded('zlib')){
-				$logger = static::getLogger();
-				$logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
+				
+				$this->logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
 				$this->compressCacheData = false;
 			}
 			else{
@@ -297,6 +289,23 @@
 		public function isSupported(){
 			return CACHE_PATH && is_dir(CACHE_PATH) && is_writable(CACHE_PATH);
 		}
+
+		/**
+	     * Return the Log instance
+	     * @return Log
+	     */
+	    public function getLogger(){
+	      return $this->logger;
+	    }
+
+	    /**
+	     * Set the log instance
+	     * @param Log $logger the log object
+	     */
+	    public function setLogger(Log $logger){
+	      $this->logger = $logger;
+	      return $this;
+	    }
 		
 		/**
 		* Get the cache file full path for the given key

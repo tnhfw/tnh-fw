@@ -45,6 +45,8 @@
 	 * @param  string $class  the class name to be loaded
 	 * @param  string $dir    the directory where to find the class
 	 * @param  mixed $params the parameter to pass as argument to the constructor of the class
+	 * @codeCoverageIgnore
+	 * 
 	 * @return object         the instance of the loaded class
 	 */
 	function & class_loader($class, $dir = 'libraries', $params = null){
@@ -94,6 +96,8 @@
 	/**
 	 * This function is the helper to record the loaded classes
 	 * @param  string $class the loaded class name
+	 * @codeCoverageIgnore
+	 * 
 	 * @return array        the list of the loaded classes
 	 */
 	function & class_loaded($class = null){
@@ -107,6 +111,8 @@
 	/**
 	 * This function is used to load the configurations in the case the "Config" library not yet loaded
 	 * @param  array  $overwrite_values if need overwrite the existing configuration
+	 * @codeCoverageIgnore
+	 * 
 	 * @return aray                   the configurations values
 	 */
 	function & load_configurations(array $overwrite_values = array()){
@@ -140,6 +146,8 @@
 	 * This function is the helper to get the config value in case the "Config" library not yet loaded
 	 * @param  string $key     the config item to get the vale
 	 * @param  mixed $default the default value to return if can't find the config item in the configuration
+	 * @test
+	 * 
 	 * @return mixed          the config value
 	 */
 	function get_config($key, $default = null){
@@ -155,6 +163,8 @@
 	 * @param  string $level   the log level "ERROR", "DEBUG", "INFO", etc.
 	 * @param  string $message the log message to be saved
 	 * @param  string $logger  the logger to use if is set
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	function save_to_log($level, $message, $logger = null){
 		$log =& class_loader('Log', 'classes');
@@ -168,6 +178,8 @@
 	 * Set the HTTP status header
 	 * @param integer $code the HTTP status code
 	 * @param string  $text the HTTP status text
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	function set_http_status_header($code = 200, $text = null){
 		if(! $code || !is_numeric($code)){
@@ -245,6 +257,8 @@
 	 *  @param $msg the message to display
 	 *  @param $title the message title: "error", "info", "warning", etc.
 	 *  @param $logging either to save error in log
+	 *  
+	 *  @codeCoverageIgnore
 	 */
 	function show_error($msg, $title = 'error', $logging = true){
 		$title = strtoupper($title);
@@ -261,6 +275,7 @@
 	/**
 	 *  Check whether the protocol used is "https" or not
 	 *  That is, the web server is configured to use a secure connection.
+	 *  @codeCoverageIgnore
 	 *  
 	 *  @return boolean true if the web server uses the https protocol, false if not.
 	 */
@@ -286,6 +301,8 @@
 	 *  The address is valid if the protocol is http, https, ftp, etc.
 	 *
 	 *  @param string $url the URL address to check
+	 *  @test
+	 *  
 	 *  @return boolean true if is a valid URL address or false.
 	 */
 	function is_url($url){
@@ -296,6 +313,7 @@
 	 *  Function defined to load controller
 	 *  
 	 *  @param string $controllerClass the controller class name to be loaded
+	 *  @codeCoverageIgnore
 	 */
 	function autoload_controller($controllerClass){
 		if(file_exists($path = APPS_CONTROLLER_PATH . $controllerClass . '.php')){
@@ -308,6 +326,8 @@
 	 *  it displays an error message using the function "show_error"
 	 *  
 	 *  @param object $ex instance of the "Exception" class or a derived class
+	 *  @codeCoverageIgnore
+	 *  
 	 *  @return boolean
 	 */
 	function php_exception_handler($ex){
@@ -329,6 +349,8 @@
 	 *  @param string $errfile the file where the error occurred
 	 *  @param int $errline the line number where the error occurred
 	 *  @param array $errcontext the context
+	 *  @codeCoverageIgnore
+	 *  
 	 *  @return boolean	
 	 */
 	function php_error_handler($errno , $errstr, $errfile , $errline, array $errcontext = array()){
@@ -366,6 +388,7 @@
 
 	/**
 	 * This function is used to run in shutdown situation of the script
+	 * @codeCoverageIgnore
 	 */
 	function php_shudown_handler(){
 		$lastError = error_get_last();
@@ -385,6 +408,8 @@
 	 *  name = "Foo" type = "text"
 	 *
 	 *  @param $attributes associative array to convert to a string attribute.
+	 *  @test
+	 *   
 	 *  @return string string of the HTML attribute.
 	 */
 	function attributes_to_string(array $attributes){
@@ -416,6 +441,7 @@
 	* Function to stringfy PHP variable, useful in debug situation
 	*
 	* @param mixed $var the variable to stringfy
+	* @codeCoverageIgnore
 	*
 	* @return string the stringfy value
 	*/
@@ -426,6 +452,8 @@
 	/**
 	 * Clean the user input
 	 * @param  mixed $str the value to clean
+	 * @test
+	 * 
 	 * @return mixed   the sanitize value
 	 */
 	function clean_input($str){
@@ -453,7 +481,8 @@
 	 * @param  int $startCount the length of non hidden for the beginning char
 	 * @param  int $endCount the length of non hidden for the ending char
 	 * @param  string $hiddenChar the char used to hide the given string
-	 *
+	 * @test
+	 * 
 	 * @return string the string with the hidden part.
 	 */
 	function string_hidden($str, $startCount = 0, $endCount = 0, $hiddenChar = '*'){
@@ -486,6 +515,7 @@
 	
 	/**
 	 * This function is used to set the initial session config regarding the configuration
+	 * @codeCoverageIgnore
 	 */
 	function set_session_config(){
 		//$_SESSION is not available on cli mode 
@@ -560,6 +590,8 @@
 	* Note this function always returns the address of the super instance.
 	* For example :
 	* $obj = & get_instance();
+	* 
+	* @codeCoverageIgnore
 	*  
 	* @return object the instance of the "Controller" class
 	*/

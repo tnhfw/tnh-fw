@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for D:\tnh-fw\core</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/nv.d3.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <!--[if lt IE 9]>
+  <script src="js/html5shiv.min.js"></script>
+  <script src="js/respond.min.js"></script>
+  <![endif]-->
+ </head>
+ <body>
+  <header>
+   <div class="container">
+    <div class="row">
+     <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li><a href="index.html">D:\tnh-fw\core</a></li>
+        <li class="active">(Dashboard)</li>
+
+      </ol>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="libraries/Email.php.html#34">Email</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#41">Assets</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#28">Url</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Security.php.html#27">Security</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#27">Html</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/PDF.php.html#30">PDF</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#40">Upload</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/StringHash.php.html#27">StringHash</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#27">Pagination</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#27">Router</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#27">ApcCache</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#27">Response</a></td><td class="text-right">4%</td></tr>
+       <tr><td><a href="classes/Module.php.html#27">Module</a></td><td class="text-right">12%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#28">Form</a></td><td class="text-right">13%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#32">EventDispatcher</a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#37">Browser</a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="classes/Session.php.html#26">Session</a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#36">Model</a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="classes/Config.php.html#27">Config</a></td><td class="text-right">30%</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#27">Cookie</a></td><td class="text-right">32%</td></tr>
+       <tr><td><a href="classes/Request.php.html#27">Request</a></td><td class="text-right">33%</td></tr>
+       <tr><td><a href="classes/Log.php.html#27">Log</a></td><td class="text-right">35%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#27">FileCache</a></td><td class="text-right">39%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#28">FormValidation</a></td><td class="text-right">41%</td></tr>
+       <tr><td><a href="classes/Database.php.html#26">Database</a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#26">Loader</a></td><td class="text-right">48%</td></tr>
+       <tr><td><a href="libraries/Benchmark.php.html#30">Benchmark</a></td><td class="text-right">53%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#30">Lang</a></td><td class="text-right">76%</td></tr>
+       <tr><td><a href="classes/Controller.php.html#27">Controller</a></td><td class="text-right">82%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="libraries/Browser.php.html#37">Browser</a></td><td class="text-right">41027</td></tr>
+       <tr><td><a href="classes/Database.php.html#26">Database</a></td><td class="text-right">11658</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#40">Upload</a></td><td class="text-right">9312</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#36">Model</a></td><td class="text-right">5647</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#28">FormValidation</a></td><td class="text-right">4168</td></tr>
+       <tr><td><a href="libraries/Email.php.html#34">Email</a></td><td class="text-right">3660</td></tr>
+       <tr><td><a href="libraries/Html.php.html#27">Html</a></td><td class="text-right">2970</td></tr>
+       <tr><td><a href="classes/Response.php.html#27">Response</a></td><td class="text-right">2800</td></tr>
+       <tr><td><a href="classes/Router.php.html#27">Router</a></td><td class="text-right">2756</td></tr>
+       <tr><td><a href="classes/Module.php.html#27">Module</a></td><td class="text-right">1988</td></tr>
+       <tr><td><a href="classes/Loader.php.html#26">Loader</a></td><td class="text-right">1512</td></tr>
+       <tr><td><a href="libraries/Form.php.html#28">Form</a></td><td class="text-right">1357</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#27">Pagination</a></td><td class="text-right">1122</td></tr>
+       <tr><td><a href="classes/Url.php.html#28">Url</a></td><td class="text-right">702</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#27">ApcCache</a></td><td class="text-right">650</td></tr>
+       <tr><td><a href="classes/Security.php.html#27">Security</a></td><td class="text-right">462</td></tr>
+       <tr><td><a href="classes/Request.php.html#27">Request</a></td><td class="text-right">442</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#27">FileCache</a></td><td class="text-right">412</td></tr>
+       <tr><td><a href="classes/Log.php.html#27">Log</a></td><td class="text-right">397</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#32">EventDispatcher</a></td><td class="text-right">288</td></tr>
+       <tr><td><a href="classes/Config.php.html#27">Config</a></td><td class="text-right">231</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#41">Assets</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="classes/Session.php.html#26">Session</a></td><td class="text-right">109</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#27">Cookie</a></td><td class="text-right">41</td></tr>
+       <tr><td><a href="libraries/PDF.php.html#30">PDF</a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/Lang.php.html#30">Lang</a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="libraries/Benchmark.php.html#30">Benchmark</a></td><td class="text-right">17</td></tr>
+       <tr><td><a href="classes/Controller.php.html#27">Controller</a></td><td class="text-right">7</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="libraries/Email.php.html#207"><abbr title="Email::setReplyTo">setReplyTo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#194"><abbr title="Email::setBcc">setBcc</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#182"><abbr title="Email::setCc">setCc</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#169"><abbr title="Email::getTo">getTo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#217"><abbr title="Email::setHtml">setHtml</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#232"><abbr title="Email::setSubject">setSubject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#282"><abbr title="Email::addAttachment">addAttachment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#268"><abbr title="Email::getMessage">getMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#257"><abbr title="Email::setMessage">setMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#245"><abbr title="Email::getSubject">getSubject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#148"><abbr title="Email::setTos">setTos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#136"><abbr title="Email::setTo">setTo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1509"><abbr title="Browser::getChromeVersionOnIos">getChromeVersionOnIos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1494"><abbr title="Browser::getSafariVersionOnIos">getSafariVersionOnIos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1481"><abbr title="Browser::checkForFacebookIos">checkForFacebookIos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#381"><abbr title="Browser::__toString">__toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#72"><abbr title="Cookie::set">set</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#90"><abbr title="Cookie::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#122"><abbr title="Email::setFrom">setFrom</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#101"><abbr title="Email::reset">reset</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#87"><abbr title="Email::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#108"><abbr title="Cookie::exists">exists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#305"><abbr title="Email::getAttachmentData">getAttachmentData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#326"><abbr title="Email::addMailHeader">addMailHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#566"><abbr title="Email::formatHeader">formatHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#550"><abbr title="Email::__toString">__toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#540"><abbr title="Email::debug">debug</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#516"><abbr title="Email::send">send</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#583"><abbr title="Email::encodeUtf8">encodeUtf8</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#599"><abbr title="Email::encodeUtf8Word">encodeUtf8Word</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#686"><abbr title="Email::filterOther">filterOther</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#658"><abbr title="Email::filterName">filterName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#631"><abbr title="Email::filterEmail">filterEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#611"><abbr title="Email::encodeUtf8Words">encodeUtf8Words</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#494"><abbr title="Email::getAttachmentMimeTemplate">getAttachmentMimeTemplate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#468"><abbr title="Email::assembleAttachmentBody">assembleAttachmentBody</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#394"><abbr title="Email::setParameters">setParameters</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#380"><abbr title="Email::getHeaders">getHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#363"><abbr title="Email::addGenericHeader">addGenericHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#341"><abbr title="Email::addMailHeaders">addMailHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#405"><abbr title="Email::getParameters">getParameters</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#417"><abbr title="Email::setWrap">setWrap</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#454"><abbr title="Email::assembleAttachmentHeaders">assembleAttachmentHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#444"><abbr title="Email::hasAttachments">hasAttachments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#432"><abbr title="Email::getWrap">getWrap</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#372"><abbr title="Browser::isChromeFrame">isChromeFrame</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#360"><abbr title="Browser::setUserAgent">setUserAgent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#683"><abbr title="Model::created_at">created_at</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#670"><abbr title="Model::only_deleted">only_deleted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#661"><abbr title="Model::with_deleted">with_deleted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#652"><abbr title="Model::as_object">as_object</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#697"><abbr title="Model::updated_at">updated_at</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#714"><abbr title="Model::serialize">serialize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#794"><abbr title="Model::setLoader">setLoader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#786"><abbr title="Model::getLoader">getLoader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#766"><abbr title="Model::getDatabaseInstance">getDatabaseInstance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#723"><abbr title="Model::unserialize">unserialize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#643"><abbr title="Model::as_array">as_array</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#631"><abbr title="Model::table">table</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#565"><abbr title="Model::count_by">count_by</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#533"><abbr title="Model::dropdown">dropdown</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#453"><abbr title="Model::relate">relate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#443"><abbr title="Model::with">with</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#580"><abbr title="Model::count_all">count_all</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#593"><abbr title="Model::cached">cached</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#620"><abbr title="Model::get_next_id">get_next_id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#612"><abbr title="Model::get_skip_validation">get_skip_validation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#603"><abbr title="Model::skip_validation">skip_validation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#823"><abbr title="Model::order_by">order_by</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#842"><abbr title="Model::limit">limit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#288"><abbr title="Browser::isRobot">isRobot</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#279"><abbr title="Browser::isTablet">isTablet</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#270"><abbr title="Browser::isMobile">isMobile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#261"><abbr title="Browser::isAol">isAol</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#297"><abbr title="Browser::isFacebook">isFacebook</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#315"><abbr title="Browser::setMobile">setMobile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#351"><abbr title="Browser::getUserAgent">getUserAgent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#342"><abbr title="Browser::setFacebook">setFacebook</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#333"><abbr title="Browser::setRobot">setRobot</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#324"><abbr title="Browser::setTablet">setTablet</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#243"><abbr title="Browser::getAolVersion">getAolVersion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#234"><abbr title="Browser::setVersion">setVersion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#101"><abbr title="Assets::css">css</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#75"><abbr title="Assets::path">path</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#53"><abbr title="Assets::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#982"><abbr title="Model::__get">__get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#157"><abbr title="Assets::img">img</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Benchmark.php.html#79"><abbr title="Benchmark::memoryUsage">memoryUsage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#216"><abbr title="Browser::setPlatform">setPlatform</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#198"><abbr title="Browser::setBrowser">setBrowser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#180"><abbr title="Browser::isBrowser">isBrowser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#696"><abbr title="Email::getHeadersForSend">getHeadersForSend</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#709"><abbr title="Email::getToForSend">getToForSend</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/StringHash.php.html#48"><abbr title="StringHash::hash">hash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/StringHash.php.html#39"><abbr title="StringHash::uniqueSalt">uniqueSalt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#78"><abbr title="Pagination::getLink">getLink</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#65"><abbr title="Pagination::setConfig">setConfig</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/StringHash.php.html#60"><abbr title="StringHash::check">check</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#220"><abbr title="Upload::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#327"><abbr title="Upload::setMaxFileSize">setMaxFileSize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#312"><abbr title="Upload::setAutoFilename">setAutoFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#296"><abbr title="Upload::setFilename">setFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#276"><abbr title="Upload::setInput">setInput</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#39"><abbr title="Pagination::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/PDF.php.html#83"><abbr title="PDF::getDompdf">getDompdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#114"><abbr title="Html::hr">hr</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#91"><abbr title="Html::br">br</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#67"><abbr title="Html::mailto">mailto</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#38"><abbr title="Html::a">a</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#138"><abbr title="Html::head">head</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#164"><abbr title="Html::ul">ul</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/PDF.php.html#65"><abbr title="PDF::generate">generate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/PDF.php.html#47"><abbr title="PDF::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#212"><abbr title="Html::table">table</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Html.php.html#186"><abbr title="Html::ol">ol</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#350"><abbr title="Upload::setAllowedMimeTypes">setAllowedMimeTypes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#366"><abbr title="Upload::setCallbackInput">setCallbackInput</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#619"><abbr title="Upload::isUploaded">isUploaded</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#614"><abbr title="Upload::getInfo">getInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#601"><abbr title="Upload::allowOverwriting">allowOverwriting</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#582"><abbr title="Upload::isDirpath">isDirpath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#632"><abbr title="Upload::save">save</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#731"><abbr title="Upload::sizeFormat">sizeFormat</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#785"><abbr title="Upload::getPhpUploadErrorMessageByCode">getPhpUploadErrorMessageByCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#775"><abbr title="Upload::setError">setError</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#767"><abbr title="Upload::getError">getError</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#751"><abbr title="Upload::sizeInBytes">sizeInBytes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#569"><abbr title="Upload::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#554"><abbr title="Upload::checkMimeType">checkMimeType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#435"><abbr title="Upload::setUploadFunction">setUploadFunction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#414"><abbr title="Upload::setMimeHelping">setMimeHelping</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#398"><abbr title="Upload::setAllowMimeType">setAllowMimeType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#382"><abbr title="Upload::setCallbackOutput">setCallbackOutput</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#452"><abbr title="Upload::clearAllowedMimeTypes">clearAllowedMimeTypes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#468"><abbr title="Upload::setDestinationDirectory">setDestinationDirectory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#539"><abbr title="Upload::isFilename">isFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#523"><abbr title="Upload::dirExists">dirExists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#507"><abbr title="Upload::fileExists">fileExists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#907"><abbr title="FormValidation::_validateRegex">_validateRegex</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#889"><abbr title="FormValidation::_validateInList">_validateInList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#219"><abbr title="Form::number">number</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#208"><abbr title="Form::checkbox">checkbox</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#197"><abbr title="Form::radio">radio</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#189"><abbr title="Form::password">password</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#227"><abbr title="Form::phone">phone</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#235"><abbr title="Form::email">email</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#267"><abbr title="Form::button">button</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#259"><abbr title="Form::file">file</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#251"><abbr title="Form::hidden">hidden</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#243"><abbr title="Form::search">search</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#181"><abbr title="Form::text">text</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#169"><abbr title="Form::input">input</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#85"><abbr title="Form::close">close</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#77"><abbr title="Form::openMultipart">openMultipart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#732"><abbr title="Email::getWrapMessage">getWrapMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Email.php.html#722"><abbr title="Email::getUniqueId">getUniqueId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#96"><abbr title="Form::fieldset">fieldset</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#108"><abbr title="Form::fieldsetClose">fieldsetClose</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#150"><abbr title="Form::label">label</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#138"><abbr title="Form::value">value</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#118"><abbr title="Form::error">error</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#275"><abbr title="Form::reset">reset</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#283"><abbr title="Form::submit">submit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#744"><abbr title="FormValidation::_validateMinLength">_validateMinLength</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#728"><abbr title="FormValidation::_validateMaxLength">_validateMaxLength</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#712"><abbr title="FormValidation::_validateExactLength">_validateExactLength</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#696"><abbr title="FormValidation::_validateValidEmail">_validateValidEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#760"><abbr title="FormValidation::_validateLessThan">_validateLessThan</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#776"><abbr title="FormValidation::_validateGreaterThan">_validateGreaterThan</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#858"><abbr title="FormValidation::_validateIsUniqueUpdate">_validateIsUniqueUpdate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#833"><abbr title="FormValidation::_validateIsUnique">_validateIsUnique</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#808"><abbr title="FormValidation::_validateExists">_validateExists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#792"><abbr title="FormValidation::_validateNumeric">_validateNumeric</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#683"><abbr title="FormValidation::_validateMatches">_validateMatches</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#658"><abbr title="FormValidation::_validateNotEqual">_validateNotEqual</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#491"><abbr title="FormValidation::_fieldIsRequired">_fieldIsRequired</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#412"><abbr title="FormValidation::displayErrors">displayErrors</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#311"><abbr title="Form::select">select</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#294"><abbr title="Form::textarea">textarea</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#566"><abbr title="FormValidation::_runCallback">_runCallback</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#579"><abbr title="FormValidation::_runEmptyCallback">_runEmptyCallback</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#646"><abbr title="FormValidation::_validateDepends">_validateDepends</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#631"><abbr title="FormValidation::_validateCallback">_validateCallback</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#619"><abbr title="FormValidation::_validateHoneypot">_validateHoneypot</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#413"><abbr title="Model::delete_many">delete_many</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#132"><abbr title="Assets::js">js</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#56"><abbr title="Module::init">init</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#134"><abbr title="Module::getModulesRoutes">getModulesRoutes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Log.php.html#245"><abbr title="Log::getLevelName">getLevelName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Log.php.html#80"><abbr title="Log::error">error</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Log.php.html#71"><abbr title="Log::fatal">fatal</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#164"><abbr title="Module::findControllerFullPath">findControllerFullPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#218"><abbr title="Module::findConfigFullPath">findConfigFullPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#124"><abbr title="Request::requestUri">requestUri</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#353"><abbr title="Module::getModuleList">getModuleList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#299"><abbr title="Module::findViewFullPath">findViewFullPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Module.php.html#272"><abbr title="Module::findLibraryFullPath">findLibraryFullPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#388"><abbr title="Loader::config">config</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#196"><abbr title="Lang::getSupported">getSupported</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1371"><abbr title="Database::getData">getData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1382"><abbr title="Database::setData">setData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1354"><abbr title="Database::getBenchmark">getBenchmark</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1337"><abbr title="Database::getCacheInstance">getCacheInstance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1328"><abbr title="Database::setLogger">setLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#47"><abbr title="EventDispatcher::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#57"><abbr title="EventDispatcher::addListener">addListener</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#169"><abbr title="Lang::getCurrent">getCurrent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#108"><abbr title="Lang::getAll">getAll</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#96"><abbr title="EventDispatcher::removeAllListener">removeAllListener</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#74"><abbr title="EventDispatcher::removeListener">removeListener</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#134"><abbr title="Request::query">query</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#152"><abbr title="Request::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#415"><abbr title="Response::sendError">sendError</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#95"><abbr title="Router::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#376"><abbr title="Response::send404">send404</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#368"><abbr title="Response::getFinalPageRendered">getFinalPageRendered</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#306"><abbr title="Response::renderFinalPageFromCache">renderFinalPageFromCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#155"><abbr title="Router::add">add</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#168"><abbr title="Router::getModule">getModule</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#200"><abbr title="Router::getArgs">getArgs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#192"><abbr title="Router::getMethod">getMethod</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#184"><abbr title="Router::getControllerPath">getControllerPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#176"><abbr title="Router::getController">getController</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#241"><abbr title="Response::renderFinalPage">renderFinalPage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#393"><abbr title="Model::delete_by">delete_by</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#249"><abbr title="Request::header">header</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#85"><abbr title="Response::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#235"><abbr title="Request::session">session</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#224"><abbr title="Request::file">file</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Request.php.html#206"><abbr title="Request::cookie">cookie</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#98"><abbr title="Response::sendHeaders">sendHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#112"><abbr title="Response::getHeaders">getHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#148"><abbr title="Response::redirect">redirect</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#140"><abbr title="Response::setHeaders">setHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#131"><abbr title="Response::setHeader">setHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#121"><abbr title="Response::getHeader">getHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1320"><abbr title="Database::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1310"><abbr title="Database::setPdo">setPdo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#441"><abbr title="Database::rightOuterJoin">rightOuterJoin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#451"><abbr title="Database::whereIsNull">whereIsNull</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#432"><abbr title="Database::leftOuterJoin">leftOuterJoin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#423"><abbr title="Database::fullOuterJoin">fullOuterJoin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#414"><abbr title="Database::rightJoin">rightJoin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#474"><abbr title="Database::whereIsNotNull">whereIsNotNull</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#558"><abbr title="Database::orWhere">orWhere</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#607"><abbr title="Database::notGroupStart">notGroupStart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#587"><abbr title="Database::groupStart">groupStart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#577"><abbr title="Database::orNotWhere">orNotWhere</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#568"><abbr title="Database::notWhere">notWhere</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#405"><abbr title="Database::leftJoin">leftJoin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#396"><abbr title="Database::innerJoin">innerJoin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/DBSessionHandler.php.html#365"><abbr title="DBSessionHandler::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#300"><abbr title="Database::distinct">distinct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Config.php.html#164"><abbr title="Config::load">load</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Config.php.html#138"><abbr title="Config::setAll">setAll</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Config.php.html#67"><abbr title="Config::init">init</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#313"><abbr title="Database::max">max</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#325"><abbr title="Database::min">min</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#376"><abbr title="Database::join">join</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#361"><abbr title="Database::avg">avg</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#349"><abbr title="Database::count">count</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#337"><abbr title="Database::sum">sum</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#616"><abbr title="Database::orGroupStart">orGroupStart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#625"><abbr title="Database::orNotGroupStart">orNotGroupStart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#876"><abbr title="Database::having">having</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#909"><abbr title="Database::numRows">numRows</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#858"><abbr title="Database::groupBy">groupBy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#838"><abbr title="Database::orderBy">orderBy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#819"><abbr title="Database::limit">limit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#924"><abbr title="Database::error">error</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1219"><abbr title="Database::setCache">setCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1302"><abbr title="Database::getPdo">getPdo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1274"><abbr title="Database::getDatabaseName">getDatabaseName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1266"><abbr title="Database::getQuery">getQuery</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1258"><abbr title="Database::queryCount">queryCount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#808"><abbr title="Database::orNotLike">orNotLike</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#799"><abbr title="Database::notLike">notLike</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#686"><abbr title="Database::orIn">orIn</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#695"><abbr title="Database::orNotIn">orNotIn</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#677"><abbr title="Database::notIn">notIn</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#647"><abbr title="Database::in">in</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#633"><abbr title="Database::groupEnd">groupEnd</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#709"><abbr title="Database::between">between</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#735"><abbr title="Database::notBetween">notBetween</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#790"><abbr title="Database::orLike">orLike</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#766"><abbr title="Database::like">like</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#753"><abbr title="Database::orNotBetween">orNotBetween</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Database.php.html#744"><abbr title="Database::orBetween">orBetween</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#208"><abbr title="Router::getSegments">getSegments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Response.php.html#171"><abbr title="Response::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#93"><abbr title="Url::title">title</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#77"><abbr title="Url::current">current</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#47"><abbr title="Url::site_url">site_url</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#35"><abbr title="Url::base_url">base_url</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#114"><abbr title="Url::domain">domain</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Url.php.html#143"><abbr title="Url::queryString">queryString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#128"><abbr title="ApcCache::getInfo">getInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#106"><abbr title="ApcCache::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#85"><abbr title="ApcCache::set">set</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#58"><abbr title="ApcCache::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#163"><abbr title="Session::clearAll">clearAll</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#156"><abbr title="Session::exists">exists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Security.php.html#114"><abbr title="Security::checkWhiteListIpAccess">checkWhiteListIpAccess</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Security.php.html#78"><abbr title="Security::validateCSRF">validateCSRF</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Security.php.html#52"><abbr title="Security::generateCSRF">generateCSRF</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Router.php.html#216"><abbr title="Router::run">run</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#86"><abbr title="Session::getFlash">getFlash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#105"><abbr title="Session::hasFlash">hasFlash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#139"><abbr title="Session::clearFlash">clearFlash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#124"><abbr title="Session::clear">clear</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Session.php.html#115"><abbr title="Session::setFlash">setFlash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#149"><abbr title="ApcCache::deleteExpiredCache">deleteExpiredCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#36"><abbr title="ApcCache::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/Security.php.html#39"><abbr title="Security::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#307"><abbr title="Model::update_many">update_many</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#297"><abbr title="FileCache::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#157"><abbr title="ApcCache::clean">clean</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#211"><abbr title="Model::get_many_by">get_many_by</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#269"><abbr title="Model::insert_many">insert_many</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#222"><abbr title="Model::get_all">get_all</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#331"><abbr title="Model::update_by">update_by</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#271"><abbr title="FileCache::setCompressCacheData">setCompressCacheData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#202"><abbr title="Model::get_many">get_many</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#203"><abbr title="ApcCache::_getCacheInfo">_getCacheInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#262"><abbr title="FileCache::isCompressCacheData">isCompressCacheData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#192"><abbr title="ApcCache::setLogger">setLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#184"><abbr title="ApcCache::getLogger">getLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#176"><abbr title="ApcCache::isSupported">isSupported</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#153"><abbr title="FileCache::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#362"><abbr title="Model::update_all">update_all</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#215"><abbr title="FileCache::deleteExpiredCache">deleteExpiredCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#176"><abbr title="FileCache::getInfo">getInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#890"><abbr title="Browser::checkBrowserInternetExplorer">checkBrowserInternetExplorer</abbr></a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#981"><abbr title="Browser::checkBrowserOpera">checkBrowserOpera</abbr></a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="classes/Module.php.html#83"><abbr title="Module::getModulesAutoloadConfig">getModulesAutoloadConfig</abbr></a></td><td class="text-right">11%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1623"><abbr title="Browser::checkBrowserYandex">checkBrowserYandex</abbr></a></td><td class="text-right">12%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1041"><abbr title="Browser::checkBrowserChrome">checkBrowserChrome</abbr></a></td><td class="text-right">13%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1580"><abbr title="Browser::checkBrowserAndroid">checkBrowserAndroid</abbr></a></td><td class="text-right">14%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#869"><abbr title="Browser::checkBrowserEdge">checkBrowserEdge</abbr></a></td><td class="text-right">16%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1651"><abbr title="Browser::checkBrowserPlayStation">checkBrowserPlayStation</abbr></a></td><td class="text-right">16%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#849"><abbr title="Browser::checkBrowserSlurp">checkBrowserSlurp</abbr></a></td><td class="text-right">18%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#608"><abbr title="Browser::checkBrowserYandexNewsBot">checkBrowserYandexNewsBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#627"><abbr title="Browser::checkBrowserYandexMetrikaBot">checkBrowserYandexMetrikaBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#589"><abbr title="Browser::checkBrowserYandexCatalogBot">checkBrowserYandexCatalogBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#646"><abbr title="Browser::checkBrowserYandexDirectBot">checkBrowserYandexDirectBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#493"><abbr title="Browser::checkBrowserBlackBerry">checkBrowserBlackBerry</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#532"><abbr title="Browser::checkBrowserGoogleBot">checkBrowserGoogleBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#570"><abbr title="Browser::checkBrowserYandexImageResizerBot">checkBrowserYandexImageResizerBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#551"><abbr title="Browser::checkBrowserYandexBot">checkBrowserYandexBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1398"><abbr title="Browser::checkBrowserSamsung">checkBrowserSamsung</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#684"><abbr title="Browser::checkBrowserYandexFaviconsBot">checkBrowserYandexFaviconsBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#741"><abbr title="Browser::checkBrowserYandexVideoBot">checkBrowserYandexVideoBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#722"><abbr title="Browser::checkBrowserYandexMediaBot">checkBrowserYandexMediaBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#703"><abbr title="Browser::checkBrowserYandexBlogsBot">checkBrowserYandexBlogsBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1415"><abbr title="Browser::checkBrowserSilk">checkBrowserSilk</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1431"><abbr title="Browser::checkBrowserIframely">checkBrowserIframely</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#760"><abbr title="Browser::checkBrowserYandexImagesBot">checkBrowserYandexImagesBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#798"><abbr title="Browser::checkBrowserBingBot">checkBrowserBingBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#665"><abbr title="Browser::checkBrowserYandexWebmasterBot">checkBrowserYandexWebmasterBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#817"><abbr title="Browser::checkBrowserW3CValidator">checkBrowserW3CValidator</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1447"><abbr title="Browser::checkBrowserCocoa">checkBrowserCocoa</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#779"><abbr title="Browser::checkBrowserMSNBot">checkBrowserMSNBot</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#450"><abbr title="FormValidation::_parseRuleString">_parseRuleString</abbr></a></td><td class="text-right">20%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1068"><abbr title="Browser::checkBrowserWebTv">checkBrowserWebTv</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1086"><abbr title="Browser::checkBrowserNetPositive">checkBrowserNetPositive</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1360"><abbr title="Browser::checkBrowserAmaya">checkBrowserAmaya</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1544"><abbr title="Browser::checkBrowseriPad">checkBrowseriPad</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1525"><abbr title="Browser::checkBrowseriPhone">checkBrowseriPhone</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1562"><abbr title="Browser::checkBrowseriPod">checkBrowseriPod</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1605"><abbr title="Browser::checkBrowserVivaldi">checkBrowserVivaldi</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1254"><abbr title="Browser::checkBrowserNokia">checkBrowserNokia</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1301"><abbr title="Browser::checkBrowserIceweasel">checkBrowserIceweasel</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1122"><abbr title="Browser::checkBrowserKonqueror">checkBrowserKonqueror</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1104"><abbr title="Browser::checkBrowserGaleon">checkBrowserGaleon</abbr></a></td><td class="text-right">22%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1190"><abbr title="Browser::checkBrowserFirebird">checkBrowserFirebird</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#742"><abbr title="Model::protect_attributes">protect_attributes</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1319"><abbr title="Browser::checkBrowserMozilla">checkBrowserMozilla</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1140"><abbr title="Browser::checkBrowserIcab">checkBrowserIcab</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1173"><abbr title="Browser::checkBrowserPhoenix">checkBrowserPhoenix</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#147"><abbr title="EventDispatcher::dispatchToListerners">dispatchToListerners</abbr></a></td><td class="text-right">26%</td></tr>
+       <tr><td><a href="classes/Request.php.html#170"><abbr title="Request::post">post</abbr></a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1157"><abbr title="Browser::checkBrowserOmniWeb">checkBrowserOmniWeb</abbr></a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1344"><abbr title="Browser::checkBrowserLynx">checkBrowserLynx</abbr></a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="classes/Module.php.html#191"><abbr title="Module::findModelFullPath">findModelFullPath</abbr></a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="classes/Module.php.html#244"><abbr title="Module::findFunctionFullPath">findFunctionFullPath</abbr></a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="classes/Module.php.html#328"><abbr title="Module::findLanguageFullPath">findLanguageFullPath</abbr></a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1273"><abbr title="Browser::checkBrowserFirefox">checkBrowserFirefox</abbr></a></td><td class="text-right">29%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#41"><abbr title="Loader::__construct">__construct</abbr></a></td><td class="text-right">31%</td></tr>
+       <tr><td><a href="classes/Config.php.html#45"><abbr title="Config::getLogger">getLogger</abbr></a></td><td class="text-right">33%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1208"><abbr title="Browser::checkBrowserNetscapeNavigator9Plus">checkBrowserNetscapeNavigator9Plus</abbr></a></td><td class="text-right">33%</td></tr>
+       <tr><td><a href="classes/Database.php.html#270"><abbr title="Database::from">from</abbr></a></td><td class="text-right">33%</td></tr>
+       <tr><td><a href="classes/Log.php.html#118"><abbr title="Log::writeLog">writeLog</abbr></a></td><td class="text-right">34%</td></tr>
+       <tr><td><a href="classes/Database.php.html#501"><abbr title="Database::where">where</abbr></a></td><td class="text-right">34%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1378"><abbr title="Browser::checkBrowserSafari">checkBrowserSafari</abbr></a></td><td class="text-right">38%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1240"><abbr title="Browser::checkBrowserIceCat">checkBrowserIceCat</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1467"><abbr title="Browser::checkFacebookExternalHit">checkFacebookExternalHit</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1226"><abbr title="Browser::checkBrowserShiretoko">checkBrowserShiretoko</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#512"><abbr title="Browser::checkForAol">checkForAol</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="classes/Log.php.html#214"><abbr title="Log::getLevelValue">getLevelValue</abbr></a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#42"><abbr title="FileCache::__construct">__construct</abbr></a></td><td class="text-right">46%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#217"><abbr title="Loader::library">library</abbr></a></td><td class="text-right">46%</td></tr>
+       <tr><td><a href="libraries/Form.php.html#38"><abbr title="Form::open">open</abbr></a></td><td class="text-right">48%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#130"><abbr title="Lang::get">get</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1671"><abbr title="Browser::checkPlatform">checkPlatform</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="classes/Database.php.html#230"><abbr title="Database::connect">connect</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#924"><abbr title="Model::_set_where">_set_where</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#600"><abbr title="FormValidation::_validateRequired">_validateRequired</abbr></a></td><td class="text-right">54%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#138"><abbr title="Loader::model">model</abbr></a></td><td class="text-right">55%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#217"><abbr title="FormValidation::_run">_run</abbr></a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#774"><abbr title="Model::setDatabaseInstance">setDatabaseInstance</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1028"><abbr title="Database::update">update</abbr></a></td><td class="text-right">61%</td></tr>
+       <tr><td><a href="classes/Database.php.html#993"><abbr title="Database::insert">insert</abbr></a></td><td class="text-right">63%</td></tr>
+       <tr><td><a href="classes/Database.php.html#953"><abbr title="Database::getAll">getAll</abbr></a></td><td class="text-right">63%</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#147"><abbr title="Browser::__construct">__construct</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#145"><abbr title="Lang::isValid">isValid</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#69"><abbr title="FileCache::get">get</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#857"><abbr title="Model::trigger">trigger</abbr></a></td><td class="text-right">69%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1088"><abbr title="Database::query">query</abbr></a></td><td class="text-right">69%</td></tr>
+       <tr><td><a href="classes/Session.php.html#58"><abbr title="Session::get">get</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#179"><abbr title="Lang::addLang">addLang</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#122"><abbr title="EventDispatcher::dispatch">dispatch</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="classes/Config.php.html#147"><abbr title="Config::delete">delete</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1060"><abbr title="Database::delete">delete</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#323"><abbr title="Loader::functions">functions</abbr></a></td><td class="text-right">72%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#879"><abbr title="Model::validate">validate</abbr></a></td><td class="text-right">72%</td></tr>
+       <tr><td><a href="classes/Loader.php.html#451"><abbr title="Loader::lang">lang</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="classes/Request.php.html#93"><abbr title="Request::__construct">__construct</abbr></a></td><td class="text-right">76%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#276"><abbr title="FormValidation::setRules">setRules</abbr></a></td><td class="text-right">77%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#373"><abbr title="Model::delete">delete</abbr></a></td><td class="text-right">77%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#114"><abbr title="FileCache::set">set</abbr></a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#53"><abbr title="Cookie::get">get</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="classes/Database.php.html#936"><abbr title="Database::get">get</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="classes/Controller.php.html#50"><abbr title="Controller::__construct">__construct</abbr></a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#244"><abbr title="FileCache::clean">clean</abbr></a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="libraries/Benchmark.php.html#61"><abbr title="Benchmark::elapsedTime">elapsedTime</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="classes/Database.php.html#1244"><abbr title="Database::escape">escape</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#179"><abbr title="Model::get_by">get_by</abbr></a></td><td class="text-right">84%</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#346"><abbr title="FormValidation::setMessage">setMessage</abbr></a></td><td class="text-right">84%</td></tr>
+       <tr><td><a href="classes/Request.php.html#188"><abbr title="Request::server">server</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="classes/Lang.php.html#70"><abbr title="Lang::__construct">__construct</abbr></a></td><td class="text-right">86%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="classes/Router.php.html#216"><abbr title="Router::run">run</abbr></a></td><td class="text-right">1190</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#78"><abbr title="Pagination::getLink">getLink</abbr></a></td><td class="text-right">702</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#890"><abbr title="Browser::checkBrowserInternetExplorer">checkBrowserInternetExplorer</abbr></a></td><td class="text-right">470</td></tr>
+       <tr><td><a href="libraries/Html.php.html#212"><abbr title="Html::table">table</abbr></a></td><td class="text-right">380</td></tr>
+       <tr><td><a href="classes/Loader.php.html#41"><abbr title="Loader::__construct">__construct</abbr></a></td><td class="text-right">340</td></tr>
+       <tr><td><a href="classes/Response.php.html#171"><abbr title="Response::render">render</abbr></a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#632"><abbr title="Upload::save">save</abbr></a></td><td class="text-right">210</td></tr>
+       <tr><td><a href="classes/Config.php.html#67"><abbr title="Config::init">init</abbr></a></td><td class="text-right">210</td></tr>
+       <tr><td><a href="classes/Module.php.html#83"><abbr title="Module::getModulesAutoloadConfig">getModulesAutoloadConfig</abbr></a></td><td class="text-right">193</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#981"><abbr title="Browser::checkBrowserOpera">checkBrowserOpera</abbr></a></td><td class="text-right">189</td></tr>
+       <tr><td><a href="classes/Database.php.html#876"><abbr title="Database::having">having</abbr></a></td><td class="text-right">182</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#453"><abbr title="Model::relate">relate</abbr></a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="classes/Url.php.html#114"><abbr title="Url::domain">domain</abbr></a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1671"><abbr title="Browser::checkPlatform">checkPlatform</abbr></a></td><td class="text-right">142</td></tr>
+       <tr><td><a href="classes/Database.php.html#709"><abbr title="Database::between">between</abbr></a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="classes/Loader.php.html#388"><abbr title="Loader::config">config</abbr></a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="classes/Database.php.html#501"><abbr title="Database::where">where</abbr></a></td><td class="text-right">122</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#785"><abbr title="Upload::getPhpUploadErrorMessageByCode">getPhpUploadErrorMessageByCode</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="classes/Router.php.html#95"><abbr title="Router::__construct">__construct</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="classes/Security.php.html#114"><abbr title="Security::checkWhiteListIpAccess">checkWhiteListIpAccess</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="classes/Response.php.html#241"><abbr title="Response::renderFinalPage">renderFinalPage</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#468"><abbr title="Upload::setDestinationDirectory">setDestinationDirectory</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="classes/Log.php.html#118"><abbr title="Log::writeLog">writeLog</abbr></a></td><td class="text-right">79</td></tr>
+       <tr><td><a href="classes/Loader.php.html#217"><abbr title="Loader::library">library</abbr></a></td><td class="text-right">73</td></tr>
+       <tr><td><a href="classes/Database.php.html#647"><abbr title="Database::in">in</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="libraries/Html.php.html#138"><abbr title="Html::head">head</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="classes/Module.php.html#56"><abbr title="Module::init">init</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="classes/Database.php.html#838"><abbr title="Database::orderBy">orderBy</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="classes/Database.php.html#1088"><abbr title="Database::query">query</abbr></a></td><td class="text-right">55</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1319"><abbr title="Browser::checkBrowserMozilla">checkBrowserMozilla</abbr></a></td><td class="text-right">52</td></tr>
+       <tr><td><a href="classes/Security.php.html#78"><abbr title="Security::validateCSRF">validateCSRF</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/Response.php.html#306"><abbr title="Response::renderFinalPageFromCache">renderFinalPageFromCache</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#858"><abbr title="FormValidation::_validateIsUniqueUpdate">_validateIsUniqueUpdate</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#412"><abbr title="FormValidation::displayErrors">displayErrors</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#331"><abbr title="Model::update_by">update_by</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#176"><abbr title="FileCache::getInfo">getInfo</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/Url.php.html#47"><abbr title="Url::site_url">site_url</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/Module.php.html#134"><abbr title="Module::getModulesRoutes">getModulesRoutes</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/Log.php.html#245"><abbr title="Log::getLevelName">getLevelName</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#215"><abbr title="FileCache::deleteExpiredCache">deleteExpiredCache</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#450"><abbr title="FormValidation::_parseRuleString">_parseRuleString</abbr></a></td><td class="text-right">39</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#147"><abbr title="EventDispatcher::dispatchToListerners">dispatchToListerners</abbr></a></td><td class="text-right">33</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1623"><abbr title="Browser::checkBrowserYandex">checkBrowserYandex</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/Request.php.html#152"><abbr title="Request::get">get</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#808"><abbr title="FormValidation::_validateExists">_validateExists</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#222"><abbr title="Model::get_all">get_all</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#220"><abbr title="Upload::__construct">__construct</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/Request.php.html#206"><abbr title="Request::cookie">cookie</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#39"><abbr title="Pagination::__construct">__construct</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Html.php.html#114"><abbr title="Html::hr">hr</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Html.php.html#91"><abbr title="Html::br">br</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#658"><abbr title="FormValidation::_validateNotEqual">_validateNotEqual</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/Request.php.html#134"><abbr title="Request::query">query</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Html.php.html#164"><abbr title="Html::ul">ul</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#533"><abbr title="Model::dropdown">dropdown</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Html.php.html#186"><abbr title="Html::ol">ol</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#833"><abbr title="FormValidation::_validateIsUnique">_validateIsUnique</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#203"><abbr title="ApcCache::_getCacheInfo">_getCacheInfo</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#582"><abbr title="Upload::isDirpath">isDirpath</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#435"><abbr title="Upload::setUploadFunction">setUploadFunction</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="classes/Database.php.html#766"><abbr title="Database::like">like</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="libraries/Form.php.html#38"><abbr title="Form::open">open</abbr></a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="classes/Loader.php.html#138"><abbr title="Loader::model">model</abbr></a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#817"><abbr title="Browser::checkBrowserW3CValidator">checkBrowserW3CValidator</abbr></a></td><td class="text-right">24</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#924"><abbr title="Model::_set_where">_set_where</abbr></a></td><td class="text-right">23</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#217"><abbr title="FormValidation::_run">_run</abbr></a></td><td class="text-right">22</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1041"><abbr title="Browser::checkBrowserChrome">checkBrowserChrome</abbr></a></td><td class="text-right">21</td></tr>
+       <tr><td><a href="classes/Security.php.html#52"><abbr title="Security::generateCSRF">generateCSRF</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="classes/Database.php.html#451"><abbr title="Database::whereIsNull">whereIsNull</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Benchmark.php.html#79"><abbr title="Benchmark::memoryUsage">memoryUsage</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#631"><abbr title="FormValidation::_validateCallback">_validateCallback</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#696"><abbr title="FormValidation::_validateValidEmail">_validateValidEmail</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Html.php.html#38"><abbr title="Html::a">a</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#760"><abbr title="FormValidation::_validateLessThan">_validateLessThan</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#776"><abbr title="FormValidation::_validateGreaterThan">_validateGreaterThan</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#792"><abbr title="FormValidation::_validateNumeric">_validateNumeric</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="classes/Database.php.html#474"><abbr title="Database::whereIsNotNull">whereIsNotNull</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#744"><abbr title="FormValidation::_validateMinLength">_validateMinLength</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#889"><abbr title="FormValidation::_validateInList">_validateInList</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#728"><abbr title="FormValidation::_validateMaxLength">_validateMaxLength</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="classes/Database.php.html#376"><abbr title="Database::join">join</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#907"><abbr title="FormValidation::_validateRegex">_validateRegex</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#712"><abbr title="FormValidation::_validateExactLength">_validateExactLength</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Form.php.html#311"><abbr title="Form::select">select</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#276"><abbr title="Upload::setInput">setInput</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#414"><abbr title="Upload::setMimeHelping">setMimeHelping</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#327"><abbr title="Upload::setMaxFileSize">setMaxFileSize</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Email.php.html#282"><abbr title="Email::addAttachment">addAttachment</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Form.php.html#118"><abbr title="Form::error">error</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="libraries/Email.php.html#341"><abbr title="Email::addMailHeaders">addMailHeaders</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="classes/Log.php.html#214"><abbr title="Log::getLevelValue">getLevelValue</abbr></a></td><td class="text-right">19</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1651"><abbr title="Browser::checkBrowserPlayStation">checkBrowserPlayStation</abbr></a></td><td class="text-right">19</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#869"><abbr title="Browser::checkBrowserEdge">checkBrowserEdge</abbr></a></td><td class="text-right">19</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1273"><abbr title="Browser::checkBrowserFirefox">checkBrowserFirefox</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="classes/Loader.php.html#451"><abbr title="Loader::lang">lang</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="classes/Database.php.html#230"><abbr title="Database::connect">connect</abbr></a></td><td class="text-right">17</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#742"><abbr title="Model::protect_attributes">protect_attributes</abbr></a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="classes/Database.php.html#1028"><abbr title="Database::update">update</abbr></a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="classes/Loader.php.html#323"><abbr title="Loader::functions">functions</abbr></a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="classes/Request.php.html#170"><abbr title="Request::post">post</abbr></a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1580"><abbr title="Browser::checkBrowserAndroid">checkBrowserAndroid</abbr></a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="classes/Database.php.html#953"><abbr title="Database::getAll">getAll</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1208"><abbr title="Browser::checkBrowserNetscapeNavigator9Plus">checkBrowserNetscapeNavigator9Plus</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#72"><abbr title="Cookie::set">set</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Email.php.html#148"><abbr title="Email::setTos">setTos</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Email.php.html#516"><abbr title="Email::send">send</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#313"><abbr title="Database::max">max</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#731"><abbr title="Upload::sizeFormat">sizeFormat</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#325"><abbr title="Database::min">min</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#361"><abbr title="Database::avg">avg</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#565"><abbr title="Model::count_by">count_by</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#723"><abbr title="Model::unserialize">unserialize</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#349"><abbr title="Database::count">count</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#337"><abbr title="Database::sum">sum</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#580"><abbr title="Model::count_all">count_all</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#823"><abbr title="Model::order_by">order_by</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Response.php.html#415"><abbr title="Response::sendError">sendError</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#539"><abbr title="Upload::isFilename">isFilename</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Request.php.html#249"><abbr title="Request::header">header</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Module.php.html#164"><abbr title="Module::findControllerFullPath">findControllerFullPath</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Url.php.html#93"><abbr title="Url::title">title</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#523"><abbr title="Upload::dirExists">dirExists</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#507"><abbr title="Upload::fileExists">fileExists</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#96"><abbr title="EventDispatcher::removeAllListener">removeAllListener</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#307"><abbr title="Model::update_many">update_many</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/PDF.php.html#65"><abbr title="PDF::generate">generate</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Session.php.html#86"><abbr title="Session::getFlash">getFlash</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#74"><abbr title="EventDispatcher::removeListener">removeListener</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#36"><abbr title="ApcCache::__construct">__construct</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#398"><abbr title="Upload::setAllowMimeType">setAllowMimeType</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Response.php.html#376"><abbr title="Response::send404">send404</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Response.php.html#98"><abbr title="Response::sendHeaders">sendHeaders</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#819"><abbr title="Database::limit">limit</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#271"><abbr title="FileCache::setCompressCacheData">setCompressCacheData</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Database.php.html#587"><abbr title="Database::groupStart">groupStart</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Module.php.html#299"><abbr title="Module::findViewFullPath">findViewFullPath</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Module.php.html#272"><abbr title="Module::findLibraryFullPath">findLibraryFullPath</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#176"><abbr title="ApcCache::isSupported">isSupported</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/Module.php.html#218"><abbr title="Module::findConfigFullPath">findConfigFullPath</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#58"><abbr title="ApcCache::get">get</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Html.php.html#67"><abbr title="Html::mailto">mailto</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1254"><abbr title="Browser::checkBrowserNokia">checkBrowserNokia</abbr></a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1378"><abbr title="Browser::checkBrowserSafari">checkBrowserSafari</abbr></a></td><td class="text-right">10</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#600"><abbr title="FormValidation::_validateRequired">_validateRequired</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#849"><abbr title="Browser::checkBrowserSlurp">checkBrowserSlurp</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="classes/Database.php.html#993"><abbr title="Database::insert">insert</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#722"><abbr title="Browser::checkBrowserYandexMediaBot">checkBrowserYandexMediaBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#703"><abbr title="Browser::checkBrowserYandexBlogsBot">checkBrowserYandexBlogsBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#741"><abbr title="Browser::checkBrowserYandexVideoBot">checkBrowserYandexVideoBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#798"><abbr title="Browser::checkBrowserBingBot">checkBrowserBingBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#684"><abbr title="Browser::checkBrowserYandexFaviconsBot">checkBrowserYandexFaviconsBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#779"><abbr title="Browser::checkBrowserMSNBot">checkBrowserMSNBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#760"><abbr title="Browser::checkBrowserYandexImagesBot">checkBrowserYandexImagesBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#493"><abbr title="Browser::checkBrowserBlackBerry">checkBrowserBlackBerry</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1398"><abbr title="Browser::checkBrowserSamsung">checkBrowserSamsung</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#532"><abbr title="Browser::checkBrowserGoogleBot">checkBrowserGoogleBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#665"><abbr title="Browser::checkBrowserYandexWebmasterBot">checkBrowserYandexWebmasterBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1431"><abbr title="Browser::checkBrowserIframely">checkBrowserIframely</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1447"><abbr title="Browser::checkBrowserCocoa">checkBrowserCocoa</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#551"><abbr title="Browser::checkBrowserYandexBot">checkBrowserYandexBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1415"><abbr title="Browser::checkBrowserSilk">checkBrowserSilk</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#570"><abbr title="Browser::checkBrowserYandexImageResizerBot">checkBrowserYandexImageResizerBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#627"><abbr title="Browser::checkBrowserYandexMetrikaBot">checkBrowserYandexMetrikaBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#646"><abbr title="Browser::checkBrowserYandexDirectBot">checkBrowserYandexDirectBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#589"><abbr title="Browser::checkBrowserYandexCatalogBot">checkBrowserYandexCatalogBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#608"><abbr title="Browser::checkBrowserYandexNewsBot">checkBrowserYandexNewsBot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#69"><abbr title="FileCache::get">get</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1360"><abbr title="Browser::checkBrowserAmaya">checkBrowserAmaya</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1301"><abbr title="Browser::checkBrowserIceweasel">checkBrowserIceweasel</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1122"><abbr title="Browser::checkBrowserKonqueror">checkBrowserKonqueror</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1068"><abbr title="Browser::checkBrowserWebTv">checkBrowserWebTv</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1605"><abbr title="Browser::checkBrowserVivaldi">checkBrowserVivaldi</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1086"><abbr title="Browser::checkBrowserNetPositive">checkBrowserNetPositive</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1104"><abbr title="Browser::checkBrowserGaleon">checkBrowserGaleon</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#122"><abbr title="EventDispatcher::dispatch">dispatch</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1173"><abbr title="Browser::checkBrowserPhoenix">checkBrowserPhoenix</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1140"><abbr title="Browser::checkBrowserIcab">checkBrowserIcab</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1190"><abbr title="Browser::checkBrowserFirebird">checkBrowserFirebird</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#879"><abbr title="Model::validate">validate</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#42"><abbr title="FileCache::__construct">__construct</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Module.php.html#191"><abbr title="Module::findModelFullPath">findModelFullPath</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Module.php.html#244"><abbr title="Module::findFunctionFullPath">findFunctionFullPath</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Module.php.html#328"><abbr title="Module::findLanguageFullPath">findLanguageFullPath</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1344"><abbr title="Browser::checkBrowserLynx">checkBrowserLynx</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1157"><abbr title="Browser::checkBrowserOmniWeb">checkBrowserOmniWeb</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Controller.php.html#50"><abbr title="Controller::__construct">__construct</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#554"><abbr title="Upload::checkMimeType">checkMimeType</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#350"><abbr title="Upload::setAllowedMimeTypes">setAllowedMimeTypes</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#683"><abbr title="FormValidation::_validateMatches">_validateMatches</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#366"><abbr title="Upload::setCallbackInput">setCallbackInput</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#619"><abbr title="Upload::isUploaded">isUploaded</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#611"><abbr title="Email::encodeUtf8Words">encodeUtf8Words</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#566"><abbr title="Email::formatHeader">formatHeader</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#468"><abbr title="Email::assembleAttachmentBody">assembleAttachmentBody</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#583"><abbr title="Email::encodeUtf8">encodeUtf8</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Form.php.html#96"><abbr title="Form::fieldset">fieldset</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Pagination.php.html#65"><abbr title="Pagination::setConfig">setConfig</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Form.php.html#208"><abbr title="Form::checkbox">checkbox</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#751"><abbr title="Upload::sizeInBytes">sizeInBytes</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Form.php.html#150"><abbr title="Form::label">label</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Form.php.html#197"><abbr title="Form::radio">radio</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#619"><abbr title="FormValidation::_validateHoneypot">_validateHoneypot</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#646"><abbr title="FormValidation::_validateDepends">_validateDepends</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#709"><abbr title="Email::getToForSend">getToForSend</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#296"><abbr title="Upload::setFilename">setFilename</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Upload.php.html#382"><abbr title="Upload::setCallbackOutput">setCallbackOutput</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Form.php.html#138"><abbr title="Form::value">value</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#696"><abbr title="Email::getHeadersForSend">getHeadersForSend</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#132"><abbr title="Assets::js">js</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#157"><abbr title="ApcCache::clean">clean</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#153"><abbr title="FileCache::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#128"><abbr title="ApcCache::getInfo">getInfo</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#106"><abbr title="ApcCache::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/cache/ApcCache.php.html#85"><abbr title="ApcCache::set">set</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#417"><abbr title="Email::setWrap">setWrap</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#269"><abbr title="Model::insert_many">insert_many</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#593"><abbr title="Model::cached">cached</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#683"><abbr title="Model::created_at">created_at</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#443"><abbr title="Model::with">with</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Database.php.html#1382"><abbr title="Database::setData">setData</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#393"><abbr title="Model::delete_by">delete_by</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Url.php.html#77"><abbr title="Url::current">current</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Url.php.html#35"><abbr title="Url::base_url">base_url</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Request.php.html#235"><abbr title="Request::session">session</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Response.php.html#85"><abbr title="Response::getLogger">getLogger</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Request.php.html#224"><abbr title="Request::file">file</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Database.php.html#1219"><abbr title="Database::setCache">setCache</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/EventDispatcher.php.html#57"><abbr title="EventDispatcher::addListener">addListener</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Response.php.html#121"><abbr title="Response::getHeader">getHeader</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Response.php.html#148"><abbr title="Response::redirect">redirect</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Session.php.html#139"><abbr title="Session::clearFlash">clearFlash</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Session.php.html#124"><abbr title="Session::clear">clear</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Security.php.html#39"><abbr title="Security::getLogger">getLogger</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Router.php.html#155"><abbr title="Router::add">add</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#697"><abbr title="Model::updated_at">updated_at</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#413"><abbr title="Model::delete_many">delete_many</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1509"><abbr title="Browser::getChromeVersionOnIos">getChromeVersionOnIos</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#157"><abbr title="Assets::img">img</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1494"><abbr title="Browser::getSafariVersionOnIos">getSafariVersionOnIos</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Database.php.html#858"><abbr title="Database::groupBy">groupBy</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#714"><abbr title="Model::serialize">serialize</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1481"><abbr title="Browser::checkForFacebookIos">checkForFacebookIos</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Database.php.html#300"><abbr title="Database::distinct">distinct</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#90"><abbr title="Cookie::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#53"><abbr title="Assets::getLogger">getLogger</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/Database.php.html#924"><abbr title="Database::error">error</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#75"><abbr title="Assets::path">path</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Email.php.html#305"><abbr title="Email::getAttachmentData">getAttachmentData</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="libraries/Assets.php.html#101"><abbr title="Assets::css">css</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#857"><abbr title="Model::trigger">trigger</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="classes/Database.php.html#270"><abbr title="Database::from">from</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="classes/Database.php.html#1060"><abbr title="Database::delete">delete</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="classes/Request.php.html#188"><abbr title="Request::server">server</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="classes/Lang.php.html#70"><abbr title="Lang::__construct">__construct</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1226"><abbr title="Browser::checkBrowserShiretoko">checkBrowserShiretoko</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1240"><abbr title="Browser::checkBrowserIceCat">checkBrowserIceCat</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#512"><abbr title="Browser::checkForAol">checkForAol</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="classes/Lang.php.html#145"><abbr title="Lang::isValid">isValid</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#114"><abbr title="FileCache::set">set</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="libraries/Benchmark.php.html#61"><abbr title="Benchmark::elapsedTime">elapsedTime</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#179"><abbr title="Model::get_by">get_by</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#346"><abbr title="FormValidation::setMessage">setMessage</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1525"><abbr title="Browser::checkBrowseriPhone">checkBrowseriPhone</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1544"><abbr title="Browser::checkBrowseriPad">checkBrowseriPad</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1562"><abbr title="Browser::checkBrowseriPod">checkBrowseriPod</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="classes/Lang.php.html#179"><abbr title="Lang::addLang">addLang</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="classes/Config.php.html#45"><abbr title="Config::getLogger">getLogger</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="classes/Request.php.html#93"><abbr title="Request::__construct">__construct</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="libraries/FormValidation.php.html#276"><abbr title="FormValidation::setRules">setRules</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="classes/Database.php.html#936"><abbr title="Database::get">get</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="classes/cache/FileCache.php.html#244"><abbr title="FileCache::clean">clean</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="classes/Database.php.html#1244"><abbr title="Database::escape">escape</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#1467"><abbr title="Browser::checkFacebookExternalHit">checkFacebookExternalHit</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="classes/Lang.php.html#130"><abbr title="Lang::get">get</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#774"><abbr title="Model::setDatabaseInstance">setDatabaseInstance</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="libraries/Browser.php.html#147"><abbr title="Browser::__construct">__construct</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="classes/Config.php.html#147"><abbr title="Config::delete">delete</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="classes/Session.php.html#58"><abbr title="Session::get">get</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="classes/model/Model.php.html#373"><abbr title="Model::delete">delete</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="libraries/Cookie.php.html#53"><abbr title="Cookie::get">get</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 4.0.8</a> using <a href="https://secure.php.net/" target="_top">PHP 5.6.35</a> with <a href="https://xdebug.org/">Xdebug 2.5.5</a> and <a href="https://phpunit.de/">PHPUnit 5.7.27</a> at Mon Feb 17 15:36:27 UTC 2020.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="js/jquery.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="js/holder.min.js" type="text/javascript"></script>
+  <script src="js/d3.min.js" type="text/javascript"></script>
+  <script src="js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([11,1,2,4,5,3,1,0,1,1,1,2], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([332,2,7,46,7,8,7,9,12,10,2,94], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[30.909090909091,25,"<a href=\"classes\/Config.php.html#27\">Config<\/a>"],[82.142857142857,7,"<a href=\"classes\/Controller.php.html#27\">Controller<\/a>"],[99.22480620155,37,"<a href=\"classes\/DBSessionHandler.php.html#34\">DBSessionHandler<\/a>"],[42.178217821782,243,"<a href=\"classes\/Database.php.html#26\">Database<\/a>"],[100,1,"<a href=\"classes\/Event.php.html#30\">Event<\/a>"],[25,25,"<a href=\"classes\/EventDispatcher.php.html#32\">EventDispatcher<\/a>"],[76,21,"<a href=\"classes\/Lang.php.html#30\">Lang<\/a>"],[48.967551622419,103,"<a href=\"classes\/Loader.php.html#26\">Loader<\/a>"],[35.922330097087,37,"<a href=\"classes\/Log.php.html#27\">Log<\/a>"],[12.790697674419,54,"<a href=\"classes\/Module.php.html#27\">Module<\/a>"],[33.333333333333,37,"<a href=\"classes\/Request.php.html#27\">Request<\/a>"],[4.3478260869565,56,"<a href=\"classes\/Response.php.html#27\">Response<\/a>"],[0,52,"<a href=\"classes\/Router.php.html#27\">Router<\/a>"],[0,21,"<a href=\"classes\/Security.php.html#27\">Security<\/a>"],[28.571428571429,16,"<a href=\"classes\/Session.php.html#26\">Session<\/a>"],[0,26,"<a href=\"classes\/Url.php.html#28\">Url<\/a>"],[0,25,"<a href=\"classes\/cache\/ApcCache.php.html#27\">ApcCache<\/a>"],[39.55223880597,41,"<a href=\"classes\/cache\/FileCache.php.html#27\">FileCache<\/a>"],[100,5,"<a href=\"classes\/model\/DBSessionHandlerModel.php.html#30\">DBSessionHandlerModel<\/a>"],[28.912466843501,124,"<a href=\"classes\/model\/Model.php.html#36\">Model<\/a>"],[0,10,"<a href=\"libraries\/Assets.php.html#41\">Assets<\/a>"],[53.333333333333,9,"<a href=\"libraries\/Benchmark.php.html#30\">Benchmark<\/a>"],[28.260869565217,332,"<a href=\"libraries\/Browser.php.html#37\">Browser<\/a>"],[32.142857142857,10,"<a href=\"libraries\/Cookie.php.html#27\">Cookie<\/a>"],[0,60,"<a href=\"libraries\/Email.php.html#34\">Email<\/a>"],[13.461538461538,45,"<a href=\"libraries\/Form.php.html#28\">Form<\/a>"],[41.828254847645,143,"<a href=\"libraries\/FormValidation.php.html#28\">FormValidation<\/a>"],[0,54,"<a href=\"libraries\/Html.php.html#27\">Html<\/a>"],[0,5,"<a href=\"libraries\/PDF.php.html#30\">PDF<\/a>"],[0,33,"<a href=\"libraries\/Pagination.php.html#27\">Pagination<\/a>"],[0,3,"<a href=\"libraries\/StringHash.php.html#27\">StringHash<\/a>"],[0,96,"<a href=\"libraries\/Upload.php.html#40\">Upload<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[33.333333333333,2,"<a href=\"classes\/Config.php.html#45\">Config::getLogger<\/a>"],[100,1,"<a href=\"classes\/Config.php.html#59\">Config::setLogger<\/a>"],[0,14,"<a href=\"classes\/Config.php.html#67\">Config::init<\/a>"],[100,2,"<a href=\"classes\/Config.php.html#108\">Config::get<\/a>"],[100,1,"<a href=\"classes\/Config.php.html#122\">Config::set<\/a>"],[100,1,"<a href=\"classes\/Config.php.html#130\">Config::getAll<\/a>"],[0,1,"<a href=\"classes\/Config.php.html#138\">Config::setAll<\/a>"],[71.428571428571,2,"<a href=\"classes\/Config.php.html#147\">Config::delete<\/a>"],[0,1,"<a href=\"classes\/Config.php.html#164\">Config::load<\/a>"],[81.481481481481,6,"<a href=\"classes\/Controller.php.html#50\">Controller::__construct<\/a>"],[100,1,"<a href=\"classes\/Controller.php.html#94\">Controller::get_instance<\/a>"],[100,4,"<a href=\"classes\/DBSessionHandler.php.html#84\">DBSessionHandler::__construct<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#111\">DBSessionHandler::setSessionSecret<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#120\">DBSessionHandler::getSessionSecret<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#129\">DBSessionHandler::setInitializerVector<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#140\">DBSessionHandler::getInitializerVector<\/a>"],[100,4,"<a href=\"classes\/DBSessionHandler.php.html#150\">DBSessionHandler::open<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#183\">DBSessionHandler::close<\/a>"],[100,6,"<a href=\"classes\/DBSessionHandler.php.html#193\">DBSessionHandler::read<\/a>"],[100,4,"<a href=\"classes\/DBSessionHandler.php.html#232\">DBSessionHandler::write<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#281\">DBSessionHandler::destroy<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#293\">DBSessionHandler::gc<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#306\">DBSessionHandler::encode<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#319\">DBSessionHandler::decode<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#331\">DBSessionHandler::getLoader<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#339\">DBSessionHandler::setLoader<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#348\">DBSessionHandler::getModelInstance<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#356\">DBSessionHandler::setModelInstance<\/a>"],[0,1,"<a href=\"classes\/DBSessionHandler.php.html#365\">DBSessionHandler::getLogger<\/a>"],[100,1,"<a href=\"classes\/DBSessionHandler.php.html#373\">DBSessionHandler::setLogger<\/a>"],[100,4,"<a href=\"classes\/DBSessionHandler.php.html#381\">DBSessionHandler::setModelInstanceFromConfig<\/a>"],[100,14,"<a href=\"classes\/Database.php.html#185\">Database::__construct<\/a>"],[52,9,"<a href=\"classes\/Database.php.html#230\">Database::connect<\/a>"],[33.333333333333,3,"<a href=\"classes\/Database.php.html#270\">Database::from<\/a>"],[100,3,"<a href=\"classes\/Database.php.html#289\">Database::select<\/a>"],[0,2,"<a href=\"classes\/Database.php.html#300\">Database::distinct<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#313\">Database::max<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#325\">Database::min<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#337\">Database::sum<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#349\">Database::count<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#361\">Database::avg<\/a>"],[0,4,"<a href=\"classes\/Database.php.html#376\">Database::join<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#396\">Database::innerJoin<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#405\">Database::leftJoin<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#414\">Database::rightJoin<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#423\">Database::fullOuterJoin<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#432\">Database::leftOuterJoin<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#441\">Database::rightOuterJoin<\/a>"],[0,4,"<a href=\"classes\/Database.php.html#451\">Database::whereIsNull<\/a>"],[0,4,"<a href=\"classes\/Database.php.html#474\">Database::whereIsNotNull<\/a>"],[34.146341463415,19,"<a href=\"classes\/Database.php.html#501\">Database::where<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#558\">Database::orWhere<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#568\">Database::notWhere<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#577\">Database::orNotWhere<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#587\">Database::groupStart<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#607\">Database::notGroupStart<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#616\">Database::orGroupStart<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#625\">Database::orNotGroupStart<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#633\">Database::groupEnd<\/a>"],[0,8,"<a href=\"classes\/Database.php.html#647\">Database::in<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#677\">Database::notIn<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#686\">Database::orIn<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#695\">Database::orNotIn<\/a>"],[0,11,"<a href=\"classes\/Database.php.html#709\">Database::between<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#735\">Database::notBetween<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#744\">Database::orBetween<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#753\">Database::orNotBetween<\/a>"],[0,5,"<a href=\"classes\/Database.php.html#766\">Database::like<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#790\">Database::orLike<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#799\">Database::notLike<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#808\">Database::orNotLike<\/a>"],[0,3,"<a href=\"classes\/Database.php.html#819\">Database::limit<\/a>"],[0,7,"<a href=\"classes\/Database.php.html#838\">Database::orderBy<\/a>"],[0,2,"<a href=\"classes\/Database.php.html#858\">Database::groupBy<\/a>"],[0,13,"<a href=\"classes\/Database.php.html#876\">Database::having<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#909\">Database::numRows<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#917\">Database::insertId<\/a>"],[0,2,"<a href=\"classes\/Database.php.html#924\">Database::error<\/a>"],[80,3,"<a href=\"classes\/Database.php.html#936\">Database::get<\/a>"],[63.636363636364,9,"<a href=\"classes\/Database.php.html#953\">Database::getAll<\/a>"],[63.157894736842,6,"<a href=\"classes\/Database.php.html#993\">Database::insert<\/a>"],[61.904761904762,10,"<a href=\"classes\/Database.php.html#1028\">Database::update<\/a>"],[71.428571428571,5,"<a href=\"classes\/Database.php.html#1060\">Database::delete<\/a>"],[69.318181818182,30,"<a href=\"classes\/Database.php.html#1088\">Database::query<\/a>"],[0,2,"<a href=\"classes\/Database.php.html#1219\">Database::setCache<\/a>"],[100,2,"<a href=\"classes\/Database.php.html#1232\">Database::cached<\/a>"],[83.333333333333,3,"<a href=\"classes\/Database.php.html#1244\">Database::escape<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1258\">Database::queryCount<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1266\">Database::getQuery<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1274\">Database::getDatabaseName<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#1282\">Database::getDatabaseConfiguration<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#1290\">Database::setDatabaseConfiguration<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1302\">Database::getPdo<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1310\">Database::setPdo<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1320\">Database::getLogger<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1328\">Database::setLogger<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1337\">Database::getCacheInstance<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#1345\">Database::setCacheInstance<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1354\">Database::getBenchmark<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#1362\">Database::setBenchmark<\/a>"],[0,1,"<a href=\"classes\/Database.php.html#1371\">Database::getData<\/a>"],[0,2,"<a href=\"classes\/Database.php.html#1382\">Database::setData<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#1391\">Database::reset<\/a>"],[100,1,"<a href=\"classes\/Database.php.html#1411\">Database::__destruct<\/a>"],[100,1,"<a href=\"classes\/Event.php.html#57\">Event::__construct<\/a>"],[0,1,"<a href=\"classes\/EventDispatcher.php.html#47\">EventDispatcher::__construct<\/a>"],[0,2,"<a href=\"classes\/EventDispatcher.php.html#57\">EventDispatcher::addListener<\/a>"],[0,3,"<a href=\"classes\/EventDispatcher.php.html#74\">EventDispatcher::removeListener<\/a>"],[0,3,"<a href=\"classes\/EventDispatcher.php.html#96\">EventDispatcher::removeAllListener<\/a>"],[100,2,"<a href=\"classes\/EventDispatcher.php.html#113\">EventDispatcher::getListeners<\/a>"],[71.428571428571,6,"<a href=\"classes\/EventDispatcher.php.html#122\">EventDispatcher::dispatch<\/a>"],[26.086956521739,8,"<a href=\"classes\/EventDispatcher.php.html#147\">EventDispatcher::dispatchToListerners<\/a>"],[86.95652173913,5,"<a href=\"classes\/Lang.php.html#70\">Lang::__construct<\/a>"],[0,1,"<a href=\"classes\/Lang.php.html#108\">Lang::getAll<\/a>"],[100,1,"<a href=\"classes\/Lang.php.html#118\">Lang::set<\/a>"],[50,2,"<a href=\"classes\/Lang.php.html#130\">Lang::get<\/a>"],[66.666666666667,4,"<a href=\"classes\/Lang.php.html#145\">Lang::isValid<\/a>"],[100,1,"<a href=\"classes\/Lang.php.html#160\">Lang::getDefault<\/a>"],[0,1,"<a href=\"classes\/Lang.php.html#169\">Lang::getCurrent<\/a>"],[71.428571428571,3,"<a href=\"classes\/Lang.php.html#179\">Lang::addLang<\/a>"],[0,1,"<a href=\"classes\/Lang.php.html#196\">Lang::getSupported<\/a>"],[100,2,"<a href=\"classes\/Lang.php.html#205\">Lang::addLangMessages<\/a>"],[31.481481481481,31,"<a href=\"classes\/Loader.php.html#41\">Loader::__construct<\/a>"],[100,2,"<a href=\"classes\/Loader.php.html#122\">Loader::getLogger<\/a>"],[55.769230769231,13,"<a href=\"classes\/Loader.php.html#138\">Loader::model<\/a>"],[46.753246753247,19,"<a href=\"classes\/Loader.php.html#217\">Loader::library<\/a>"],[72.340425531915,12,"<a href=\"classes\/Loader.php.html#323\">Loader::functions<\/a>"],[0,11,"<a href=\"classes\/Loader.php.html#388\">Loader::config<\/a>"],[75,15,"<a href=\"classes\/Loader.php.html#451\">Loader::lang<\/a>"],[100,1,"<a href=\"classes\/Log.php.html#55\">Log::__construct<\/a>"],[100,1,"<a href=\"classes\/Log.php.html#62\">Log::setLogger<\/a>"],[0,1,"<a href=\"classes\/Log.php.html#71\">Log::fatal<\/a>"],[0,1,"<a href=\"classes\/Log.php.html#80\">Log::error<\/a>"],[100,1,"<a href=\"classes\/Log.php.html#89\">Log::warning<\/a>"],[100,1,"<a href=\"classes\/Log.php.html#98\">Log::info<\/a>"],[100,1,"<a href=\"classes\/Log.php.html#107\">Log::debug<\/a>"],[34,15,"<a href=\"classes\/Log.php.html#118\">Log::writeLog<\/a>"],[100,1,"<a href=\"classes\/Log.php.html#204\">Log::isValidConfigLevel<\/a>"],[42.857142857143,8,"<a href=\"classes\/Log.php.html#214\">Log::getLevelValue<\/a>"],[0,6,"<a href=\"classes\/Log.php.html#245\">Log::getLevelName<\/a>"],[100,2,"<a href=\"classes\/Module.php.html#45\">Module::getLogger<\/a>"],[0,7,"<a href=\"classes\/Module.php.html#56\">Module::init<\/a>"],[11.428571428571,16,"<a href=\"classes\/Module.php.html#83\">Module::getModulesAutoloadConfig<\/a>"],[0,6,"<a href=\"classes\/Module.php.html#134\">Module::getModulesRoutes<\/a>"],[0,3,"<a href=\"classes\/Module.php.html#164\">Module::findControllerFullPath<\/a>"],[28.571428571429,3,"<a href=\"classes\/Module.php.html#191\">Module::findModelFullPath<\/a>"],[0,3,"<a href=\"classes\/Module.php.html#218\">Module::findConfigFullPath<\/a>"],[28.571428571429,3,"<a href=\"classes\/Module.php.html#244\">Module::findFunctionFullPath<\/a>"],[0,3,"<a href=\"classes\/Module.php.html#272\">Module::findLibraryFullPath<\/a>"],[0,3,"<a href=\"classes\/Module.php.html#299\">Module::findViewFullPath<\/a>"],[28.571428571429,3,"<a href=\"classes\/Module.php.html#328\">Module::findLanguageFullPath<\/a>"],[0,1,"<a href=\"classes\/Module.php.html#353\">Module::getModuleList<\/a>"],[100,1,"<a href=\"classes\/Module.php.html#361\">Module::hasModule<\/a>"],[76.470588235294,3,"<a href=\"classes\/Request.php.html#93\">Request::__construct<\/a>"],[100,1,"<a href=\"classes\/Request.php.html#116\">Request::method<\/a>"],[0,1,"<a href=\"classes\/Request.php.html#124\">Request::requestUri<\/a>"],[0,5,"<a href=\"classes\/Request.php.html#134\">Request::query<\/a>"],[0,5,"<a href=\"classes\/Request.php.html#152\">Request::get<\/a>"],[28.571428571429,5,"<a href=\"classes\/Request.php.html#170\">Request::post<\/a>"],[85.714285714286,5,"<a href=\"classes\/Request.php.html#188\">Request::server<\/a>"],[0,5,"<a href=\"classes\/Request.php.html#206\">Request::cookie<\/a>"],[0,2,"<a href=\"classes\/Request.php.html#224\">Request::file<\/a>"],[0,2,"<a href=\"classes\/Request.php.html#235\">Request::session<\/a>"],[0,3,"<a href=\"classes\/Request.php.html#249\">Request::header<\/a>"],[100,7,"<a href=\"classes\/Response.php.html#68\">Response::__construct<\/a>"],[0,2,"<a href=\"classes\/Response.php.html#85\">Response::getLogger<\/a>"],[0,3,"<a href=\"classes\/Response.php.html#98\">Response::sendHeaders<\/a>"],[0,1,"<a href=\"classes\/Response.php.html#112\">Response::getHeaders<\/a>"],[0,2,"<a href=\"classes\/Response.php.html#121\">Response::getHeader<\/a>"],[0,1,"<a href=\"classes\/Response.php.html#131\">Response::setHeader<\/a>"],[0,1,"<a href=\"classes\/Response.php.html#140\">Response::setHeaders<\/a>"],[0,2,"<a href=\"classes\/Response.php.html#148\">Response::redirect<\/a>"],[0,15,"<a href=\"classes\/Response.php.html#171\">Response::render<\/a>"],[0,9,"<a href=\"classes\/Response.php.html#241\">Response::renderFinalPage<\/a>"],[0,6,"<a href=\"classes\/Response.php.html#306\">Response::renderFinalPageFromCache<\/a>"],[0,1,"<a href=\"classes\/Response.php.html#368\">Response::getFinalPageRendered<\/a>"],[0,3,"<a href=\"classes\/Response.php.html#376\">Response::send404<\/a>"],[0,3,"<a href=\"classes\/Response.php.html#415\">Response::sendError<\/a>"],[0,10,"<a href=\"classes\/Router.php.html#95\">Router::__construct<\/a>"],[0,2,"<a href=\"classes\/Router.php.html#155\">Router::add<\/a>"],[0,1,"<a href=\"classes\/Router.php.html#168\">Router::getModule<\/a>"],[0,1,"<a href=\"classes\/Router.php.html#176\">Router::getController<\/a>"],[0,1,"<a href=\"classes\/Router.php.html#184\">Router::getControllerPath<\/a>"],[0,1,"<a href=\"classes\/Router.php.html#192\">Router::getMethod<\/a>"],[0,1,"<a href=\"classes\/Router.php.html#200\">Router::getArgs<\/a>"],[0,1,"<a href=\"classes\/Router.php.html#208\">Router::getSegments<\/a>"],[0,34,"<a href=\"classes\/Router.php.html#216\">Router::run<\/a>"],[0,2,"<a href=\"classes\/Security.php.html#39\">Security::getLogger<\/a>"],[0,4,"<a href=\"classes\/Security.php.html#52\">Security::generateCSRF<\/a>"],[0,6,"<a href=\"classes\/Security.php.html#78\">Security::validateCSRF<\/a>"],[0,9,"<a href=\"classes\/Security.php.html#114\">Security::checkWhiteListIpAccess<\/a>"],[100,2,"<a href=\"classes\/Session.php.html#44\">Session::getLogger<\/a>"],[71.428571428571,2,"<a href=\"classes\/Session.php.html#58\">Session::get<\/a>"],[100,1,"<a href=\"classes\/Session.php.html#74\">Session::set<\/a>"],[0,3,"<a href=\"classes\/Session.php.html#86\">Session::getFlash<\/a>"],[0,1,"<a href=\"classes\/Session.php.html#105\">Session::hasFlash<\/a>"],[0,1,"<a href=\"classes\/Session.php.html#115\">Session::setFlash<\/a>"],[0,2,"<a href=\"classes\/Session.php.html#124\">Session::clear<\/a>"],[0,2,"<a href=\"classes\/Session.php.html#139\">Session::clearFlash<\/a>"],[0,1,"<a href=\"classes\/Session.php.html#156\">Session::exists<\/a>"],[0,1,"<a href=\"classes\/Session.php.html#163\">Session::clearAll<\/a>"],[0,2,"<a href=\"classes\/Url.php.html#35\">Url::base_url<\/a>"],[0,6,"<a href=\"classes\/Url.php.html#47\">Url::site_url<\/a>"],[0,2,"<a href=\"classes\/Url.php.html#77\">Url::current<\/a>"],[0,3,"<a href=\"classes\/Url.php.html#93\">Url::title<\/a>"],[0,12,"<a href=\"classes\/Url.php.html#114\">Url::domain<\/a>"],[0,1,"<a href=\"classes\/Url.php.html#143\">Url::queryString<\/a>"],[0,3,"<a href=\"classes\/cache\/ApcCache.php.html#36\">ApcCache::__construct<\/a>"],[0,3,"<a href=\"classes\/cache\/ApcCache.php.html#58\">ApcCache::get<\/a>"],[0,2,"<a href=\"classes\/cache\/ApcCache.php.html#85\">ApcCache::set<\/a>"],[0,2,"<a href=\"classes\/cache\/ApcCache.php.html#106\">ApcCache::delete<\/a>"],[0,2,"<a href=\"classes\/cache\/ApcCache.php.html#128\">ApcCache::getInfo<\/a>"],[0,1,"<a href=\"classes\/cache\/ApcCache.php.html#149\">ApcCache::deleteExpiredCache<\/a>"],[0,2,"<a href=\"classes\/cache\/ApcCache.php.html#157\">ApcCache::clean<\/a>"],[0,3,"<a href=\"classes\/cache\/ApcCache.php.html#176\">ApcCache::isSupported<\/a>"],[0,1,"<a href=\"classes\/cache\/ApcCache.php.html#184\">ApcCache::getLogger<\/a>"],[0,1,"<a href=\"classes\/cache\/ApcCache.php.html#192\">ApcCache::setLogger<\/a>"],[0,5,"<a href=\"classes\/cache\/ApcCache.php.html#203\">ApcCache::_getCacheInfo<\/a>"],[46.153846153846,4,"<a href=\"classes\/cache\/FileCache.php.html#42\">FileCache::__construct<\/a>"],[66.666666666667,6,"<a href=\"classes\/cache\/FileCache.php.html#69\">FileCache::get<\/a>"],[78.260869565217,4,"<a href=\"classes\/cache\/FileCache.php.html#114\">FileCache::set<\/a>"],[0,2,"<a href=\"classes\/cache\/FileCache.php.html#153\">FileCache::delete<\/a>"],[0,6,"<a href=\"classes\/cache\/FileCache.php.html#176\">FileCache::getInfo<\/a>"],[0,6,"<a href=\"classes\/cache\/FileCache.php.html#215\">FileCache::deleteExpiredCache<\/a>"],[81.818181818182,3,"<a href=\"classes\/cache\/FileCache.php.html#244\">FileCache::clean<\/a>"],[0,1,"<a href=\"classes\/cache\/FileCache.php.html#262\">FileCache::isCompressCacheData<\/a>"],[0,3,"<a href=\"classes\/cache\/FileCache.php.html#271\">FileCache::setCompressCacheData<\/a>"],[100,3,"<a href=\"classes\/cache\/FileCache.php.html#289\">FileCache::isSupported<\/a>"],[0,1,"<a href=\"classes\/cache\/FileCache.php.html#297\">FileCache::getLogger<\/a>"],[100,1,"<a href=\"classes\/cache\/FileCache.php.html#305\">FileCache::setLogger<\/a>"],[100,1,"<a href=\"classes\/cache\/FileCache.php.html#316\">FileCache::getFilePath<\/a>"],[100,1,"<a href=\"classes\/model\/DBSessionHandlerModel.php.html#48\">DBSessionHandlerModel::__construct<\/a>"],[100,1,"<a href=\"classes\/model\/DBSessionHandlerModel.php.html#56\">DBSessionHandlerModel::getSessionTableColumns<\/a>"],[100,1,"<a href=\"classes\/model\/DBSessionHandlerModel.php.html#64\">DBSessionHandlerModel::setSessionTableColumns<\/a>"],[100,1,"<a href=\"classes\/model\/DBSessionHandlerModel.php.html#74\">DBSessionHandlerModel::deleteByTime<\/a>"],[100,1,"<a href=\"classes\/model\/DBSessionHandlerModel.php.html#81\">DBSessionHandlerModel::getKeyValue<\/a>"],[100,4,"<a href=\"classes\/model\/Model.php.html#143\">Model::__construct<\/a>"],[100,1,"<a href=\"classes\/model\/Model.php.html#170\">Model::get<\/a>"],[84.615384615385,4,"<a href=\"classes\/model\/Model.php.html#179\">Model::get_by<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#202\">Model::get_many<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#211\">Model::get_many_by<\/a>"],[0,5,"<a href=\"classes\/model\/Model.php.html#222\">Model::get_all<\/a>"],[100,3,"<a href=\"classes\/model\/Model.php.html#245\">Model::insert<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#269\">Model::insert_many<\/a>"],[92.307692307692,3,"<a href=\"classes\/model\/Model.php.html#282\">Model::update<\/a>"],[0,3,"<a href=\"classes\/model\/Model.php.html#307\">Model::update_many<\/a>"],[0,6,"<a href=\"classes\/model\/Model.php.html#331\">Model::update_by<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#362\">Model::update_all<\/a>"],[77.777777777778,2,"<a href=\"classes\/model\/Model.php.html#373\">Model::delete<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#393\">Model::delete_by<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#413\">Model::delete_many<\/a>"],[100,1,"<a href=\"classes\/model\/Model.php.html#433\">Model::truncate<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#443\">Model::with<\/a>"],[0,12,"<a href=\"classes\/model\/Model.php.html#453\">Model::relate<\/a>"],[0,5,"<a href=\"classes\/model\/Model.php.html#533\">Model::dropdown<\/a>"],[0,3,"<a href=\"classes\/model\/Model.php.html#565\">Model::count_by<\/a>"],[0,3,"<a href=\"classes\/model\/Model.php.html#580\">Model::count_all<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#593\">Model::cached<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#603\">Model::skip_validation<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#612\">Model::get_skip_validation<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#620\">Model::get_next_id<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#631\">Model::table<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#643\">Model::as_array<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#652\">Model::as_object<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#661\">Model::with_deleted<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#670\">Model::only_deleted<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#683\">Model::created_at<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#697\">Model::updated_at<\/a>"],[0,2,"<a href=\"classes\/model\/Model.php.html#714\">Model::serialize<\/a>"],[0,3,"<a href=\"classes\/model\/Model.php.html#723\">Model::unserialize<\/a>"],[25,5,"<a href=\"classes\/model\/Model.php.html#742\">Model::protect_attributes<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#766\">Model::getDatabaseInstance<\/a>"],[60,2,"<a href=\"classes\/model\/Model.php.html#774\">Model::setDatabaseInstance<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#786\">Model::getLoader<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#794\">Model::setLoader<\/a>"],[100,1,"<a href=\"classes\/model\/Model.php.html#803\">Model::getFormValidation<\/a>"],[100,1,"<a href=\"classes\/model\/Model.php.html#811\">Model::setFormValidation<\/a>"],[0,3,"<a href=\"classes\/model\/Model.php.html#823\">Model::order_by<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#842\">Model::limit<\/a>"],[69.230769230769,5,"<a href=\"classes\/model\/Model.php.html#857\">Model::trigger<\/a>"],[72.727272727273,6,"<a href=\"classes\/model\/Model.php.html#879\">Model::validate<\/a>"],[52.777777777778,11,"<a href=\"classes\/model\/Model.php.html#924\">Model::_set_where<\/a>"],[0,1,"<a href=\"classes\/model\/Model.php.html#982\">Model::__get<\/a>"],[0,2,"<a href=\"libraries\/Assets.php.html#53\">Assets::getLogger<\/a>"],[0,2,"<a href=\"libraries\/Assets.php.html#75\">Assets::path<\/a>"],[0,2,"<a href=\"libraries\/Assets.php.html#101\">Assets::css<\/a>"],[0,2,"<a href=\"libraries\/Assets.php.html#132\">Assets::js<\/a>"],[0,2,"<a href=\"libraries\/Assets.php.html#157\">Assets::img<\/a>"],[100,1,"<a href=\"libraries\/Benchmark.php.html#47\">Benchmark::mark<\/a>"],[83.333333333333,4,"<a href=\"libraries\/Benchmark.php.html#61\">Benchmark::elapsedTime<\/a>"],[0,4,"<a href=\"libraries\/Benchmark.php.html#79\">Benchmark::memoryUsage<\/a>"],[66.666666666667,2,"<a href=\"libraries\/Browser.php.html#147\">Browser::__construct<\/a>"],[100,2,"<a href=\"libraries\/Browser.php.html#160\">Browser::reset<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#180\">Browser::isBrowser<\/a>"],[100,1,"<a href=\"libraries\/Browser.php.html#189\">Browser::getBrowser<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#198\">Browser::setBrowser<\/a>"],[100,1,"<a href=\"libraries\/Browser.php.html#207\">Browser::getPlatform<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#216\">Browser::setPlatform<\/a>"],[100,1,"<a href=\"libraries\/Browser.php.html#225\">Browser::getVersion<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#234\">Browser::setVersion<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#243\">Browser::getAolVersion<\/a>"],[100,1,"<a href=\"libraries\/Browser.php.html#252\">Browser::setAolVersion<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#261\">Browser::isAol<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#270\">Browser::isMobile<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#279\">Browser::isTablet<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#288\">Browser::isRobot<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#297\">Browser::isFacebook<\/a>"],[100,1,"<a href=\"libraries\/Browser.php.html#306\">Browser::setAol<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#315\">Browser::setMobile<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#324\">Browser::setTablet<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#333\">Browser::setRobot<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#342\">Browser::setFacebook<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#351\">Browser::getUserAgent<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#360\">Browser::setUserAgent<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#372\">Browser::isChromeFrame<\/a>"],[0,1,"<a href=\"libraries\/Browser.php.html#381\">Browser::__toString<\/a>"],[100,1,"<a href=\"libraries\/Browser.php.html#392\">Browser::determine<\/a>"],[100,52,"<a href=\"libraries\/Browser.php.html#403\">Browser::checkBrowsers<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#493\">Browser::checkBrowserBlackBerry<\/a>"],[40,3,"<a href=\"libraries\/Browser.php.html#512\">Browser::checkForAol<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#532\">Browser::checkBrowserGoogleBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#551\">Browser::checkBrowserYandexBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#570\">Browser::checkBrowserYandexImageResizerBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#589\">Browser::checkBrowserYandexCatalogBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#608\">Browser::checkBrowserYandexNewsBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#627\">Browser::checkBrowserYandexMetrikaBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#646\">Browser::checkBrowserYandexDirectBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#665\">Browser::checkBrowserYandexWebmasterBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#684\">Browser::checkBrowserYandexFaviconsBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#703\">Browser::checkBrowserYandexBlogsBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#722\">Browser::checkBrowserYandexMediaBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#741\">Browser::checkBrowserYandexVideoBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#760\">Browser::checkBrowserYandexImagesBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#779\">Browser::checkBrowserMSNBot<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#798\">Browser::checkBrowserBingBot<\/a>"],[20,6,"<a href=\"libraries\/Browser.php.html#817\">Browser::checkBrowserW3CValidator<\/a>"],[18.181818181818,3,"<a href=\"libraries\/Browser.php.html#849\">Browser::checkBrowserSlurp<\/a>"],[16.666666666667,5,"<a href=\"libraries\/Browser.php.html#869\">Browser::checkBrowserEdge<\/a>"],[8.1081081081081,24,"<a href=\"libraries\/Browser.php.html#890\">Browser::checkBrowserInternetExplorer<\/a>"],[8.1632653061224,15,"<a href=\"libraries\/Browser.php.html#981\">Browser::checkBrowserOpera<\/a>"],[13.333333333333,5,"<a href=\"libraries\/Browser.php.html#1041\">Browser::checkBrowserChrome<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1068\">Browser::checkBrowserWebTv<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1086\">Browser::checkBrowserNetPositive<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1104\">Browser::checkBrowserGaleon<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1122\">Browser::checkBrowserKonqueror<\/a>"],[25,3,"<a href=\"libraries\/Browser.php.html#1140\">Browser::checkBrowserIcab<\/a>"],[28.571428571429,3,"<a href=\"libraries\/Browser.php.html#1157\">Browser::checkBrowserOmniWeb<\/a>"],[25,3,"<a href=\"libraries\/Browser.php.html#1173\">Browser::checkBrowserPhoenix<\/a>"],[25,3,"<a href=\"libraries\/Browser.php.html#1190\">Browser::checkBrowserFirebird<\/a>"],[33.333333333333,5,"<a href=\"libraries\/Browser.php.html#1208\">Browser::checkBrowserNetscapeNavigator9Plus<\/a>"],[40,3,"<a href=\"libraries\/Browser.php.html#1226\">Browser::checkBrowserShiretoko<\/a>"],[40,3,"<a href=\"libraries\/Browser.php.html#1240\">Browser::checkBrowserIceCat<\/a>"],[22.222222222222,4,"<a href=\"libraries\/Browser.php.html#1254\">Browser::checkBrowserNokia<\/a>"],[29.411764705882,6,"<a href=\"libraries\/Browser.php.html#1273\">Browser::checkBrowserFirefox<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1301\">Browser::checkBrowserIceweasel<\/a>"],[25,10,"<a href=\"libraries\/Browser.php.html#1319\">Browser::checkBrowserMozilla<\/a>"],[28.571428571429,3,"<a href=\"libraries\/Browser.php.html#1344\">Browser::checkBrowserLynx<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1360\">Browser::checkBrowserAmaya<\/a>"],[38.461538461538,5,"<a href=\"libraries\/Browser.php.html#1378\">Browser::checkBrowserSafari<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#1398\">Browser::checkBrowserSamsung<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#1415\">Browser::checkBrowserSilk<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#1431\">Browser::checkBrowserIframely<\/a>"],[20,3,"<a href=\"libraries\/Browser.php.html#1447\">Browser::checkBrowserCocoa<\/a>"],[40,2,"<a href=\"libraries\/Browser.php.html#1467\">Browser::checkFacebookExternalHit<\/a>"],[0,2,"<a href=\"libraries\/Browser.php.html#1481\">Browser::checkForFacebookIos<\/a>"],[0,2,"<a href=\"libraries\/Browser.php.html#1494\">Browser::getSafariVersionOnIos<\/a>"],[0,2,"<a href=\"libraries\/Browser.php.html#1509\">Browser::getChromeVersionOnIos<\/a>"],[22.222222222222,2,"<a href=\"libraries\/Browser.php.html#1525\">Browser::checkBrowseriPhone<\/a>"],[22.222222222222,2,"<a href=\"libraries\/Browser.php.html#1544\">Browser::checkBrowseriPad<\/a>"],[22.222222222222,2,"<a href=\"libraries\/Browser.php.html#1562\">Browser::checkBrowseriPod<\/a>"],[14.285714285714,4,"<a href=\"libraries\/Browser.php.html#1580\">Browser::checkBrowserAndroid<\/a>"],[22.222222222222,3,"<a href=\"libraries\/Browser.php.html#1605\">Browser::checkBrowserVivaldi<\/a>"],[12.5,6,"<a href=\"libraries\/Browser.php.html#1623\">Browser::checkBrowserYandex<\/a>"],[16.666666666667,5,"<a href=\"libraries\/Browser.php.html#1651\">Browser::checkBrowserPlayStation<\/a>"],[50,30,"<a href=\"libraries\/Browser.php.html#1671\">Browser::checkPlatform<\/a>"],[100,2,"<a href=\"libraries\/Cookie.php.html#39\">Cookie::getLogger<\/a>"],[80,2,"<a href=\"libraries\/Cookie.php.html#53\">Cookie::get<\/a>"],[0,3,"<a href=\"libraries\/Cookie.php.html#72\">Cookie::set<\/a>"],[0,2,"<a href=\"libraries\/Cookie.php.html#90\">Cookie::delete<\/a>"],[0,1,"<a href=\"libraries\/Cookie.php.html#108\">Cookie::exists<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#87\">Email::__construct<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#101\">Email::reset<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#122\">Email::setFrom<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#136\">Email::setTo<\/a>"],[0,3,"<a href=\"libraries\/Email.php.html#148\">Email::setTos<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#169\">Email::getTo<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#182\">Email::setCc<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#194\">Email::setBcc<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#207\">Email::setReplyTo<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#217\">Email::setHtml<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#232\">Email::setSubject<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#245\">Email::getSubject<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#257\">Email::setMessage<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#268\">Email::getMessage<\/a>"],[0,4,"<a href=\"libraries\/Email.php.html#282\">Email::addAttachment<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#305\">Email::getAttachmentData<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#326\">Email::addMailHeader<\/a>"],[0,4,"<a href=\"libraries\/Email.php.html#341\">Email::addMailHeaders<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#363\">Email::addGenericHeader<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#380\">Email::getHeaders<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#394\">Email::setParameters<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#405\">Email::getParameters<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#417\">Email::setWrap<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#432\">Email::getWrap<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#444\">Email::hasAttachments<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#454\">Email::assembleAttachmentHeaders<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#468\">Email::assembleAttachmentBody<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#494\">Email::getAttachmentMimeTemplate<\/a>"],[0,3,"<a href=\"libraries\/Email.php.html#516\">Email::send<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#540\">Email::debug<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#550\">Email::__toString<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#566\">Email::formatHeader<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#583\">Email::encodeUtf8<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#599\">Email::encodeUtf8Word<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#611\">Email::encodeUtf8Words<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#631\">Email::filterEmail<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#658\">Email::filterName<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#686\">Email::filterOther<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#696\">Email::getHeadersForSend<\/a>"],[0,2,"<a href=\"libraries\/Email.php.html#709\">Email::getToForSend<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#722\">Email::getUniqueId<\/a>"],[0,1,"<a href=\"libraries\/Email.php.html#732\">Email::getWrapMessage<\/a>"],[48.275862068966,11,"<a href=\"libraries\/Form.php.html#38\">Form::open<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#77\">Form::openMultipart<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#85\">Form::close<\/a>"],[0,2,"<a href=\"libraries\/Form.php.html#96\">Form::fieldset<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#108\">Form::fieldsetClose<\/a>"],[0,4,"<a href=\"libraries\/Form.php.html#118\">Form::error<\/a>"],[0,2,"<a href=\"libraries\/Form.php.html#138\">Form::value<\/a>"],[0,2,"<a href=\"libraries\/Form.php.html#150\">Form::label<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#169\">Form::input<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#181\">Form::text<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#189\">Form::password<\/a>"],[0,2,"<a href=\"libraries\/Form.php.html#197\">Form::radio<\/a>"],[0,2,"<a href=\"libraries\/Form.php.html#208\">Form::checkbox<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#219\">Form::number<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#227\">Form::phone<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#235\">Form::email<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#243\">Form::search<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#251\">Form::hidden<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#259\">Form::file<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#267\">Form::button<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#275\">Form::reset<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#283\">Form::submit<\/a>"],[0,1,"<a href=\"libraries\/Form.php.html#294\">Form::textarea<\/a>"],[0,4,"<a href=\"libraries\/Form.php.html#311\">Form::select<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#100\">FormValidation::__construct<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#136\">FormValidation::_resetValidation<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#153\">FormValidation::setData<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#163\">FormValidation::getData<\/a>"],[100,2,"<a href=\"libraries\/FormValidation.php.html#172\">FormValidation::_toCallCase<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#186\">FormValidation::isSuccess<\/a>"],[100,2,"<a href=\"libraries\/FormValidation.php.html#195\">FormValidation::canDoValidation<\/a>"],[100,2,"<a href=\"libraries\/FormValidation.php.html#204\">FormValidation::run<\/a>"],[57.692307692308,12,"<a href=\"libraries\/FormValidation.php.html#217\">FormValidation::_run<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#262\">FormValidation::setRule<\/a>"],[77.777777777778,3,"<a href=\"libraries\/FormValidation.php.html#276\">FormValidation::setRules<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#298\">FormValidation::setErrorsDelimiter<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#313\">FormValidation::setErrorDelimiter<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#324\">FormValidation::getErrorDelimiter<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#333\">FormValidation::getErrorsDelimiter<\/a>"],[84.615384615385,4,"<a href=\"libraries\/FormValidation.php.html#346\">FormValidation::setMessage<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#375\">FormValidation::setCustomError<\/a>"],[100,5,"<a href=\"libraries\/FormValidation.php.html#390\">FormValidation::post<\/a>"],[0,6,"<a href=\"libraries\/FormValidation.php.html#412\">FormValidation::displayErrors<\/a>"],[100,1,"<a href=\"libraries\/FormValidation.php.html#439\">FormValidation::returnErrors<\/a>"],[20.833333333333,8,"<a href=\"libraries\/FormValidation.php.html#450\">FormValidation::_parseRuleString<\/a>"],[0,1,"<a href=\"libraries\/FormValidation.php.html#491\">FormValidation::_fieldIsRequired<\/a>"],[100,2,"<a href=\"libraries\/FormValidation.php.html#505\">FormValidation::_validateRule<\/a>"],[95,7,"<a href=\"libraries\/FormValidation.php.html#530\">FormValidation::_setError<\/a>"],[0,1,"<a href=\"libraries\/FormValidation.php.html#566\">FormValidation::_runCallback<\/a>"],[0,1,"<a href=\"libraries\/FormValidation.php.html#579\">FormValidation::_runEmptyCallback<\/a>"],[100,2,"<a href=\"libraries\/FormValidation.php.html#590\">FormValidation::_getLabel<\/a>"],[54.545454545455,6,"<a href=\"libraries\/FormValidation.php.html#600\">FormValidation::_validateRequired<\/a>"],[0,2,"<a href=\"libraries\/FormValidation.php.html#619\">FormValidation::_validateHoneypot<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#631\">FormValidation::_validateCallback<\/a>"],[0,2,"<a href=\"libraries\/FormValidation.php.html#646\">FormValidation::_validateDepends<\/a>"],[0,5,"<a href=\"libraries\/FormValidation.php.html#658\">FormValidation::_validateNotEqual<\/a>"],[0,2,"<a href=\"libraries\/FormValidation.php.html#683\">FormValidation::_validateMatches<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#696\">FormValidation::_validateValidEmail<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#712\">FormValidation::_validateExactLength<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#728\">FormValidation::_validateMaxLength<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#744\">FormValidation::_validateMinLength<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#760\">FormValidation::_validateLessThan<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#776\">FormValidation::_validateGreaterThan<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#792\">FormValidation::_validateNumeric<\/a>"],[0,5,"<a href=\"libraries\/FormValidation.php.html#808\">FormValidation::_validateExists<\/a>"],[0,5,"<a href=\"libraries\/FormValidation.php.html#833\">FormValidation::_validateIsUnique<\/a>"],[0,6,"<a href=\"libraries\/FormValidation.php.html#858\">FormValidation::_validateIsUniqueUpdate<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#889\">FormValidation::_validateInList<\/a>"],[0,4,"<a href=\"libraries\/FormValidation.php.html#907\">FormValidation::_validateRegex<\/a>"],[0,4,"<a href=\"libraries\/Html.php.html#38\">Html::a<\/a>"],[0,3,"<a href=\"libraries\/Html.php.html#67\">Html::mailto<\/a>"],[0,5,"<a href=\"libraries\/Html.php.html#91\">Html::br<\/a>"],[0,5,"<a href=\"libraries\/Html.php.html#114\">Html::hr<\/a>"],[0,8,"<a href=\"libraries\/Html.php.html#138\">Html::head<\/a>"],[0,5,"<a href=\"libraries\/Html.php.html#164\">Html::ul<\/a>"],[0,5,"<a href=\"libraries\/Html.php.html#186\">Html::ol<\/a>"],[0,19,"<a href=\"libraries\/Html.php.html#212\">Html::table<\/a>"],[0,1,"<a href=\"libraries\/PDF.php.html#47\">PDF::__construct<\/a>"],[0,3,"<a href=\"libraries\/PDF.php.html#65\">PDF::generate<\/a>"],[0,1,"<a href=\"libraries\/PDF.php.html#83\">PDF::getDompdf<\/a>"],[0,5,"<a href=\"libraries\/Pagination.php.html#39\">Pagination::__construct<\/a>"],[0,2,"<a href=\"libraries\/Pagination.php.html#65\">Pagination::setConfig<\/a>"],[0,26,"<a href=\"libraries\/Pagination.php.html#78\">Pagination::getLink<\/a>"],[0,1,"<a href=\"libraries\/StringHash.php.html#39\">StringHash::uniqueSalt<\/a>"],[0,1,"<a href=\"libraries\/StringHash.php.html#48\">StringHash::hash<\/a>"],[0,1,"<a href=\"libraries\/StringHash.php.html#60\">StringHash::check<\/a>"],[0,5,"<a href=\"libraries\/Upload.php.html#220\">Upload::__construct<\/a>"],[0,4,"<a href=\"libraries\/Upload.php.html#276\">Upload::setInput<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#296\">Upload::setFilename<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#312\">Upload::setAutoFilename<\/a>"],[0,4,"<a href=\"libraries\/Upload.php.html#327\">Upload::setMaxFileSize<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#350\">Upload::setAllowedMimeTypes<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#366\">Upload::setCallbackInput<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#382\">Upload::setCallbackOutput<\/a>"],[0,3,"<a href=\"libraries\/Upload.php.html#398\">Upload::setAllowMimeType<\/a>"],[0,4,"<a href=\"libraries\/Upload.php.html#414\">Upload::setMimeHelping<\/a>"],[0,5,"<a href=\"libraries\/Upload.php.html#435\">Upload::setUploadFunction<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#452\">Upload::clearAllowedMimeTypes<\/a>"],[0,9,"<a href=\"libraries\/Upload.php.html#468\">Upload::setDestinationDirectory<\/a>"],[0,3,"<a href=\"libraries\/Upload.php.html#507\">Upload::fileExists<\/a>"],[0,3,"<a href=\"libraries\/Upload.php.html#523\">Upload::dirExists<\/a>"],[0,3,"<a href=\"libraries\/Upload.php.html#539\">Upload::isFilename<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#554\">Upload::checkMimeType<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#569\">Upload::getStatus<\/a>"],[0,5,"<a href=\"libraries\/Upload.php.html#582\">Upload::isDirpath<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#601\">Upload::allowOverwriting<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#614\">Upload::getInfo<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#619\">Upload::isUploaded<\/a>"],[0,14,"<a href=\"libraries\/Upload.php.html#632\">Upload::save<\/a>"],[0,3,"<a href=\"libraries\/Upload.php.html#731\">Upload::sizeFormat<\/a>"],[0,2,"<a href=\"libraries\/Upload.php.html#751\">Upload::sizeInBytes<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#767\">Upload::getError<\/a>"],[0,1,"<a href=\"libraries\/Upload.php.html#775\">Upload::setError<\/a>"],[0,10,"<a href=\"libraries\/Upload.php.html#785\">Upload::getPhpUploadErrorMessageByCode<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

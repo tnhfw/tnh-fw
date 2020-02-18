@@ -72,6 +72,17 @@
 	        $this->logger->setLogger('Library::Lang');
 
 			$this->default = get_config('default_language', 'en');
+			$this->logger->debug('Setting the supported languages');
+			
+			//add the supported languages ('key', 'display name')
+			$languages = get_config('languages', null);
+			if(! empty($languages)){
+				foreach($languages as $key => $displayName){
+					$this->addLang($key, $displayName);
+				}
+			}
+			unset($languages);
+
 			//determine the current language
 			$language = null;
 			//if the language exists in cookie use it

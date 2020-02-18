@@ -17,7 +17,7 @@
 		 * The default method
 		 * @return null
 		 */
-		function index() {
+		public function index() {
 			Loader::library('Assets');
 			Loader::library('Html');
 			$this->response->render('home');

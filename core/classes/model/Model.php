@@ -33,7 +33,7 @@
      * @copyright Copyright (c) 2012, Jamie Rumbelow <http://jamierumbelow.net>
      */
 
-    abstract class Model{
+    class Model{
 
         /* --------------------------------------------------------------
          * VARIABLES
@@ -48,7 +48,7 @@
         /**
          * The database connection object. Will be set to the default
          * connection. This allows individual models to use different DBs
-         * without overwriting CI's global $this->db connection.
+         * without overwriting the global database connection.
          */
         protected $_database;
 
@@ -97,7 +97,7 @@
 
         /**
          * An array of validation rules. This needs to be the same format
-         * as validation rules passed to the Form_validation library.
+         * as validation rules passed to the FormValidation library.
          */
         protected $validate = array();
 
@@ -120,6 +120,18 @@
     	*/
     	protected $dbCacheTime = 0;
 
+        /**
+         * Instance of the Loader class
+         * @var Loader
+         */
+        protected $loaderInstance = null;
+
+        /**
+         * Instance of the FormValidation library
+         * @var FormValidation
+         */
+        protected $formValidationInstance = null;
+
         /* --------------------------------------------------------------
          * GENERIC METHODS
          * ------------------------------------------------------------ */
@@ -128,23 +140,24 @@
          * Initialise the model, tie into the CodeIgniter superobject and
          * try our best to guess the table name.
          */
-        public function __construct(){
-            $obj = & get_instance();
-    		if(!isset($obj->database)){
-    			show_error('You must load the database library before to use the model class');
+        public function __construct(Database $db = null){
+            if(is_object($db)){
+                $this->setDatabaseInstance($db);
             }
-            /**
-             * NOTE: Need use "clone" because some Model need have the personal instance of the database library
-             * to prevent duplication
-             */
-    		$this->_database = clone $obj->database;
-    				
+            else{
+                $obj = & get_instance();
+        		if(isset($obj->database) && is_object($obj->database)){
+                    /**
+                    * NOTE: Need use "clone" because some Model need have the personal instance of the database library
+                    * to prevent duplication
+                    */
+        			$this->setDatabaseInstance(clone $obj->database);
+                }
+            }
+
             array_unshift($this->before_create, 'protect_attributes');
             array_unshift($this->before_update, 'protect_attributes');
             $this->_temporary_return_type = $this->return_type;
-            if($this->dbCacheTime > 0){
-                $this->_database->setCache($this->dbCacheTime);
-            }
         }
 
         /* --------------------------------------------------------------
@@ -459,7 +472,12 @@
 
                 if (in_array($relationship, $this->_with))
                 {
-                    Loader::model($options['model'], $relationship . '_model');
+                    if(is_object($this->loaderInstance)){
+                        $this->loaderInstance->model($options['model'], $relationship . '_model');
+                    }
+                    else{
+                        Loader::model($options['model'], $relationship . '_model');    
+                    }
                     if (is_object($row))
                     {
                         $row->{$relationship} = $this->{$relationship . '_model'}->get($row->{$options['primary_key']});
@@ -486,7 +504,12 @@
 
                 if (in_array($relationship, $this->_with))
                 {
-                    Loader::model($options['model'], $relationship . '_model');
+                    if(is_object($this->loaderInstance)){
+                        $this->loaderInstance->model($options['model'], $relationship . '_model');
+                    }
+                    else{
+                        Loader::model($options['model'], $relationship . '_model');    
+                    }
                     if (is_object($row))
                     {
                         $row->{$relationship} = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row->{$this->primary_key});
@@ -744,6 +767,52 @@
             return $this->_database;
         }
 
+        /**
+         * set the Database instance for future use
+         * @param Database $db the database object
+         */
+         public function setDatabaseInstance($db){
+            $this->_database = $db;
+            if($this->dbCacheTime > 0){
+                $this->_database->setCache($this->dbCacheTime);
+            }
+            return $this;
+        }
+
+        /**
+         * Return the loader instance
+         * @return Loader the loader instance
+         */
+        public function getLoader(){
+            return $this->loaderInstance;
+        }
+
+        /**
+         * set the loader instance for future use
+         * @param Loader $loader the loader object
+         */
+         public function setLoader($loader){
+            $this->loaderInstance = $loader;
+            return $this;
+        }
+
+        /**
+         * Return the FormValidation instance
+         * @return FormValidation the form validation instance
+         */
+        public function getFormValidation(){
+            return $this->formValidationInstance;
+        }
+
+        /**
+         * set the form validation instance for future use
+         * @param FormValidation $fv the form validation object
+         */
+         public function setFormValidation($fv){
+            $this->formValidationInstance = $fv;
+            return $this;
+        }
+
         /* --------------------------------------------------------------
          * QUERY BUILDER DIRECT ACCESS METHODS
          * ------------------------------------------------------------ */
@@ -815,16 +884,21 @@
             }
             if(!empty($this->validate))
             {
-                foreach($data as $key => $val)
-                {
-                    $_POST[$key] = $val;
+                $fv = null;
+                if(is_object($this->formValidationInstance)){
+                    $fv = $this->formValidationInstance;
                 }
-                Loader::library('FormValidation');
+                else{
+                    Loader::library('FormValidation');
+                    $fv = $this->formvalidation;
+                    $this->setFormValidation($fv);
+                }
                 if(is_array($this->validate))
                 {
-                    $this->formvalidation->setRules($this->validate);
+                    $fv->setData($data);
+                    $fv->setRules($this->validate);
 
-                    if ($this->formvalidation->run())
+                    if ($fv->run())
                     {
                         return $data;
                     }

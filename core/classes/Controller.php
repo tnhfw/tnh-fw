@@ -58,7 +58,7 @@
 			}
 			
 			$this->logger->debug('Setting the cache handler instance');
-			//set cache hanlder instance
+			//set cache handler instance
 			if(get_config('cache_enable', false)){
 				if(isset($this->{strtolower(get_config('cache_handler'))})){
 					$this->cache = $this->{strtolower(get_config('cache_handler'))};
@@ -66,6 +66,7 @@
 				} 
 			}
 			$this->logger->debug('Loading the required classes into super instance');
+			$this->eventdispatcher =& class_loader('EventDispatcher', 'classes');
 			$this->loader =& class_loader('Loader', 'classes');
 			$this->lang =& class_loader('Lang', 'classes');
 			$this->request =& class_loader('Request', 'classes');
@@ -73,21 +74,13 @@
 			$this->eventdispatcher->dispatch('REQUEST_CREATED');
 			$this->response =& class_loader('Response', 'classes', 'classes');
 			
-			$this->logger->debug('Setting the supported languages');
-			//add the supported languages ('key', 'display name')
-			$languages = get_config('languages', null);
-			if(! empty($languages)){
-				foreach($languages as $key => $displayName){
-					$this->lang->addLang($key, $displayName);
-				}
-			}
-			unset($languages);
+			
 			//set session config
 			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
 			
 			//determine the current module
-			if($this->router->getModule()){
+			if(isset($this->router) && $this->router->getModule()){
 				$this->moduleName = $this->router->getModule();
 			}
 			//dispatch the loaded instance of super controller event

@@ -51,9 +51,6 @@
 					$autoloads = $autoload;
 					unset($autoload);
 				}
-				else{
-					show_error('No autoload configuration found in autoload.php');
-				}
 			}
 			//loading autoload configuration for modules
 			$modulesAutoloads = Module::getModulesAutoloadConfig();
@@ -83,41 +80,36 @@
 			//config autoload
 			if(! empty($autoloads['config']) && is_array($autoloads['config'])){
 				foreach($autoloads['config'] as $c){
-					Loader::config($c);
+					$this->config($c);
 				}
 			}
 			
 			//languages autoload
 			if(! empty($autoloads['languages']) && is_array($autoloads['languages'])){
 				foreach($autoloads['languages'] as $language){
-					Loader::lang($language);
+					$this->lang($language);
 				}
 			}
 			
 			//libraries autoload
 			if(! empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
 				foreach($autoloads['libraries'] as $library){
-					Loader::library($library);
+					$this->library($library);
 				}
-			}
-			
-			//before load models check if database library is loaded and then load model library
-			//if Database is loaded load the required library
-			if(isset(static::$loaded['database']) || ! empty($autoloads['models'])){
-				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
 			}
 			
 			//models autoload
 			if(! empty($autoloads['models']) && is_array($autoloads['models'])){
+				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
 				foreach($autoloads['models'] as $model){
-					Loader::model($model);
+					$this->model($model);
 				}
 			}
 			
 			//functions autoload
 			if(! empty($autoloads['functions']) && is_array($autoloads['functions'])){
 				foreach($autoloads['functions'] as $function){
-					Loader::functions($function);
+					$this->functions($function);
 				}
 			}
 			
@@ -522,9 +514,6 @@
 					$langObj->addLangMessages($lang);
 					//free the memory
 					unset($lang);
-				}
-				else{
-					show_error('No language messages found in [' . $languageFilePath . ']');
 				}
 				static::$loaded['lang_' . $language] = $languageFilePath;
 				$logger->info('Language [' . $language . '] --> ' . $languageFilePath . ' loaded successfully.');

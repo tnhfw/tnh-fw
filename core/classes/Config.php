@@ -44,10 +44,21 @@
 		 */
 		private static function getLogger(){
 			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Config');
+				$logger[0] =& class_loader('Log', 'classes');
+				$logger[0]->setLogger('Library::Config');
+				static::$logger = $logger[0];
 			}
-			return static::$logger[0];
+			return static::$logger;			
+		}
+
+		/**
+		 * Set the log instance for future use
+		 * @param Log $logger the log object
+		 * @return Log the log instance
+		 */
+		public static function setLogger($logger){
+			static::$logger = $logger;
+			return static::$logger;
 		}
 
 		/**
@@ -147,7 +158,7 @@
 		}
 
 		/**
-		 * Load the configuration file. This an alias with the Loader::config()
+		 * Load the configuration file. This an alias to Loader::config()
 		 * @param  string $config the config name to be loaded
 		 */
 		public static function load($config){

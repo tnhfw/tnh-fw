@@ -131,7 +131,7 @@
 	 * The cache default time to live in second. 0 means no need to use the cache feature
 	 * @var int
 	*/
-	private $cacheTtl            = 0;
+	private $cacheTtl              = 0;
 	
 	/**
 	 * The cache current time to live. 0 means no need to use the cache feature
@@ -143,7 +143,7 @@
 	 * The number of executed query for the current request
 	 * @var int
 	*/
-    private $queryCount         = 0;
+    private $queryCount          = 0;
 	
 	/**
 	 * The default data to be used in the statments query INSERT, UPDATE
@@ -155,7 +155,7 @@
 	 * The database configuration
 	 * @var array
 	*/
-    private static $config       = array();
+    private $config              = array();
 	
 	/**
 	 * The logger instance
@@ -163,70 +163,103 @@
 	 */
     private $logger              = null;
 
+
+    /**
+    * The cache instance
+    * @var CacheInterface
+    */
+    private $cacheInstance       = null;
+
+     /**
+    * The benchmark instance
+    * @var Benchmark
+    */
+    private $benchmarkInstance   = null;
+
+
     /**
      * Construct new database
      * @param array $overwriteConfig the config to overwrite with the config set in database.php
+     * @param object $logger the log instance
      */
-    public function __construct($overwriteConfig = array()){
+    public function __construct($overwriteConfig = array(), Log $logger = null){
         /**
          * instance of the Log class
          */
-        $this->logger =& class_loader('Log', 'classes');
-        $this->logger->setLogger('Library::Database');
+        if(is_object($logger)){
+          $this->logger = $logger;
+        }
+        else{
+            $this->logger =& class_loader('Log', 'classes');
+            $this->logger->setLogger('Library::Database');
+        }
 
+        $db = array();
       	if(file_exists(CONFIG_PATH . 'database.php')){
           //here don't use require_once because somewhere user can create database instance directly
       	  require CONFIG_PATH . 'database.php';
-          if(empty($db) || !is_array($db)){
-      			show_error('No database configuration found in database.php');
-		  }
-		  else{
-  				if(! empty($overwriteConfig)){
-  				  $db = array_merge($db, $overwriteConfig);
-  				}
-  				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
-  				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
-  				$config['password']  = isset($db['password']) ? $db['password'] : '';
-  				$config['database']  = isset($db['database']) ? $db['database'] : '';
-  				$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
-  				$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
-  				$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
-  				$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
-  				$config['port']      = (strstr($config['hostname'], ':') ? explode(':', $config['hostname'])[1] : '');
-  				$this->prefix        = $config['prefix'];
-  				$this->databaseName  = $config['database'];
-  				
-				$dsn = '';
-  				if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
-  					  $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
-  						. (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
-  						. 'dbname=' . $config['database'];
-  				}
-  				else if ($config['driver'] == 'sqlite'){
-  				  $dsn = 'sqlite:' . $config['database'];
-  				}
-  				else if($config['driver'] == 'oracle'){
-  				  $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
-  				}
+        }
+          
+				if(! empty($overwriteConfig)){
+				  $db = array_merge($db, $overwriteConfig);
+				}
+				$config['driver']    = isset($db['driver']) ? $db['driver'] : 'mysql';
+				$config['username']  = isset($db['username']) ? $db['username'] : 'root';
+				$config['password']  = isset($db['password']) ? $db['password'] : '';
+				$config['database']  = isset($db['database']) ? $db['database'] : '';
+				$config['hostname']  = isset($db['hostname']) ? $db['hostname'] : 'localhost';
+				$config['charset']   = isset($db['charset']) ? $db['charset'] : 'utf8';
+				$config['collation'] = isset($db['collation']) ? $db['collation'] : 'utf8_general_ci';
+				$config['prefix']    = isset($db['prefix']) ? $db['prefix'] : '';
+        $port = '';
+        if(strstr($config['hostname'], ':')){
+          $p = explode(':', $config['hostname']);
+          $port = isset($p[1]) ? $p[1] : '';
+        }
+				$config['port']      = $port;
 				
-  				try{
-  				  $this->pdo = new PDO($dsn, $config['username'], $config['password']);
-  				  $this->pdo->exec("SET NAMES '" . $config['charset'] . "' COLLATE '" . $config['collation'] . "'");
-  				  $this->pdo->exec("SET CHARACTER SET '" . $config['charset'] . "'");
-  				  $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-  				}
-  				catch (PDOException $e){
-  				  $this->logger->fatal($e->getMessage());
-  				  show_error('Cannot connect to Database.');
-  				}
-  				static::$config = $config;
-				$this->temporaryCacheTtl = $this->cacheTtl;
-  				$this->logger->info('The database configuration are listed below: ' . stringfy_vars(array_merge($config, array('password' => string_hidden($config['password'])))));
-  			}
-    	}
-    	else{
-    		show_error('Unable to find database configuration');
-    	}
+		  	$this->setDatabaseConfiguration($config);
+
+    		$this->temporaryCacheTtl = $this->cacheTtl;
+    }
+
+    /**
+     * This is used to connect to database
+     * @return bool 
+     */
+    public function connect(){
+      $config = $this->getDatabaseConfiguration();
+      if(! empty($config)){
+        try{
+            $dsn = '';
+            if($config['driver'] == 'mysql' || $config['driver'] == '' || $config['driver'] == 'pgsql'){
+                $dsn = $config['driver'] . ':host=' . $config['hostname'] . ';'
+                . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '')
+                . 'dbname=' . $config['database'];
+            }
+            else if ($config['driver'] == 'sqlite'){
+              $dsn = 'sqlite:' . $config['database'];
+            }
+            else if($config['driver'] == 'oracle'){
+              $dsn = 'oci:dbname=' . $config['host'] . '/' . $config['database'];
+            }
+            
+            $this->pdo = new PDO($dsn, $config['username'], $config['password']);
+            $this->pdo->exec("SET NAMES '" . $config['charset'] . "' COLLATE '" . $config['collation'] . "'");
+            $this->pdo->exec("SET CHARACTER SET '" . $config['charset'] . "'");
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+            return true;
+          }
+          catch (PDOException $e){
+            $this->logger->fatal($e->getMessage());
+            show_error('Cannot connect to Database.');
+            return false;
+          }
+      }
+      else{
+        show_error('Database configuration is not set.');
+        return false;
+      }
     }
 
     /**
@@ -975,6 +1008,9 @@
       $query = $this->query($query);
 
       if ($query){
+        if(! $this->pdo){
+          $this->connect();
+        }
         $this->insertId = $this->pdo->lastInsertId();
         return $this->insertId();
       }
@@ -1081,10 +1117,7 @@
         $cacheKey = null;
   	  
   	  //the cache manager instance
-        $cacheInstance = null;
-  	  
-  	  //the instance of the super controller
-      $obj = & get_instance();
+      $cacheInstance = null;
   	  
   	  //if can use cache feature for this query
   	  $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
@@ -1092,22 +1125,40 @@
       if ($dbCacheStatus && $sqlSELECTQuery){
         $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
         $cacheKey = md5($query . $all . $array);
-        $cacheInstance = $obj->cache;
+        if(is_object($this->cacheInstance)){
+          $cacheInstance = $this->cacheInstance;
+        }
+        else{
+          $obj = & get_instance();
+          $cacheInstance = $obj->cache;  
+        }
         $cacheContent = $cacheInstance->get($cacheKey);        
       }
       else{
 		  $this->logger->info('The cache is not enabled for this query or is not the SELECT query, get the result directly from real database');
       }
+
+      if(! $this->pdo){
+        $this->connect();
+      }
       
       if (! $cacheContent && $sqlSELECTQuery){
 		    //for database query execution time
         $benchmarkMarkerKey = md5($query . $all . $array);
-        $obj->benchmark->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');
+        $bench = null;
+        if(is_object($this->benchmarkInstance)){
+          $bench = $this->benchmarkInstance;
+        }
+        else{
+          $obj = & get_instance();
+          $bench = $obj->benchmark;  
+        }
+        $bench->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');
         //Now execute the query
 		    $sqlQuery = $this->pdo->query($this->query);
         
     		//get response time for this query
-        $responseTime = $obj->benchmark->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
+        $responseTime = $bench->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
 	     	//TODO use the configuration value for the high response time currently is 1 second
         if($responseTime >= 1 ){
             $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$responseTime. '] sec.');
@@ -1194,6 +1245,9 @@
       if(is_null($data)){
         return null;
       }
+      if(! $this->pdo){
+        $this->connect();
+      }
       return $this->pdo->quote(trim($data));
     }
 
@@ -1225,8 +1279,20 @@
      * Return the database configuration
      * @return array
      */
-    public static function getDatabaseConfiguration(){
-      return static::$config;
+    public  function getDatabaseConfiguration(){
+      return $this->config;
+    }
+
+    /**
+     * set the database configuration
+     * @param array $config the configuration
+     */
+    public function setDatabaseConfiguration(array $config){
+      $this->config = array_merge($this->config, $config);
+      $this->prefix = $this->config['prefix'];
+      $this->databaseName = $this->config['database'];
+      $this->logger->info('The database configuration are listed below: ' . stringfy_vars(array_merge($this->config, array('password' => string_hidden($this->config['password'])))));
+      return $this;
     }
 
     /**
@@ -1235,6 +1301,67 @@
      */
     public function getPdo(){
       return $this->pdo;
+    }
+
+    /**
+     * Set the PDO instance
+     * @param PDO $pdo the pdo object
+     */
+    public function setPdo(PDO $pdo){
+      $this->pdo = $pdo;
+      return $this;
+    }
+
+
+    /**
+     * Return the Log instance
+     * @return Log
+     */
+    public function getLogger(){
+      return $this->logger;
+    }
+
+    /**
+     * Set the log instance
+     * @param Log $logger the log object
+     */
+    public function setLogger($logger){
+      $this->logger = $logger;
+      return $this;
+    }
+
+     /**
+     * Return the cache instance
+     * @return CacheInterface
+     */
+    public function getCacheInstance(){
+      return $this->cacheInstance;
+    }
+
+    /**
+     * Set the cache instance
+     * @param CacheInterface $cache the cache object
+     */
+    public function setCacheInstance($cache){
+      $this->cacheInstance = $cache;
+      return $this;
+    }
+
+    /**
+     * Return the benchmark instance
+     * @return Benchmark
+     */
+    public function getBenchmark(){
+      return $this->benchmarkInstance;
+    }
+
+    /**
+     * Set the benchmark instance
+     * @param Benchmark $cache the cache object
+     */
+    public function setBenchmark($benchmark){
+      $this->benchmarkInstance = $benchmark;
+      return $this;
     }
 
     /**

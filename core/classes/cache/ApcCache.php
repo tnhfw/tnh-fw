@@ -30,25 +30,24 @@
 		 * The logger instance
 		 * @var Log
 		 */
-		private static $logger;
+		private $logger;
 		
 		
-		public function __construct(){
+		public function __construct(Log $logger = null){
 			if(! $this->isSupported()){
 				show_error('The cache for APC[u] driver is not available. Check if APC[u] extension is loaded and enabled.');
 			}
-		}
 
-		/**
-		 * Get the logger singleton instance
-		 * @return Log the logger instance
-		 */
-		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::ApcCache');
-			}
-			return static::$logger[0];
+			/**
+	         * instance of the Log class
+	         */
+	        if(is_object($logger)){
+	          $this->logger = $logger;
+	        }
+	        else{
+	            $this->logger =& class_loader('Log', 'classes');
+	            $this->logger->setLogger('Library::ApcCache');
+	        }
 		}
 
 		/**
@@ -57,12 +56,11 @@
 		 * @return mixed      the cache data if exists else return false
 		 */
 		public function get($key){
-			$logger = static::getLogger();
-			$logger->debug('Getting cache data for key ['. $key .']');
+			$this->logger->debug('Getting cache data for key ['. $key .']');
 			$success = false;
 			$data = apc_fetch($key, $success);
 			if($success === false){
-				$logger->info('No cache found for the key ['. $key .'], return false');
+				$this->logger->info('No cache found for the key ['. $key .'], return false');
 				return false;
 			}
 			else{
@@ -71,7 +69,7 @@
 				if($cacheInfo){
 					$expire = $cacheInfo['creation_time'] + $cacheInfo['ttl'];
 				}
-				$logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $expire) . ']');
+				$this->logger->info('The cache not yet expire, now return the cache data for key ['. $key .'], the cache will expire at [' . date('Y-m-d H:i:s', $expire) . ']');
 				return $data;
 			}
 		}
@@ -85,16 +83,15 @@
 		 * @return boolean true if success otherwise will return false
 		 */
 		public function set($key, $data, $ttl = 0){
-			$logger = static::getLogger();
 			$expire = time() + $ttl;
-			$logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
+			$this->logger->debug('Setting cache data for key ['. $key .'], time to live [' .$ttl. '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
 			$result = apc_store($key, $data, $ttl);
 			if($result === false){
-		    	$logger->error('Can not write cache data for the key ['. $key .'], return false');
+		    	$this->logger->error('Can not write cache data for the key ['. $key .'], return false');
 		    	return false;
 		    }
 		    else{
-		    	$logger->info('Cache data saved for the key ['. $key .']');
+		    	$this->logger->info('Cache data saved for the key ['. $key .']');
 		    	return true;
 		    }
 		}
@@ -107,15 +104,14 @@
 		 * the cache or the cache with the given key not exist
 		 */
 		public function delete($key){
-			$logger = static::getLogger();
-			$logger->debug('Deleting of cache data for key [' .$key. ']');
+			$this->logger->debug('Deleting of cache data for key [' .$key. ']');
 			$cacheInfo = $this->_getCacheInfo($key);
 			if($cacheInfo === false){
-				$logger->info('This cache data does not exists skipping');
+				$this->logger->info('This cache data does not exists skipping');
 				return false;
 			}
 			else{
-				$logger->info('Found cache data for the key [' .$key. '] remove it');
+				$this->logger->info('Found cache data for the key [' .$key. '] remove it');
 	      		return apc_delete($key);
 			}
 			return false;
@@ -130,8 +126,7 @@
 		 * 'ttl' => the time to live of the cache in second
 		 */
 		public function getInfo($key){
-			$logger = static::getLogger();
-			$logger->debug('Getting of cache info for key [' .$key. ']');
+			$this->logger->debug('Getting of cache info for key [' .$key. ']');
 			$cacheInfos = $this->_getCacheInfo($key);
 			if($cacheInfos){
 				$data = array(
@@ -142,7 +137,7 @@
 				return $data;
 			}
 			else{
-				$logger->info('This cache does not exists skipping');
+				$this->logger->info('This cache does not exists skipping');
 				return false;
 			}
 		}
@@ -160,15 +155,14 @@
 		 * Remove all cache data
 		 */
 		public function clean(){
-			$logger = static::getLogger();
-			$logger->debug('Deleting of all cache data');
+			$this->logger->debug('Deleting of all cache data');
 			$cacheInfos = apc_cache_info('user');
 			if(empty($cacheInfos['cache_list'])){
-				$logger->info('No cache data were found skipping');
+				$this->logger->info('No cache data were found skipping');
 				return false;
 			}
 			else{
-				$logger->info('Found [' . count($cacheInfos) . '] cache data to remove');
+				$this->logger->info('Found [' . count($cacheInfos) . '] cache data to remove');
 				return apc_clear_cache('user');
 			}
 		}
@@ -182,6 +176,23 @@
 		public function isSupported(){
 			return (extension_loaded('apc') || extension_loaded('apcu')) && ini_get('apc.enabled');
 		}
+
+		/**
+	     * Return the Log instance
+	     * @return Log
+	     */
+	    public function getLogger(){
+	      return $this->logger;
+	    }
+
+	    /**
+	     * Set the log instance
+	     * @param Log $logger the log object
+	     */
+	    public function setLogger(Log $logger){
+	      $this->logger = $logger;
+	      return $this;
+	    }
 		
 		/**
 		* Return the array of cache information

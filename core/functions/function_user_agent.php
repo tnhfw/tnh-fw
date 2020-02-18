@@ -51,7 +51,7 @@
 		 *  @return string the IP address.
 		 */
 		function get_ip(){
-			$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+			$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 
 			if (isset($_SERVER["HTTP_CLIENT_IP"])) {
 				$ip = $_SERVER["HTTP_CLIENT_IP"];

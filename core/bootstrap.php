@@ -116,12 +116,6 @@
 	 */
 	require_once CORE_CLASSES_PATH . 'Event.php';
 
-	/**
-	 * Load the EventDispatcher class
-	 * @var EventDispatcher
-	 */
-	$DISPATCHER =& class_loader('EventDispatcher', 'classes');
-
 	$BENCHMARK->mark('CONFIG_INIT_START');
 	/**
 	* Load configurations and using the 
