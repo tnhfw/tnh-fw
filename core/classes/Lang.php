@@ -83,8 +83,6 @@
 			}
 			unset($languages);
 
-			//determine the current language
-			$language = null;
 			//if the language exists in cookie use it
 			$cfgKey = get_config('language_cookie_name');
 			$this->logger->debug('Getting current language from cookie [' .$cfgKey. ']');

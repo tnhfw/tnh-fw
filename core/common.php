@@ -60,7 +60,7 @@
 		foreach (array(ROOT_PATH, CORE_PATH) as $path) {
 			$file = $path . $dir . '/' . $class . '.php';
 			if(file_exists($file)){
-				if(class_exists($class, false) == false){
+				if(class_exists($class, false) === false){
 					require_once $file;
 				}
 				//already found
@@ -72,7 +72,7 @@
 			//can't use show_error() at this time because some dependencies not yet loaded
 			set_http_status_header(503);
 			echo 'Cannot find the class [' . $class . ']';
-			exit(1);
+			die();
 		}
 		
 		/*
@@ -102,7 +102,7 @@
 	 */
 	function & class_loaded($class = null){
 		static $list = array();
-		if($class != null){
+		if($class !== null){
 			$list[strtolower($class)] = $class;
 		}
 		return $list;
@@ -113,7 +113,7 @@
 	 * @param  array  $overwrite_values if need overwrite the existing configuration
 	 * @codeCoverageIgnore
 	 * 
-	 * @return aray                   the configurations values
+	 * @return array                   the configurations values
 	 */
 	function & load_configurations(array $overwrite_values = array()){
 		static $config;
@@ -127,13 +127,7 @@
 			if(! $found){
 				set_http_status_header(503);
 				echo 'Unable to find the configuration file [' . $file . ']';
-				exit(1);
-			}
-
-			if(! isset($config) || !is_array($config)){
-				set_http_status_header(503);
-				echo 'No configuration found in file ['  . $file . ']';
-				exit(1);
+				die();
 			}
 		}
 		foreach ($overwrite_values as $key => $value) {
@@ -182,7 +176,7 @@
 	 * @codeCoverageIgnore
 	 */
 	function set_http_status_header($code = 200, $text = null){
-		if(! $code || !is_numeric($code)){
+		if(!is_numeric($code) || $code < 0 ){
 			show_error('HTTP status code must be an integer');
 		}
 		if(empty($text)){
@@ -254,14 +248,15 @@
 	/**
 	 *  This function displays an error message to the user and ends the execution of the script.
 	 *  
-	 *  @param $msg the message to display
-	 *  @param $title the message title: "error", "info", "warning", etc.
-	 *  @param $logging either to save error in log
+	 *  @param string $msg the message to display
+	 *  @param string $title the message title: "error", "info", "warning", etc.
+	 *  @param boolean $logging either to save error in log
 	 *  
 	 *  @codeCoverageIgnore
 	 */
 	function show_error($msg, $title = 'error', $logging = true){
 		$title = strtoupper($title);
+		$data = array();
 		$data['error'] = $msg;
 		$data['title'] = $title;
 		if($logging){
@@ -306,7 +301,7 @@
 	 *  @return boolean true if is a valid URL address or false.
 	 */
 	function is_url($url){
-		return preg_match('/^(http|https|ftp):\/\/(.*)/', $url);
+		return preg_match('/^(http|https|ftp):\/\/(.*)/', $url) == 1;
 	}
 	
 	/**
@@ -337,7 +332,6 @@
 		else{
 			save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
 		}
-		exit(1);
 		return true;
 	}
 	
@@ -359,7 +353,7 @@
 			set_http_status_header(500);
 		}
 		if (! (error_reporting() & $errno)) {
-			save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ' . $error_type, 'PHP ERROR');
+			save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
 			return;
 		}
 		if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
@@ -381,7 +375,7 @@
 			show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline .'</b> raison : ' . $errstr, 'PHP ' . $errorType);
 		}
 		if ($isError){
-			exit(1);
+			die();
 		}
 		return true;
 	}
@@ -407,8 +401,7 @@
 	 *  $a = array('name' => 'Foo', 'type' => 'text'); => produces the following string:
 	 *  name = "Foo" type = "text"
 	 *
-	 *  @param $attributes associative array to convert to a string attribute.
-	 *  @test
+	 *  @param array $attributes associative array to convert to a string attribute.
 	 *   
 	 *  @return string string of the HTML attribute.
 	 */

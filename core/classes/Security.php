@@ -37,11 +37,11 @@
 		 * @return Log the logger instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Security');
+			if(self::$logger == null){
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Security');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 
@@ -50,7 +50,7 @@
 		 * @return string the generated CSRF token
 		 */
 		public static function generateCSRF(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Generation of CSRF ...');
 			
 			$key = get_config('csrf_key', 'csrf_key');
@@ -76,7 +76,7 @@
 		 * @return boolean true if valid, false if not valid
 		 */
 		public static function validateCSRF(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Validation of CSRF ...');
 				
 			$key = get_config('csrf_key', 'csrf_key');
@@ -112,7 +112,7 @@
 		 * This method is used to check the whitelist IP address access
 		 */
 		 public static function checkWhiteListIpAccess(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Validation of the IP address access ...');
 			$logger->debug('Check if whitelist IP access is enabled in the configuration ...');
 			$isEnable = get_config('white_list_ip_enable', false);
@@ -123,7 +123,7 @@
 					//Can't use Loader::functions() at this time because teh "Loader" library is loader after the security prossessing
 					require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 					$ip = get_ip();
-					if(count($list) == 1 && $list[0] == '*' || in_array($ip, $list)){
+					if((count($list) == 1 && $list[0] == '*') || in_array($ip, $list)){
 						$logger->info('IP address ' . $ip . ' allowed using the wildcard "*" or the full IP');
 						//wildcard to access all ip address
 						return;

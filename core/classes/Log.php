@@ -112,7 +112,7 @@
 		/**
 		 * Save the log message
 		 * @param  string $message the log message to be saved
-		 * @param  int|string $level   the log level in integer or string format, if is string will convert into integer
+		 * @param  integer|string $level   the log level in integer or string format, if is string will convert into integer
 		 * to allow check the log level threshold.
 		 */
 		public function writeLog($message, $level = self::INFO){
@@ -122,9 +122,9 @@
 				return;
 			}
 			//check config log level
-			if(! static::isValidConfigLevel($configLogLevel)){
+			if(! self::isValidConfigLevel($configLogLevel)){
 				//NOTE: here need put the show_error() "logging" to false to prevent loop
-				show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', static::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
+				show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
 			}
 			
 			//check if config log_logger_name is set
@@ -146,11 +146,11 @@
 			
 			//if $level is not an integer
 			if(! is_numeric($level)){
-				$level = static::getLevelValue($level);
+				$level = self::getLevelValue($level);
 			}
 			
 			//check if can logging regarding the log level config
-			$configLevel = static::getLevelValue($configLogLevel);
+			$configLevel = self::getLevelValue($configLogLevel);
 			if($configLevel > $level){
 				//can't log
 				return;
@@ -168,7 +168,7 @@
 			
 			$path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
 			if(! file_exists($path)){
-				@touch($path);
+				touch($path);
 			}
 			//may be at this time helper user_agent not yet included
 			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
@@ -181,7 +181,7 @@
 			//ip
 			$ip = get_ip();
 			//level name
-			$levelName = static::getLevelName($level);
+			$levelName = self::getLevelName($level);
 			
 			//debug info
 			$dtrace = debug_backtrace();
@@ -189,9 +189,11 @@
 			
 			$str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
 			$fp = fopen($path, 'a+');
-			flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
-			fwrite($fp, $str);
-			fclose($fp);
+			if(is_resource($fp)){
+				flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
+				fwrite($fp, $str);
+				fclose($fp);
+			}
 		}		
 		
 		/**
@@ -203,7 +205,7 @@
 		 */
 		private static function isValidConfigLevel($level){
 			$level = strtolower($level);
-			return in_array($level, static::$validConfigLevel);
+			return in_array($level, self::$validConfigLevel);
 		}
 
 		/**
@@ -240,7 +242,7 @@
 		/**
 		 * Get the log level string for the given log level integer
 		 * @param  integer $level the log level in integer format
-		 * @return int        the log level in string format
+		 * @return string        the log level in string format
 		 */
 		private static function getLevelName($level){
 			$value = '';

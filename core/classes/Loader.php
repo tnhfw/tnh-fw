@@ -54,7 +54,7 @@
 			}
 			//loading autoload configuration for modules
 			$modulesAutoloads = Module::getModulesAutoloadConfig();
-			if($modulesAutoloads && is_array($modulesAutoloads)){
+			if(! empty($modulesAutoloads) && is_array($modulesAutoloads)){
 				//libraries autoload
 				if(! empty($modulesAutoloads['libraries']) && is_array($modulesAutoloads['libraries'])){
 					$autoloads['libraries'] = array_merge($autoloads['libraries'], $modulesAutoloads['libraries']);
@@ -120,11 +120,11 @@
 		 * @return Log the logger instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Loader');
+			if(self::$logger == null){
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Loader');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 		/**
@@ -247,10 +247,8 @@
 				return;
 			}
 			$libraryFilePath = null;
-			$isSystem = false;
 			$logger->debug('Check if this is a system library ...');
 			if(file_exists(CORE_LIBRARY_PATH . $file)){
-				$isSystem = true;
 				$libraryFilePath = CORE_LIBRARY_PATH . $file;
 				$class = ucfirst($class);
 				$logger->info('This library is a system library');
@@ -393,7 +391,7 @@
 			$file = 'config_'.$filename.'.php';
 			$logger->debug('Loading configuration [' . $filename . '] ...');
 			if(isset(static::$loaded['config_' . $filename])){
-				$logger->info('Configuration [' . $path . '] already loaded no need to load it again, cost in performance');
+				$logger->info('Configuration [' . $file . '] already loaded no need to load it again, cost in performance');
 				return;
 			}
 			$configFilePath = CONFIG_PATH . $file;
@@ -407,7 +405,6 @@
 				if(isset($path[0]) && in_array($path[0], Module::getModuleList())){
 					$searchModuleName = $path[0];
 					$filename = $path[1] . '.php';
-					$file = $path[0] . DS .$filename;
 				}
 			}
 			if(! $searchModuleName && !empty($obj->moduleName)){
@@ -426,9 +423,6 @@
 				require_once $configFilePath;
 				if(! empty($config) && is_array($config)){
 					Config::setAll($config);
-				}
-				else{
-					show_error('No configuration found in ['. $configFilePath . ']');
 				}
 			}
 			else{

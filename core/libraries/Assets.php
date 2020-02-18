@@ -51,12 +51,12 @@
 		 * @return Object the Log instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
+			if(self::$logger == null){
 				//can't assign reference to static variable
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Assets');
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Assets');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 
@@ -73,7 +73,7 @@
 		 *  @return string|null the absolute path of the assets file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function path($asset){
-			$logger = static::getLogger();	
+			$logger = self::getLogger();	
 			$path = ASSETS_PATH . $asset;
 			
 			$logger->debug('Including the Assets file [' . $path . ']');
@@ -99,7 +99,7 @@
 		 *  @return string|null the absolute path of the css file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function css($path){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			/*
 			* if the file name contains the ".css" extension, replace it with 
 			* an empty string for better processing.
@@ -130,7 +130,7 @@
 		 *  @return string|null the absolute path of the javascript file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function js($path){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$path = str_ireplace('.js', '', $path);
 			$path = ASSETS_PATH . 'js/' . $path . '.js';
 			$logger->debug('Including the Assets file [' . $path . '] for javascript');
@@ -155,7 +155,7 @@
 		 *  @return string|null the absolute path of the image file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function img($path){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$path = ASSETS_PATH . 'images/' . $path;
 			$logger->debug('Including the Assets file [' . $path . '] for image');
 			if(file_exists($path)){

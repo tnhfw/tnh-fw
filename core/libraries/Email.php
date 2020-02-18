@@ -275,7 +275,7 @@
 		 *
 		 * @param string $path The file path to the attachment.
 		 * @param string $filename The filename of the attachment when emailed.
-		 * @param null $data
+		 * @param string $data
 		 * 
 		 * @return self
 		 */
@@ -309,8 +309,11 @@
 			}
 			$filesize = filesize($path);
 			$handle = fopen($path, "r");
-			$attachment = fread($handle, $filesize);
-			fclose($handle);
+			$attachment = null;
+			if(is_resource($handle)){
+				$attachment = fread($handle, $filesize);
+				fclose($handle);
+			}
 			return $attachment;
 		}
 

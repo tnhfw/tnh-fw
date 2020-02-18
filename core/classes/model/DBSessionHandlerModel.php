@@ -68,7 +68,7 @@
 
 		/**
 		 * Delete the expire session
-		 * @param  int|long $time the unix timestamp
+		 * @param  int $time the unix timestamp
 		 * @return int       affected rows
 		 */
 		abstract public function deleteByTime($time);

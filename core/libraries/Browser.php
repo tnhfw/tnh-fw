@@ -177,7 +177,7 @@
          * @param string $browserName
          * @return bool True if the browser is the specified browser
          */
-        function isBrowser($browserName)
+        public function isBrowser($browserName)
         {
             return (0 == strcasecmp($this->_browser_name, trim($browserName)));
         }

@@ -57,7 +57,7 @@
         *
         *    @since        1.0
         *    @version    1.0
-        *    @var        mixex
+        *    @var        string
         */
         private $upload_function = 'move_uploaded_file';
 
@@ -270,7 +270,7 @@
         *    @since     1.0
         *    @version   1.0
         *    @param     string      $input
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setInput
         */
         public function setInput($input)
@@ -290,7 +290,7 @@
         *    @since     1.0
         *    @version   1.0
         *    @param     string      $filename
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setFilename
         */
         public function setFilename($filename)
@@ -306,7 +306,7 @@
         *    @since     1.0
         *    @version   1.5
         *    @param     string      $extension
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setAutoFilename
         */
         public function setAutoFilename()
@@ -320,8 +320,8 @@
         *
         *    @since     1.0
         *    @version   1.0
-        *    @param     integer     $file_size
-        *    @return    boolean
+        *    @param     double     $file_size
+        *    @return    object
         *    @method    boolean     setMaxFileSize
         */
         public function setMaxFileSize($file_size)
@@ -329,7 +329,7 @@
             $file_size = $this->sizeInBytes($file_size);
             if (is_numeric($file_size) && $file_size > -1) {
                 // Get php config
-                $php_size = $this->sizeInBytes(ini_get('upload_max_filesize'));
+                $php_size = $this->sizeInBytes((int) ini_get('upload_max_filesize'));
                 // Calculate difference
                 if ($php_size < $file_size) {
                     $this->logger->warning('The upload max file size you set [' .$file_size. '] is greather than the PHP configuration for upload max file size [' .$php_size. ']');
@@ -344,7 +344,7 @@
         *    @since     1.0
         *    @version   1.0
         *    @param     array       $mimes
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setAllowedMimeTypes
         */
         public function setAllowedMimeTypes(array $mimes)
@@ -360,7 +360,7 @@
         *    @since     1.0
         *    @version   1.0
         *    @param     mixed       $callback
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setCallbackInput
         */
         public function setCallbackInput($callback)
@@ -376,7 +376,7 @@
         *    @since     1.0
         *    @version   1.0
         *    @param     mixed       $callback
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setCallbackOutput
         */
         public function setCallbackOutput($callback)
@@ -392,7 +392,7 @@
         *    @since     1.0
         *    @version   1.0.1
         *    @param     string      $mime
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setAllowMimeType
         */
         public function setAllowMimeType($mime)
@@ -408,7 +408,7 @@
         *
         *    @since     1.0.1
         *    @version   1.0.1
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean    setMimeHelping
         */
         public function setMimeHelping($name)
@@ -428,8 +428,8 @@
         *
         *    @since     1.0
         *    @version   1.0
-        *    @param     string      $mime
-        *    @return    boolean
+        *    @param     string      $function
+        *    @return    object
         *    @method    boolean     setUploadFunction
         */
         public function setUploadFunction($function)
@@ -446,7 +446,7 @@
         *
         *    @since     1.0
         *    @version   1.0
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean    clearAllowedMimeTypes
         */
         public function clearAllowedMimeTypes()
@@ -462,7 +462,7 @@
         *    @version   1.0
         *    @param     string      $destination_directory      Destination path
         *    @param     boolean     $create_if_not_exist
-        *    @return    boolean
+        *    @return    object
         *    @method    boolean     setDestinationDirectory
         */
         public function setDestinationDirectory($destination_directory, $create_if_not_exist = false) {
@@ -595,7 +595,7 @@
         *
         *    @since      1.0
         *    @version    1.0
-        *    @return     boolean
+        *    @return     object
         *    @method     boolean    allowOverwriting
         */
         public function allowOverwriting()

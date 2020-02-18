@@ -188,7 +188,7 @@
     		$this->_set_where($where);
 
             $this->trigger('before_get');
-			$type = $this->_temporary_return_type == 'array' ? 'array':false;
+			$type = $this->_temporary_return_type == 'array' ? 'array' : false;
             $row = $this->_database->from($this->_table)->get($type);
             $this->_temporary_return_type = $this->return_type;
             $row = $this->trigger('after_get', $row);
@@ -893,22 +893,17 @@
                     $fv = $this->formvalidation;
                     $this->setFormValidation($fv);
                 }
-                if(is_array($this->validate))
-                {
-                    $fv->setData($data);
-                    $fv->setRules($this->validate);
+               
+                $fv->setData($data);
+                $fv->setRules($this->validate);
 
-                    if ($fv->run())
-                    {
-                        return $data;
-                    }
-                    else
-                    {
-                        return FALSE;
-                    }
-                }
-                else {
+                if ($fv->run())
+                {
                     return $data;
+                }
+                else
+                {
+                    return FALSE;
                 }
             }
             else

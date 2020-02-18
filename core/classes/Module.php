@@ -43,33 +43,33 @@
 		 * @return Object the Log instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Module');
+			if(self::$logger == null){
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Module');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 		/**
 		 * Initialise the module list by scanning the directory MODULE_PATH
 		 */
 		public function init(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Check if the application contains the modules ...');
 			$moduleDir = opendir(MODULE_PATH);
 			while(($module = readdir($moduleDir)) !== false){
 				if($module != '.' && $module != '..'  && preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
-					static::$list[] = $module;
+					self::$list[] = $module;
 				}
 				else{
 					$logger->info('Skipping [' .$module. '], may be this is not a directory or does not exists or is invalid name');
 				}
 			}
 			closedir($moduleDir);
-			ksort(static::$list);
+			ksort(self::$list);
 			
-			if(static::hasModule()){
-				$logger->info('The application contains the module below [' . implode(', ', static::getModuleList()) . ']');
+			if(self::hasModule()){
+				$logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
 			}
 			else{
 				$logger->info('The application contains no module skipping');
@@ -81,18 +81,19 @@
 		 * @return array|boolean the autoload configurations list or false if no module contains the autoload configuration values
 		 */
 		public static function getModulesAutoloadConfig(){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skipping.');
 				return false;
 			}
+			$autoloads = array();
 			$autoloads['libraries'] = array();
 			$autoloads['config']    = array();
 			$autoloads['models']    = array();
 			$autoloads['functions'] = array();
 			$autoloads['languages'] = array();
 			
-			foreach (static::$list as $module) {
+			foreach (self::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
 				if(file_exists($file)){
 					require_once $file;
@@ -119,9 +120,6 @@
 						}
 						unset($autoload);
 					}
-					else{
-						show_error('No autoload configuration found in autoload.php for module [' .$module. ']');
-					}
 				}
 			}
 			return $autoloads;
@@ -132,13 +130,13 @@
 		 * @return array|boolean the routes list or false if no module contains the routes configuration
 		 */
 		public static function getModulesRoutes(){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skipping.');
 				return false;
 			}
 			$routes = array();
-			foreach (static::$list as $module) {
+			foreach (self::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'routes.php';
 				if(file_exists($file)){
 					require_once $file;
@@ -162,8 +160,8 @@
 		 * @return boolean|string  false or null if no module have this controller, path the full path of the controller
 		 */
 		public static function findControllerFullPath($class, $module = null){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -189,8 +187,8 @@
 		 * @return boolean|string  false or null if no module have this model, return the full path of this model
 		 */
 		public static function findModelFullPath($class, $module = null){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -216,8 +214,8 @@
 		 * @return boolean|string  false or null if no module have this configuration,  return the full path of this configuration
 		 */
 		public static function findConfigFullPath($configuration, $module = null){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -242,8 +240,8 @@
 		 * @return boolean|string  false or null if no module have this helper,  return the full path of this helper
 		 */
 		public static function findFunctionFullPath($helper, $module = null){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -270,8 +268,8 @@
 		 * @return boolean|string  false or null if no module have this library,  return the full path of this library
 		 */
 		public static function findLibraryFullPath($class, $module = null){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -297,8 +295,8 @@
 		 * @return boolean|string  false or null if no module have this view, path the full path of the view
 		 */
 		public static function findViewFullPath($view, $module = null){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -326,8 +324,8 @@
 		 * @return boolean|string  false or null if no module have this language,  return the full path of this language
 		 */
 		public static function findLanguageFullPath($language, $module = null, $appLang){
-			$logger = static::getLogger();
-			if(! static::hasModule()){
+			$logger = self::getLogger();
+			if(! self::hasModule()){
 				$logger->info('No module was loaded skiping.');
 				return false;
 			}
@@ -351,7 +349,7 @@
 		 * @return array the module list
 		 */
 		public static function getModuleList(){
-			return static::$list;
+			return self::$list;
 		}
 
 		/**
@@ -359,7 +357,7 @@
 		 * @return boolean
 		 */
 		public static function hasModule(){
-			return !empty(static::$list);
+			return !empty(self::$list);
 		}
 
 	}

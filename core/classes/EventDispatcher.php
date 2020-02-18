@@ -95,7 +95,7 @@
 		 */
 		public function removeAllListener($eventName = null){
 			$this->logger->debug('Removing of all Event Listener, the event name [' .$eventName. ']');
-			if($eventName != null && isset($this->listeners[$eventName])){
+			if($eventName !== null && isset($this->listeners[$eventName])){
 				$this->logger->info('The Event name is set of exist in the listener just remove all Event Listener for this event');
 				unset($this->listeners[$eventName]);
 			}

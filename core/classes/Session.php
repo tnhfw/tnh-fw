@@ -42,11 +42,11 @@
 		 * @return Log the logger instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Session');
+			if(self::$logger == null){
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Session');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 		/**
@@ -56,7 +56,7 @@
 		 * @return mixed          the session value if exist or the default value
 		 */
 		public static function get($item, $default = null){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Getting session data for item [' .$item. '] ...');
 			if(array_key_exists($item, $_SESSION)){
 				$logger->info('Found session data for item [' . $item . '] the vaue is : [' . stringfy_vars($_SESSION[$item]) . ']');
@@ -72,7 +72,7 @@
 		 * @param mixed $value the session item value
 		 */
 		public static function set($item, $value){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Setting session data for item [' . $item . '], value [' . stringfy_vars($value) . ']');
 			$_SESSION[$item] = $value;
 		}
@@ -84,7 +84,7 @@
 		 * @return mixed          the session flash value if exist or the default value
 		 */
 		public static function getFlash($item, $default = null){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$key = self::SESSION_FLASH_KEY.'_'.$item;
 			$return = array_key_exists($key, $_SESSION) ?
 			($_SESSION[$key]) : $default;
@@ -122,7 +122,7 @@
 		 * @param  string $item the session item name to be deleted
 		 */
 		public static function clear($item){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			if(array_key_exists($item, $_SESSION)){
 				$logger->info('Deleting of session for item ['.$item.' ]');
 				unset($_SESSION[$item]);
@@ -137,7 +137,7 @@
 		 * @param  string $item the session flash item name to be deleted
 		 */
 		public static function clearFlash($item){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$key = self::SESSION_FLASH_KEY.'_'.$item;
 			if(array_key_exists($key, $_SESSION)){
 				$logger->info('Delete session flash for item ['.$item.']');

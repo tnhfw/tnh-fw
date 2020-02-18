@@ -71,11 +71,11 @@
 					
 			$this->_currentUrlCacheKey = md5($this->_currentUrl);
 			
-			static::$_canCompressOutput = get_config('compress_output')
+			self::$_canCompressOutput = get_config('compress_output')
 										  && isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
 										  && stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false 
 										  && extension_loaded('zlib')
-										  && (bool) ini_get('zlib.output_compression') == false;
+										  && (bool) ini_get('zlib.output_compression') === false;
 		}
 
 		/**
@@ -83,11 +83,11 @@
 		 * @return Log the logger instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Response');
+			if(self::$logger == null){
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Response');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 		/**
@@ -97,9 +97,9 @@
 		 */
 		public static function sendHeaders($httpCode = 200, array $headers = array()){
 			set_http_status_header($httpCode);
-			static::setHeaders($headers);
+			self::setHeaders($headers);
 			if(! headers_sent()){
-				foreach(static::getHeaders() as $key => $value){
+				foreach(self::getHeaders() as $key => $value){
 					header($key .': '.$value);
 				}
 			}
@@ -110,7 +110,7 @@
 		 * @return array the headers list
 		 */
 		public static function getHeaders(){
-			return static::$headers;
+			return self::$headers;
 		}
 
 		/**
@@ -119,7 +119,7 @@
 		 * @return string       the header value
 		 */
 		public static function getHeader($name){
-			return array_key_exists($name, static::$headers) ? static::$headers[$name] : null;
+			return array_key_exists($name, self::$headers) ? self::$headers[$name] : null;
 		}
 
 
@@ -129,7 +129,7 @@
 		 * @param string $value the header value to be set
 		 */
 		public static function setHeader($name, $value){
-			static::$headers[$name] = $value;
+			self::$headers[$name] = $value;
 		}
 
 		/**
@@ -138,7 +138,7 @@
 		 * Note: this will merge with the existing headers
 		 */
 		public static function setHeaders(array $headers){
-			static::$headers = array_merge(static::getHeaders(), $headers);
+			self::$headers = array_merge(self::getHeaders(), $headers);
 		}
 		
 		/**
@@ -146,7 +146,7 @@
 		 * @param  string $path the URL or URI to be redirect to
 		 */
 		public static function redirect($path = ''){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$url = Url::site_url($path);
 			$logger->info('Redirect to URL [' .$url. ']');
 			if(! headers_sent()){
@@ -163,13 +163,13 @@
 		/**
 		 * Render the view to display later or return the content
 		 * @param  string  $view   the view name or path
-		 * @param  array   $data   the variable data to use in the view
+		 * @param  array|object   $data   the variable data to use in the view
 		 * @param  boolean $return whether to return the view generated content or display it directly
 		 * @return void|string          if $return is true will return the view content otherwise
 		 * will display the view content.
 		 */
-		public function render($view, $data = array(), $return = false){
-			$logger = static::getLogger();
+		public function render($view, $data = null, $return = false){
+			$logger = self::getLogger();
 			//convert data to an array
 			$data = ! is_array($data) ? (array) $data : $data;
 			$view = str_ireplace('.php', '', $view);
@@ -239,7 +239,7 @@
 		* Send the final page output to user
 		*/
 		public function renderFinalPage(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$obj = & get_instance();
 			$cachePageStatus = get_config('cache_enable', false) && !empty($obj->view_cache_enable);
 			$dispatcher = $obj->eventdispatcher;
@@ -275,10 +275,10 @@
 					$lastModified = $cacheInfo['mtime'];
 					$expire = $cacheInfo['expire'];
 					$maxAge = $expire - time();
-					static::setHeader('Pragma', 'public');
-					static::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
-					static::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
-					static::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified).' GMT');	
+					self::setHeader('Pragma', 'public');
+					self::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+					self::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
+					self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified).' GMT');	
 				}
 			}
 			
@@ -289,22 +289,22 @@
 			$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
 			
 			//compress the output if is available
-			if (static::$_canCompressOutput){
+			if (self::$_canCompressOutput){
 				ob_start('ob_gzhandler');
 			}
 			else{
 				ob_start();
 			}
-			static::sendHeaders(200);
+			self::sendHeaders(200);
 			echo $content;
-			@ob_end_flush();
+			ob_end_flush();
 		}
 		
 		/**
 		* Send the final page output to user if is cached
 		*/
 		public function renderFinalPageFromCache(&$cache){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$url = $this->_currentUrl;					
 			//the current page cache key for identification
 			$pageCacheKey = $this->_currentUrlCacheKey;
@@ -316,18 +316,18 @@
 				$lastModified = $cacheInfo['mtime'];
 				$expire = $cacheInfo['expire'];
 				$maxAge = $expire - $_SERVER['REQUEST_TIME'];
-				static::setHeader('Pragma', 'public');
-				static::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
-				static::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
-				static::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified).' GMT');
+				self::setHeader('Pragma', 'public');
+				self::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+				self::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire).' GMT');
+				self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified).' GMT');
 				if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $lastModified <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
 					$logger->info('The cache page content is not yet expire for the URL [' . $url . '] send 304 header to browser');
-					static::sendHeaders(304);
-					exit;
+					self::sendHeaders(304);
+					return;
 				}
 				else{
 					$logger->info('The cache page content is expired or the browser don\'t send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $url . '] send cache headers to tell the browser');
-					static::sendHeaders(200);
+					self::sendHeaders(200);
 					//get the cache content
 					$content = $cache->get($pageCacheKey);
 					if($content){
@@ -343,15 +343,15 @@
 						
 						///display the final output
 						//compress the output if is available
-						if (static::$_canCompressOutput){
+						if (self::$_canCompressOutput){
 							ob_start('ob_gzhandler');
 						}
 						else{
 							ob_start();
 						}
 						echo $content;
-						@ob_end_flush();
-						exit;
+						ob_end_flush();
+						return;
 					}
 					else{
 						$logger->info('The page cache content for the URL [' . $url . '] is not valid may be already expired');
@@ -377,7 +377,7 @@
 			/********* for logs **************/
 			//can't use $obj = & get_instance()  here because the global super object will be available until
 			//the main controller is loaded even for Loader::library('xxxx');
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$request =& class_loader('Request', 'classes');
 			$userAgent =& class_loader('Browser');
 			$browser = $userAgent->getPlatform().', '.$userAgent->getBrowser().' '.$userAgent->getVersion();
@@ -392,7 +392,7 @@
 			$path = CORE_VIEWS_PATH . '404.php';
 			if(file_exists($path)){
 				//compress the output if is available
-				if (static::$_canCompressOutput){
+				if (self::$_canCompressOutput){
 					ob_start('ob_gzhandler');
 				}
 				else{
@@ -400,7 +400,7 @@
 				}
 				require_once $path;
 				$output = ob_get_clean();
-				static::sendHeaders(404);
+				self::sendHeaders(404);
 				echo $output;
 			}
 			else{
@@ -416,7 +416,7 @@
 			$path = CORE_VIEWS_PATH . 'errors.php';
 			if(file_exists($path)){
 				//compress the output if exists
-				if (static::$_canCompressOutput){
+				if (self::$_canCompressOutput){
 					ob_start('ob_gzhandler');
 				}
 				else{
@@ -425,14 +425,13 @@
 				extract($data);
 				require_once $path;
 				$output = ob_get_clean();
-				static::sendHeaders(503);
+				self::sendHeaders(503);
 				echo $output;
 			}
 			else{
 				//can't use show_error() at this time because some dependencies not yet loaded and to prevent loop
 				set_http_status_header(503);
 				echo 'The error view [' . $path . '] does not exist';
-				exit(1);
 			}
 		}
 	}

@@ -47,6 +47,7 @@
 						$config = array_merge($config, $overwriteConfig);
 					}
 					$this->config = $config;
+                    //put it gobally
 					Config::setAll($config);
 					unset($config);
 				}

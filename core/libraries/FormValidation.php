@@ -348,7 +348,6 @@
             switch ($numArgs) {
                 default:
                     return false;
-                    break;
                 // A global rule error message
                 case 2:
                     foreach ($this->post(null) as $key => $val) {
@@ -385,7 +384,7 @@
          *
          * @param string $key Key of $this->data to be found, pass null for all Key => Val pairs.
          * @param boolean $trim Defaults to true, trims all $this->data values.
-         * @return string/array Array of post or data values if null is passed as key, string if only one key is desired.
+         * @return string|array Array of post or data values if null is passed as key, string if only one key is desired.
          */
         public function post($key = null, $trim = true) {
             $returnValue = null;
@@ -395,7 +394,7 @@
                     $returnValue[$key] = $this->post($key, $trim);
                 }
             } else {
-                $returnValue = (array_key_exists($key, $this->getData())) ? (($trim) ? trim($this->data[$key]) : $this->data[$key]) : false;
+                $returnValue = (array_key_exists($key, $this->getData())) ? (($trim) ? trim($this->data[$key]) : $this->data[$key]) : null;
             }
             return $returnValue;
         }
@@ -461,14 +460,13 @@
                      $ruleSets[] = $regexRule[0];
                  }
                  $ruleStringRegex = explode('|', $ruleStringTemp);
-                 if(is_array($ruleStringRegex)){
-                    foreach ($ruleStringRegex as $rule) {
-                        $rule = trim($rule);
-                        if($rule){
-                            $ruleSets[] = $rule;
-                        }
+                foreach ($ruleStringRegex as $rule) {
+                    $rule = trim($rule);
+                    if($rule){
+                        $ruleSets[] = $rule;
                     }
-                 }
+                }
+                 
             }
             /***********************************/
             else{
@@ -509,12 +507,11 @@
 
             // Get the rule arguments, realRule is just the base rule name
             // Like min_length instead of min_length[3]
-            $realRule = preg_match('/\[(.*)\]/', $ruleName, $ruleArgs);
             $ruleName = preg_replace('/\[(.*)\]/', '', $ruleName);
             
             if (method_exists($this, $this->_toCallCase($ruleName))) {
                 $methodToCall = $this->_toCallCase($ruleName);
-                @call_user_func(array($this, $methodToCall), $inputName, $ruleName, $ruleArgs);
+                call_user_func(array($this, $methodToCall), $inputName, $ruleName, $ruleArgs);
             }
 
             return;
@@ -525,10 +522,11 @@
 		*
 		* @param string $inputName the input or key name
 		* @param string $ruleName the rule name
-		* @param array $replacements
+		* @param array|string $replacements
 		*/
         protected function _setError($inputName, $ruleName, $replacements = array()) {
             $rulePhraseKeyParts = explode(',', $ruleName);
+            $rulePhrase = null;
             foreach ($rulePhraseKeyParts as $rulePhraseKeyPart) {
                 if (array_key_exists($rulePhraseKeyPart, $this->_errorsMessages)) {
                     $rulePhrase = $this->_errorsMessages[$rulePhraseKeyPart];
@@ -561,7 +559,7 @@
          * @param type $inputArg
          * @param string $callbackFunc
 		 *
-         * @return anything
+         * @return mixed
          */
         protected function _runCallback($inputArg, $callbackFunc) {
 			return eval('return ' . $callbackFunc . '("' . $inputArg . '");');

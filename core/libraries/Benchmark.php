@@ -56,7 +56,7 @@
 		 * @param  string  $startMarkerName the marker for start point
 		 * @param  string  $endMarkerName   the marker for end point
 		 * @param  integer $decimalCount   the number of decimal
-		 * @return double         the total execution time
+		 * @return string         the total execution time
 		 */
 		public function elapsedTime($startMarkerName = null, $endMarkerName = null, $decimalCount = 6){
 			if(! $startMarkerName || !isset($this->markersTime[$startMarkerName])){
@@ -74,7 +74,7 @@
 		 * @param  string  $startMarkerName the marker for start point
 		 * @param  string  $endMarkerName   the marker for end point
 		 * @param  integer $decimalCount   the number of decimal
-		 * @return double         the total memory usage
+		 * @return string         the total memory usage
 		 */
 		public function memoryUsage($startMarkerName = null, $endMarkerName = null, $decimalCount = 6){
 			if(! $startMarkerName || !isset($this->markersMemory[$startMarkerName])){

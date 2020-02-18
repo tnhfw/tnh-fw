@@ -37,11 +37,11 @@
 		 * @return Object the Log instance
 		 */
 		private static function getLogger(){
-			if(static::$logger == null){
-				static::$logger[0] =& class_loader('Log', 'classes');
-				static::$logger[0]->setLogger('Library::Cookie');
+			if(self::$logger == null){
+				self::$logger[0] =& class_loader('Log', 'classes');
+				self::$logger[0]->setLogger('Library::Cookie');
 			}
-			return static::$logger[0];
+			return self::$logger[0];
 		}
 
 		/**
@@ -51,7 +51,7 @@
 		 * @return mixed          the cookie value if exist or the default value
 		 */
 		public static function get($item, $default = null){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			if(array_key_exists($item, $_COOKIE)){
 				return $_COOKIE[$item];
 			}
@@ -88,7 +88,7 @@
 		 * @return boolean true if the item exists and is deleted successfully otherwise will return false.
 		 */
 		public static function delete($item){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			if(array_key_exists($item, $_COOKIE)){
 				$logger->info('Delete cookie item ['.$item.']');
 				unset($_COOKIE[$item]);

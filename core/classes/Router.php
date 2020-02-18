@@ -104,9 +104,6 @@
 					$this->routes = $route;
 					unset($route);
 				}
-				else{
-					show_error('No routing configuration found in [' . $routesPath . ']');
-				}
 			}
 			else{
 				show_error('Unable to find the routes configuration file [' . $routesPath . ']');

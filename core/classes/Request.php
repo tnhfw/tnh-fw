@@ -218,10 +218,9 @@
 		/**
 		 * Get the value from $_FILES for given key. if the key is empty will return the all values
 		 * @param  string  $key the item key to be fetched
-		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function file($key, $xss = true){
+		public function file($key){
 			$file = array_key_exists($key, $this->file) ? $this->file[$key] : null;
 			return $file;
 		}
