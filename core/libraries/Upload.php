@@ -608,10 +608,54 @@
             return (object)$this->file;
         }
 
+
+        /**
+         * Check if the file is uploaded
+         * @return boolean
+         */
         public function isUploaded(){
             return isset($this->file_array[$this->input])
-            &&
-            is_uploaded_file($this->file_array[$this->input]['tmp_name']);
+            && is_uploaded_file($this->file_array[$this->input]['tmp_name']);
+        }
+
+        /**
+         * Check if file upload has error
+         * @return boolean
+         */
+        protected function uploadHasError(){
+            //check if file upload is  allowed in the configuration
+            if(! ini_get('file_uploads')){
+                $this->setError($this->error_messages['file_uploads']);
+                return true;
+            }
+
+             //check for php upload error
+            if(is_numeric($this->file['error']) && $this->file['error'] > 0){
+                $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
+                return true;
+            }
+            
+            //check for mime type
+            if (!$this->checkMimeType($this->file['mime'])) {
+                $this->setError($this->error_messages['accept_file_types']);
+                return true;
+            }
+
+             // Check file size
+            if ($this->max_file_size > 0) {
+                if ($this->max_file_size < $this->file['size']) {
+                    $this->setError(sprintf($this->error_messages['max_file_size'], $this->sizeFormat($this->max_file_size)));
+                    return true;
+                }
+            }
+
+            // Check if exists file
+            if ($this->fileExists($this->destination_directory . $this->filename) && $this->overwrite_file === false) {
+                $this->setError($this->error_messages['overwritten_not_allowed']);
+                return true;
+            }
+
+            return false;
         }
         /**
         *    Upload file
@@ -622,11 +666,6 @@
         *    @method    boolean    save
         */
         public function save(){
-            //check if file upload is  allowed in the configuration
-            if(! ini_get('file_uploads')){
-                $this->setError($this->error_messages['file_uploads']);
-                return false;
-            }
             if (count($this->file_array) > 0) {
                 if (array_key_exists($this->input, $this->file_array)) {
                     // set original filename if not have a new name
@@ -659,32 +698,10 @@
 
                     $this->logger->info('The upload file information to process is : ' .stringfy_vars($this->file));
 
-                    //check for php upload error
-                    if(is_numeric($this->file['error']) && $this->file['error'] > 0){
-                        $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
+                    $error = $this->uploadHasError();
+                    if($error){
                         return false;
                     }
-                    
-                    //check for mime type
-                    if (!$this->checkMimeType($this->file['mime'])) {
-                        $this->setError($this->error_messages['accept_file_types']);
-                        return false;
-                    }
-
-                     // Check file size
-                    if ($this->max_file_size > 0) {
-                        if ($this->max_file_size < $this->file['size']) {
-                            $this->setError(sprintf($this->error_messages['max_file_size'], $this->sizeFormat($this->max_file_size)));
-                            return false;
-                        }
-                    }
-
-                    // Check if exists file
-                    if ($this->fileExists($this->destination_directory . $this->filename) && $this->overwrite_file === false) {
-                        $this->setError($this->error_messages['overwritten_not_allowed']);
-                        return false;
-                    }
-
                     // Execute input callback
                     if (!empty( $this->callbacks['input'])) {
                         call_user_func($this->callbacks['input'], (object)$this->file);
@@ -762,7 +779,7 @@
          * @param string $message the upload error message to set
          */
         public function setError($message){
-            $this->logger->info('The upload got error : ' . $message);
+            $this->logger->info('The file upload got error : ' . $message);
             $this->error = $message;
         }
 

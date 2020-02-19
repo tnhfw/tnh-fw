@@ -570,7 +570,7 @@
          *
          * @param string $callbackFunc
 		 *
-         * @return anything
+         * @return mixed
          */
         protected function _runEmptyCallback($callbackFunc) {
             return eval('return ' . $callbackFunc . '();');

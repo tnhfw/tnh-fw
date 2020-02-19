@@ -57,15 +57,17 @@
 			$logger = self::getLogger();
 			$logger->debug('Check if the application contains the modules ...');
 			$moduleDir = opendir(MODULE_PATH);
-			while(($module = readdir($moduleDir)) !== false){
-				if($module != '.' && $module != '..'  && preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
-					self::$list[] = $module;
+			if(is_resource($moduleDir)){
+				while(($module = readdir($moduleDir)) !== false){
+					if($module != '.' && $module != '..'  && preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
+						self::$list[] = $module;
+					}
+					else{
+						$logger->info('Skipping [' .$module. '], may be this is not a directory or does not exists or is invalid name');
+					}
 				}
-				else{
-					$logger->info('Skipping [' .$module. '], may be this is not a directory or does not exists or is invalid name');
-				}
+				closedir($moduleDir);
 			}
-			closedir($moduleDir);
 			ksort(self::$list);
 			
 			if(self::hasModule()){
