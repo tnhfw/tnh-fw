@@ -135,7 +135,7 @@
 	}
 	
 	
-	function php_error_handler($errno , $errstr, $errfile , $errline, array $errcontext = array()){
+	function php_error_handler($errno , $errstr, $errfile , $errline){
 		//show only and continue to help track of some error occured
 		echo 'php_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
 	}

@@ -152,7 +152,7 @@
 			//try to check if session secret is set before
 			$secret = $this->getSessionSecret();
 			if(empty($secret)){
-				$secret = get_config('session_secret', false);
+				$secret = get_config('session_secret', null);
 				$this->setSessionSecret($secret);
 			}
 			$this->logger->info('Session secret: ' . $secret);

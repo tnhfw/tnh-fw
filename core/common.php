@@ -176,11 +176,7 @@
 	 * @codeCoverageIgnore
 	 */
 	function set_http_status_header($code = 200, $text = null){
-		if (!is_int($code) || $code < 0 ){
-			show_error('HTTP status code must be an integer');
-		}
 		if (empty($text)){
-			$code = abs($code);
 			$http_status = array(
 								100 => 'Continue',
 								101 => 'Switching Protocols',

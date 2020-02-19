@@ -26,8 +26,8 @@
 		public static function setUpBeforeClass()
 		{
 			require APPS_MODEL_PATH . 'DBSessionModel.php';
-			static::$config = new Config();
-			static::$config->init();
+			self::$config = new Config();
+			self::$config->init();
 		}
 		
 		
@@ -51,8 +51,8 @@
 		
 		public function testUsingSessionConfiguration(){
 			//using value in the configuration
-			static::$config->set('session_save_path', 'DBSessionModel');
-			static::$config->set('session_secret', $this->secret);
+			self::$config->set('session_save_path', 'DBSessionModel');
+			self::$config->set('session_secret', $this->secret);
 			$dbsh = new DBSessionHandler();
 			//assign Database instance manually
 			$o = &get_instance();
