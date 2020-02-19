@@ -218,11 +218,8 @@
             if(get_instance()->request->method() == 'POST' || $this->enableCsrfCheck){
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
-                if( get_config('csrf_enable', false) || $this->enableCsrfCheck){
-                     $this->logger->info('Check the CSRF value if is valid');
-                    if(! Security::validateCSRF()){
-                        show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
-                    }
+                if ((get_config('csrf_enable', false) || $this->enableCsrfCheck) && ! Security::validateCSRF()){
+                    show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
                 }
                 else{
                     $this->logger->info('CSRF is not enabled in configuration or not set manully, no need to check it');
@@ -456,7 +453,7 @@
                 $rule = '#regex\[\/(.*)\/([a-zA-Z0-9]?)\]#';
                 preg_match($rule, $ruleString, $regexRule);
                 $ruleStringTemp = preg_replace($rule, '', $ruleString);
-                 if(isset($regexRule[0]) && !empty($regexRule[0])){
+                 if(!empty($regexRule[0])){
                      $ruleSets[] = $regexRule[0];
                  }
                  $ruleStringRegex = explode('|', $ruleStringTemp);

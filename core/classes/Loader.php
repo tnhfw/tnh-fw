@@ -43,76 +43,8 @@
 			//in the list to prevent duplicate or loading the resources again.
 			static::$loaded = class_loaded();
 			
-			$autoloads = array();
-			//loading of the resources in autoload.php configuration file
-			if(file_exists(CONFIG_PATH . 'autoload.php')){
-				require_once CONFIG_PATH . 'autoload.php';
-				if(! empty($autoload) && is_array($autoload)){
-					$autoloads = $autoload;
-					unset($autoload);
-				}
-			}
-			//loading autoload configuration for modules
-			$modulesAutoloads = Module::getModulesAutoloadConfig();
-			if(! empty($modulesAutoloads) && is_array($modulesAutoloads)){
-				//libraries autoload
-				if(! empty($modulesAutoloads['libraries']) && is_array($modulesAutoloads['libraries'])){
-					$autoloads['libraries'] = array_merge($autoloads['libraries'], $modulesAutoloads['libraries']);
-				}
-				//config autoload
-				if(! empty($modulesAutoloads['config']) && is_array($modulesAutoloads['config'])){
-					$autoloads['config'] = array_merge($autoloads['config'], $modulesAutoloads['config']);
-				}
-				//models autoload
-				if(! empty($modulesAutoloads['models']) && is_array($modulesAutoloads['models'])){
-					$autoloads['models'] = array_merge($autoloads['models'], $modulesAutoloads['models']);
-				}
-				//functions autoload
-				if(! empty($modulesAutoloads['functions']) && is_array($modulesAutoloads['functions'])){
-					$autoloads['functions'] = array_merge($autoloads['functions'], $modulesAutoloads['functions']);
-				}
-				//languages autoload
-				if(! empty($modulesAutoloads['languages']) && is_array($modulesAutoloads['languages'])){
-					$autoloads['languages'] = array_merge($autoloads['languages'], $modulesAutoloads['languages']);
-				}
-			}
-			
-			//config autoload
-			if(! empty($autoloads['config']) && is_array($autoloads['config'])){
-				foreach($autoloads['config'] as $c){
-					$this->config($c);
-				}
-			}
-			
-			//languages autoload
-			if(! empty($autoloads['languages']) && is_array($autoloads['languages'])){
-				foreach($autoloads['languages'] as $language){
-					$this->lang($language);
-				}
-			}
-			
-			//libraries autoload
-			if(! empty($autoloads['libraries']) && is_array($autoloads['libraries'])){
-				foreach($autoloads['libraries'] as $library){
-					$this->library($library);
-				}
-			}
-			
-			//models autoload
-			if(! empty($autoloads['models']) && is_array($autoloads['models'])){
-				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
-				foreach($autoloads['models'] as $model){
-					$this->model($model);
-				}
-			}
-			
-			//functions autoload
-			if(! empty($autoloads['functions']) && is_array($autoloads['functions'])){
-				foreach($autoloads['functions'] as $function){
-					$this->functions($function);
-				}
-			}
-			
+			//Load resources from autoload configuration
+			$this->loadResourcesFromAutoloadConfig();
 		}
 
 		/**
@@ -514,6 +446,69 @@
 			}
 			else{
 				show_error('Unable to find language file [' . $file . ']');
+			}
+		}
+
+
+		private function getResourcesFromAutoloadConfig(){
+			$autoloads = array();
+			$autoloads['config']    = array();
+			$autoloads['languages'] = array();
+			$autoloads['libraries'] = array();
+			$autoloads['models']    = array();
+			$autoloads['functions'] = array();
+			//loading of the resources in autoload.php configuration file
+			if(file_exists(CONFIG_PATH . 'autoload.php')){
+				require_once CONFIG_PATH . 'autoload.php';
+				if(! empty($autoload) && is_array($autoload)){
+					$autoloads = array_merge($autoloads, $autoload);
+					unset($autoload);
+				}
+			}
+			//loading autoload configuration for modules
+			$modulesAutoloads = Module::getModulesAutoloadConfig();
+			if(! empty($modulesAutoloads) && is_array($modulesAutoloads)){
+				$autoloads = array_merge_recursive($autoloads, $modulesAutoloads);
+			}
+			return $autoloads;
+		}
+
+		private function loadResourcesFromAutoloadConfig(){
+			$autoloads = array();
+			$autoloads['config']    = array();
+			$autoloads['languages'] = array();
+			$autoloads['libraries'] = array();
+			$autoloads['models']    = array();
+			$autoloads['functions'] = array();
+
+			$list = $this->getResourcesFromAutoloadConfig();
+
+			$autoloads = array_merge($autoloads, $list);
+			//config autoload
+			foreach($autoloads['config'] as $c){
+				$this->config($c);
+			}
+			
+			//languages autoload
+			foreach($autoloads['languages'] as $language){
+				$this->lang($language);
+			}
+			
+			//libraries autoload
+			foreach($autoloads['libraries'] as $library){
+				$this->library($library);
+			}
+
+			//models autoload
+			if(! empty($autoloads['models']) && is_array($autoloads['models'])){
+				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
+				foreach($autoloads['models'] as $model){
+					$this->model($model);
+				}
+			}
+			
+			foreach($autoloads['functions'] as $function){
+				$this->functions($function);
 			}
 		}
 	}
