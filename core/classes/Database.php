@@ -866,8 +866,6 @@
      * @return mixed          the insert id of the new record or null
      */
     public function insert($data = array(), $escape = true){
-      $column = array();
-      $val = array();
       if(empty($data) && $this->getData()){
         //as when using $this->setData() the data already escaped
         $escape = false;
@@ -991,7 +989,7 @@
      
       if (! $cacheContent && $isSqlSELECTQuery){
         $sqlQuery = $this->runSqlQuery($query, $all, $array);
-        if ($sqlQuery){
+        if (is_object($sqlQuery)){
             $this->setQueryResultForSelect($sqlQuery, $all, $array);
             $this->setCacheContentForQuery(
                                             $this->query, 
@@ -1004,8 +1002,8 @@
       }
       else if ((! $cacheContent && !$isSqlSELECTQuery) || ($cacheContent && !$isSqlSELECTQuery)){
     		$sqlQuery = $this->runSqlQuery($query, $all, $array);
-    		if($sqlQuery){
-          $this->setQueryResultForNonSelect($sqlQuery, $all, $array);
+    		if(is_object($sqlQuery)){
+          $this->setQueryResultForNonSelect($sqlQuery);
     		}
         if (! $this->result){
           $this->setQueryError();
@@ -1447,7 +1445,7 @@
      * Set the result for other command than SELECT query using PDOStatment
      * @see Database::query
      */
-    protected function setQueryResultForNonSelect($pdoStatment, $all = true, $array = false){
+    protected function setQueryResultForNonSelect($pdoStatment){
       //Sqlite and pgsql always return 0 when using rowCount()
       if(in_array($this->config['driver'], array('sqlite', 'pgsql'))){
         $this->result = 1; //to test the result for the query like UPDATE, INSERT, DELETE

@@ -744,8 +744,8 @@
         *
         *    @since      1.0
         *    @version    1.0.1
-        *    @param      integer    $size
-        *    @return     string
+        *    @param      integer|double    $size
+        *    @return     integer|double
         *    @method     string     sizeInBytes
         */
         public function sizeInBytes($size)

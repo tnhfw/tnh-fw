@@ -50,7 +50,7 @@
 		 */
 		public function __construct(Log $logger = null){
 			//setting the Log instance
-			$this->setLoggerFromParamOrCreateNewInstance(null);
+			$this->setLoggerFromParamOrCreateNewInstance($logger);
 			
 			//instance of the super object
 			self::$instance = & $this;
