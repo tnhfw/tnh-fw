@@ -474,19 +474,11 @@
             if ($this->isDirpath($destination_directory)) {
                 if ($this->dirExists($destination_directory)) {
                     $this->destination_directory = $destination_directory;
-                    if (substr($this->destination_directory, -1) != DIRECTORY_SEPARATOR) {
-                        $this->destination_directory .= DIRECTORY_SEPARATOR;
-                    }
                     chdir($destination_directory);
-                } elseif ($create_if_not_exist === true) {
+                } else if ($create_if_not_exist === true) {
                     if (mkdir($destination_directory, 0775, true)) {
-                        if ($this->dirExists($destination_directory)) {
-                            $this->destination_directory = $destination_directory;
-                            if (substr($this->destination_directory, -1) != DIRECTORY_SEPARATOR) {
-                                $this->destination_directory .= DIRECTORY_SEPARATOR;
-                            }
-                            chdir($destination_directory);
-                        }
+                        $this->destination_directory = $destination_directory;
+                        chdir($destination_directory);
                     }
                     else{
                         $this->logger->warning('Can not create the upload directory [' .$destination_directory. ']');
@@ -652,7 +644,7 @@
                             '$1',
                             $this->file_array[$this->input]['name']
                         );
-                        $this->filename = $this->filename.'.'.$extension;
+                        $this->filename = $this->filename . '.' . $extension;
                     }
 
                     // set file info
@@ -688,12 +680,9 @@
                     }
 
                     // Check if exists file
-                    if ($this->fileExists($this->destination_directory . $this->filename)) {
-                        // Check if overwrite file
-                        if ($this->overwrite_file === false) {
-                            $this->setError($this->error_messages['overwritten_not_allowed']);
-                            return false;
-                        }
+                    if ($this->fileExists($this->destination_directory . $this->filename) && $this->overwrite_file === false) {
+                        $this->setError($this->error_messages['overwritten_not_allowed']);
+                        return false;
                     }
 
                     // Execute input callback

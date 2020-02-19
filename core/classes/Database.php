@@ -187,6 +187,8 @@
 
         //Set global configuration using the config file
         $this->setDatabaseConfigurationFromConfigFile($overwriteConfig);
+
+
         
     		$this->temporaryCacheTtl = $this->cacheTtl;
     }
@@ -197,7 +199,7 @@
      */
     public function connect(){
       $config = $this->getDatabaseConfiguration();
-      if(! empty($config)){
+      if (! empty($config)){
         try{
             $this->pdo = new PDO($this->getDsnFromDriver(), $config['username'], $config['password']);
             $this->pdo->exec("SET NAMES '" . $config['charset'] . "' COLLATE '" . $config['collation'] . "'");
@@ -223,7 +225,7 @@
      * @return object        the current Database instance
      */
     public function from($table){
-      if(is_array($table)){
+      if (is_array($table)){
         $froms = '';
         foreach($table as $key){
           $froms .= $this->prefix . $key . ', ';
@@ -331,7 +333,7 @@
     public function join($table, $field1 = null, $op = null, $field2 = null, $type = ''){
       $on = $field1;
       $table = $this->prefix . $table;
-      if(! is_null($op)){
+      if (! is_null($op)){
         $on = (! in_array($op, $this->operatorList) ? $this->prefix . $field1 . ' = ' . $this->prefix . $op : $this->prefix . $field1 . ' ' . $op . ' ' . $this->prefix . $field2);
       }
       if (empty($this->join)){
@@ -404,7 +406,7 @@
      * @return object        the current Database instance
      */
     public function whereIsNull($field, $andOr = 'AND'){
-      if(is_array($field)){
+      if (is_array($field)){
         foreach($field as $f){
         	$this->whereIsNull($f, $andOr);
         }
@@ -422,7 +424,7 @@
      * @return object        the current Database instance
      */
     public function whereIsNotNull($field, $andOr = 'AND'){
-      if(is_array($field)){
+      if (is_array($field)){
         foreach($field as $f){
           $this->whereIsNotNull($f, $andOr);
         }
@@ -449,7 +451,7 @@
         $whereStr = $this->getWhereStrIfIsArray($where, $type, $andOr, $escape);
       }
       else{
-        if(is_array($op)){
+        if (is_array($op)){
           $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
         } else {
           $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape = true);
@@ -498,7 +500,7 @@
         $this->where = $type . ' (';
       }
       else{
-          if(substr($this->where, -1) == '('){
+          if (substr($this->where, -1) == '('){
             $this->where .= $type . ' (';
           }
           else{
@@ -556,7 +558,7 @@
     public function in($field, array $keys, $type = '', $andOr = 'AND', $escape = true){
       $_keys = array();
       foreach ($keys as $k => $v){
-        if(is_null($v)){
+        if (is_null($v)){
           $v = '';
         }
         $_keys[] = (is_numeric($v) ? $v : $this->escape($v, $escape));
@@ -605,10 +607,10 @@
      * @return object        the current Database instance
      */
     public function between($field, $value1, $value2, $type = '', $andOr = 'AND', $escape = true){
-      if(is_null($value1)){
+      if (is_null($value1)){
         $value1 = '';
       }
-      if(is_null($value2)){
+      if (is_null($value2)){
         $value2 = '';
       }
       $whereStr = $field . ' ' . $type . ' BETWEEN ' . $this->escape($value1, $escape) . ' AND ' . $this->escape($value2, $escape);
@@ -653,7 +655,7 @@
      * @return object        the current Database instance
      */
     public function like($field, $data, $type = '', $andOr = 'AND', $escape = true){
-      if(empty($data)){
+      if (empty($data)){
         $data = '';
       }
       $this->setWhereStr($field . ' ' . $type . ' LIKE ' . ($this->escape($data, $escape)), $andOr);
@@ -695,7 +697,7 @@
      * @return object        the current Database instance
      */
     public function limit($limit, $limitEnd = null){
-      if(empty($limit)){
+      if (empty($limit)){
         return;
       }
       if (! is_null($limitEnd)){
@@ -714,7 +716,7 @@
      * @return object        the current Database instance
      */
     public function orderBy($orderBy, $orderDir = ' ASC'){
-        if(stristr($orderBy, ' ') || $orderBy == 'rand()'){
+        if (stristr($orderBy, ' ') || $orderBy == 'rand()'){
           $this->orderBy = empty($this->orderBy) ? $orderBy : $this->orderBy . ', ' . $orderBy;
         }
         else{
@@ -731,7 +733,7 @@
      * @return object        the current Database instance
      */
     public function groupBy($field){
-      if(is_array($field)){
+      if (is_array($field)){
         $this->groupBy = implode(', ', $field);
       }
       else{
@@ -749,12 +751,12 @@
      * @return object        the current Database instance
      */
     public function having($field, $op = null, $val = null, $escape = true){
-      if(is_array($op)){
+      if (is_array($op)){
         $x = explode('?', $field);
         $w = '';
         foreach($x as $k => $v){
-  	      if(!empty($v)){
-            if(isset($op[$k]) && is_null($op[$k])){
+  	      if (!empty($v)){
+            if (! isset($op[$k])){
               $op[$k] = '';
             }
   	      	$w .= $v . (isset($op[$k]) ? $this->escape($op[$k], $escape) : '');
@@ -763,13 +765,13 @@
         $this->having = $w;
       }
       else if (! in_array($op, $this->operatorList)){
-        if(is_null($op)){
+        if (is_null($op)){
           $op = '';
         }
         $this->having = $field . ' > ' . ($this->escape($op, $escape));
       }
       else{
-        if(is_null($val)){
+        if (is_null($val)){
           $val = '';
         }
         $this->having = $field . ' ' . $op . ' ' . ($this->escape($val, $escape));
@@ -797,7 +799,7 @@
      * Show an error got from the current query (SQL command synthax error, database driver returned error, etc.)
      */
     public function error(){
-  		if($this->error){
+  		if ($this->error){
   			show_error('Query: "' . $this->query . '" Error: ' . $this->error, 'Database Error');
   		}
     }
@@ -811,7 +813,7 @@
     public function get($returnSQLQueryOrResultType = false){
       $this->limit = 1;
       $query = $this->getAll(true);
-      if($returnSQLQueryOrResultType === true){
+      if ($returnSQLQueryOrResultType === true){
         return $query;
       }
       else{
@@ -821,7 +823,7 @@
 
     /**
      * Get the result of record rows list returned by the current query
-     * @param  boolean $returnSQLQueryOrResultType if is boolean and true will return the SQL query string.
+     * @param  boolean|string $returnSQLQueryOrResultType if is boolean and true will return the SQL query string.
      * If is string will determine the result type "array" or "object"
      * @return mixed       the query SQL string or the record result
      */
@@ -847,16 +849,14 @@
           $query .= ' ORDER BY ' . $this->orderBy;
       }
 
-      if(! empty($this->limit)){
+      if (! empty($this->limit)){
       	$query .= ' LIMIT ' . $this->limit;
       }
 	  
-	   if($returnSQLQueryOrResultType === true){
+	   if ($returnSQLQueryOrResultType === true){
       	return $query;
       }
-      else{
-    	   return $this->query($query, true, (($returnSQLQueryOrResultType == 'array') ? true : false) );
-      }
+    	return $this->query($query, true, $returnSQLQueryOrResultType == 'array');
     }
 
     /**
@@ -866,7 +866,7 @@
      * @return mixed          the insert id of the new record or null
      */
     public function insert($data = array(), $escape = true){
-      if(empty($data) && $this->getData()){
+      if (empty($data) && $this->getData()){
         //as when using $this->setData() the data already escaped
         $escape = false;
         $data = $this->getData();
@@ -880,15 +880,10 @@
       $query = $this->query($query);
 
       if ($query){
-        if(! $this->pdo){
-          $this->connect();
-        }
         $this->insertId = $this->pdo->lastInsertId();
         return $this->insertId();
       }
-      else{
-		  return false;
-      }
+      return false;
     }
 
     /**
@@ -900,7 +895,7 @@
     public function update($data = array(), $escape = true){
       $query = 'UPDATE ' . $this->from . ' SET ';
       $values = array();
-      if(empty($data) && $this->getData()){
+      if (empty($data) && $this->getData()){
         //as when using $this->setData() the data already escaped
         $escape = false;
         $data = $this->getData();
@@ -942,83 +937,10 @@
     		$query .= ' LIMIT ' . $this->limit;
       	}
 
-    	if($query == 'DELETE FROM ' . $this->from && $this->config['driver'] != 'sqlite'){  
+    	if ($query == 'DELETE FROM ' . $this->from && $this->config['driver'] != 'sqlite'){  
     		$query = 'TRUNCATE TABLE ' . $this->from;
       }
     	return $this->query($query);
-    }
-
-
-    /**
-     * Execute an SQL query
-     * @param  string  $query the query SQL string
-     * @param  boolean|array $all  if boolean this indicate whether to return all record or not, if array 
-     * will 
-     * @param  boolean $array return the result as array
-     * @return mixed         the query result
-     */
-    public function query($query, $all = true, $array = false){
-      $this->reset();
-      $query = $this->transformPreparedQuery($query, $all);
-      $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
-      
-      $isSqlSELECTQuery = stristr($this->query, 'SELECT');
-
-      $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . ($all ? 'YES':'NO'));
-      //cache expire time
-  	  $cacheExpire = $this->temporaryCacheTtl;
-  	  
-  	  //return to the initial cache time
-  	  $this->temporaryCacheTtl = $this->cacheTtl;
-  	  
-  	  //config for cache
-      $cacheEnable = get_config('cache_enable');
-  	  
-  	  //the database cache content
-      $cacheContent = null;
-
-  	  //if can use cache feature for this query
-  	  $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
-	  
-      if ($dbCacheStatus && $isSqlSELECTQuery){
-          $cacheContent = $this->getCacheContentForQuery($query, $all, $array);  
-      }
-      else{
-		      $this->logger->info('The cache is not enabled for this query or is not the SELECT query, get the result directly from real database');
-      }
-     
-      if (! $cacheContent && $isSqlSELECTQuery){
-        $sqlQuery = $this->runSqlQuery($query, $all, $array);
-        if (is_object($sqlQuery)){
-            $this->setQueryResultForSelect($sqlQuery, $all, $array);
-            $this->setCacheContentForQuery(
-                                            $this->query, 
-                                            $this->getCacheBenchmarkKeyForQuery($this->query, $all, $array), 
-                                            $this->result, 
-                                            $dbCacheStatus && $isSqlSELECTQuery, 
-                                            $this->temporaryCacheTtl
-                                          );
-        }
-      }
-      else if ((! $cacheContent && !$isSqlSELECTQuery) || ($cacheContent && !$isSqlSELECTQuery)){
-    		$sqlQuery = $this->runSqlQuery($query, $all, $array);
-    		if(is_object($sqlQuery)){
-          $this->setQueryResultForNonSelect($sqlQuery);
-    		}
-        if (! $this->result){
-          $this->setQueryError();
-        }
-      }
-      else{
-        $this->logger->info('The result for query [' .$this->query. '] already cached use it');
-        $this->result = $cacheContent;
-	     	$this->numRows = count($this->result);
-      }
-      $this->queryCount++;
-      if(! $this->result){
-        $this->logger->info('No result where found for the query [' . $query . ']');
-      }
-      return $this->result;
     }
 
     /**
@@ -1027,7 +949,7 @@
      * @return object        the current Database instance
      */
     public function setCache($ttl = 0){
-      if($ttl > 0){
+      if ($ttl > 0){
         $this->cacheTtl = $ttl;
 		    $this->temporaryCacheTtl = $ttl;
       }
@@ -1040,7 +962,7 @@
 	 * @return object        the current Database instance
 	 */
 	public function cached($ttl = 0){
-      if($ttl > 0){
+      if ($ttl > 0){
         $this->temporaryCacheTtl = $ttl;
       }
 	  return $this;
@@ -1053,8 +975,8 @@
      * @return mixed       the data after escaped or the same data if not
      */
     public function escape($data, $escaped = true){
-      if($escaped){
-        if(! $this->pdo){
+      if ($escaped){
+        if (! $this->pdo){
           $this->connect();
         }
         return $this->pdo->quote(trim($data)); 
@@ -1195,12 +1117,81 @@
       return $this;
     }
 
+     /**
+     * Execute an SQL query
+     * @param  string  $query the query SQL string
+     * @param  boolean|array $all  if boolean this indicate whether to return all record or not, if array 
+     * will 
+     * @param  boolean $array return the result as array
+     * @return mixed         the query result
+     */
+    public function query($query, $all = true, $array = false){
+      $this->reset();
+      $query = $this->transformPreparedQuery($query, $all);
+      $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
+      
+      $isSqlSELECTQuery = stristr($this->query, 'SELECT');
+
+      $this->logger->info('Execute SQL query ['.$this->query.'], return type: ' . ($array?'ARRAY':'OBJECT') .', return as list: ' . (is_bool($all) && $all ? 'YES':'NO'));
+      //cache expire time
+      $cacheExpire = $this->temporaryCacheTtl;
+      
+      //return to the initial cache time
+      $this->temporaryCacheTtl = $this->cacheTtl;
+      
+      //config for cache
+      $cacheEnable = get_config('cache_enable');
+      
+      //the database cache content
+      $cacheContent = null;
+
+      //if can use cache feature for this query
+      $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
+    
+      if ($dbCacheStatus && $isSqlSELECTQuery){
+          $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
+          $cacheContent = $this->getCacheContentForQuery($query, $all, $array);  
+      }
+      
+      if ( !$cacheContent){
+        $sqlQuery = $this->runSqlQuery($query, $all, $array);
+        if (is_object($sqlQuery)){
+          if ($isSqlSELECTQuery){
+            $this->setQueryResultForSelect($sqlQuery, $all, $array);
+            $this->setCacheContentForQuery(
+                                            $this->query, 
+                                            $this->getCacheBenchmarkKeyForQuery($this->query, $all, $array), 
+                                            $this->result, 
+                                            $dbCacheStatus && $isSqlSELECTQuery, 
+                                            $this->temporaryCacheTtl
+                                          );
+          }
+          else{
+              $this->setQueryResultForNonSelect($sqlQuery);
+              if (! $this->result){
+                $this->setQueryError();
+              }
+          }
+        }
+      } else if ($isSqlSELECTQuery){
+          $this->logger->info('The result for query [' .$this->query. '] already cached use it');
+          $this->result = $cacheContent;
+          $this->numRows = count($this->result);
+      }
+      $this->queryCount++;
+      if (! $this->result){
+        $this->logger->info('No result where found for the query [' . $query . ']');
+      }
+      return $this->result;
+    }
+
+
     /**
      * Set the Log instance using argument or create new instance
      * @param object $logger the Log instance if not null
      */
     protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
-      if($logger !== null){
+      if ($logger !== null){
         $this->logger = $logger;
       }
       else{
@@ -1215,12 +1206,12 @@
     */
     protected function setDatabaseConfigurationFromConfigFile(array $overwriteConfig = array()){
         $db = array();
-        if(file_exists(CONFIG_PATH . 'database.php')){
+        if (file_exists(CONFIG_PATH . 'database.php')){
             //here don't use require_once because somewhere user can create database instance directly
             require CONFIG_PATH . 'database.php';
         }
           
-        if(! empty($overwriteConfig)){
+        if (! empty($overwriteConfig)){
           $db = array_merge($db, $overwriteConfig);
         }
         $config = array(
@@ -1235,7 +1226,7 @@
           'port' => ''
         );
         $this->setDatabaseConfiguration(array_merge($config, $db));
-        $this->determinePortConfigurationFromHostname();  
+        $this->setPortConfigurationFromHostname();  
     }
 
     /**
@@ -1244,7 +1235,7 @@
      */
     protected function getDsnFromDriver(){
       $config = $this->getDatabaseConfiguration();
-      if(! empty($config)){
+      if (! empty($config)){
             $driverDsnMap = array(
                                     'mysql' => 'mysql:host=' . $config['hostname'] . ';' 
                                                 . (($config['port']) != '' ? 'port=' . $config['port'] . ';' : '') 
@@ -1266,10 +1257,10 @@
      * Set the database server port configuration using the current hostname like localhost:3309 
      * @return void
      */
-    protected function determinePortConfigurationFromHostname(){
-      if(strstr($this->config['hostname'], ':')){
+    protected function setPortConfigurationFromHostname(){
+      if (strstr($this->config['hostname'], ':')){
         $p = explode(':', $this->config['hostname']);
-        if(count($p) > 2){
+        if (count($p) >= 2){
           $this->setDatabaseConfiguration(array(
             'hostname' => $p[0],
             'port' => $p[1]
@@ -1287,7 +1278,7 @@
     protected function getWhereStrIfIsArray(array $where, $type = '', $andOr = 'AND', $escape = true){
         $_where = array();
         foreach ($where as $column => $data){
-          if(is_null($data)){
+          if (is_null($data)){
             $data = '';
           }
           $_where[] = $type . $column . ' = ' . ($this->escape($data, $escape));
@@ -1306,8 +1297,8 @@
        $x = explode('?', $where);
        $w = '';
         foreach($x as $k => $v){
-          if(! empty($v)){
-              if(isset($op[$k]) && is_null($op[$k])){
+          if (! empty($v)){
+              if (isset($op[$k]) && is_null($op[$k])){
                 $op[$k] = '';
               }
               $w .= $type . $v . (isset($op[$k]) ? ($this->escape($op[$k], $escape)) : '');
@@ -1325,13 +1316,13 @@
     protected function getWhereStrForOperator($where, $op = null, $val = null, $type = '', $escape = true){
        $w = '';
        if (! in_array((string)$op, $this->operatorList)){
-          if(is_null($op)){
+          if (is_null($op)){
             $op = '';
           }
           $w = $type . $where . ' = ' . ($this->escape($op, $escape));
         }
         else{
-          if(is_null($val)){
+          if (is_null($val)){
             $val = '';
           }
           $w = $type . $where . $op . ($this->escape($val, $escape));
@@ -1349,7 +1340,7 @@
           $this->where = $whereStr;
         }
         else{
-          if(substr($this->where, -1) == '('){
+          if (substr($this->where, -1) == '('){
             $this->where = $this->where . ' ' . $whereStr;
           }
           else{
@@ -1365,11 +1356,11 @@
      * @return string
      */
     protected function transformPreparedQuery($query, $data){
-      if(is_array($data)){
+      if (is_array($data)){
         $x = explode('?', $query);
         $q = '';
         foreach($x as $k => $v){
-          if(! empty($v)){
+          if (! empty($v)){
             $q .= $v . (isset($data[$k]) ? $this->escape($data[$k]) : '');
           }
         }
@@ -1385,6 +1376,9 @@
      *  @return string
      */
     protected function getCacheBenchmarkKeyForQuery($query, $all, $array){
+      if (is_array($all)){
+        $all = 'array';
+      }
       return md5($query . $all . $array);
     }
 
@@ -1395,9 +1389,8 @@
      * @return mixed
      */
     protected function getCacheContentForQuery($query, $all, $array){
-       $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
         $cacheKey = $this->getCacheBenchmarkKeyForQuery($query, $all, $array);
-        if(is_object($this->cacheInstance)){
+        if (is_object($this->cacheInstance)){
           return $this->cacheInstance->get($cacheKey);
         }
         $instance = & get_instance()->cache;
@@ -1424,16 +1417,16 @@
      * Set the result for SELECT query using PDOStatment
      * @see Database::query
      */
-    protected function setQueryResultForSelect($pdoStatment, $all = true, $array = false){
+    protected function setQueryResultForSelect($pdoStatment, $all, $array){
       //if need return all result like list of record
-      if ($all){
+      if (is_bool($all) && $all){
           $this->result = ($array === false) ? $pdoStatment->fetchAll(PDO::FETCH_OBJ) : $pdoStatment->fetchAll(PDO::FETCH_ASSOC);
       }
       else{
           $this->result = ($array === false) ? $pdoStatment->fetch(PDO::FETCH_OBJ) : $pdoStatment->fetch(PDO::FETCH_ASSOC);
       }
       //Sqlite and pgsql always return 0 when using rowCount()
-      if(in_array($this->config['driver'], array('sqlite', 'pgsql'))){
+      if (in_array($this->config['driver'], array('sqlite', 'pgsql'))){
         $this->numRows = count($this->result);  
       }
       else{
@@ -1447,7 +1440,7 @@
      */
     protected function setQueryResultForNonSelect($pdoStatment){
       //Sqlite and pgsql always return 0 when using rowCount()
-      if(in_array($this->config['driver'], array('sqlite', 'pgsql'))){
+      if (in_array($this->config['driver'], array('sqlite', 'pgsql'))){
         $this->result = 1; //to test the result for the query like UPDATE, INSERT, DELETE
         $this->numRows = 1;  
       }
@@ -1477,12 +1470,12 @@
        //for database query execution time
         $benchmarkMarkerKey = $this->getCacheBenchmarkKeyForQuery($query, $all, $array);
         $benchmarkInstance = $this->getBenchmark();
-        if(! is_object($benchmarkInstance)){
+        if (! is_object($benchmarkInstance)){
           $obj = & get_instance();
           $benchmarkInstance = $obj->benchmark; 
           $this->setBenchmark($benchmarkInstance);
         }
-        if(! $this->pdo){
+        if (! $this->pdo){
             $this->connect();
         }
         
@@ -1493,40 +1486,40 @@
         //get response time for this query
         $responseTime = $benchmarkInstance->elapsedTime('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')');
         //TODO use the configuration value for the high response time currently is 1 second
-        if($responseTime >= 1 ){
+        if ($responseTime >= 1 ){
             $this->logger->warning('High response time while processing database query [' .$query. ']. The response time is [' .$responseTime. '] sec.');
         }
-        if($sqlQuery){
+        if ($sqlQuery){
           return $sqlQuery;
         }
         $this->setQueryError();
     }
 
-  /**
-   * Reset the database class attributs to the initail values before each query.
-   */
-  private function reset(){
-    $this->select   = '*';
-    $this->from     = null;
-    $this->where    = null;
-    $this->limit    = null;
-    $this->orderBy  = null;
-    $this->groupBy  = null;
-    $this->having   = null;
-    $this->join     = null;
-    $this->numRows  = 0;
-    $this->insertId = null;
-    $this->query    = null;
-    $this->error    = null;
-    $this->result   = array();
-    $this->data     = array();
-  }
+    /**
+     * Reset the database class attributs to the initail values before each query.
+     */
+    private function reset(){
+      $this->select   = '*';
+      $this->from     = null;
+      $this->where    = null;
+      $this->limit    = null;
+      $this->orderBy  = null;
+      $this->groupBy  = null;
+      $this->having   = null;
+      $this->join     = null;
+      $this->numRows  = 0;
+      $this->insertId = null;
+      $this->query    = null;
+      $this->error    = null;
+      $this->result   = array();
+      $this->data     = array();
+    }
 
-  /**
-   * The class destructor
-   */
-  public function __destruct(){
-    $this->pdo = null;
+    /**
+     * The class destructor
+     */
+    public function __destruct(){
+      $this->pdo = null;
   }
 
 }
