@@ -210,11 +210,10 @@
         }
 
         /**
-         * Takes and trims each data, if it has any rules, we parse the rule string and run
-         * each rule against the data value. Sets _success to true if there are no errors
-         * afterwards.
+         * Validate the CSRF 
+         * @return void 
          */
-        protected function _run() {
+        protected function validateCSRF(){
             if(get_instance()->request->method() == 'POST' || $this->enableCsrfCheck){
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
@@ -225,6 +224,15 @@
                     $this->logger->info('CSRF is not enabled in configuration or not set manully, no need to check it');
                 }
             }
+        }
+        /**
+         * Takes and trims each data, if it has any rules, we parse the rule string and run
+         * each rule against the data value. Sets _success to true if there are no errors
+         * afterwards.
+         */
+        protected function _run() {
+            //validate CSRF
+            $this->validateCSRF();
             /////////////////////////////////////////////
             $this->_forceFail = false;
 

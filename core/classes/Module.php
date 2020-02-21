@@ -73,9 +73,6 @@
 			if(self::hasModule()){
 				$logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
 			}
-			else{
-				$logger->info('The application contains no module skipping');
-			}
 		}
 		
 		/**
@@ -123,13 +120,11 @@
 			foreach (self::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'routes.php';
 				if(file_exists($file)){
+					$route = array();
 					require_once $file;
 					if(! empty($route) && is_array($route)){
 						$routes = array_merge($routes, $route);
 						unset($route);
-					}
-					else{
-						show_error('No routing configuration found in [' .$file. '] for module [' . $module . ']');
 					}
 				}
 			}

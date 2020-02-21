@@ -265,7 +265,7 @@
 	    /**
 	     * @param boolean $compressCacheData
 	     *
-	     * @return self
+	     * @return object
 	     */
 	    public function setCompressCacheData($status = true){
 			//if Zlib extension is not loaded set compressCacheData to false
@@ -291,7 +291,7 @@
 
 		/**
 	     * Return the Log instance
-	     * @return Log
+	     * @return object
 	     */
 	    public function getLogger(){
 	      return $this->logger;
@@ -310,7 +310,7 @@
 		* Get the cache file full path for the given key
 		*
 		* @param $key the cache item key
-		* @return string  		the full cache file path for this key
+		* @return string
 		*/
 		private function getFilePath($key){
 			return CACHE_PATH . md5($key) . '.cache';

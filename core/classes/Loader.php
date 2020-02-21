@@ -351,8 +351,8 @@
 				$logger->info('Cannot find config [' . $filename . '] from modules using the default location');
 			}
 			$logger->info('The config file path to be loaded is [' . $configFilePath . ']');
+			$config = array();
 			if(file_exists($configFilePath)){
-				$config = array();
 				require_once $configFilePath;
 				if(! empty($config) && is_array($config)){
 					Config::setAll($config);
@@ -476,6 +476,10 @@
 			return $autoloads;
 		}
 
+		/**
+		 * Load the autoload configuration
+		 * @return void
+		 */
 		private function loadResourcesFromAutoloadConfig(){
 			$autoloads = array();
 			$autoloads['config']    = array();
@@ -485,32 +489,33 @@
 			$autoloads['functions'] = array();
 
 			$list = $this->getResourcesFromAutoloadConfig();
-
 			$autoloads = array_merge($autoloads, $list);
+			
 			//config autoload
-			foreach($autoloads['config'] as $c){
-				$this->config($c);
-			}
+			$this->loadAutoloadResourcesArray('config', $autoloads['config']);
 			
 			//languages autoload
-			foreach($autoloads['languages'] as $language){
-				$this->lang($language);
-			}
+			$this->loadAutoloadResourcesArray('lang', $autoloads['languages']);
 			
 			//libraries autoload
-			foreach($autoloads['libraries'] as $library){
-				$this->library($library);
-			}
+			$this->loadAutoloadResourcesArray('library', $autoloads['libraries']);
 
 			//models autoload
-			if(! empty($autoloads['models']) && is_array($autoloads['models'])){
-				foreach($autoloads['models'] as $model){
-					$this->model($model);
-				}
-			}
+			$this->loadAutoloadResourcesArray('model', $autoloads['models']);
 			
-			foreach($autoloads['functions'] as $function){
-				$this->functions($function);
+			//functions autoload
+			$this->loadAutoloadResourcesArray('functions', $autoloads['functions']);
+		}
+
+		/**
+		 * Load the resources autoload array
+		 * @param  string $method    this object method name to call
+		 * @param  array  $resources the resource to load
+		 * @return void            
+		 */
+		private function loadAutoloadResourcesArray($method, array $resources){
+			foreach ($resources as $name) {
+				$this->{$method}($name);
 			}
 		}
 	}

@@ -38,6 +38,7 @@
          */
         public function __construct($overwriteConfig = array()){
             if(file_exists(CONFIG_PATH . 'config_pagination.php')){
+                $config = array();
                 require_once CONFIG_PATH . 'config_pagination.php';
                 if(empty($config) || ! is_array($config)){
                     show_error('No configuration found in ' . CONFIG_PATH . 'config_pagination.php');
@@ -104,7 +105,8 @@
             $query = $temp[0] . $query;
             $navbar = '';
             $numberOfPage = ceil($totalRows / $numberOfRowPerPage);
-			if(! is_numeric ($currentPageNumber) || $currentPageNumber <= 0){
+            $currentPageNumber = (int) $currentPageNumber;
+			if($currentPageNumber <= 0){
 				$currentPageNumber = 1;
 			}
             if($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0 || !is_numeric($numberOfLink) || !is_numeric($numberOfRowPerPage)
