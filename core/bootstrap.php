@@ -183,6 +183,9 @@
 		}
 	}
 	
+	//load model class
+	require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
+	
 	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/**
 	* Routing

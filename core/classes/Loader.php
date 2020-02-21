@@ -501,7 +501,6 @@
 
 			//models autoload
 			if(! empty($autoloads['models']) && is_array($autoloads['models'])){
-				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
 				foreach($autoloads['models'] as $model){
 					$this->model($model);
 				}

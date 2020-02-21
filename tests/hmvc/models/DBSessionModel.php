@@ -15,9 +15,9 @@
 		);
 		
 		public function deleteByTime($time){
-			$this->_database->from($this->_table)
-						->where('s_time', '<', $time)
-						->delete();
+			$this->getQueryBuilder()->from($this->_table)
+									->where('s_time', '<', $time);
+			$this->_database->delete();
 		}
 
 		

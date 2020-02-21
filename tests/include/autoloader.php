@@ -1,6 +1,6 @@
 <?php
 	//Autoload function
-	function test_autoload($class){
+	function tests_autoload($class){
 		$classesMap = array(
 			//Caches
 			'ApcCache' => CORE_CLASSES_CACHE_PATH . 'ApcCache.php',
@@ -42,12 +42,10 @@
 		);
 		if(isset($classesMap[$class])){
 			if(file_exists($classesMap[$class])){
-				include_once $classesMap[$class];
+				require_once $classesMap[$class];
 			}
 			else{
 				echo 'File for class ' . $class . ' not found';
 			}
 		}
 	}
-	
-	spl_autoload_register('test_autoload');

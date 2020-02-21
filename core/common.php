@@ -531,9 +531,6 @@
 			}
 			else if ($sessionHandler == 'database'){
 				//load database session handle library
-				//Model
-				require_once CORE_CLASSES_MODEL_PATH . 'Model.php';
-
 				//Database Session handler Model
 				require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
 

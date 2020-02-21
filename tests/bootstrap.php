@@ -238,19 +238,22 @@
 	if(! isset($_SERVER['REMOTE_ADDR'])){ 
 		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 	}
-
-	//require autoloader for test
-	require_once  'include/autoloader.php';
 	
 	//check for composer autoload file if exists include it
-	if(file_exists(VENDOR_PATH . 'autoload.php')){
+	if (file_exists(VENDOR_PATH . 'autoload.php')){
 		require_once VENDOR_PATH . 'autoload.php';
 		
 		//define the class alias for vstream
 		class_alias('org\bovigo\vfs\vfsStream', 'vfsStream');
 		class_alias('org\bovigo\vfs\vfsStreamDirectory', 'vfsStreamDirectory');
 		class_alias('org\bovigo\vfs\vfsStreamWrapper', 'vfsStreamWrapper');
+		
 	}
+
+	//require autoloader for test
+	require_once  'include/autoloader.php';
+	
+	
 
 	//grap from core/common.php functions and mock some functions for tests
 	require_once  'include/common.php';
@@ -272,6 +275,11 @@
 	 * Setting of the PHP shutdown handling function
 	 */
 	register_shutdown_function('php_shudown_handler');
+	
+	/**
+	* Register the tests autoload
+	*/
+	spl_autoload_register('tests_autoload');
 	
 	
 	
