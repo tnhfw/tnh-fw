@@ -59,7 +59,7 @@
 			$moduleDir = opendir(MODULE_PATH);
 			if(is_resource($moduleDir)){
 				while(($module = readdir($moduleDir)) !== false){
-					if($module != '.' && $module != '..'  && preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
+					if(preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
 						self::$list[] = $module;
 					}
 					else{
@@ -98,28 +98,10 @@
 			foreach (self::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
 				if(file_exists($file)){
+					$autoload = array();
 					require_once $file;
 					if(! empty($autoload) && is_array($autoload)){
-						//libraries autoload
-						if(! empty($autoload['libraries']) && is_array($autoload['libraries'])){
-							$autoloads['libraries'] = array_merge($autoloads['libraries'], $autoload['libraries']);
-						}
-						//config autoload
-						if(! empty($autoload['config']) && is_array($autoload['config'])){
-							$autoloads['config'] = array_merge($autoloads['config'], $autoload['config']);
-						}
-						//models autoload
-						if(! empty($autoload['models']) && is_array($autoload['models'])){
-							$autoloads['models'] = array_merge($autoloads['models'], $autoload['models']);
-						}
-						//functions autoload
-						if(! empty($autoload['functions']) && is_array($autoload['functions'])){
-							$autoloads['functions'] = array_merge($autoloads['functions'], $autoload['functions']);
-						}
-						//languages autoload
-						if(! empty($autoload['languages']) && is_array($autoload['languages'])){
-							$autoloads['languages'] = array_merge($autoloads['languages'], $autoload['languages']);
-						}
+						$autoloads = array_merge_recursive($autoloads, $autoload);
 						unset($autoload);
 					}
 				}

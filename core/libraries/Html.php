@@ -89,9 +89,7 @@
 		 * @return string|void      the generated "br" html if $return is true or display it if not
 		 */
 		public static function br($nb = 1, $return = true){
-			if(! is_numeric($nb) || $nb <= 0){
-				$nb = 1;
-			}
+			$nb = (int) $nb;
 			$str = null;
 			for ($i = 1; $i <= $nb; $i++) {
 				$str .= '<br />';
@@ -112,9 +110,7 @@
 		 * @return string|void the generated "hr" html if $return is true or display it if not.
 		 */
 		public static function hr($nb = 1, array $attributes = array(), $return = true){
-			if(! is_numeric($nb) || $nb <= 0){
-				$nb = 1;
-			}
+			$nb = (int) $nb;
 			$str = null;
 			for ($i = 1; $i <= $nb; $i++) {
 				$str .= '<hr' .attributes_to_string($attributes). ' />';
@@ -136,10 +132,9 @@
 		 * @return string|void the generated header html if $return is true or display it if not.
 		 */
 		public static function head($type = 1, $text = null, $nb = 1, array $attributes = array(), $return = true){
-			if(! is_numeric($nb) || $nb <= 0){
-				$nb = 1;
-			}
-			if(! is_numeric($type) || $type <= 0 || $type > 6){
+			$nb = (int) $nb;
+			$type = (int) $type;
+			if($type <= 0 || $type > 6){
 				$type = 1;
 			}
 			$str = null;

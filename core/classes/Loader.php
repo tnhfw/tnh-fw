@@ -352,6 +352,7 @@
 			}
 			$logger->info('The config file path to be loaded is [' . $configFilePath . ']');
 			if(file_exists($configFilePath)){
+				$config = array();
 				require_once $configFilePath;
 				if(! empty($config) && is_array($config)){
 					Config::setAll($config);
@@ -432,6 +433,7 @@
 			}
 			$logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
 			if($languageFilePath){
+				$lang = array();
 				require_once $languageFilePath;
 				if(! empty($lang) && is_array($lang)){
 					$logger->info('Language file  [' .$languageFilePath. '] contains the valid languages keys add them to language list');
@@ -459,6 +461,7 @@
 			$autoloads['functions'] = array();
 			//loading of the resources in autoload.php configuration file
 			if(file_exists(CONFIG_PATH . 'autoload.php')){
+				$autoload = array();
 				require_once CONFIG_PATH . 'autoload.php';
 				if(! empty($autoload) && is_array($autoload)){
 					$autoloads = array_merge($autoloads, $autoload);

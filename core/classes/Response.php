@@ -260,7 +260,10 @@
 				//current page URL
 				$url = $this->_currentUrl;
 				//Cache view Time to live in second
-				$viewCacheTtl = !empty($obj->view_cache_ttl) ? $obj->view_cache_ttl : get_config('cache_ttl');
+				$viewCacheTtl = get_config('cache_ttl');
+				if (!empty($obj->view_cache_ttl)){
+					$viewCacheTtl = $obj->view_cache_ttl;
+				}
 				//the cache handler instance
 				$cacheInstance = $obj->cache;
 				//the current page cache key for identification
@@ -289,12 +292,11 @@
 			$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
 			
 			//compress the output if is available
+			$type = null;
 			if (self::$_canCompressOutput){
-				ob_start('ob_gzhandler');
+				$type = 'ob_gzhandler';
 			}
-			else{
-				ob_start();
-			}
+			ob_start($type);
 			self::sendHeaders(200);
 			echo $content;
 			ob_end_flush();

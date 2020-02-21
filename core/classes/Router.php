@@ -98,7 +98,8 @@
 	        $routesPath = CONFIG_PATH . 'routes.php';
 	        $this->logger->debug('Loading of routes configuration file --> ' . $routesPath . ' ...');
 			if(file_exists($routesPath)){
-				 $this->logger->info('Found routes configuration file --> ' . $routesPath. ' now load it');
+				$this->logger->info('Found routes configuration file --> ' . $routesPath. ' now load it');
+				$route = array();
 				require_once $routesPath;
 				if(! empty($route) && is_array($route)){
 					$this->routes = $route;

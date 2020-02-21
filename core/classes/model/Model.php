@@ -112,6 +112,11 @@
          * this, we can, or, we could use the `as_array()` and `as_object()` scopes.
          */
         protected $return_type = 'object';
+
+        /**
+         * Set return type array or object
+         * @var string
+         */
         protected $_temporary_return_type = NULL;
     	
     	

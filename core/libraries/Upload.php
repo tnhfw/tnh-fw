@@ -256,8 +256,6 @@
             // Set file array
             if (isset($_FILES) && is_array($_FILES)) {
                 $this->file_array = $_FILES;
-            } elseif (isset($HTTP_POST_FILES) && is_array($HTTP_POST_FILES)) {
-                $this->file_array = $HTTP_POST_FILES;
             }
             $this->logger->info('The upload file information are : ' .stringfy_vars($this->file_array));
         }

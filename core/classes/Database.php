@@ -505,9 +505,6 @@
             }
           } else {
               $this->setQueryResultForNonSelect($sqlQuery);
-              if (! $this->result){
-                $this->setQueryError();
-              }
           }
         }
       } else if ($isSqlSELECTQuery){
@@ -574,10 +571,11 @@
             //here don't use require_once because somewhere user can create database instance directly
             require CONFIG_PATH . 'database.php';
         }
-          
-        if (! empty($overwriteConfig)){
-          $db = array_merge($db, $overwriteConfig);
-        }
+        
+        //merge with the parameter  
+        $db = array_merge($db, $overwriteConfig);
+        
+        //default configuration
         $config = array(
           'driver' => 'mysql',
           'username' => 'root',
@@ -590,14 +588,15 @@
           'port' => ''
         );
 		
-		$config = array_merge($config, $db);
-		if (strstr($config['hostname'], ':')){
-			$p = explode(':', $config['hostname']);
-			if (count($p) >= 2){
-			  $config['hostname'] = $p[0];
-			  $config['port'] = $p[1];
-			}
-		 }
+    		$config = array_merge($config, $db);
+    		//determine the port using the hostname like localhost:3307
+        //hostname will be "localhost", and port "3307"
+        $p = explode(':', $config['hostname']);
+    	  if (count($p) >= 2){
+    		  $config['hostname'] = $p[0];
+    		  $config['port'] = $p[1];
+    		}
+		
 		 $this->databaseName = $config['database'];
 		 $this->config = $config;
 		 $this->logger->info(
