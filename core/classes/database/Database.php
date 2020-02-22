@@ -479,12 +479,8 @@
             $this->result  = $queryResult->getResult();
             $this->numRows = $queryResult->getNumRows();
             if ($isSqlSELECTQuery && $dbCacheStatus){
-                $this->setCacheContentForQuery(
-                                            $this->query, 
-                                            $this->getCacheKeyForQuery($this->query, $returnAsList, $returnAsArray), 
-                                            $this->result, 
-                                            $cacheExpire
-                                          );
+                $key = $this->getCacheKeyForQuery($this->query, $returnAsList, $returnAsArray);
+                $this->setCacheContentForQuery($this->query, $key, $this->result, $cacheExpire);
             if (! $this->result){
               $this->logger->info('No result where found for the query [' . $query . ']');
             }

@@ -51,24 +51,21 @@
 		 *  @return string the IP address.
 		 */
 		function get_ip(){
-			$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
-
-			if (isset($_SERVER["HTTP_CLIENT_IP"])) {
-				$ip = $_SERVER["HTTP_CLIENT_IP"];
+			$ip = '127.0.0.1';
+			$ipServerVars = array(
+								'REMOTE_ADDR',
+								'HTTP_CLIENT_IP',
+								'HTTP_X_FORWARDED_FOR',
+								'HTTP_X_FORWARDED',
+								'HTTP_FORWARDED_FOR',
+								'HTTP_FORWARDED'
+							);
+			foreach ($ipServerVars as $var) {
+				if(isset($_SERVER[$var])){
+					$ip = $_SERVER[$var];
+					break;
+				}
 			}
-			else if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
-				$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-			} 
-			else if (isset($_SERVER["HTTP_X_FORWARDED"])) {
-				$ip = $_SERVER["HTTP_X_FORWARDED"];
-			} 
-			else if (isset($_SERVER["HTTP_FORWARDED_FOR"])) {
-				$ip = $_SERVER["HTTP_FORWARDED_FOR"];
-			} 
-			else if (isset($_SERVER["HTTP_FORWARDED"])) {
-				$ip = $_SERVER["HTTP_FORWARDED"];
-			} 
-
 			// Strip any secondary IP etc from the IP address
 			if (strpos($ip, ',') > 0) {
 				$ip = substr($ip, 0, strpos($ip, ','));

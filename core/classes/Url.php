@@ -115,18 +115,26 @@
 			$obj = & get_instance();
 			$domain = 'localhost';
 			$port = $obj->request->server('SERVER_PORT');
-			$protocol = is_https() ? 'https' : 'http';
+			$protocol = 'http';
+			if(is_https()){
+				$protocol = 'https';
+			}
+
+			$domainserverVars = array(
+				'HTTP_HOST',
+				'SERVER_NAME',
+				'SERVER_ADDR'
+			);
+
+			foreach ($domainserverVars as $var) {
+				$value = $obj->request->server($var);
+				if($value){
+					$domain = $value;
+					break;
+				}
+			}
 			
-			if($obj->request->server('HTTP_HOST')){
-				$domain = $obj->request->server('HTTP_HOST');
-			}
-			else if($obj->request->server('SERVER_NAME')){
-				$domain = $obj->request->server('SERVER_NAME');
-			}
-			else if($obj->request->server('SERVER_ADDR')){
-				$domain = $obj->request->server('SERVER_ADDR');
-			}
-			if($port && (is_https() && $port != 443 || !is_https() && $port != 80)){
+			if($port && ((is_https() && $port != 443) || (!is_https() && $port != 80))){
 				//some server use SSL but the port doesn't equal 443 sometime is 80 if is the case put the port at this end
 				//of the domain like https://my.domain.com:787
 				if(is_https() && $port != 80){

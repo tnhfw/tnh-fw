@@ -154,14 +154,16 @@
 				}
 				$baseUrl = null;
 				if (isset($_SERVER['SERVER_ADDR'])){
+					$baseUrl = $_SERVER['SERVER_ADDR'];
 					//check if the server is running under IPv6
 					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE){
 						$baseUrl = '['.$_SERVER['SERVER_ADDR'].']';
 					}
-					else{
-						$baseUrl = $_SERVER['SERVER_ADDR'];
+					$serverPort = 80;
+					if (isset($_SERVER['SERVER_PORT'])) {
+						$serverPort = $_SERVER['SERVER_PORT'];
 					}
-					$port = ((isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80' && ! is_https() || $_SERVER['SERVER_PORT'] != '443' && is_https()) ) ? ':' . $_SERVER['SERVER_PORT'] : '');
+					$port = ((($serverPort != '80' && ! is_https()) || ($serverPort != '443' && is_https())) ? ':' . $serverPort : '');
 					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl . $port
 						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
 				}

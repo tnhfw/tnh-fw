@@ -42,7 +42,7 @@
 		
 		/**
 		 * The logger instance
-		 * @var Log
+		 * @var object
 		 */
 		private static $logger;
 
@@ -95,7 +95,7 @@
 		 *  Note:
 		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
 		 *  
-		 *  @param $path the name of the css file without the extension.
+		 *  @param string $path the name of the css file without the extension.
 		 *  @return string|null the absolute path of the css file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function css($path){
@@ -126,7 +126,7 @@
 		 *  Note:
 		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
 		 *  
-		 *  @param $path the name of the javascript file without the extension.
+		 *  @param string $path the name of the javascript file without the extension.
 		 *  @return string|null the absolute path of the javascript file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function js($path){
@@ -151,7 +151,7 @@
 		 *  Note:
 		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
 		 *  
-		 *  @param $path the name of the image file with the extension.
+		 *  @param string $path the name of the image file with the extension.
 		 *  @return string|null the absolute path of the image file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function img($path){

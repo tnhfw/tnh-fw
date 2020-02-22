@@ -54,7 +54,7 @@
      * or the data used to replace the placeholder (array)
 	 * @var array|boolean
 	 */
-     private $all               = true;
+     private $returnAsList     = true;
      
      
      /**
@@ -100,8 +100,8 @@
         if (is_object($pdo)){
           $this->pdo = $pdo;
         }
-        $this->query = $query;
-        $this->returnAsList = $returnAsList;
+        $this->query         = $query;
+        $this->returnAsList  = $returnAsList;
         $this->returnAsArray = $returnAsArray;
         $this->setLoggerFromParamOrCreateNewInstance(null);
     }
@@ -122,11 +122,7 @@
           $this->benchmarkInstance = & class_loader('Benchmark');
         }
         
-        $this->logger->info(
-                          'Execute SQL query [' . $this->query . '], return type: ' 
-                          . ($this->returnAsArray ? 'ARRAY' : 'OBJECT') .', return as list: ' 
-                          . ($this->returnAsList ? 'YES':'NO')
-                        );
+        $this->logger->info('Execute SQL query [' . $this->query . ']');
 
         $this->benchmarkInstance->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');                
         //Now execute the query
