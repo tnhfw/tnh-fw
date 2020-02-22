@@ -225,6 +225,7 @@
                 }
             }
         }
+        
         /**
          * Takes and trims each data, if it has any rules, we parse the rule string and run
          * each rule against the data value. Sets _success to true if there are no errors

@@ -20,7 +20,10 @@
 								'charset'   => 'utf8',
 								'collation' => 'utf8_general_ci',
 							));
-			$this->db->setBenchmark(new Benchmark());
+            $qr = new DatabaseQueryRunner($this->db->getPdo());
+            $qr->setBenchmark(new Benchmark());
+            $qr->setDriver('sqlite');
+            $this->db->setQueryRunner($qr);
 		}
 		
 		public static function setUpBeforeClass()
@@ -39,12 +42,12 @@
 		protected function setUp()
 		{
 			$this->model = new DBSessionModel($this->db);
+            //to prevent old data conflict
+			$this->model->truncate();
 		}
 
 		protected function tearDown()
 		{
-			//to prevent old data conflict
-			$this->model->truncate();
 		}
 
 		

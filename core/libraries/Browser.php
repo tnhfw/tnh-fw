@@ -481,8 +481,6 @@
                 $this->checkBrowserIframely() ||
                 $this->checkBrowserCocoa() ||
                 $this->checkBrowserMozilla() /* Mozilla is such an open standard that you must check it last */
-
-
             );
         }
 

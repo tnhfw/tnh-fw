@@ -129,17 +129,12 @@
 			
 			//check if config log_logger_name is set
 			if($this->logger){
-				$configLoggerName = get_config('log_logger_name', '');
-				if($configLoggerName){
-					if (is_array($configLoggerName)){
-						//for best comparaison put all string to lowercase
-						$configLoggerName = array_map('strtolower', $configLoggerName);
-						if(! in_array(strtolower($this->logger), $configLoggerName)){
-							return;
-						}
-					}
-					else if(strtolower($this->logger) !== strtolower($configLoggerName)){
-						return; 
+				$configLoggersName = get_config('log_logger_name', array());
+				if (!empty($configLoggersName)) {
+					//for best comparaison put all string to lowercase
+					$configLoggersName = array_map('strtolower', $configLoggersName);
+					if(! in_array(strtolower($this->logger), $configLoggersName)){
+						return;
 					}
 				}
 			}

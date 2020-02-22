@@ -1,11 +1,12 @@
 ## TNH FRAMEWORK
 **A simple PHP framework using HMVC architecture**
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/tnhfw/tnh-fw.svg?style=flat-square)](https://packagist.org/packages/tnhfw/tnh-fw)
+[![Latest Stable Version](https://poser.pugx.org/tnhfw/tnh-fw/v/stable)](https://packagist.org/packages/tnhfw/tnh-fw)
+[![Latest Unstable Version](https://poser.pugx.org/tnhfw/tnh-fw/v/unstable)](https://packagist.org/packages/tnhfw/tnh-fw)
+[![License](https://poser.pugx.org/tnhfw/tnh-fw/license)](https://packagist.org/packages/tnhfw/tnh-fw)
 [![Build Status](https://img.shields.io/travis/tnhfw/tnh-fw/1.0.0-dev.svg?style=flat-square)](https://travis-ci.com/tnhfw/tnh-fw)
 [![Quality Score](https://img.shields.io/scrutinizer/g/tnhfw/tnh-fw.svg?style=flat-square)](https://scrutinizer-ci.com/g/tnhfw/tnh-fw)
-[![Total Downloads](https://img.shields.io/packagist/dt/tnhfw/tnh-fw.svg?style=flat-square)](https://packagist.org/packages/tnhfw/tnh-fw)
-
+[![Total Downloads](https://poser.pugx.org/tnhfw/tnh-fw/downloads)](https://packagist.org/packages/tnhfw/tnh-fw)
 
 ## Requirements
 

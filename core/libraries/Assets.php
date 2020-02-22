@@ -69,8 +69,8 @@
 		 *  Note:
 		 *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
 		 *  
-		 *  @param $asset the name of the assets file path with the extension.
-		 *  @return string|null
+		 *  @param string $asset the name of the assets file path with the extension.
+		 *  @return string|null the absolute path of the assets file, if it exists otherwise returns null if the file does not exist.
 		 */
 		public static function path($asset){
 			$logger = self::getLogger();	

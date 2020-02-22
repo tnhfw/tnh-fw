@@ -172,7 +172,7 @@
 			//TODO for Database library
 			if(strtolower($class) == 'database'){
 				$logger->info('This is the Database library ...');
-				$dbInstance = & class_loader('Database', 'classes', $params);
+				$dbInstance = & class_loader('Database', 'classes/database', $params);
 				$obj->{$instance} = $dbInstance;
 				static::$loaded[$instance] = $class;
 				$logger->info('Library Database loaded successfully.');

@@ -309,8 +309,8 @@
 		/**
 		* Get the cache file full path for the given key
 		*
-		* @param $key the cache item key
-		* @return string
+		* @param string $key the cache item key
+		* @return string the full cache file path for this key
 		*/
 		private function getFilePath($key){
 			return CACHE_PATH . md5($key) . '.cache';

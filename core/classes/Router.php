@@ -93,55 +93,20 @@
 		 * Construct the new Router instance
 		 */
 		public function __construct(){
-			$this->logger =& class_loader('Log', 'classes');
-	        $this->logger->setLogger('Library::Router');
-	        $routesPath = CONFIG_PATH . 'routes.php';
-	        $this->logger->debug('Loading of routes configuration file --> ' . $routesPath . ' ...');
-			if(file_exists($routesPath)){
-				$this->logger->info('Found routes configuration file --> ' . $routesPath. ' now load it');
-				$route = array();
-				require_once $routesPath;
-				if(! empty($route) && is_array($route)){
-					$this->routes = $route;
-					unset($route);
-				}
-			}
-			else{
-				show_error('Unable to find the routes configuration file [' . $routesPath . ']');
-			}
+			$this->setLoggerFromParamOrCreateNewInstance(null);
 			
 			//loading routes for module
-			$this->logger->debug('Loading of modules routes ... ');
+			$moduleRouteList = array();
 			$modulesRoutes = Module::getModulesRoutes();
 			if($modulesRoutes && is_array($modulesRoutes)){
-				$this->routes = array_merge($this->routes, $modulesRoutes);
-				$this->logger->info('Routes for all modules loaded successfully');
+				$moduleRouteList = $modulesRoutes;
+				unset($modulesRoutes);
 			}
-			else{
-				$this->logger->info('No routes found for all modules skipping.');
-			}
+			$this->setRouteConfiguration($moduleRouteList);
 			$this->logger->info('The routes configuration are listed below: ' . stringfy_vars($this->routes));
 
-			foreach($this->routes as $pattern => $callback){
-				$this->add($pattern, $callback);
-			}
-			
-			//here use directly the variable $_SERVER
-			$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-			$this->logger->debug('Check if URL suffix is enabled in the configuration');
-			//remove url suffix from the request URI
-			if($suffix = get_config('url_suffix')){
-				$this->logger->info('URL suffix is enabled in the configuration, the value is [' . $suffix . ']' );
-				$uri = str_ireplace($suffix, '', $uri);
-			}
-			else{
-				$this->logger->info('URL suffix is not enabled in the configuration');
-			}
-			if(strpos($uri, '?') !== false){
-				$uri = substr($uri, 0, strpos($uri, '?'));
-			}
-			$uri = trim($uri, $this->uriTrim);
-			$this->segments = explode('/', $uri);
+			//Set route parameters
+			$this->setRouteParams();
 		}
 
 		/**
@@ -398,4 +363,77 @@
 				$response->send404();
 			}
 		}
+
+	/**
+     * Return the Log instance
+     * @return Log
+     */
+    public function getLogger(){
+      return $this->logger;
+    }
+
+    /**
+     * Set the log instance
+     * @param Log $logger the log object
+	 * @return object
+     */
+    public function setLogger($logger){
+      $this->logger = $logger;
+      return $this;
+    }
+
+    /**
+    * Setting the route configuration using the configuration file and additional configuration from param
+    * @param array $overwriteConfig the additional configuration to overwrite with the existing one
+    * @param boolean $useConfigFile whether to use route configuration file
+	* @return object
+    */
+    public function setRouteConfiguration(array $overwriteConfig = array(), $useConfigFile = true){
+        $route = array();
+        if ($useConfigFile && file_exists(CONFIG_PATH . 'routes.php')){
+            require_once CONFIG_PATH . 'routes.php';
+        }
+        $route = array_merge($route, $overwriteConfig);
+        $this->routes = $route;
+		return $this;
+    }
+
+    /**
+     * Set the route paramaters using the configuration
+     */
+    protected function setRouteParams(){
+    	//adding route
+		foreach($this->routes as $pattern => $callback){
+			$this->add($pattern, $callback);
+		}
+		
+		//here use directly the variable $_SERVER
+		$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+		$this->logger->debug('Check if URL suffix is enabled in the configuration');
+		//remove url suffix from the request URI
+		$suffix = get_config('url_suffix');
+		if ($suffix) {
+			$this->logger->info('URL suffix is enabled in the configuration, the value is [' . $suffix . ']' );
+			$uri = str_ireplace($suffix, '', $uri);
+		} 
+		if (strpos($uri, '?') !== false){
+			$uri = substr($uri, 0, strpos($uri, '?'));
+		}
+		$uri = trim($uri, $this->uriTrim);
+		$this->segments = explode('/', $uri);
 	}
+
+	/**
+     * Set the Log instance using argument or create new instance
+     * @param object $logger the Log instance if not null
+     */
+    protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
+      if ($logger !== null){
+        $this->logger = $logger;
+      }
+      else{
+          $this->logger =& class_loader('Log', 'classes');
+          $this->logger->setLogger('Library::Router');
+      }
+    }
+}
