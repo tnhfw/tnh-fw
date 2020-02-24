@@ -155,7 +155,6 @@
                 //determine the pagination query string value
                 $this->determinePaginationQueryStringValue();
             }
-            $query = $this->paginationQueryString;
             //************************************
             $navbar = '';
             $numberOfPage = ceil($totalRows / $numberOfRowPerPage);
@@ -170,7 +169,7 @@
                 return $navbar;
             }
             $start = null;
-            $end = null;
+            $end   = null;
             $begin = null;
             if ($numberOfLink % 2 == 0){
                 $start = $currentPageNumber - ($numberOfLink / 2) + 1;
@@ -196,6 +195,8 @@
                 $begin = 1;
                 $end = $numberOfPage;
             }
+            $begin = (int) $begin;
+            $end = (int) $end;
 
             //**
             if ($currentPageNumber == 1){
