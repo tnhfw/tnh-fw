@@ -150,21 +150,20 @@
 				//can't log
 				return;
 			}
-			
-			$logSavePath = get_config('log_save_path');
-			if(! $logSavePath){
-				$logSavePath = LOGS_PATH;
-			}
-			
-			if(! is_dir($logSavePath) || !is_writable($logSavePath)){
-				//NOTE: here need put the show_error() "logging" to false to prevent loop
-				show_error('Error : the log dir does not exists or is not writable', $title = 'Log directory error', $logging = false);
-			}
-			
-			$path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
-			if(! file_exists($path)){
-				touch($path);
-			}
+			//check log file and directory
+			$path = $this->checkAndSetLogFileDirectory();
+			//save the log data
+			$this->saveLogData($path, $level, $message);
+		}	
+
+		/**
+		 * Save the log data into file
+		 * @param  string $path    the path of the log file
+		 * @param  int $level   the log level in numeric format
+		 * @param  string $message the log message to save
+		 * @return void
+		 */
+		public function saveLogData($path, $level, $message){
 			//may be at this time helper user_agent not yet included
 			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 			
@@ -189,7 +188,29 @@
 				fwrite($fp, $str);
 				fclose($fp);
 			}
-		}		
+		}	
+
+		/**
+		 * Check the file and directory 
+		 * @return string the log file path
+		 */
+		protected function checkAndSetLogFileDirectory(){
+			$logSavePath = get_config('log_save_path');
+			if(! $logSavePath){
+				$logSavePath = LOGS_PATH;
+			}
+			
+			if(! is_dir($logSavePath) || !is_writable($logSavePath)){
+				//NOTE: here need put the show_error() "logging" to false to prevent loop
+				show_error('Error : the log dir does not exists or is not writable', $title = 'Log directory error', $logging = false);
+			}
+			
+			$path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
+			if(! file_exists($path)){
+				touch($path);
+			}
+			return $path;
+		}
 		
 		/**
 		 * Check if the given log level is valid
@@ -198,7 +219,7 @@
 		 *
 		 * @return boolean        true if the given log level is valid, false if not
 		 */
-		private static function isValidConfigLevel($level){
+		protected static function isValidConfigLevel($level){
 			$level = strtolower($level);
 			return in_array($level, self::$validConfigLevel);
 		}
@@ -206,30 +227,27 @@
 		/**
 		 * Get the log level number for the given level string
 		 * @param  string $level the log level in string format
+		 * 
 		 * @return int        the log level in integer format using the predefinied constants
 		 */
-		private static function getLevelValue($level){
+		protected static function getLevelValue($level){
 			$level = strtolower($level);
-			$value = self::NONE;
-			
+			$levelMaps = array(
+				'fatal'   => self::FATAL,
+				'error'   => self::ERROR,
+				'warning' => self::WARNING,
+				'warn'    => self::WARNING,
+				'info'    => self::INFO,
+				'debug'   => self::DEBUG,
+				'all'     => self::ALL
+			);
 			//the default value is NONE, so means no need test for NONE
-			if($level == 'fatal'){
-				$value = self::FATAL;
-			}
-			else if($level == 'error'){
-				$value = self::ERROR;
-			}
-			else if($level == 'warning' || $level == 'warn'){
-				$value = self::WARNING;
-			}
-			else if($level == 'info'){
-				$value = self::INFO;
-			}
-			else if($level == 'debug'){
-				$value = self::DEBUG;
-			}
-			else if($level == 'all'){
-				$value = self::ALL;
+			$value = self::NONE;
+			foreach ($levelMaps as $k => $v) {
+				if($level == $k){
+					$value = $v;
+					break;
+				}
 			}
 			return $value;
 		}
@@ -239,24 +257,20 @@
 		 * @param  integer $level the log level in integer format
 		 * @return string        the log level in string format
 		 */
-		private static function getLevelName($level){
+		protected static function getLevelName($level){
+			$levelMaps = array(
+				self::FATAL   => 'FATAL',
+				self::ERROR   => 'ERROR',
+				self::WARNING => 'WARNING',
+				self::INFO    => 'INFO',
+				self::DEBUG   => 'DEBUG'
+			);
 			$value = '';
-			
-			//the default value is NONE, so means no need test for NONE
-			if($level == self::FATAL){
-				$value = 'FATAL';
-			}
-			else if($level == self::ERROR){
-				$value = 'ERROR';
-			}
-			else if($level == self::WARNING){
-				$value = 'WARNING';
-			}
-			else if($level == self::INFO){
-				$value = 'INFO';
-			}
-			else if($level == self::DEBUG){
-				$value = 'DEBUG';
+			foreach ($levelMaps as $k => $v) {
+				if($level == $k){
+					$value = $v;
+					break;
+				}
 			}
 			//no need for ALL
 			return $value;

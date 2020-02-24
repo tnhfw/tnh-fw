@@ -173,7 +173,6 @@
 					if($serverPort && ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80))){
 						$port = ':'.$serverPort;
 					}
-					$port = ((($serverPort != '80' && ! is_https()) || ($serverPort != '443' && is_https())) ? ':' . $serverPort : '');
 					$baseUrl = $protocol . $baseUrl . $port . substr(
 																		$_SERVER['SCRIPT_NAME'], 
 																		0, 

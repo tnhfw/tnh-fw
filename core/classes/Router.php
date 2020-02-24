@@ -207,7 +207,7 @@
 		* Add the URI and callback to the list of URIs to validate
 		*
 		* @param string $uri the request URI
-		* @param object $callback the callback function
+		* @param string $callback the callback function
 		*
 		* @return object the current instance
 		*/
@@ -264,10 +264,8 @@
 	    		$routeUri = $uri;
 	    	}
 	    	//if the application is running in CLI mode use the first argument
-			else if(IS_CLI){
-				if(isset($_SERVER['argv'][1])){
-					$routeUri = $_SERVER['argv'][1];
-				}
+			else if(IS_CLI && isset($_SERVER['argv'][1])){
+				$routeUri = $_SERVER['argv'][1];
 			}
 			else if(isset($_SERVER['REQUEST_URI'])){
 				$routeUri = $_SERVER['REQUEST_URI'];
@@ -442,11 +440,15 @@
 	    	//did we set the controller, so set the controller path
 			if($this->controller && ! $this->controllerPath){
 				$this->logger->debug('Setting the file path for the controller [' . $this->controller . ']');
-				$this->controllerPath = APPS_CONTROLLER_PATH . ucfirst($this->controller) . '.php';
+				$controllerPath = APPS_CONTROLLER_PATH . ucfirst($this->controller) . '.php';
 				//if the controller is in module
 				if($this->module){
-					$this->controllerPath = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
+					$path = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
+					if($path !== false){
+						$controllerPath = $path;
+					}
 				}
+				$this->controllerPath = $controllerPath;
 			}
 			return $this;
 	    }
@@ -481,7 +483,7 @@
 					//check if this contains an module
 					$moduleControllerMethod = explode('#', $this->callback[$index]);
 					if(is_array($moduleControllerMethod) && count($moduleControllerMethod) >= 2){
-						$this->logger->info('The current request use the module [' .$moduleControllerMethod[0]. ']');
+						$this->logger->info('The current request use the module [' . $moduleControllerMethod[0] . ']');
 						$this->module = $moduleControllerMethod[0];
 						$moduleControllerMethod = explode('@', $moduleControllerMethod[1]);
 					}
@@ -552,10 +554,10 @@
 						if(isset($segment[0])){
 							$this->controller = $segment[0];
 							//check if the request use the same module name and controller
-							$path = Module::findControllerFullPath(ucfirst($this->getController()), $this->getModule());
+							$path = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
 							if(! $path){
-								$this->logger->info('The controller [' . $this->getController() . '] not found in the module, may be will use the module [' . $this->getModule() . '] as controller');
-								$this->controller = $this->getModule();
+								$this->logger->info('The controller [' . $this->controller . '] not found in the module, may be will use the module [' . $this->module . '] as controller');
+								$this->controller = $this->module;
 							}
 							else{
 								$this->controllerPath = $path;

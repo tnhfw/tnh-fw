@@ -50,17 +50,14 @@
 		 * @return string the generated string.
 		 */
 		function get_random_string($type = 'alnum', $length = 10, $lower = false){
-			$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-			switch($type){
-				case 'alpha':
-					$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-				break;
-				case 'alnum':
-					$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-				break;
-				case 'num':
-					$str = '1234567890';
-				break;
+			$chars = array(
+							'alpha' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+							'alnum' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+							'num' => '1234567890'
+						);
+			$str = null;
+			if(isset($chars[$type])){
+				$str = $chars[$type];
 			}
 			$random = null;
 			for($i = 0; $i < $length; $i++){

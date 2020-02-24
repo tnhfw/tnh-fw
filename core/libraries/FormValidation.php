@@ -266,10 +266,7 @@
                     }
                 }
             }
-
-            if (empty($this->_errors) && $this->_forceFail === false) {
-                $this->_success = true;
-            }
+            $this->_success =  empty($this->_errors) && $this->_forceFail === false;
         }
 
         /**
@@ -827,16 +824,17 @@
          */
 		protected function _validateExists($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-    		$obj = & get_instance();
-    		if(! isset($obj->database)){
-    			return;
-    		}
+    		if (! is_object($this->databaseInstance)){
+                $obj = & get_instance();
+                if(isset($obj->database)){
+                    $this->databaseInstance = $obj->database;
+                } 
+            }
     		list($table, $column) = explode('.', $ruleArgs[1]);
-    		$obj->database->from($table)
-    			          ->where($column, $inputVal)
-    			          ->get();
-    		$nb = $obj->database->numRows();
-            if ($nb == 0) {
+    		$this->databaseInstance->getQueryBuilder()->from($table)
+    			                                       ->where($column, $inputVal);
+    		$this->databaseInstance->get();
+            if ($this->databaseInstance->numRows() <= 0) {
                 if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
@@ -856,15 +854,13 @@
                 $obj = & get_instance();
                 if(isset($obj->database)){
                     $this->databaseInstance = $obj->database;
-                } else {
-                    return;
-                }
+                } 
             }
     		list($table, $column) = explode('.', $ruleArgs[1]);
     		$this->databaseInstance->getQueryBuilder()->from($table)
     			                                      ->where($column, $inputVal);
     		$this->databaseInstance->get();
-    		if ($this->databaseInstance->numRows() != 0) {
+    		if ($this->databaseInstance->numRows() > 0) {
                 if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
@@ -884,21 +880,19 @@
                 $obj = & get_instance();
                 if(isset($obj->database)){
                     $this->databaseInstance = $obj->database;
-                } else {
-                    return;
-                }
+                } 
             }
     		$data = explode(',', $ruleArgs[1]);
     		if(count($data) < 2){
     			return;
     		}
     		list($table, $column) = explode('.', $data[0]);
-    		list($field, $val) = explode('=', $data[1]);
+    		list($field, $val)    = explode('=', $data[1]);
     		$this->databaseInstance->getQueryBuilder()->from($table)
                                 			          ->where($column, $inputVal)
                                             		  ->where($field, '!=', trim($val));
             $this->databaseInstance->get();
-    		if ($this->databaseInstance->numRows() != 0) {
+    		if ($this->databaseInstance->numRows() > 0) {
                 if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }

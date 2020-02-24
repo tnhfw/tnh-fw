@@ -88,24 +88,20 @@
 				$logger->warning('The CSRF session data is not valide');
 				return false;
 			}
-			else{
-				//perform form data
-				//need use request->query() for best retrieve
-				//super instance
-				$obj = & get_instance();
-				$token = $obj->request->query($key);
-				if(! $token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime){
-					$logger->warning('The CSRF data [' .$token. '] is not valide may be attacker do his job');
-					return false;
-				}
-				else{
-					$logger->info('The CSRF data [' .$token. '] is valide the form data is safe continue');
-					//remove the token from session
-					Session::clear($key);
-					Session::clear($keyExpire);
-					return true;
-				}
+			//perform form data
+			//need use request->query() for best retrieve
+			//super instance
+			$obj = & get_instance();
+			$token = $obj->request->query($key);
+			if(! $token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime){
+				$logger->warning('The CSRF data [' .$token. '] is not valide may be attacker do his job');
+				return false;
 			}
+			$logger->info('The CSRF data [' .$token. '] is valide the form data is safe continue');
+			//remove the token from session
+			Session::clear($key);
+			Session::clear($keyExpire);
+			return true;
 		}
 		
 		/**

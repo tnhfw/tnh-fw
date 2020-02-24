@@ -339,7 +339,7 @@
         if (is_array($op)){
           $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
         } else {
-          $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape = true);
+          $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
         }
       }
       $this->setWhereStr($whereStr, $andOr);
@@ -729,7 +729,7 @@
      */
     public function escape($data, $escaped = true){
       return $escaped 
-                    ? $this->getPdo()->quote(trim($data)) 
+                    ? $this->pdo->quote(trim($data)) 
                     : $data; 
     }
 

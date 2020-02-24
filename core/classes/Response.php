@@ -66,8 +66,14 @@
 		 * Construct new response instance
 		 */
 		public function __construct(){
-			$this->_currentUrl =  (! empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '' )
-					. (! empty($_SERVER['QUERY_STRING']) ? ('?' . $_SERVER['QUERY_STRING']) : '' );
+			$currentUrl = '';
+			if (! empty($_SERVER['REQUEST_URI'])){
+				$currentUrl = $_SERVER['REQUEST_URI'];
+			}
+			if (! empty($_SERVER['QUERY_STRING'])){
+				$currentUrl .= '?' . $_SERVER['QUERY_STRING'];
+			}
+			$this->_currentUrl =  $currentUrl;
 					
 			$this->_currentUrlCacheKey = md5($this->_currentUrl);
 			
@@ -327,39 +333,37 @@
 					self::sendHeaders(304);
 					return;
 				}
-				else{
-					$logger->info('The cache page content is expired or the browser don\'t send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $url . '] send cache headers to tell the browser');
-					self::sendHeaders(200);
-					//get the cache content
-					$content = $cache->get($pageCacheKey);
-					if($content){
-						$logger->info('The page content for the URL [' . $url . '] already cached just display it');
-						//load benchmark class
-						$benchmark = & class_loader('Benchmark');
-						
-						// Parse out the elapsed time and memory usage,
-						// then swap the pseudo-variables with the data
-						$elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-						$memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
-						$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
-						
-						///display the final output
-						//compress the output if is available
-						if (self::$_canCompressOutput){
-							ob_start('ob_gzhandler');
-						}
-						else{
-							ob_start();
-						}
-						echo $content;
-						ob_end_flush();
-						return;
+				$logger->info('The cache page content is expired or the browser doesn\'t send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $url . '] send cache headers to tell the browser');
+				self::sendHeaders(200);
+				//get the cache content
+				$content = $cache->get($pageCacheKey);
+				if($content){
+					$logger->info('The page content for the URL [' . $url . '] already cached just display it');
+					//load benchmark class
+					$benchmark = & class_loader('Benchmark');
+					
+					// Parse out the elapsed time and memory usage,
+					// then swap the pseudo-variables with the data
+					$elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+					$memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
+					$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
+					
+					///display the final output
+					//compress the output if is available
+					$type = null;
+					if (self::$_canCompressOutput){
+						$type = 'ob_gzhandler';
 					}
-					else{
-						$logger->info('The page cache content for the URL [' . $url . '] is not valid may be already expired');
-						$cache->delete($pageCacheKey);
-					}
+					ob_start($type);
+					echo $content;
+					ob_end_flush();
+					return;
 				}
+				else{
+					$logger->info('The page cache content for the URL [' . $url . '] is not valid may be already expired');
+					$cache->delete($pageCacheKey);
+				}
+				
 			}
 		}
 		
@@ -394,12 +398,11 @@
 			$path = CORE_VIEWS_PATH . '404.php';
 			if(file_exists($path)){
 				//compress the output if is available
+				$type = null;
 				if (self::$_canCompressOutput){
-					ob_start('ob_gzhandler');
+					$type = 'ob_gzhandler';
 				}
-				else{
-					ob_start();
-				}
+				ob_start($type);
 				require_once $path;
 				$output = ob_get_clean();
 				self::sendHeaders(404);
@@ -417,13 +420,12 @@
 		public static function sendError(array $data = array()){
 			$path = CORE_VIEWS_PATH . 'errors.php';
 			if(file_exists($path)){
-				//compress the output if exists
+				//compress the output if is available
+				$type = null;
 				if (self::$_canCompressOutput){
-					ob_start('ob_gzhandler');
+					$type = 'ob_gzhandler';
 				}
-				else{
-					ob_start();
-				}
+				ob_start($type);
 				extract($data);
 				require_once $path;
 				$output = ob_get_clean();

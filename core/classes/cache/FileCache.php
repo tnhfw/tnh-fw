@@ -180,31 +180,25 @@
 				$this->logger->info('This cache file does not exists skipping');
 				return false;
 			}
-			else{
-				$this->logger->info('Found cache file [' .$filePath. '] check the validity');
-	      		$data = file_get_contents($filePath);
-				$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
-				if(! $data){
-					$this->logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
-					return false;
-				}
-				else{
-					$this->logger->info('This cache data is OK check for expire');
-					if(isset($data['expire']) && $data['expire'] > time()){
-						$this->logger->info('This cache not yet expired return cache informations');
-						$info = array(
-							'mtime' => $data['mtime'],
-							'expire' => $data['expire'],
-							'ttl' => $data['ttl']
-							);
-						return $info;
-					}
-					else{
-						$this->logger->info('This cache already expired return false');
-						return false;
-					}
-				}
+			$this->logger->info('Found cache file [' .$filePath. '] check the validity');
+      		$data = file_get_contents($filePath);
+			$data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
+			if(! $data){
+				$this->logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
+				return false;
 			}
+			$this->logger->info('This cache data is OK check for expire');
+			if(isset($data['expire']) && $data['expire'] > time()){
+				$this->logger->info('This cache not yet expired return cache informations');
+				$info = array(
+					'mtime' => $data['mtime'],
+					'expire' => $data['expire'],
+					'ttl' => $data['ttl']
+					);
+				return $info;
+			}
+			$this->logger->info('This cache already expired return false');
+			return false;
 		}
 
 

@@ -1668,63 +1668,47 @@
          */
         protected function checkPlatform()
         {
-            if (stripos($this->_agent, 'windows') !== false) {
-                $this->_platform = self::PLATFORM_WINDOWS;
-            } else if (stripos($this->_agent, 'iPad') !== false) {
-                $this->_platform = self::PLATFORM_IPAD;
-            } else if (stripos($this->_agent, 'iPod') !== false) {
-                $this->_platform = self::PLATFORM_IPOD;
-            } else if (stripos($this->_agent, 'iPhone') !== false) {
-                $this->_platform = self::PLATFORM_IPHONE;
-            } elseif (stripos($this->_agent, 'mac') !== false) {
-                $this->_platform = self::PLATFORM_APPLE;
-            } elseif (stripos($this->_agent, 'android') !== false) {
-                $this->_platform = self::PLATFORM_ANDROID;
-            } elseif (stripos($this->_agent, 'Silk') !== false) {
-                $this->_platform = self::PLATFORM_FIRE_OS;
-            } elseif (stripos($this->_agent, 'linux') !== false && stripos($this->_agent, 'SMART-TV') !== false ) {
-                $this->_platform = self::PLATFORM_LINUX .'/'.self::PLATFORM_SMART_TV;
-            } elseif (stripos($this->_agent, 'linux') !== false) {
-                $this->_platform = self::PLATFORM_LINUX;
-            } else if (stripos($this->_agent, 'Nokia') !== false) {
-                $this->_platform = self::PLATFORM_NOKIA;
-            } else if (stripos($this->_agent, 'BlackBerry') !== false) {
-                $this->_platform = self::PLATFORM_BLACKBERRY;
-            } elseif (stripos($this->_agent, 'FreeBSD') !== false) {
-                $this->_platform = self::PLATFORM_FREEBSD;
-            } elseif (stripos($this->_agent, 'OpenBSD') !== false) {
-                $this->_platform = self::PLATFORM_OPENBSD;
-            } elseif (stripos($this->_agent, 'NetBSD') !== false) {
-                $this->_platform = self::PLATFORM_NETBSD;
-            } elseif (stripos($this->_agent, 'OpenSolaris') !== false) {
-                $this->_platform = self::PLATFORM_OPENSOLARIS;
-            } elseif (stripos($this->_agent, 'SunOS') !== false) {
-                $this->_platform = self::PLATFORM_SUNOS;
-            } elseif (stripos($this->_agent, 'OS\/2') !== false) {
-                $this->_platform = self::PLATFORM_OS2;
-            } elseif (stripos($this->_agent, 'BeOS') !== false) {
-                $this->_platform = self::PLATFORM_BEOS;
-            } elseif (stripos($this->_agent, 'win') !== false) {
-                $this->_platform = self::PLATFORM_WINDOWS;
-            } elseif (stripos($this->_agent, 'Playstation') !== false) {
-                $this->_platform = self::PLATFORM_PLAYSTATION;
-            } elseif (stripos($this->_agent, 'Roku') !== false) {
-                $this->_platform = self::PLATFORM_ROKU;
-            } elseif (stripos($this->_agent, 'iOS') !== false) {
-                $this->_platform = self::PLATFORM_IPHONE . '/' . self::PLATFORM_IPAD;
-            } elseif (stripos($this->_agent, 'tvOS') !== false) {
-                $this->_platform = self::PLATFORM_APPLE_TV;
-            } elseif (stripos($this->_agent, 'curl') !== false) {
-                $this->_platform = self::PLATFORM_TERMINAL;
-            } elseif (stripos($this->_agent, 'CrOS') !== false) {
-                $this->_platform = self::PLATFORM_CHROME_OS;
-            } elseif (stripos($this->_agent, 'okhttp') !== false) {
-                $this->_platform = self::PLATFORM_JAVA_ANDROID;
-            } elseif (stripos($this->_agent, 'PostmanRuntime') !== false) {
-                $this->_platform = self::PLATFORM_POSTMAN;
-            } elseif (stripos($this->_agent, 'Iframely') !== false) {
-                $this->_platform = self::PLATFORM_I_FRAME;
-            }
+            $platformMaps = array(
+              'windows' => self::PLATFORM_WINDOWS,
+              'iPad' => self::PLATFORM_IPAD,
+              'iPod' => self::PLATFORM_IPOD,
+              'iPhone' => self::PLATFORM_IPHONE,
+              'mac' => self::PLATFORM_APPLE,
+              'android' => self::PLATFORM_ANDROID,
+              'Silk' => self::PLATFORM_FIRE_OS,
+              'linux_smarttv' => self::PLATFORM_LINUX .'/'.self::PLATFORM_SMART_TV,
+              'linux' => self::PLATFORM_LINUX,
+              'Nokia' => self::PLATFORM_NOKIA,
+              'BlackBerry' => self::PLATFORM_BLACKBERRY,
+              'FreeBSD' => self::PLATFORM_FREEBSD,
+              'OpenBSD' => self::PLATFORM_OPENBSD,
+              'NetBSD' => self::PLATFORM_NETBSD,
+              'OpenSolaris' => self::PLATFORM_OPENSOLARIS,
+              'SunOS' => self::PLATFORM_SUNOS,
+              'OS\/2' => self::PLATFORM_OS2,
+              'BeOS' => self::PLATFORM_BEOS,
+              'win' => self::PLATFORM_WINDOWS,
+              'Playstation' => self::PLATFORM_PLAYSTATION,
+              'Roku' => self::PLATFORM_ROKU,
+              'iOS' => self::PLATFORM_IPHONE . '/' . self::PLATFORM_IPAD,
+              'tvOS' => self::PLATFORM_APPLE_TV,
+              'curl' => self::PLATFORM_TERMINAL,
+              'CrOS' => self::PLATFORM_CHROME_OS,
+              'okhttp' => self::PLATFORM_JAVA_ANDROID,
+              'PostmanRuntime' => self::PLATFORM_POSTMAN,
+              'Iframely' => self::PLATFORM_I_FRAME
+            );
 
+            foreach ($platformMaps as $name => $value) {
+                if($name == 'linux_smarttv' 
+                    && stripos($this->_agent, 'linux') !== false 
+                    && stripos($this->_agent, 'SMART-TV') !== false ){
+                        $this->_platform = $value;
+                        break;
+                } elseif (stripos($this->_agent, $name) !== false) {
+                    $this->_platform = $value;
+                    break;
+                }
+            }
         }
     }

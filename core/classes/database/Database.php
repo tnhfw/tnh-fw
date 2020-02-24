@@ -444,7 +444,7 @@
       $this->reset();
       $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
       //If is the SELECT query
-      $isSqlSELECTQuery = stristr($this->query, 'SELECT') !== false;
+      $isSqlSELECTQuery = stristr($this->query, 'SELECT');
 
       //cache expire time
       $cacheExpire = $this->temporaryCacheTtl;
@@ -466,7 +466,7 @@
           $cacheContent = $this->getCacheContentForQuery($query, $returnAsList, $returnAsArray);  
       }
       
-      if ( !$cacheContent){
+      if (!$cacheContent){
   	   	//count the number of query execution to server
         $this->queryCount++;
         
