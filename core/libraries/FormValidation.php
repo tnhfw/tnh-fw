@@ -84,13 +84,12 @@
          */
         private $data = array();
 
+
         /**
-         * Whether to check the CSRF. This attribute is just a way to allow custom change of the 
-		 * CSRF global configuration
-		 *
-         * @var boolean
+         * The database instance
+         * @var object
          */
-        public $enableCsrfCheck = false;
+        private $databaseInstance = null;
 
         /**
          * Set all errors and rule sets empty, and sets success to false.
@@ -131,6 +130,23 @@
         }
 
         /**
+         * Set the database instance
+         * @param object $database the database instance
+         */
+        public function setDatabase(Database $database){
+            $this->databaseInstance = $database;
+            return $this;
+        }
+
+        /**
+         * Get the database instance
+         * @return object the database instance
+         */
+        public function getDatabase(){
+            return $this->databaseInstance;
+        }
+
+        /**
          * Reset the form validation instance
          */
         protected function _resetValidation() {
@@ -141,7 +157,6 @@
             $this->_success              = false;
             $this->_forceFail            = false;
             $this->data                  = array();
-			$this->enableCsrfCheck       = false;
         }
 
         /**
@@ -214,10 +229,10 @@
          * @return void 
          */
         protected function validateCSRF(){
-            if(get_instance()->request->method() == 'POST' || $this->enableCsrfCheck){
+            if(get_instance()->request->method() == 'POST'){
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
-                if ((get_config('csrf_enable', false) || $this->enableCsrfCheck) && ! Security::validateCSRF()){
+                if (get_config('csrf_enable', false) && ! Security::validateCSRF()){
                     show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
                 }
                 else{
@@ -837,16 +852,19 @@
          */
     	protected function _validateIsUnique($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-    		$obj = & get_instance();
-    		if(! isset($obj->database)){
-    			return;
-    		}
+            if (! is_object($this->databaseInstance)){
+                $obj = & get_instance();
+                if(isset($obj->database)){
+                    $this->databaseInstance = $obj->database;
+                } else {
+                    return;
+                }
+            }
     		list($table, $column) = explode('.', $ruleArgs[1]);
-    		$obj->database->from($table)
-    			          ->where($column, $inputVal)
-    			          ->get();
-    		$nb = $obj->database->numRows();
-            if ($nb != 0) {
+    		$this->databaseInstance->getQueryBuilder()->from($table)
+    			                                      ->where($column, $inputVal);
+    		$this->databaseInstance->get();
+    		if ($this->databaseInstance->numRows() != 0) {
                 if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
@@ -862,22 +880,25 @@
          */
     	protected function _validateIsUniqueUpdate($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-    		$obj = & get_instance();
-    		if(! isset($obj->database)){
-    			return;
-    		}
+    		if (! is_object($this->databaseInstance)){
+                $obj = & get_instance();
+                if(isset($obj->database)){
+                    $this->databaseInstance = $obj->database;
+                } else {
+                    return;
+                }
+            }
     		$data = explode(',', $ruleArgs[1]);
     		if(count($data) < 2){
     			return;
     		}
     		list($table, $column) = explode('.', $data[0]);
     		list($field, $val) = explode('=', $data[1]);
-    		$obj->database->from($table)
-    			          ->where($column, $inputVal)
-                		  ->where($field, '!=', trim($val))
-                		  ->get();
-    		$nb = $obj->database->numRows();
-            if ($nb != 0) {
+    		$this->databaseInstance->getQueryBuilder()->from($table)
+                                			          ->where($column, $inputVal)
+                                            		  ->where($field, '!=', trim($val));
+            $this->databaseInstance->get();
+    		if ($this->databaseInstance->numRows() != 0) {
                 if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }

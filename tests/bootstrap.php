@@ -41,7 +41,6 @@
 	//tests dir path
 	define('TESTS_PATH', dirname(realpath(__FILE__)) . DS);
 
-
 	/**
 	* The path to the directory.
 	*
@@ -241,10 +240,6 @@
 	
 	//Fix to allow test as if application is running in CLI mode $_SESSION global variable is not available
 	$_SESSION = array();
-	
-	if(! isset($_SERVER['REMOTE_ADDR'])){ 
-		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-	}
 	
 	//check for composer autoload file if exists include it
 	if (file_exists(VENDOR_PATH . 'autoload.php')){

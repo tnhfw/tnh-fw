@@ -189,7 +189,7 @@
 	$LOGGER->info('Everything is OK load Router library and dispatch the request to the corresponding controller');
 	/**
 	* Routing
-	* instantiation of the "Router" class and user request routing processing.
+	* instantiation of the "Router" class and request processing.
 	*/
 	$ROUTER = & class_loader('Router', 'classes');
-	$ROUTER->run();
+	$ROUTER->processRequest();

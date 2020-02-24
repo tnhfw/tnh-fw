@@ -153,6 +153,12 @@
 					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
 				}
 				$baseUrl = null;
+				$protocol = 'http';
+				if(is_https()){
+					$protocol = 'https';
+				}
+				$protocol .='://';
+
 				if (isset($_SERVER['SERVER_ADDR'])){
 					$baseUrl = $_SERVER['SERVER_ADDR'];
 					//check if the server is running under IPv6
@@ -163,9 +169,16 @@
 					if (isset($_SERVER['SERVER_PORT'])) {
 						$serverPort = $_SERVER['SERVER_PORT'];
 					}
+					$port = '';
+					if($serverPort && ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80))){
+						$port = ':'.$serverPort;
+					}
 					$port = ((($serverPort != '80' && ! is_https()) || ($serverPort != '443' && is_https())) ? ':' . $serverPort : '');
-					$baseUrl = (is_https() ? 'https' : 'http').'://' . $baseUrl . $port
-						. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
+					$baseUrl = $protocol . $baseUrl . $port . substr(
+																		$_SERVER['SCRIPT_NAME'], 
+																		0, 
+																		strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME']))
+																	);
 				}
 				else{
 					$logger->warning('Can not determine the application base URL automatically, use http://localhost as default');

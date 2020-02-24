@@ -50,18 +50,8 @@
 			}
 			$str .= attributes_to_string($attributes);
 			$str .= '>';
-			$checkCsrf = false;
-			//check if the user set the checking of CSRF manually
-			if($method != 'POST' && isset($attributes['csrf'])){
-				$obj = & get_instance();
-				if(! isset($obj->formvalidation)){
-					Loader::library('FormValidation');
-				}
-				$obj->formvalidation->enableCsrfCheck = true;
-				$checkCsrf = true;
-			}
-			//if CSRF enable or is set manually
-			if((get_config('csrf_enable', false) && $method == 'POST') || ($method != 'POST' && $checkCsrf)){
+			//if CSRF is enabled in the configuration
+			if(get_config('csrf_enable', false) && $method == 'POST'){
 				$csrfValue = Security::generateCSRF();
 				$csrfName = get_config('csrf_key', 'csrf_key');
 				$str .= static::hidden($csrfName, $csrfValue);

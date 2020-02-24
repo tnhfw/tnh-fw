@@ -470,9 +470,9 @@
   	   	//count the number of query execution to server
         $this->queryCount++;
         
-        $this->queryRunner->setQuery($query);
-        $this->queryRunner->setReturnType($returnAsList);
-        $this->queryRunner->setReturnAsArray($returnAsArray);
+        $this->queryRunner->setQuery($query)
+                          ->setReturnType($returnAsList)
+                          ->setReturnAsArray($returnAsArray);
         
         $queryResult = $this->queryRunner->execute();
         if (is_object($queryResult)){
@@ -574,15 +574,15 @@
     protected function updateQueryBuilderAndRunnerProperties(){
        //update queryBuilder with some properties needed
      if(is_object($this->queryBuilder)){
-        $this->queryBuilder->setDriver($this->config['driver']);
-        $this->queryBuilder->setPrefix($this->config['prefix']);
-        $this->queryBuilder->setPdo($this->pdo);
+        $this->queryBuilder->setDriver($this->config['driver'])
+                           ->setPrefix($this->config['prefix'])
+                           ->setPdo($this->pdo);
      }
 
       //update queryRunner with some properties needed
      if(is_object($this->queryRunner)){
-        $this->queryRunner->setDriver($this->config['driver']);
-        $this->queryRunner->setPdo($this->pdo);
+        $this->queryRunner->setDriver($this->config['driver'])
+                          ->setPdo($this->pdo);
      }
     }
 	

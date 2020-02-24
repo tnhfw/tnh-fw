@@ -14,7 +14,7 @@
 			<directory suffix="Test.php">./tnhfw/classes</directory>
 			<directory suffix="Test.php">./tnhfw/functions</directory>
 			<directory suffix="Test.php">./tnhfw/libraries</directory>
-			<file suffix="Test.php">./tnhfw/CommonTest.php</file>
+			<file>./tnhfw/CommonTest.php</file>
 		</testsuite>
 	</testsuites>
 	<filter>
