@@ -155,7 +155,7 @@
             //update of QueryRunner and QueryBuilder properties
             $this->updateQueryBuilderAndRunnerProperties();
 
-            return $this->pdo !== null;
+            return is_object($this->pdo);
           }
           catch (PDOException $e){
             $this->logger->fatal($e->getMessage());
@@ -564,8 +564,8 @@
      */
     protected function getDatabaseDefaultConfiguration(){
       return array(
-              'driver' => 'mysql',
-              'username' => 'root',
+              'driver' => '',
+              'username' => '',
               'password' => '',
               'database' => '',
               'hostname' => 'localhost',

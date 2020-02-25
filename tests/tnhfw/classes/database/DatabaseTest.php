@@ -28,12 +28,23 @@
             $cfg = get_db_config();
             $db = new Database($cfg, false);
             $isConnected = $db->connect();
-			$this->assertTrue($isConnected);
+            $this->assertTrue($isConnected);
 		}
         
         public function testCannotConnectToDatabase()
 		{
-             $db = new Database(array(), false);
+             $db = new Database(array(
+                                  'driver' => '',
+                                  'username' => '',
+                                  'password' => '',
+                                  'database' => '',
+                                  'hostname' => '',
+                                  'charset' => '',
+                                  'collation' => '',
+                                  'prefix' => '',
+                                  'port' => ''
+                                ), 
+                                false);
              $isConnected = $db->connect();
 			$this->assertFalse($isConnected);
 		}

@@ -113,6 +113,13 @@
 	*/
 	define('CORE_CLASSES_CACHE_PATH', CORE_CLASSES_PATH . 'cache' . DS);
 	
+    /**
+	* The path to the directory of core classes for the database used by the system.
+	*
+	* It contains PHP classes for the database library, drivers, etc.
+	*/
+	define('CORE_CLASSES_DATABASE_PATH', CORE_CLASSES_PATH . 'database' . DS);
+    
 	/**
 	* The path to the directory of core classes for the model used by the system.
 	*

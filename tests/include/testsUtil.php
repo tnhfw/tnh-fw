@@ -16,7 +16,7 @@
     function get_db_config(){
         return array(
                     'driver'    =>  'sqlite',
-                    'database'  =>  TESTS_PATH . 'assets/db_tests.db',
+                    'database'  =>  TESTS_PATH . 'assets' . DS . 'db_tests.db',
                     'charset'   => 'utf8',
                     'collation' => 'utf8_general_ci',
                 );
