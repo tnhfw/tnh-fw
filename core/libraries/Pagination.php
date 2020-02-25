@@ -153,7 +153,7 @@
             }
             //************************************
             $navbar = '';
-            $numberOfPage = ceil($totalRows / $numberOfRowPerPage);
+            $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
             $currentPageNumber = (int) $currentPageNumber;
             $numberOfLink = (int) $numberOfLink;
             $numberOfRowPerPage = (int) $numberOfRowPerPage;
@@ -227,8 +227,8 @@
                 $end = $numberOfPage;
             }
             return array(
-                        'begin' => $begin,
-                        'end' => $end
+                        'begin' => (int) $begin,
+                        'end' => (int) $end
                     );
         }
 

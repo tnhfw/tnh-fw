@@ -200,12 +200,10 @@
 			
 			//check in module first
 			$logger->debug('Checking the view [' . $view . '] from module list ...');
-			$moduleInfo = self::getModuleInfoForView($view);
+			$moduleInfo = $this->getModuleInfoForView($view);
 			$module    = $moduleInfo['module'];
 			$view  = $moduleInfo['view'];
-			if(! empty($moduleInfo['viewFile'])){
-				$viewFile = $moduleInfo['viewFile'];
-			}
+			
 			$moduleViewPath = Module::findViewFullPath($view, $module);
 			if($moduleViewPath){
 				$path = $moduleViewPath;
