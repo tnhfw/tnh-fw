@@ -155,7 +155,7 @@
             //update of QueryRunner and QueryBuilder properties
             $this->updateQueryBuilderAndRunnerProperties();
 
-            return true;
+            return $this->pdo !== null;
           }
           catch (PDOException $e){
             $this->logger->fatal($e->getMessage());

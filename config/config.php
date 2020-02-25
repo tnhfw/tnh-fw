@@ -166,16 +166,12 @@
 	/**
 	* The logger name to use for the log
 	* 
-	* You can use an string or array of logger. If this config is set so means only log message with this or these logger(s) will be accepted
+	* If this config is set so means only log message with this or these logger(s) will be saved
 	*
 	* Example:
-	*	//using string for only one logger name 
-	*	$config['log_logger_name'] = 'MY_LOGGER'; //only log message with MY_LOGGER will be saved in file.
-	*
-	*	//using array for muliple logger names
-	*	$config['log_logger_name'] = array('MY_LOGGER1', 'MY_LOGGER2'); //only log message with MY_LOGGER1 or MY_LOGGER2 will be saved in file.
+	* $config['log_logger_name'] = array('MY_LOGGER1', 'MY_LOGGER2'); //only log message with MY_LOGGER1 or MY_LOGGER2 will be saved in file.
 	*/	
-	$config['log_logger_name'] = '';
+	$config['log_logger_name'] = array();
 	
 	
 	/*+---------------------------------------------------------------+
