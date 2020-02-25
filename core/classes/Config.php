@@ -42,7 +42,7 @@
 		 * The signleton of the logger
 		 * @return Object the Log instance
 		 */
-		private static function getLogger(){
+		public static function getLogger(){
 			if(self::$logger == null){
 				$logger = array();
 				$logger[0] =& class_loader('Log', 'classes');

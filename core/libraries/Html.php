@@ -36,9 +36,7 @@
 		 * @return string|void             the anchor link generated html if $return is true or display it if not
 		 */
 		public static function a($link = '', $anchor = null, array $attributes = array(), $return = true){
-			if(! is_url($link)){
-				$link = Url::site_url($link);
-			}
+			$link = Url::site_url($link);
 			if(! $anchor){
 				$anchor = $link;
 			}
@@ -159,9 +157,17 @@
 		public static function ul($data = array(), $attributes = array(), $return = true){
 			$data = (array) $data;
 			$str = null;
-			$str .= '<ul' . (! empty($attributes['ul']) ? attributes_to_string($attributes['ul']):'') . '>';
+			$ulAttributes = '';
+			if(! empty($attributes['ul'])){
+				$ulAttributes = ' ' . attributes_to_string($attributes['ul']);
+			}
+			$liAttributes = '';
+			if(! empty($attributes['li'])){
+				$liAttributes = ' ' . attributes_to_string($attributes['li']);
+			}
+			$str .= '<ul' . $ulAttributes . '>';
 			foreach ($data as $row) {
-				$str .= '<li' . (! empty($attributes['li']) ? attributes_to_string($attributes['li']):'') .'>' .$row. '</li>';
+				$str .= '<li' . $liAttributes .'>' .$row. '</li>';
 			}
 			$str .= '</ul>';
 			if($return){
@@ -181,9 +187,17 @@
 		public static function ol($data = array(), $attributes = array(), $return = true){
 			$data = (array) $data;
 			$str = null;
-			$str .= '<ol' . (!empty($attributes['ol']) ? attributes_to_string($attributes['ol']):'') . '>';
+			$olAttributes = '';
+			if(! empty($attributes['ol'])){
+				$olAttributes = ' ' . attributes_to_string($attributes['ol']);
+			}
+			$liAttributes = '';
+			if(! empty($attributes['li'])){
+				$liAttributes = ' ' . attributes_to_string($attributes['li']);
+			}
+			$str .= '<ol' . $olAttributes . '>';
 			foreach ($data as $row) {
-				$str .= '<li' . (!empty($attributes['li']) ? attributes_to_string($attributes['li']):'') .'>' .$row. '</li>';
+				$str .= '<li' . $liAttributes .'>' .$row. '</li>';
 			}
 			$str .= '</ol>';
 			if($return){
@@ -208,44 +222,114 @@
 			$headers = (array) $headers;
 			$body = (array) $body;
 			$str = null;
-			$str .= '<table' . (! empty($attributes['table']) ? attributes_to_string($attributes['table']):'') . '>';
-			if(! empty($headers)){
-				$str .= '<thead' . (! empty($attributes['thead']) ? attributes_to_string($attributes['thead']):'') .'>';
-				$str .= '<tr' . (! empty($attributes['thead_tr']) ? attributes_to_string($attributes['thead_tr']):'') .'>';
-				foreach ($headers as $value) {
-					$str .= '<th' . (! empty($attributes['thead_th']) ? attributes_to_string($attributes['thead_th']):'') .'>' .$value. '</th>';
-				}
-				$str .= '</tr>';
-				$str .= '</thead>';
+			$tableAttributes = '';
+			if(! empty($attributes['table'])){
+				$tableAttributes = ' ' . attributes_to_string($attributes['table']);
 			}
-			else{
-				//no need check for footer
-				$use_footer = false;
-			}
-			$str .= '<tbody' . (! empty($attributes['tbody']) ? attributes_to_string($attributes['tbody']):'') .'>';
-			foreach ($body as $row) {
-				if(is_array($row)){
-					$str .= '<tr' . (! empty($attributes['tbody_tr']) ? attributes_to_string($attributes['tbody_tr']):'') .'>';
-					foreach ($row as $value) {
-						$str .= '<td' . (! empty($attributes['tbody_td']) ? attributes_to_string($attributes['tbody_td']):'') .'>' .$value. '</td>';	
-					}
-					$str .= '</tr>';
-				}
-			}
-			$str .= '</tbody>';
+			$str .= '<table' . $tableAttributes . '>';
+			$str .= self::buildTableHeader($headers, $attributes);
+			$str .= self::buildTableBody($body, $attributes);
+
 			if($use_footer){
-				$str .= '<tfoot' . (! empty($attributes['tfoot']) ? attributes_to_string($attributes['tfoot']):'') .'>';
-				$str .= '<tr' . (! empty($attributes['tfoot_tr']) ? attributes_to_string($attributes['tfoot_tr']):'') .'>';
-				foreach ($headers as $value) {
-					$str .= '<th' . (! empty($attributes['tfoot_th']) ? attributes_to_string($attributes['tfoot_th']):'') .'>' .$value. '</th>';
-				}
-				$str .= '</tr>';
-				$str .= '</tfoot>';
+				$str .= self::buildTableFooter($headers, $attributes);
 			}
 			$str .= '</table>';
 			if($return){
 				return $str;
 			}
 			echo $str;
+		}
+
+		/**
+		 * This method is used to build the header of the html table
+		 * @see  Html::table 
+		 * @return string|null
+		 */
+		protected static function buildTableHeader(array $headers, $attributes = array()){
+			$str = null;
+			if(! empty($headers)){
+				$theadAttributes = '';
+				if(! empty($attributes['thead'])){
+					$theadAttributes = ' ' . attributes_to_string($attributes['thead']);
+				}
+				$theadtrAttributes = '';
+				if(! empty($attributes['thead_tr'])){
+					$theadtrAttributes = ' ' . attributes_to_string($attributes['thead_tr']);
+				}
+				$thAttributes = '';
+				if(! empty($attributes['thead_th'])){
+					$thAttributes = ' ' . attributes_to_string($attributes['thead_th']);
+				}
+				$str .= '<thead' . $theadAttributes .'>';
+				$str .= '<tr' . $theadtrAttributes .'>';
+				foreach ($headers as $value) {
+					$str .= '<th' . $thAttributes .'>' .$value. '</th>';
+				}
+				$str .= '</tr>';
+				$str .= '</thead>';
+			}
+			return $str;
+		}
+
+		/**
+		 * This method is used to build the body of the html table
+		 * @see  Html::table 
+		 * @return string|null
+		 */
+		protected static function buildTableBody(array $body, $attributes = array()){
+			$str = null;
+			$tbodyAttributes = '';
+			if(! empty($attributes['tbody'])){
+				$tbodyAttributes = ' ' . attributes_to_string($attributes['tbody']);
+			}
+			$tbodytrAttributes = '';
+			if(! empty($attributes['tbody_tr'])){
+				$tbodytrAttributes = ' ' . attributes_to_string($attributes['tbody_tr']);
+			}
+			$tbodytdAttributes = '';
+			if(! empty($attributes['tbody_td'])){
+				$tbodytdAttributes = ' ' . attributes_to_string($attributes['tbody_td']);
+			}
+			$str .= '<tbody' . $tbodyAttributes .'>';
+			foreach ($body as $row) {
+				if(is_array($row)){
+					$str .= '<tr' . $tbodytrAttributes .'>';
+					foreach ($row as $value) {
+						$str .= '<td' . $tbodytdAttributes .'>' .$value. '</td>';	
+					}
+					$str .= '</tr>';
+				}
+			}
+			$str .= '</tbody>';
+			return $str;
+		}
+
+		/**
+		 * This method is used to build the footer of the html table
+		 * @see  Html::table 
+		 * @return string|null
+		 */
+		protected static function buildTableFooter(array $footers, $attributes = array()){
+			$str = null;
+			$tfootAttributes = '';
+			if(! empty($attributes['tfoot'])){
+				$tfootAttributes = ' ' . attributes_to_string($attributes['tfoot']);
+			}
+			$tfoottrAttributes = '';
+			if(! empty($attributes['tfoot_tr'])){
+				$tfoottrAttributes = ' ' . attributes_to_string($attributes['tfoot_tr']);
+			}
+			$thAttributes = '';
+			if(! empty($attributes['tfoot_th'])){
+				$thAttributes = ' ' . attributes_to_string($attributes['tfoot_th']);
+			}
+			$str .= '<tfoot' . $tfootAttributes .'>';
+				$str .= '<tr' . $tfoottrAttributes .'>';
+				foreach ($footers as $value) {
+					$str .= '<th' . $thAttributes .'>' .$value. '</th>';
+				}
+				$str .= '</tr>';
+				$str .= '</tfoot>';
+			return $str;
 		}
 	}

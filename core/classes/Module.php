@@ -153,10 +153,8 @@
 				$logger->info('Found controller [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('Controller [' . $class . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('Controller [' . $class . '] does not exist in the module [' .$module. ']');
+			return false;
 		}
 
 		/**
@@ -180,10 +178,8 @@
 				$logger->info('Found model [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('Model [' . $class . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('Model [' . $class . '] does not exist in the module [' .$module. ']');
+			return false;
 		}
 		
 		/**
@@ -206,10 +202,8 @@
 				$logger->info('Found configuration [' . $configuration . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('Configuration [' . $configuration . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('Configuration [' . $configuration . '] does not exist in the module [' .$module. ']');
+			return false;
 		}
 
 		/**
@@ -233,10 +227,9 @@
 				$logger->info('Found helper [' . $helper . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('Helper [' . $helper . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('Helper [' . $helper . '] does not exist in the module [' .$module. ']');
+			return false;
+			
 		}
 
 
@@ -260,10 +253,8 @@
 				$logger->info('Found library [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('Library [' . $class . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('Library [' . $class . '] does not exist in the module [' .$module. ']');
+			return false;
 		}
 
 
@@ -289,10 +280,8 @@
 				$logger->info('Found view [' . $view . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('View [' . $view . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('View [' . $view . '] does not exist in the module [' .$module. ']');
+			return false;
 		}
 
 		/**
@@ -317,10 +306,8 @@
 				$logger->info('Found language [' . $language . '] in module [' .$module. '], the file path is [' .$filePath. ']');
 				return $filePath;
 			}
-			else{
-				$logger->info('Language [' . $language . '] does not exist in the module [' .$module. ']');
-				return false;
-			}
+			$logger->info('Language [' . $language . '] does not exist in the module [' .$module. ']');
+			return false;
 		}
 
 		/**
