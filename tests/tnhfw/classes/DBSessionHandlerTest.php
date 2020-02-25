@@ -14,12 +14,8 @@
 		private static $config = null;
 		
 		public function __construct(){
-			$this->db = new Database(array(
-								'driver'    =>  'sqlite',
-								'database'  =>  TESTS_PATH . 'assets/db_tests.db',
-								'charset'   => 'utf8',
-								'collation' => 'utf8_general_ci',
-							));
+            $cfg = get_db_config();
+			$this->db = new Database($cfg);
             $qr = new DatabaseQueryRunner($this->db->getPdo());
             $qr->setBenchmark(new Benchmark());
             $qr->setDriver('sqlite');

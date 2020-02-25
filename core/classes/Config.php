@@ -34,7 +34,7 @@
 
 		/**
 		 * The logger instance
-		 * @var Log
+		 * @var object
 		 */
 		private static $logger;
 
@@ -54,8 +54,8 @@
 
 		/**
 		 * Set the log instance for future use
-		 * @param Log $logger the log object
-		 * @return Log the log instance
+		 * @param object $logger the log object
+		 * @return object the log instance
 		 */
 		public static function setLogger($logger){
 			self::$logger = $logger;

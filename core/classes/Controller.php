@@ -54,7 +54,16 @@
 			
 			//instance of the super object
 			self::$instance = & $this;
+
+			//Load the resources loaded during the application bootstrap
+			$this->logger->debug('Adding the loaded classes to the super instance');
+			foreach (class_loaded() as $var => $class){
+				$this->$var =& class_loader($class);
+			}
 			
+			//set module using the router
+			$this->setModuleNameFromRouter();
+
 			//load the required resources
 			$this->loadRequiredResources();
 			
@@ -64,9 +73,6 @@
 			//set application session configuration
 			$this->logger->debug('Setting PHP application session handler');
 			set_session_config();
-			
-			//set module using the router
-			$this->setModuleNameFromRouter();
 
 			//dispatch the loaded instance of super controller event
 			$this->eventdispatcher->dispatch('SUPER_CONTROLLER_CREATED');
@@ -85,7 +91,7 @@
 		 * This method is used to set the module name
 		 */
 		protected function setModuleNameFromRouter(){
-			//determine the current module
+			//set the module using the router instance
 			if(isset($this->router) && $this->router->getModule()){
 				$this->moduleName = $this->router->getModule();
 			}
@@ -127,11 +133,6 @@
 		 * @return void 
 		 */
 		private function loadRequiredResources(){
-			$this->logger->debug('Adding the loaded classes to the super instance');
-			foreach (class_loaded() as $var => $class){
-				$this->$var =& class_loader($class);
-			}
-
 			$this->logger->debug('Loading the required classes into super instance');
 			$this->eventdispatcher =& class_loader('EventDispatcher', 'classes');
 			$this->loader =& class_loader('Loader', 'classes');

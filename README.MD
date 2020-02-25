@@ -16,7 +16,7 @@
 ## Installation 
 ### Using composer (recommended)
 ```bash
-composer create-project tnhfw/tnh-fw --dev
+composer create-project tnhfw/tnh-fw --stability dev
 ```
 ### Using GitHub releases
  - Download the framework using the following link [https://github.com/tnhfw/tnh-fw/releases](https://github.com/tnhfw/tnh-fw/releases)

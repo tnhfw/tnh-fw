@@ -23,9 +23,19 @@
 		{
 		}
 		
-		public function testNotYet()
+		public function testConnectToDatabaseSuccessfully()
 		{
-			$this->markTestSkipped();
+            $cfg = get_db_config();
+            $db = new Database($cfg, false);
+            $isConnected = $db->connect();
+			$this->assertTrue($isConnected);
+		}
+        
+        public function testCannotConnectToDatabase()
+		{
+             $db = new Database(array(), false);
+             $isConnected = $db->connect();
+			$this->assertFalse($isConnected);
 		}
 
 	}

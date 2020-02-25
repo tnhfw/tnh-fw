@@ -127,16 +127,9 @@
 				show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
 			}
 			
-			//check if config log_logger_name is set
-			if($this->logger){
-				$configLoggersName = get_config('log_logger_name', array());
-				if (!empty($configLoggersName)) {
-					//for best comparaison put all string to lowercase
-					$configLoggersName = array_map('strtolower', $configLoggersName);
-					if(! in_array(strtolower($this->logger), $configLoggersName)){
-						return;
-					}
-				}
+			//check if config log_logger_name and current log can save log data
+			if(! $this->canSaveLogDataForLogger()){
+				return;
 			}
 			
 			//if $level is not an integer
@@ -159,11 +152,11 @@
 		/**
 		 * Save the log data into file
 		 * @param  string $path    the path of the log file
-		 * @param  int $level   the log level in numeric format
+		 * @param  integer|string $level   the log level in integer or string format, if is string will convert into integer
 		 * @param  string $message the log message to save
 		 * @return void
 		 */
-		public function saveLogData($path, $level, $message){
+		protected function saveLogData($path, $level, $message){
 			//may be at this time helper user_agent not yet included
 			require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 			
@@ -174,6 +167,12 @@
 			$logDate = $dateTime->format('Y-m-d H:i:s.u'); 
 			//ip
 			$ip = get_ip();
+			
+			//if $level is not an integer
+			if(! is_numeric($level)){
+				$level = self::getLevelValue($level);
+			}
+
 			//level name
 			$levelName = self::getLevelName($level);
 			
@@ -189,6 +188,25 @@
 				fclose($fp);
 			}
 		}	
+
+		/**
+		 * Check if the current logger can save log data regarding the configuration
+		 * of logger filter
+		 * @return boolean
+		 */
+		protected function canSaveLogDataForLogger(){
+			if(! empty($this->logger)){
+				$configLoggersName = get_config('log_logger_name', array());
+				if (!empty($configLoggersName)) {
+					//for best comparaison put all string to lowercase
+					$configLoggersName = array_map('strtolower', $configLoggersName);
+					if(! in_array(strtolower($this->logger), $configLoggersName)){
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 
 		/**
 		 * Check the file and directory 
@@ -228,7 +246,7 @@
 		 * Get the log level number for the given level string
 		 * @param  string $level the log level in string format
 		 * 
-		 * @return int        the log level in integer format using the predefinied constants
+		 * @return int        the log level in integer format using the predefined constants
 		 */
 		protected static function getLevelValue($level){
 			$level = strtolower($level);

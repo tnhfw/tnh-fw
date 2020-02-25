@@ -728,9 +728,11 @@
      * @return mixed       the data after escaped or the same data if not
      */
     public function escape($data, $escaped = true){
-      return $escaped 
-                    ? $this->pdo->quote(trim($data)) 
-                    : $data; 
+      $data = trim($data);
+      if($escaped){
+        return $this->pdo->quote($data);
+      }
+      return $data;  
     }
 
 
