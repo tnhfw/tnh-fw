@@ -92,14 +92,14 @@
          * @param  string $item the config item name to be deleted
          * @return boolean true if the item exists and is deleted successfully otherwise will return false.
          */
-        public static function delete($item){
+        public static function delete($item) {
             $logger = self::getLogger();
-            if(array_key_exists($item, self::$config)){
-                $logger->info('Delete config item ['.$item.']');
+            if (array_key_exists($item, self::$config)) {
+                $logger->info('Delete config item [' . $item . ']');
                 unset(self::$config[$item]);
                 return true;
-            } else{
-                $logger->warning('Config item ['.$item.'] to be deleted does not exists');
+            } else {
+                $logger->warning('Config item [' . $item . '] to be deleted does not exists');
                 return false;
             }
         }
@@ -147,12 +147,12 @@
                                                                         0, 
                                                                         strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME']))
                                                                     );
-                } else{
+                } else {
                     $logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
                     $baseUrl = 'http://localhost/';
                 }
                 self::set('base_url', $baseUrl);
             }
-            self::$config['base_url'] = rtrim(self::$config['base_url'], '/') .'/';
+            self::$config['base_url'] = rtrim(self::$config['base_url'], '/') . '/';
         }
     }

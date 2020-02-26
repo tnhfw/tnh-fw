@@ -69,14 +69,14 @@
          * @param  string $item the cookie item name to be cleared
          * @return boolean true if the item exists and is deleted successfully otherwise will return false.
          */
-        public static function delete($item){
+        public static function delete($item) {
             $logger = self::getLogger();
-            if(array_key_exists($item, $_COOKIE)){
-                $logger->info('Delete cookie item ['.$item.']');
+            if (array_key_exists($item, $_COOKIE)) {
+                $logger->info('Delete cookie item [' . $item . ']');
                 unset($_COOKIE[$item]);
                 return true;
-            } else{
-                $logger->warning('Cookie item ['.$item.'] to be deleted does not exists');
+            } else {
+                $logger->warning('Cookie item [' . $item . '] to be deleted does not exists');
                 return false;
             }
         }

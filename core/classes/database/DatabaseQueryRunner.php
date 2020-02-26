@@ -130,18 +130,18 @@
                                                                 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')'
                                                                 );
             //TODO use the configuration value for the high response time currently is 1 second
-        if ($responseTime >= 1 ){
+        if ($responseTime >= 1) {
             $this->logger->warning(
                                     'High response time while processing database query [' . $this->query . ']. 
-                                     The response time is [' .$responseTime. '] sec.'
+                                     The response time is [' .$responseTime . '] sec.'
                                     );
         }
 		
-        if ($this->pdoStatment !== false){
+        if ($this->pdoStatment !== false) {
             $isSqlSELECTQuery = stristr($this->query, 'SELECT') !== false;
-            if($isSqlSELECTQuery){
+            if ($isSqlSELECTQuery) {
                 $this->setResultForSelect();              
-            } else{
+            } else {
                 $this->setResultForNonSelect();
             }
             return $this->queryResult;
@@ -153,26 +153,26 @@
      * Return the result for SELECT query
      * @see DatabaseQueryRunner::execute
      */
-    protected function setResultForSelect(){
+    protected function setResultForSelect() {
         //if need return all result like list of record
         $result = null;
         $numRows = 0;
         $fetchMode = PDO::FETCH_OBJ;
-        if($this->returnAsArray){
+        if ($this->returnAsArray) {
         $fetchMode = PDO::FETCH_ASSOC;
         }
-        if ($this->returnAsList){
+        if ($this->returnAsList) {
             $result = $this->pdoStatment->fetchAll($fetchMode);
-        } else{
+        } else {
             $result = $this->pdoStatment->fetch($fetchMode);
         }
         //Sqlite and pgsql always return 0 when using rowCount()
-        if (in_array($this->driver, array('sqlite', 'pgsql'))){
+        if (in_array($this->driver, array('sqlite', 'pgsql'))) {
         $numRows = count($result);  
-        } else{
+        } else {
         $numRows = $this->pdoStatment->rowCount(); 
         }
-        if(! is_object($this->queryResult)){
+        if (!is_object($this->queryResult)) {
             $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
         }
         $this->queryResult->setResult($result);
@@ -183,19 +183,19 @@
      * Return the result for non SELECT query
      * @see DatabaseQueryRunner::execute
      */
-    protected function setResultForNonSelect(){
+    protected function setResultForNonSelect() {
         //Sqlite and pgsql always return 0 when using rowCount()
         $result = false;
         $numRows = 0;
-        if (in_array($this->driver, array('sqlite', 'pgsql'))){
+        if (in_array($this->driver, array('sqlite', 'pgsql'))) {
         $result = true; //to test the result for the query like UPDATE, INSERT, DELETE
         $numRows = 1; //TODO use the correct method to get the exact affected row
-        } else{
+        } else {
             //to test the result for the query like UPDATE, INSERT, DELETE
             $result  = $this->pdoStatment->rowCount() >= 0; 
             $numRows = $this->pdoStatment->rowCount(); 
         }
-        if(! is_object($this->queryResult)){
+        if (!is_object($this->queryResult)) {
             $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
         }
         $this->queryResult->setResult($result);
@@ -347,11 +347,11 @@
      * Set the Log instance using argument or create new instance
      * @param object $logger the Log instance if not null
      */
-    protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
-        if ($logger !== null){
+    protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null) {
+        if ($logger !== null) {
         $this->logger = $logger;
-        } else{
-            $this->logger =& class_loader('Log', 'classes');
+        } else {
+            $this->logger = & class_loader('Log', 'classes');
             $this->logger->setLogger('Library::DatabaseQueryRunner');
         }
     }

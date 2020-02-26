@@ -86,9 +86,9 @@
     /**
      * Verification of the PHP environment: minimum and maximum version
      */
-    if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')){
+    if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')) {
         show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_REQUIRED_PHP_MIN_VERSION . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
-    } else if(version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')){
+    } else if (version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')) {
         show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_REQUIRED_PHP_MAX_VERSION . '] please install a PHP version that is compatible.', 'PHP Error environment');	
     }
     $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_REQUIRED_PHP_MIN_VERSION . ', REQUIRED MAXIMUM: ' . TNH_REQUIRED_PHP_MAX_VERSION . '], application can work without any issue');
@@ -110,10 +110,10 @@
 	
     //if user have some composer packages
     $LOGGER->debug('Check for composer autoload');
-    if(file_exists(VENDOR_PATH . 'autoload.php')){
+    if (file_exists(VENDOR_PATH . 'autoload.php')) {
         $LOGGER->info('The composer autoload file exists include it');
         require_once VENDOR_PATH . 'autoload.php';
-    } else{
+    } else {
         $LOGGER->info('The composer autoload file does not exist skipping');
     }
 	
@@ -158,35 +158,35 @@
     /**
      * Loading Security class
      */
-    $SECURITY =& class_loader('Security', 'classes');
+    $SECURITY = & class_loader('Security', 'classes');
     $SECURITY->checkWhiteListIpAccess();
 	
     /**
      * Loading Url class
      */
-    $URL =& class_loader('Url', 'classes');
+    $URL = & class_loader('Url', 'classes');
 	
-    if(get_config('cache_enable', false)){
+    if (get_config('cache_enable', false)) {
         /**
          * Load Cache interface file
          */
         require_once CORE_CLASSES_CACHE_PATH . 'CacheInterface.php';
         $cacheHandler = get_config('cache_handler');
-        if(! $cacheHandler){
+        if (!$cacheHandler) {
             show_error('The cache feature is enabled in the configuration but the cache handler class is not set.');
         }
         $CACHE = null;
         //first check if the cache handler is the system driver
-        if(file_exists(CORE_CLASSES_CACHE_PATH . $cacheHandler . '.php')){
-            $CACHE =& class_loader($cacheHandler, 'classes/cache');
-        } else{
+        if (file_exists(CORE_CLASSES_CACHE_PATH . $cacheHandler . '.php')) {
+            $CACHE = & class_loader($cacheHandler, 'classes/cache');
+        } else {
             //it's not a system driver use user library
-            $CACHE =& class_loader($cacheHandler);
+            $CACHE = & class_loader($cacheHandler);
         }
         //check if the page already cached
-        if(! empty($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'get'){
+        if (!empty($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'get') {
             $RESPONSE = & class_loader('Response', 'classes');
-            if ($RESPONSE->renderFinalPageFromCache($CACHE)){
+            if ($RESPONSE->renderFinalPageFromCache($CACHE)) {
                 return;
             }
         }

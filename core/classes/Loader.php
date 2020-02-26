@@ -74,25 +74,25 @@
             $class  = $moduleInfo['class'];
 			
             $moduleModelFilePath = Module::findModelFullPath($class, $module);
-            if ($moduleModelFilePath){
-                $logger->info('Found model [' . $class . '] from module [' .$module. '], the file path is [' .$moduleModelFilePath. '] we will used it');
+            if ($moduleModelFilePath) {
+                $logger->info('Found model [' . $class . '] from module [' . $module . '], the file path is [' . $moduleModelFilePath . '] we will used it');
                 $classFilePath = $moduleModelFilePath;
-            } else{
+            } else {
                 $logger->info('Cannot find model [' . $class . '] from modules using the default location');
             }
             $logger->info('The model file path to be loaded is [' . $classFilePath . ']');
-            if (file_exists($classFilePath)){
+            if (file_exists($classFilePath)) {
                 require_once $classFilePath;
-                if (class_exists($class)){
+                if (class_exists($class)) {
                     $c = new $class();
                     $obj = & get_instance();
                     $obj->{$instance} = $c;
                     static::$loaded[$instance] = $class;
                     $logger->info('Model [' . $class . '] --> ' . $classFilePath . ' loaded successfully.');
-                } else{
-                    show_error('The file '.$classFilePath.' exists but does not contain the class ['. $class . ']');
+                } else {
+                    show_error('The file ' . $classFilePath . ' exists but does not contain the class [' . $class . ']');
                 }
-            } else{
+            } else {
                 show_error('Unable to find the model [' . $class . ']');
             }
         }
@@ -131,17 +131,17 @@
             }
             $libraryFilePath = null;
             $logger->debug('Check if this is a system library ...');
-            if (file_exists(CORE_LIBRARY_PATH . $file)){
+            if (file_exists(CORE_LIBRARY_PATH . $file)) {
                 $libraryFilePath = CORE_LIBRARY_PATH . $file;
                 $class = ucfirst($class);
                 $logger->info('This library is a system library');
-            } else{
+            } else {
                 $logger->info('This library is not a system library');	
                 //first check if this library is in the module
                 $libraryFilePath = self::getLibraryPathUsingModuleInfo($class);
                 //***************
             }
-            if (! $libraryFilePath && file_exists(LIBRARY_PATH . $file)){
+            if (!$libraryFilePath && file_exists(LIBRARY_PATH . $file)) {
                 $libraryFilePath = LIBRARY_PATH . $file;
             }
             $logger->info('The library file path to be loaded is [' . $libraryFilePath . ']');
@@ -173,21 +173,21 @@
             $moduleInfo = self::getModuleInfoForFunction($function);
             $module    = $moduleInfo['module'];
             $function  = $moduleInfo['function'];
-            if(! empty($moduleInfo['file'])){
+            if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
             $moduleFunctionPath = Module::findFunctionFullPath($function, $module);
-            if ($moduleFunctionPath){
-                $logger->info('Found helper [' . $function . '] from module [' .$module. '], the file path is [' .$moduleFunctionPath. '] we will used it');
+            if ($moduleFunctionPath) {
+                $logger->info('Found helper [' . $function . '] from module [' . $module . '], the file path is [' . $moduleFunctionPath . '] we will used it');
                 $functionFilePath = $moduleFunctionPath;
-            } else{
+            } else {
                 $logger->info('Cannot find helper [' . $function . '] from modules using the default location');
             }
-            if (! $functionFilePath){
+            if (!$functionFilePath) {
                 $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
-                foreach($searchDir as $dir){
+                foreach ($searchDir as $dir) {
                     $filePath = $dir . $file;
-                    if (file_exists($filePath)){
+                    if (file_exists($filePath)) {
                         $functionFilePath = $filePath;
                         //is already found not to continue
                         break;
@@ -195,11 +195,11 @@
                 }
             }
             $logger->info('The helper file path to be loaded is [' . $functionFilePath . ']');
-            if ($functionFilePath){
+            if ($functionFilePath) {
                 require_once $functionFilePath;
                 static::$loaded['function_' . $function] = $functionFilePath;
                 $logger->info('Helper [' . $function . '] --> ' . $functionFilePath . ' loaded successfully.');
-            } else{
+            } else {
                 show_error('Unable to find helper file [' . $file . ']');
             }
         }
@@ -229,25 +229,25 @@
             $module    = $moduleInfo['module'];
             $filename  = $moduleInfo['filename'];
             $moduleConfigPath = Module::findConfigFullPath($filename, $module);
-            if ($moduleConfigPath){
-                $logger->info('Found config [' . $filename . '] from module [' .$module. '], the file path is [' .$moduleConfigPath. '] we will used it');
+            if ($moduleConfigPath) {
+                $logger->info('Found config [' . $filename . '] from module [' . $module . '], the file path is [' . $moduleConfigPath . '] we will used it');
                 $configFilePath = $moduleConfigPath;
-            } else{
+            } else {
                 $logger->info('Cannot find config [' . $filename . '] from modules using the default location');
             }
             $logger->info('The config file path to be loaded is [' . $configFilePath . ']');
             $config = array();
-            if (file_exists($configFilePath)){
+            if (file_exists($configFilePath)) {
                 require_once $configFilePath;
-                if (! empty($config) && is_array($config)){
+                if (!empty($config) && is_array($config)) {
                     Config::setAll($config);
                     static::$loaded['config_' . $filename] = $configFilePath;
                     $logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
                     $logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
                     unset($config);
                 }
-            } else{
-                show_error('Unable to find config file ['. $configFilePath . ']');
+            } else {
+                show_error('Unable to find config file [' . $configFilePath . ']');
             }
         }
 
@@ -278,21 +278,21 @@
             $moduleInfo = self::getModuleInfoForLanguage($language);
             $module    = $moduleInfo['module'];
             $language  = $moduleInfo['language'];
-            if(! empty($moduleInfo['file'])){
+            if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
             $moduleLanguagePath = Module::findLanguageFullPath($language, $appLang, $module);
-            if ($moduleLanguagePath){
-                $logger->info('Found language [' . $language . '] from module [' .$module. '], the file path is [' .$moduleLanguagePath. '] we will used it');
+            if ($moduleLanguagePath) {
+                $logger->info('Found language [' . $language . '] from module [' . $module . '], the file path is [' . $moduleLanguagePath . '] we will used it');
                 $languageFilePath = $moduleLanguagePath;
-            } else{
+            } else {
                 $logger->info('Cannot find language [' . $language . '] from modules using the default location');
             }
-            if (! $languageFilePath){
+            if (!$languageFilePath) {
                 $searchDir = array(APP_LANG_PATH, CORE_LANG_PATH);
-                foreach($searchDir as $dir){
+                foreach ($searchDir as $dir) {
                     $filePath = $dir . $appLang . DS . $file;
-                    if (file_exists($filePath)){
+                    if (file_exists($filePath)) {
                         $languageFilePath = $filePath;
                         //already found no need continue
                         break;
@@ -329,19 +329,19 @@
          * 	'class' => 'class_name'
          * )
          */
-        protected static function getModuleInfoForModelLibrary($class){
+        protected static function getModuleInfoForModelLibrary($class) {
             $module = null;
             $obj = & get_instance();
-            if (strpos($class, '/') !== false){
+            if (strpos($class, '/') !== false) {
                 $path = explode('/', $class);
-                if (isset($path[0]) && in_array($path[0], Module::getModuleList())){
+                if (isset($path[0]) && in_array($path[0], Module::getModuleList())) {
                     $module = $path[0];
                     $class = ucfirst($path[1]);
                 }
-            } else{
+            } else {
                 $class = ucfirst($class);
             }
-            if (! $module && !empty($obj->moduleName)){
+            if (!$module && !empty($obj->moduleName)) {
                 $module = $obj->moduleName;
             }
             return array(
@@ -451,15 +451,15 @@
          * @param  string $class the class name to determine the instance
          * @return string        the instance name
          */
-        protected static function getModelLibraryInstanceName($class){
+        protected static function getModelLibraryInstanceName($class) {
             //for module
             $instance = null;
-            if (strpos($class, '/') !== false){
+            if (strpos($class, '/') !== false) {
                 $path = explode('/', $class);
-                if (isset($path[1])){
+                if (isset($path[1])) {
                     $instance = strtolower($path[1]);
                 }
-            } else{
+            } else {
                 $instance = strtolower($class);
             }
             return $instance;
@@ -478,10 +478,10 @@
             $module = $moduleInfo['module'];
             $class  = $moduleInfo['class'];
             $moduleLibraryPath = Module::findLibraryFullPath($class, $module);
-            if ($moduleLibraryPath){
-                $logger->info('Found library [' . $class . '] from module [' .$module. '], the file path is [' .$moduleLibraryPath. '] we will used it');
+            if ($moduleLibraryPath) {
+                $logger->info('Found library [' . $class . '] from module [' . $module . '], the file path is [' . $moduleLibraryPath . '] we will used it');
                 $libraryFilePath = $moduleLibraryPath;
-            } else{
+            } else {
                 $logger->info('Cannot find library [' . $class . '] from modules using the default location');
             }
             return $libraryFilePath;
@@ -495,20 +495,20 @@
          * @param  array  $params          the parameter to use
          * @return void
          */
-        protected static function loadLibrary($libraryFilePath, $class, $instance, $params = array()){
-            if ($libraryFilePath){
+        protected static function loadLibrary($libraryFilePath, $class, $instance, $params = array()) {
+            if ($libraryFilePath) {
                 $logger = static::getLogger();
                 require_once $libraryFilePath;
-                if (class_exists($class)){
+                if (class_exists($class)) {
                     $c = $params ? new $class($params) : new $class();
                     $obj = & get_instance();
                     $obj->{$instance} = $c;
                     static::$loaded[$instance] = $class;
                     $logger->info('Library [' . $class . '] --> ' . $libraryFilePath . ' loaded successfully.');
-                } else{
-                    show_error('The file '.$libraryFilePath.' exists but does not contain the class '.$class);
+                } else {
+                    show_error('The file ' . $libraryFilePath . ' exists but does not contain the class ' . $class);
                 }
-            } else{
+            } else {
                 show_error('Unable to find library class [' . $class . ']');
             }
         }
@@ -534,7 +534,7 @@
                 }
                 static::$loaded['lang_' . $language] = $languageFilePath;
                 $logger->info('Language [' . $language . '] --> ' . $languageFilePath . ' loaded successfully.');
-            } else{
+            } else {
                 show_error('Unable to find language [' . $language . ']');
             }
         }

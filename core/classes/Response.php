@@ -170,21 +170,21 @@
             //check in module first
             $logger->debug('Checking the view [' . $view . '] from module list ...');
             $moduleInfo = $this->getModuleInfoForView($view);
-            $module    = $moduleInfo['module'];
-            $view  = $moduleInfo['view'];
+            $module = $moduleInfo['module'];
+            $view = $moduleInfo['view'];
 			
             $moduleViewPath = Module::findViewFullPath($view, $module);
-            if($moduleViewPath){
+            if ($moduleViewPath) {
                 $path = $moduleViewPath;
-                $logger->info('Found view [' . $view . '] in module [' .$module. '], the file path is [' .$moduleViewPath. '] we will used it');
-            } else{
-                $logger->info('Cannot find view [' . $view . '] in module [' .$module. '] using the default location');
+                $logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
+            } else {
+                $logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
             }
 			
             $logger->info('The view file path to be loaded is [' . $path . ']');
 			
             /////////
-            if($return){
+            if ($return) {
                 return $this->loadView($path, $data, true);
             }
             $this->loadView($path, $data, false);
@@ -298,8 +298,8 @@
                 $output = ob_get_clean();
                 self::sendHeaders(404);
                 echo $output;
-            } else{
-                show_error('The 404 view [' .$path. '] does not exist');
+            } else {
+                show_error('The 404 view [' . $path . '] does not exist');
             }
         }
 
@@ -321,7 +321,7 @@
                 $output = ob_get_clean();
                 self::sendHeaders(503);
                 echo $output;
-            } else{
+            } else {
                 //can't use show_error() at this time because some dependencies not yet loaded and to prevent loop
                 set_http_status_header(503);
                 echo 'The error view [' . $path . '] does not exist';

@@ -142,9 +142,9 @@
         public function setTos(array $emails)
         {
             foreach ($emails as $name => $email) {
-                if(is_numeric($name)){
+                if (is_numeric($name)) {
                     $this->setTo($email);
-                } else{
+                } else {
                     $this->setTo($email, $name);
                 }
             }

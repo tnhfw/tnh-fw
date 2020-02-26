@@ -90,20 +90,20 @@
         /**
          * Construct new request instance
          */
-        public function __construct(){
+        public function __construct() {
             $this->get = $_GET;
             $this->post = $_POST;
             $this->server = $_SERVER;
             $this->query = $_REQUEST;
             $this->cookie = $_COOKIE;
             $this->file = $_FILES;
-            $this->session =& class_loader('Session', 'classes');
+            $this->session = & class_loader('Session', 'classes');
             $this->method = $this->server('REQUEST_METHOD');
             $this->requestUri = $this->server('REQUEST_URI');
             $this->header = array();
-            if(function_exists('apache_request_headers')){
+            if (function_exists('apache_request_headers')) {
                 $this->header = apache_request_headers();
-            } else if(function_exists('getallheaders')){
+            } else if (function_exists('getallheaders')) {
                 $this->header = getallheaders();
             }
         }

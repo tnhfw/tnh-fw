@@ -215,17 +215,17 @@
      * @param  string $type   the type of join (INNER, LEFT, RIGHT)
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function join($table, $field1 = null, $op = null, $field2 = null, $type = ''){
+    public function join($table, $field1 = null, $op = null, $field2 = null, $type = '') {
         $on = $field1;
         $table = $this->getPrefix() . $table;
-        if (! is_null($op)){
-        $on = (! in_array($op, $this->operatorList) 
+        if (!is_null($op)) {
+        $on = (!in_array($op, $this->operatorList) 
                                                     ? ($this->getPrefix() . $field1 . ' = ' . $this->getPrefix() . $op) 
                                                     : ($this->getPrefix() . $field1 . ' ' . $op . ' ' . $this->getPrefix() . $field2));
         }
-        if (empty($this->join)){
+        if (empty($this->join)) {
         $this->join = ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
-        } else{
+        } else {
         $this->join = $this->join . ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
         }
         return $this;
@@ -329,12 +329,12 @@
      * @param  boolean $escape whether to escape or not the $val
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function where($where, $op = null, $val = null, $type = '', $andOr = 'AND', $escape = true){
+    public function where($where, $op = null, $val = null, $type = '', $andOr = 'AND', $escape = true) {
         $whereStr = '';
-        if (is_array($where)){
+        if (is_array($where)) {
         $whereStr = $this->getWhereStrIfIsArray($where, $type, $andOr, $escape);
-        } else{
-        if (is_array($op)){
+        } else {
+        if (is_array($op)) {
             $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
         } else {
             $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
@@ -577,13 +577,13 @@
      * @param  int $limitEnd the limit count
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function limit($limit, $limitEnd = null){
-        if (empty($limit)){
+    public function limit($limit, $limitEnd = null) {
+        if (empty($limit)) {
         $limit = 0;
         }
-        if (! is_null($limitEnd)){
+        if (!is_null($limitEnd)) {
         $this->limit = $limit . ', ' . $limitEnd;
-        } else{
+        } else {
         $this->limit = $limit;
         }
         return $this;
@@ -595,10 +595,10 @@
      * @param  string $orderDir the order direction (ASC or DESC)
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orderBy($orderBy, $orderDir = ' ASC'){
-        if (stristr($orderBy, ' ') || $orderBy == 'rand()'){
+    public function orderBy($orderBy, $orderDir = ' ASC') {
+        if (stristr($orderBy, ' ') || $orderBy == 'rand()') {
         $this->orderBy = empty($this->orderBy) ? $orderBy : $this->orderBy . ', ' . $orderBy;
-        } else{
+        } else {
         $this->orderBy = empty($this->orderBy) 
                         ? ($orderBy . ' ' . strtoupper($orderDir)) 
                         : $this->orderBy . ', ' . $orderBy . ' ' . strtoupper($orderDir);
@@ -611,10 +611,10 @@
      * @param  string|array $field the field name used or array of field list
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function groupBy($field){
-        if (is_array($field)){
+    public function groupBy($field) {
+        if (is_array($field)) {
         $this->groupBy = implode(', ', $field);
-        } else{
+        } else {
         $this->groupBy = $field;
         }
         return $this;
@@ -628,16 +628,16 @@
      * @param  boolean $escape whether to escape or not the values
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function having($field, $op = null, $val = null, $escape = true){
-        if (is_array($op)){
+    public function having($field, $op = null, $val = null, $escape = true) {
+        if (is_array($op)) {
         $this->having = $this->getHavingStrIfOperatorIsArray($field, $op, $escape);
-        } else if (! in_array($op, $this->operatorList)){
-        if (is_null($op)){
+        } else if (!in_array($op, $this->operatorList)) {
+        if (is_null($op)) {
             $op = '';
         }
         $this->having = $field . ' > ' . ($this->escape($op, $escape));
-        } else{
-        if (is_null($val)){
+        } else {
+        if (is_null($val)) {
             $val = '';
         }
         $this->having = $field . ' ' . $op . ' ' . ($this->escape($val, $escape));

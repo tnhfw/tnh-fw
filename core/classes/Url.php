@@ -44,25 +44,25 @@
          * @param  string $path the link path or full URL
          * @return string the full link URL
          */
-        public static function site_url($path = ''){
-            if(is_url($path)){
+        public static function site_url($path = '') {
+            if (is_url($path)) {
                 return $path;
             }
             $path = rtrim($path, '/');
             $baseUrl = get_config('base_url');
             $frontController = get_config('front_controller');
             $url = $baseUrl;
-            if($frontController){
+            if ($frontController) {
                 $url .= $frontController . '/';
             }
-            if(($suffix = get_config('url_suffix')) && $path){
-                if(strpos($path, '?') !== false){
+            if (($suffix = get_config('url_suffix')) && $path) {
+                if (strpos($path, '?') !== false) {
                     $query = explode('?', $path);
                     $query[0] = str_ireplace($suffix, '', $query[0]);
                     $query[0] = rtrim($query[0], '/');
                     $query[0] .= $suffix;
                     $path = implode('?', $query);
-                } else{
+                } else {
                     $path .= $suffix;
                 }
             }
