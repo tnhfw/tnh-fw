@@ -24,7 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	if(! function_exists('__')){
+	if (!function_exists('__')) {
 		/**
 		 * function for the shortcut to Lang::get()
 		 * @param  string $key the language key to retrieve
@@ -32,20 +32,20 @@
 		 * for the given key
 		 * @return string  the language value
 		 */
-		function __($key, $default = 'LANGUAGE_ERROR'){
+		function __($key, $default = 'LANGUAGE_ERROR') {
 			return get_instance()->lang->get($key, $default);
 		}
 
 	}
 
 
-	if(! function_exists('get_languages')){
+	if (!function_exists('get_languages')) {
 		/**
 		 * function for the shortcut to Lang::getSupported()
 		 * 
 		 * @return array all the supported languages
 		 */
-		function get_languages(){
+		function get_languages() {
 			return get_instance()->lang->getSupported();
 		}
 

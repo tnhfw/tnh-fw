@@ -27,7 +27,7 @@
 	/**
 	 * PDF library to generate PDF document using the library DOMPDF
 	 */
-	class PDF extends BaseClass{
+	class PDF extends BaseClass {
 		
 		/**
 		 * The dompdf instance
@@ -38,10 +38,10 @@
 		/**
 		 * Create PDF library instance
 		 */
-		public function __construct(){
+		public function __construct() {
 			parent::__construct();
 
-			require_once VENDOR_PATH.'dompdf/dompdf_config.inc.php';
+			require_once VENDOR_PATH . 'dompdf/dompdf_config.inc.php';
 			$this->dompdf = new Dompdf();
 		}
 
@@ -62,8 +62,7 @@
 			$this->dompdf->render();
 			if($stream){
 				$this->dompdf->stream($filename);
-			}
-			else{
+			} else{
 				return $this->dompdf->output();
 			}
 		}
@@ -73,7 +72,7 @@
 		*
 		* @return object the dompdf instance
 		*/
-		public function getDompdf(){
+		public function getDompdf() {
 			return $this->dompdf;
 		}
 		

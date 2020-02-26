@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Tony NGUEREZA">
-    <title><?php echo $title;?></title>
+    <title><?php echo $title; ?></title>
 	<style type = 'text/css'>
 	/* reset */
 		*{
@@ -64,10 +64,10 @@
   <body>
 	<div class="container">
 		<div class = "title">
-			<h2><?php echo $title;?></h2>
+			<h2><?php echo $title; ?></h2>
 		</div>
 		<div class = "body">
-			<p><?php echo $error;?></p>
+			<p><?php echo $error; ?></p>
 		</div>
 	</div> <!-- ./container-->
    </body>

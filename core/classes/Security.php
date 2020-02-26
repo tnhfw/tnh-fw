@@ -24,13 +24,13 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Security extends BaseStaticClass{
+	class Security extends BaseStaticClass {
 
 		/**
 		 * This method is used to generate the CSRF token
 		 * @return string the generated CSRF token
 		 */
-		public static function generateCSRF(){
+		public static function generateCSRF() {
 			$logger = self::getLogger();
 			$logger->debug('Generation of CSRF ...');
 			
@@ -41,8 +41,7 @@
 			if(Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) > $currentTime){
 				$logger->info('The CSRF token not yet expire just return it');
 				return Session::get($key);
-			}
-			else{
+			} else{
 				$newTime = $currentTime + $expire;
 				$token = sha1(uniqid()) . sha1(uniqid());
 				$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. '], token [' .$token. ']');
@@ -56,7 +55,7 @@
 		 * This method is used to check the CSRF if is valid, not yet expire, etc.
 		 * @return boolean true if valid, false if not valid
 		 */
-		public static function validateCSRF(){
+		public static function validateCSRF() {
 			$logger = self::getLogger();
 			$logger->debug('Validation of CSRF ...');
 				
@@ -64,8 +63,8 @@
 			$expire = get_config('csrf_expire', 60);
 			$keyExpire = 'csrf_expire';
 			$currentTime = time();
-			$logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. ']');
-			if(! Session::exists($key) || Session::get($keyExpire) <= $currentTime){
+			$logger->info('The CSRF informations are listed below: key [' . $key . '], key expire [' . $keyExpire . '], expire time [' . $expire . ']');
+			if (!Session::exists($key) || Session::get($keyExpire) <= $currentTime) {
 				$logger->warning('The CSRF session data is not valide');
 				return false;
 			}
@@ -74,11 +73,11 @@
 			//super instance
 			$obj = & get_instance();
 			$token = $obj->request->query($key);
-			if(! $token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime){
-				$logger->warning('The CSRF data [' .$token. '] is not valide may be attacker do his job');
+			if (!$token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime) {
+				$logger->warning('The CSRF data [' . $token . '] is not valide may be attacker do his job');
 				return false;
 			}
-			$logger->info('The CSRF data [' .$token. '] is valide the form data is safe continue');
+			$logger->info('The CSRF data [' . $token . '] is valide the form data is safe continue');
 			//remove the token from session
 			Session::clear($key);
 			Session::clear($keyExpire);
@@ -104,8 +103,7 @@
 						$logger->info('IP address ' . $ip . ' allowed using the wildcard "*" or the full IP');
 						//wildcard to access all ip address
 						return;
-					}
-					else{
+					} else{
 						// go through all whitelisted ips
 						foreach ($list as $ipaddr) {
 							// find the wild card * in whitelisted ip (f.e. find position in "127.0.*" or "127*")
@@ -130,8 +128,7 @@
 						show_error('Access to this application is not allowed');
 					}
 				}
-			}
-			else{
+			} else{
 				$logger->info('Whitelist IP access is not enabled in the configuration, ignore checking');
 			}
 		 }

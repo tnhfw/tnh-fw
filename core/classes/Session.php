@@ -23,7 +23,7 @@
 	 * along with this program; if not, write to the Free Software
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
-	class Session extends BaseStaticClass{
+	class Session extends BaseStaticClass {
 		
 		/**
 		 * The session flash key to use
@@ -37,14 +37,14 @@
 		 * @param  mixed $default the default value to use if can not find the session item in the list
 		 * @return mixed          the session value if exist or the default value
 		 */
-		public static function get($item, $default = null){
+		public static function get($item, $default = null) {
 			$logger = self::getLogger();
-			$logger->debug('Getting session data for item [' .$item. '] ...');
-			if(array_key_exists($item, $_SESSION)){
+			$logger->debug('Getting session data for item [' . $item . '] ...');
+			if (array_key_exists($item, $_SESSION)) {
 				$logger->info('Found session data for item [' . $item . '] the vaue is : [' . stringfy_vars($_SESSION[$item]) . ']');
 				return $_SESSION[$item];
 			}
-			$logger->warning('Cannot find session item [' . $item . '] using the default value ['. $default . ']');
+			$logger->warning('Cannot find session item [' . $item . '] using the default value [' . $default . ']');
 			return $default;
 		}
 
@@ -53,7 +53,7 @@
 		 * @param string $item  the session item name to set
 		 * @param mixed $value the session item value
 		 */
-		public static function set($item, $value){
+		public static function set($item, $value) {
 			$logger = self::getLogger();
 			$logger->debug('Setting session data for item [' . $item . '], value [' . stringfy_vars($value) . ']');
 			$_SESSION[$item] = $value;
@@ -72,8 +72,7 @@
 			($_SESSION[$key]) : $default;
 			if(array_key_exists($key, $_SESSION)){
 				unset($_SESSION[$key]);
-			}
-			else{
+			} else{
 				$logger->warning('Cannot find session flash item ['. $key .'] using the default value ['. $default .']');
 			}
 			return $return;
@@ -84,8 +83,8 @@
 		 * @param  string  $item the session flash item name
 		 * @return boolean 
 		 */
-		public static function hasFlash($item){
-			$key = self::SESSION_FLASH_KEY.'_'.$item;
+		public static function hasFlash($item) {
+			$key = self::SESSION_FLASH_KEY . '_' . $item;
 			return array_key_exists($key, $_SESSION);
 		}
 
@@ -94,8 +93,8 @@
 		 * @param string $item  the session flash item name to set
 		 * @param mixed $value the session flash item value
 		 */
-		public static function setFlash($item, $value){
-			$key = self::SESSION_FLASH_KEY.'_'.$item;
+		public static function setFlash($item, $value) {
+			$key = self::SESSION_FLASH_KEY . '_' . $item;
 			$_SESSION[$key] = $value;
 		}
 
@@ -108,8 +107,7 @@
 			if(array_key_exists($item, $_SESSION)){
 				$logger->info('Deleting of session for item ['.$item.' ]');
 				unset($_SESSION[$item]);
-			}
-			else{
+			} else{
 				$logger->warning('Session item ['.$item.'] to be deleted does not exists');
 			}
 		}
@@ -124,8 +122,7 @@
 			if(array_key_exists($key, $_SESSION)){
 				$logger->info('Delete session flash for item ['.$item.']');
 				unset($_SESSION[$item]);
-			}
-			else{
+			} else{
 				$logger->warning('Dession flash item ['.$item.'] to be deleted does not exists');
 			}
 		}
@@ -135,14 +132,14 @@
 		 * @param  string  $item the session item name
 		 * @return boolean 
 		 */
-		public static function exists($item){
+		public static function exists($item) {
 			return array_key_exists($item, $_SESSION);
 		}
 
 		/**
 		 * Destroy all session data values
 		 */
-		public static function clearAll(){
+		public static function clearAll() {
 			session_unset();
 			session_destroy();
 		}

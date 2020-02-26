@@ -29,7 +29,7 @@
 	 * also to dispatch the event
 	 */
 	
-	class EventDispatcher extends BaseClass{
+	class EventDispatcher extends BaseClass {
 		
 		/**
 		 * The list of the registered listeners
@@ -38,7 +38,7 @@
 		private $listeners = array();
 		
 
-		public function __construct(){
+		public function __construct() {
 			parent::__construct();
 		}
 
@@ -52,8 +52,7 @@
 			if(! isset($this->listeners[$eventName])){
 				$this->logger->info('This event does not have the registered event listener before, adding new one');
 				$this->listeners[$eventName] = array();
-			}
-			else{
+			} else{
 				$this->logger->info('This event already have the registered listener, add this listener to the list');
 			}
 			$this->listeners[$eventName][] = $listener;
@@ -71,12 +70,10 @@
 				if(false !== $index = array_search($listener, $this->listeners[$eventName], true)){
 					$this->logger->info('Found the listener at index [' .$index. '] remove it');
 					unset($this->listeners[$eventName][$index]);
-				}
-				else{
+				} else{
 					$this->logger->info('Cannot found this listener in the event listener list');
 				}
-			}
-			else{
+			} else{
 				$this->logger->info('This event does not have this listener ignore remove');
 			}
 		}
@@ -91,8 +88,7 @@
 			if($eventName !== null && isset($this->listeners[$eventName])){
 				$this->logger->info('The event name is set of exist in the listener just remove all event listener for this event');
 				unset($this->listeners[$eventName]);
-			}
-			else{
+			} else{
 				$this->logger->info('The event name is not set or does not exist in the listener, so remove all event listener');
 				$this->listeners = array();
 			}
@@ -103,7 +99,7 @@
 		 * @param string $eventName the event name
 		 * @return array the listeners for this event or empty array if this event does not contain any listener
 		 */
-		public function getListeners($eventName){
+		public function getListeners($eventName) {
 			return isset($this->listeners[$eventName]) ? $this->listeners[$eventName] : array();
 		}
 		
@@ -125,8 +121,7 @@
 			if($event->returnBack){
 				$this->logger->info('This event need return back, return the result for future use');
 				return $this->dispatchToListerners($event);
-			}
-			else{
+			} else{
 				$this->logger->info('This event no need return back the result, just dispatch it');
 				$this->dispatchToListerners($event);
 			}
@@ -146,8 +141,7 @@
 					return $event;
 				}
 				return;
-			}
-			else{
+			} else{
 				$this->logger->info('Found the registered event listener for the event [' .$event->name. '] the list are: ' . stringfy_vars($list));
 			}
 			foreach($list as $listener){
@@ -155,12 +149,10 @@
 					$returnedEvent = call_user_func_array($listener, array($event));
 					if($returnedEvent instanceof EventInfo){
 						$event = $returnedEvent;
-					}
-					else{
+					} else{
 						show_error('This event [' .$event->name. '] need you return the event object after processing');
 					}
-				}
-				else{
+				} else{
 					call_user_func_array($listener, array($event));
 				}
 				if($event->stop){

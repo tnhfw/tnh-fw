@@ -25,15 +25,15 @@
 	*/
 
 
-	class Url{
+	class Url {
 
 		/**
 		 * Return the link using base_url config without front controller "index.php"
 		 * @param  string $path the link path or full URL
 		 * @return string the full link URL
 		 */
-		public static function base_url($path = ''){
-			if(is_url($path)){
+		public static function base_url($path = '') {
+			if (is_url($path)) {
 				return $path;
 			}
 			return get_config('base_url') . $path;
@@ -62,8 +62,7 @@
 					$query[0] = rtrim($query[0], '/');
 					$query[0] .= $suffix;
 					$path = implode('?', $query);
-				}
-				else{
+				} else{
 					$path .= $suffix;
 				}
 			}
@@ -74,10 +73,10 @@
 		 * Return the current site URL
 		 * @return string
 		 */
-		public static function current(){
+		public static function current() {
 			$current = '/';
 			$requestUri = get_instance()->request->requestUri();
-			if($requestUri){
+			if ($requestUri) {
 				$current = $requestUri;
 			}
 			return static::domain() . $current;
@@ -90,18 +89,18 @@
 		 * @param  boolean $lowercase whether to set the final text to lowe case or not
 		 * @return string the friendly generated text
 		 */
-		public static function title($str = null, $separator = '-', $lowercase = true){
+		public static function title($str = null, $separator = '-', $lowercase = true) {
 			$str = trim($str);
-			$from = array('ç','À','Á','Â','Ã','Ä','Å','à','á','â','ã','ä','å','Ò','Ó','Ô','Õ','Ö','Ø','ò','ó','ô','õ','ö','ø','È','É','Ê','Ë','è','é','ê','ë','Ç','ç','Ì','Í','Î','Ï','ì','í','î','ï','Ù','Ú','Û','Ü','ù','ú','û','ü','ÿ','Ñ','ñ');
-			$to = array('c','a','a','a','a','a','a','a','a','a','a','a','a','o','o','o','o','o','o','o','o','o','o','o','o','e','e','e','e','e','e','e','e','e','e','i','i','i','i','i','i','i','i','u','u','u','u','u','u','u','u','y','n','n');
+			$from = array('ç', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'à', 'á', 'â', 'ã', 'ä', 'å', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'È', 'É', 'Ê', 'Ë', 'è', 'é', 'ê', 'ë', 'Ç', 'ç', 'Ì', 'Í', 'Î', 'Ï', 'ì', 'í', 'î', 'ï', 'Ù', 'Ú', 'Û', 'Ü', 'ù', 'ú', 'û', 'ü', 'ÿ', 'Ñ', 'ñ');
+			$to = array('c', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'n', 'n');
 			$str = str_replace($from, $to, $str);
 			$str = preg_replace('#([^a-z0-9]+)#i', $separator, $str);
 			$str = str_replace('--', $separator, $str);
 			//if after process we get something like one-two-three-, need truncate the last separator "-"
-			if(substr($str, -1) == $separator){
+			if (substr($str, -1) == $separator) {
 				$str = substr($str, 0, -1);
 			}
-			if($lowercase){
+			if ($lowercase) {
 				$str = strtolower($str);
 			}
 			return $str;
@@ -111,11 +110,11 @@
 		 * Get the current application domain with protocol
 		 * @return string the domain name
 		 */
-		public static function domain(){
+		public static function domain() {
 			$domain = 'localhost';
 			$port = get_instance()->request->server('SERVER_PORT');
 			$protocol = 'http';
-			if(is_https()){
+			if (is_https()) {
 				$protocol = 'https';
 			}
 
@@ -127,23 +126,23 @@
 
 			foreach ($domainserverVars as $var) {
 				$value = get_instance()->request->server($var);
-				if($value){
+				if ($value) {
 					$domain = $value;
 					break;
 				}
 			}
 			
-			if($port && ((is_https() && $port != 443) || (!is_https() && $port != 80))){
-				$domain .= ':'.$port;
+			if ($port && ((is_https() && $port != 443) || (!is_https() && $port != 80))) {
+				$domain .= ':' . $port;
 			}
-			return $protocol.'://'.$domain;
+			return $protocol . '://' . $domain;
 		}
 
 		/**
 		 * Get the current request query string
 		 * @return string
 		 */
-		public static function queryString(){
+		public static function queryString() {
 			return get_instance()->request->server('QUERY_STRING');
 		}
 	}

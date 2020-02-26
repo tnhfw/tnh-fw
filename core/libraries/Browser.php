@@ -919,20 +919,15 @@
                     if(preg_match('#trident/([0-9\.]+);#i', $this->_agent, $aresult)){
                         if($aresult[1] == '3.1'){
                             $this->setVersion('7.0');
-                        }
-                        else if($aresult[1] == '4.0'){
+                        } else if($aresult[1] == '4.0'){
                             $this->setVersion('8.0');
-                        }
-                        else if($aresult[1] == '5.0'){
+                        } else if($aresult[1] == '5.0'){
                             $this->setVersion('9.0');
-                        }
-                        else if($aresult[1] == '6.0'){
+                        } else if($aresult[1] == '6.0'){
                             $this->setVersion('10.0');
-                        }
-                        else if($aresult[1] == '7.0'){
+                        } else if($aresult[1] == '7.0'){
                             $this->setVersion('11.0');
-                        }
-                        else if($aresult[1] == '8.0'){
+                        } else if($aresult[1] == '8.0'){
                             $this->setVersion('11.0');
                         }
                     }
@@ -1669,40 +1664,40 @@
         protected function checkPlatform()
         {
             $platformMaps = array(
-              'windows' => self::PLATFORM_WINDOWS,
-              'iPad' => self::PLATFORM_IPAD,
-              'iPod' => self::PLATFORM_IPOD,
-              'iPhone' => self::PLATFORM_IPHONE,
-              'mac' => self::PLATFORM_APPLE,
-              'android' => self::PLATFORM_ANDROID,
-              'Silk' => self::PLATFORM_FIRE_OS,
-              'linux_smarttv' => self::PLATFORM_LINUX .'/'.self::PLATFORM_SMART_TV,
-              'linux' => self::PLATFORM_LINUX,
-              'Nokia' => self::PLATFORM_NOKIA,
-              'BlackBerry' => self::PLATFORM_BLACKBERRY,
-              'FreeBSD' => self::PLATFORM_FREEBSD,
-              'OpenBSD' => self::PLATFORM_OPENBSD,
-              'NetBSD' => self::PLATFORM_NETBSD,
-              'OpenSolaris' => self::PLATFORM_OPENSOLARIS,
-              'SunOS' => self::PLATFORM_SUNOS,
-              'OS\/2' => self::PLATFORM_OS2,
-              'BeOS' => self::PLATFORM_BEOS,
-              'win' => self::PLATFORM_WINDOWS,
-              'Playstation' => self::PLATFORM_PLAYSTATION,
-              'Roku' => self::PLATFORM_ROKU,
-              'iOS' => self::PLATFORM_IPHONE . '/' . self::PLATFORM_IPAD,
-              'tvOS' => self::PLATFORM_APPLE_TV,
-              'curl' => self::PLATFORM_TERMINAL,
-              'CrOS' => self::PLATFORM_CHROME_OS,
-              'okhttp' => self::PLATFORM_JAVA_ANDROID,
-              'PostmanRuntime' => self::PLATFORM_POSTMAN,
-              'Iframely' => self::PLATFORM_I_FRAME
+                'windows' => self::PLATFORM_WINDOWS,
+                'iPad' => self::PLATFORM_IPAD,
+                'iPod' => self::PLATFORM_IPOD,
+                'iPhone' => self::PLATFORM_IPHONE,
+                'mac' => self::PLATFORM_APPLE,
+                'android' => self::PLATFORM_ANDROID,
+                'Silk' => self::PLATFORM_FIRE_OS,
+                'linux_smarttv' => self::PLATFORM_LINUX .'/'.self::PLATFORM_SMART_TV,
+                'linux' => self::PLATFORM_LINUX,
+                'Nokia' => self::PLATFORM_NOKIA,
+                'BlackBerry' => self::PLATFORM_BLACKBERRY,
+                'FreeBSD' => self::PLATFORM_FREEBSD,
+                'OpenBSD' => self::PLATFORM_OPENBSD,
+                'NetBSD' => self::PLATFORM_NETBSD,
+                'OpenSolaris' => self::PLATFORM_OPENSOLARIS,
+                'SunOS' => self::PLATFORM_SUNOS,
+                'OS\/2' => self::PLATFORM_OS2,
+                'BeOS' => self::PLATFORM_BEOS,
+                'win' => self::PLATFORM_WINDOWS,
+                'Playstation' => self::PLATFORM_PLAYSTATION,
+                'Roku' => self::PLATFORM_ROKU,
+                'iOS' => self::PLATFORM_IPHONE . '/' . self::PLATFORM_IPAD,
+                'tvOS' => self::PLATFORM_APPLE_TV,
+                'curl' => self::PLATFORM_TERMINAL,
+                'CrOS' => self::PLATFORM_CHROME_OS,
+                'okhttp' => self::PLATFORM_JAVA_ANDROID,
+                'PostmanRuntime' => self::PLATFORM_POSTMAN,
+                'Iframely' => self::PLATFORM_I_FRAME
             );
 
             foreach ($platformMaps as $name => $value) {
-                if($name == 'linux_smarttv' 
+                if ($name == 'linux_smarttv' 
                     && stripos($this->_agent, 'linux') !== false 
-                    && stripos($this->_agent, 'SMART-TV') !== false ){
+                    && stripos($this->_agent, 'SMART-TV') !== false) {
                         $this->_platform = $value;
                         break;
                 } elseif (stripos($this->_agent, $name) !== false) {

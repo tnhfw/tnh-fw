@@ -8,13 +8,13 @@
     <meta name="description" content="A simple PHP framework using HMVC architecture">
     <meta name="author" content="Tony NGUEREZA">
     <title>TNH Framework</title>
-    <link href="<?php echo Assets::css('bootstrap.min');?>" rel="stylesheet" type = "text/css" >
-	<link href="<?php echo Assets::css('font-awesome.min');?>" rel="stylesheet" type = "text/css" >
-    <link href="<?php echo Assets::css('responsive');?>" rel="stylesheet" type = "text/css" >
-	<link rel="icon" href="<?php echo Assets::img('favicon.ico');?>">
+    <link href="<?php echo Assets::css('bootstrap.min'); ?>" rel="stylesheet" type = "text/css" >
+	<link href="<?php echo Assets::css('font-awesome.min'); ?>" rel="stylesheet" type = "text/css" >
+    <link href="<?php echo Assets::css('responsive'); ?>" rel="stylesheet" type = "text/css" >
+	<link rel="icon" href="<?php echo Assets::img('favicon.ico'); ?>">
 	<!--[if lt IE 9]>
-	<script src="<?php echo Assets::js('html5shiv');?>"></script>
-	<script src="<?php echo Assets::js('respond.min');?>"></script>
+	<script src="<?php echo Assets::js('html5shiv'); ?>"></script>
+	<script src="<?php echo Assets::js('respond.min'); ?>"></script>
     <![endif]-->
 	<style type = "text/css">
 		
@@ -28,15 +28,15 @@
 			<div class = "col-md-offset-2 col-md-8 col-md-offset-2">
 				<div class = "panel panel-primary">
 					<div class = "panel-heading">
-						<h2>Welcome on <?php echo TNH_NAME;?> v<?php echo TNH_VERSION;?></h2>
+						<h2>Welcome on <?php echo TNH_NAME; ?> v<?php echo TNH_VERSION; ?></h2>
 					</div>
 					<div class = "panel-body">
-						<img src = "<?php echo Assets::img('logo.png');?>" class = "img-responsive" style = "float:left;" />
+						<img src = "<?php echo Assets::img('logo.png'); ?>" class = "img-responsive" style = "float:left;" />
 						<h3>
 							A simple PHP framework using HMVC architecture
 						</h3>
 						<br />
-						<p><?php echo Html::a('https://github.com/tnhfw/tnh-fw', 'Framework on Github', array('class' => 'btn btn-default', 'target' => '_blank'));?></p>
+						<p><?php echo Html::a('https://github.com/tnhfw/tnh-fw', 'Framework on Github', array('class' => 'btn btn-default', 'target' => '_blank')); ?></p>
 					</div>
 				</div>
 				<div class = "panel panel-primary">
@@ -44,10 +44,10 @@
 						<h2>Server information</h2>
 					</div>
 					<div class = "panel-body">
-						<h4>Running on : <b><?php echo php_uname();?></b></h4>
-						<h4>PHP server SAPI : <b><?php echo php_sapi_name();?></b></h4>
-						<h4>PHP Version : <b><?php echo phpversion();?></b></h4>
-						<h4>PHP Loaded extensions : (<?php echo count(get_loaded_extensions());?> extensions)</h4>
+						<h4>Running on : <b><?php echo php_uname(); ?></b></h4>
+						<h4>PHP server SAPI : <b><?php echo php_sapi_name(); ?></b></h4>
+						<h4>PHP Version : <b><?php echo phpversion(); ?></b></h4>
+						<h4>PHP Loaded extensions : (<?php echo count(get_loaded_extensions()); ?> extensions)</h4>
 							<table class = "table table-striped table-condensed table-bordered table-responsive">
 								<tr>
 									<th>Name</th>
@@ -55,10 +55,10 @@
 								</tr>
 								<?php foreach (get_loaded_extensions() as $e):?>
 									<tr>
-										<td><?php echo $e;?></td>
-										<td><?php echo phpversion($e);?></td>
+										<td><?php echo $e; ?></td>
+										<td><?php echo phpversion($e); ?></td>
 									</tr>
-								<?php endforeach;?>
+								<?php endforeach; ?>
 							</table>
 					</div>
 				</div>
@@ -67,30 +67,30 @@
 						<h2>Framework information</h2>
 					</div>
 					<div class = "panel-body">
-						<h4>Version : <b><?php echo TNH_VERSION;?></b></h4>
-						<h4>Required PHP version : <b>PHP >= <?php echo TNH_REQUIRED_PHP_MIN_VERSION;?>, PHP <= <?php echo TNH_REQUIRED_PHP_MAX_VERSION;?></b></h4>
-						<h4>Build date : <b><?php echo TNH_RELEASE_DATE;?></b></h4>
-						<h4>Author : <b><?php echo TNH_AUTHOR;?></b></h4>
-						<h4>Author E-mail : <b><?php echo TNH_AUTHOR_EMAIL;?></b></h4>
-						<h4>Loaded files : (<?php echo count(get_included_files());?> files)</h4>
+						<h4>Version : <b><?php echo TNH_VERSION; ?></b></h4>
+						<h4>Required PHP version : <b>PHP >= <?php echo TNH_REQUIRED_PHP_MIN_VERSION; ?>, PHP <= <?php echo TNH_REQUIRED_PHP_MAX_VERSION; ?></b></h4>
+						<h4>Build date : <b><?php echo TNH_RELEASE_DATE; ?></b></h4>
+						<h4>Author : <b><?php echo TNH_AUTHOR; ?></b></h4>
+						<h4>Author E-mail : <b><?php echo TNH_AUTHOR_EMAIL; ?></b></h4>
+						<h4>Loaded files : (<?php echo count(get_included_files()); ?> files)</h4>
 							<table class = "table table-striped table-condensed table-bordered table-responsive">
 								<tr>
 									<th>Path</th>
 									<th>File</th>
 								</tr>
-								<?php foreach(get_included_files() as $file):?>
+								<?php foreach (get_included_files() as $file):?>
 									<tr>
-										<td><?php echo $file;?></td>
-										<td><?php echo basename($file);?></td>
+										<td><?php echo $file; ?></td>
+										<td><?php echo basename($file); ?></td>
 									</tr>
-								<?php endforeach;?>
+								<?php endforeach; ?>
 							</table>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script src="<?php echo Assets::js('jquery');?>"></script>
-	<script src="<?php echo Assets::js('bootstrap.min');?>"></script>
+	<script src="<?php echo Assets::js('jquery'); ?>"></script>
+	<script src="<?php echo Assets::js('bootstrap.min'); ?>"></script>
 	</body>
 </html>

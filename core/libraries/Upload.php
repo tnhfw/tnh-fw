@@ -22,139 +22,139 @@
      * You should have received a copy of the GNU General Public License
      * along with this program; if not, write to the Free Software
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-    */
+     */
 
 
 
     /**
-    *    Upload
-    *
-    *    A complete class to upload files with php 5 or higher, but the best: very simple to use.
-    *
-    *    @author Olaf Erlandsen <info@webdevfreelance.com>
-    *    @author http://www.webdevfreelance.com/
-    *
-    *    @package FileUpload
-    *    @version 1.5
-    */
+     *    Upload
+     *
+     *    A complete class to upload files with php 5 or higher, but the best: very simple to use.
+     *
+     *    @author Olaf Erlandsen <info@webdevfreelance.com>
+     *    @author http://www.webdevfreelance.com/
+     *
+     *    @package FileUpload
+     *    @version 1.5
+     */
     class Upload extends BaseClass{
 
         /**
-        *   Version
-        *
-        *   @since      1.5
-        *   @version    1.0
-        */
+         *   Version
+         *
+         *   @since      1.5
+         *   @version    1.0
+         */
         const VERSION = '1.5';
 
         /**
-        *    Upload function name
-        *    Remember:
-        *        Default function: move_uploaded_file
-        *        Native options:
-        *            - move_uploaded_file (Default and best option)
-        *            - copy
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        string
-        */
+         *    Upload function name
+         *    Remember:
+         *        Default function: move_uploaded_file
+         *        Native options:
+         *            - move_uploaded_file (Default and best option)
+         *            - copy
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        string
+         */
         private $upload_function = 'move_uploaded_file';
 
         /**
-        *    Array with the information obtained from the
-        *    variable $_FILES or $HTTP_POST_FILES.
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        array
-        */
+         *    Array with the information obtained from the
+         *    variable $_FILES or $HTTP_POST_FILES.
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        array
+         */
         private $file_array    = array();
 
         /**
-        *    If the file you are trying to upload already exists it will
-        *    be overwritten if you set the variable to true.
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        boolean
-        */
+         *    If the file you are trying to upload already exists it will
+         *    be overwritten if you set the variable to true.
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        boolean
+         */
         private $overwrite_file = false;
 
         /**
-        *    Input element
-        *    Example:
-        *        <input type="file" name="file" />
-        *    Result:
-        *        FileUpload::$input = file
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        string
-        */
+         *    Input element
+         *    Example:
+         *        <input type="file" name="file" />
+         *    Result:
+         *        FileUpload::$input = file
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        string
+         */
         private $input;
 
         /**
-        *    Path output
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        string
-        */
+         *    Path output
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        string
+         */
         private $destination_directory;
 
         /**
-        *    Output filename
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        string
-        */
+         *    Output filename
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        string
+         */
         private $filename;
 
         /**
-        *    Max file size
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        float
-        */
+         *    Max file size
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        float
+         */
         private $max_file_size= 0.0;
 
         /**
-        *    List of allowed mime types
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        array
-        */
+         *    List of allowed mime types
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        array
+         */
         private $allowed_mime_types = array();
 
         /**
-        *    Callbacks
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        array
-        */
+         *    Callbacks
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        array
+         */
         private $callbacks = array('before' => null, 'after' => null);
 
         /**
-        *    File object
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        object
-        */
+         *    File object
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        object
+         */
         private $file;
 
         /**
-        *    Helping mime types
-        *
-        *    @since        1.0
-        *    @version    1.0
-        *    @var        array
-        */
+         *    Helping mime types
+         *
+         *    @since        1.0
+         *    @version    1.0
+         *    @var        array
+         */
         private $mime_helping = array(
             'text'      =>    array('text/plain',),
             'image'     =>    array(
@@ -204,13 +204,13 @@
 
 
         /**
-        *    Construct
-        *
-        *    @since     0.1
-        *    @version   1.0.1
-        *    @return    object
-        *    @method    object    __construct
-        */
+         *    Construct
+         *
+         *    @since     0.1
+         *    @version   1.0.1
+         *    @return    object
+         *    @method    object    __construct
+         */
         public function __construct(){
             parent::__construct();
 
@@ -232,15 +232,15 @@
             );
 
             $this->file = array(
-                'status'                =>    false,    // True: success upload
-                'mime'                  =>    '',       // Empty string
-                'filename'              =>    '',       // Empty string
-                'original'              =>    '',       // Empty string
-                'size'                  =>    0,        // 0 Bytes
-                'sizeFormated'          =>    '0B',     // 0 Bytes
-                'destination'           =>    './',     // Default: ./
-                'allowed_mime_types'    =>    array(),  // Allowed mime types
-                'error'                 =>    null,        // File error
+                'status'                =>    false, // True: success upload
+                'mime'                  =>    '', // Empty string
+                'filename'              =>    '', // Empty string
+                'original'              =>    '', // Empty string
+                'size'                  =>    0, // 0 Bytes
+                'sizeFormated'          =>    '0B', // 0 Bytes
+                'destination'           =>    './', // Default: ./
+                'allowed_mime_types'    =>    array(), // Allowed mime types
+                'error'                 =>    null, // File error
             );
 
             // Change dir to current dir
@@ -250,40 +250,40 @@
             if (isset($_FILES) && is_array($_FILES)) {
                 $this->file_array = $_FILES;
             }
-            $this->logger->info('The upload file information are : ' .stringfy_vars($this->file_array));
+            $this->logger->info('The upload file information are : ' . stringfy_vars($this->file_array));
         }
         /**
-        *    Set input.
-        *    If you have $_FILES["file"], you must use the key "file"
-        *    Example:
-        *        $object->setInput("file");
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     string      $input
-        *    @return    object
-        *    @method    boolean     setInput
-        */
+         *    Set input.
+         *    If you have $_FILES["file"], you must use the key "file"
+         *    Example:
+         *        $object->setInput("file");
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     string      $input
+         *    @return    object
+         *    @method    boolean     setInput
+         */
         public function setInput($input)
         {
-            if (!empty($input) && (is_string($input) || is_numeric($input) )) {
+            if (!empty($input) && (is_string($input) || is_numeric($input))) {
                 $this->input = $input;
             }
             return $this;
         }
         /**
-        *    Set new filename
-        *    Example:
-        *        FileUpload::setFilename("new file.txt")
-        *    Remember:
-        *        Use %s to retrive file extension
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     string      $filename
-        *    @return    object
-        *    @method    boolean     setFilename
-        */
+         *    Set new filename
+         *    Example:
+         *        FileUpload::setFilename("new file.txt")
+         *    Remember:
+         *        Use %s to retrive file extension
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     string      $filename
+         *    @return    object
+         *    @method    boolean     setFilename
+         */
         public function setFilename($filename)
         {
             if ($this->isFilename($filename)) {
@@ -292,29 +292,29 @@
             return $this;
         }
         /**
-        *    Set automatic filename
-        *
-        *    @since     1.0
-        *    @version   1.5
-        *    @param     string      $extension
-        *    @return    object
-        *    @method    boolean     setAutoFilename
-        */
+         *    Set automatic filename
+         *
+         *    @since     1.0
+         *    @version   1.5
+         *    @param     string      $extension
+         *    @return    object
+         *    @method    boolean     setAutoFilename
+         */
         public function setAutoFilename()
         {
-            $this->filename = sha1(mt_rand(1, 9999).uniqid());
+            $this->filename = sha1(mt_rand(1, 9999) . uniqid());
             $this->filename .= time();
             return $this;
         }
         /**
-        *    Set file size limit
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     double     $file_size
-        *    @return    object
-        *    @method    boolean     setMaxFileSize
-        */
+         *    Set file size limit
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     double     $file_size
+         *    @return    object
+         *    @method    boolean     setMaxFileSize
+         */
         public function setMaxFileSize($file_size)
         {
             $file_size = $this->sizeInBytes($file_size);
@@ -323,37 +323,37 @@
                 $php_size = $this->sizeInBytes((int) ini_get('upload_max_filesize'));
                 // Calculate difference
                 if ($php_size < $file_size) {
-                    $this->logger->warning('The upload max file size you set [' .$file_size. '] is greather than the PHP configuration for upload max file size [' .$php_size. ']');
+                    $this->logger->warning('The upload max file size you set [' . $file_size . '] is greather than the PHP configuration for upload max file size [' . $php_size . ']');
                 }
                 $this->max_file_size = $file_size;
             }
             return $this;
         }
         /**
-        *    Set array mime types
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     array       $mimes
-        *    @return    object
-        *    @method    boolean     setAllowedMimeTypes
-        */
+         *    Set array mime types
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     array       $mimes
+         *    @return    object
+         *    @method    boolean     setAllowedMimeTypes
+         */
         public function setAllowedMimeTypes(array $mimes)
         {
             if (count($mimes) > 0) {
-                array_map(array($this , 'setAllowMimeType'), $mimes);
+                array_map(array($this, 'setAllowMimeType'), $mimes);
             }
             return $this;
         }
         /**
-        *    Set input callback
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     mixed       $callback
-        *    @return    object
-        *    @method    boolean     setCallbackInput
-        */
+         *    Set input callback
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     mixed       $callback
+         *    @return    object
+         *    @method    boolean     setCallbackInput
+         */
         public function setCallbackInput($callback)
         {
             if (is_callable($callback, false)) {
@@ -362,14 +362,14 @@
             return $this;
         }
         /**
-        *    Set output callback
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     mixed       $callback
-        *    @return    object
-        *    @method    boolean     setCallbackOutput
-        */
+         *    Set output callback
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     mixed       $callback
+         *    @return    object
+         *    @method    boolean     setCallbackOutput
+         */
         public function setCallbackOutput($callback)
         {
             if (is_callable($callback, false)) {
@@ -378,14 +378,14 @@
             return $this;
         }
         /**
-        *    Append a mime type to allowed mime types
-        *
-        *    @since     1.0
-        *    @version   1.0.1
-        *    @param     string      $mime
-        *    @return    object
-        *    @method    boolean     setAllowMimeType
-        */
+         *    Append a mime type to allowed mime types
+         *
+         *    @since     1.0
+         *    @version   1.0.1
+         *    @param     string      $mime
+         *    @return    object
+         *    @method    boolean     setAllowMimeType
+         */
         public function setAllowMimeType($mime)
         {
             if (!empty($mime) && is_string($mime)) {
@@ -395,51 +395,51 @@
             return $this;
         }
         /**
-        *    Set allowed mime types from mime helping
-        *
-        *    @since     1.0.1
-        *    @version   1.0.1
-        *    @return    object
-        *    @method    boolean    setMimeHelping
-        */
+         *    Set allowed mime types from mime helping
+         *
+         *    @since     1.0.1
+         *    @version   1.0.1
+         *    @return    object
+         *    @method    boolean    setMimeHelping
+         */
         public function setMimeHelping($name)
         {
             if (!empty($name) && is_string($name)) {
                 if (array_key_exists($name, $this->mime_helping)) {
-                    return $this->setAllowedMimeTypes($this->mime_helping[ $name ]);
+                    return $this->setAllowedMimeTypes($this->mime_helping[$name]);
                 }
             }
             return $this;
         }
         /**
-        *    Set function to upload file
-        *    Examples:
-        *        1.- FileUpload::setUploadFunction("move_uploaded_file");
-        *        2.- FileUpload::setUploadFunction("copy");
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     string      $function
-        *    @return    object
-        *    @method    boolean     setUploadFunction
-        */
+         *    Set function to upload file
+         *    Examples:
+         *        1.- FileUpload::setUploadFunction("move_uploaded_file");
+         *        2.- FileUpload::setUploadFunction("copy");
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     string      $function
+         *    @return    object
+         *    @method    boolean     setUploadFunction
+         */
         public function setUploadFunction($function)
         {
-            if (!empty($function) && (is_array($function) || is_string($function) )) {
-                if (is_callable( $function)) {
+            if (!empty($function) && (is_array($function) || is_string($function))) {
+                if (is_callable($function)) {
                     $this->upload_function = $function;
                 }
             }
             return $this;
         }
         /**
-        *    Clear allowed mime types cache
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @return    object
-        *    @method    boolean    clearAllowedMimeTypes
-        */
+         *    Clear allowed mime types cache
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @return    object
+         *    @method    boolean    clearAllowedMimeTypes
+         */
         public function clearAllowedMimeTypes()
         {
             $this->allowed_mime_types = array();
@@ -447,15 +447,15 @@
             return $this;
         }
         /**
-        *    Set destination output
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     string      $destination_directory      Destination path
-        *    @param     boolean     $create_if_not_exist
-        *    @return    object
-        *    @method    boolean     setDestinationDirectory
-        */
+         *    Set destination output
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     string      $destination_directory      Destination path
+         *    @param     boolean     $create_if_not_exist
+         *    @return    object
+         *    @method    boolean     setDestinationDirectory
+         */
         public function setDestinationDirectory($destination_directory, $create_if_not_exist = false) {
             $destination_directory = realpath($destination_directory);
             if (substr($destination_directory, -1) != DIRECTORY_SEPARATOR) {
@@ -470,8 +470,7 @@
                     if (mkdir($destination_directory, 0775, true)) {
                         $this->destination_directory = $destination_directory;
                         chdir($destination_directory);
-                    }
-                    else{
+                    } else{
                         $this->logger->warning('Can not create the upload directory [' .$destination_directory. ']');
                     }
                 }
@@ -479,14 +478,14 @@
             return $this;
         }
         /**
-        *    Check file exists
-        *
-        *    @since      1.0
-        *    @version    1.0.1
-        *    @param      string     $file_destination
-        *    @return     boolean
-        *    @method     boolean    fileExists
-        */
+         *    Check file exists
+         *
+         *    @since      1.0
+         *    @version    1.0.1
+         *    @param      string     $file_destination
+         *    @return     boolean
+         *    @method     boolean    fileExists
+         */
         public function fileExists($file_destination)
         {
             if ($this->isFilename($file_destination)) {
@@ -495,14 +494,14 @@
             return false;
         }
         /**
-        *    Check dir exists
-        *
-        *    @since        1.0
-        *    @version    1.0.1
-        *    @param      string     $path
-        *    @return     boolean
-        *    @method     boolean    dirExists
-        */
+         *    Check dir exists
+         *
+         *    @since        1.0
+         *    @version    1.0.1
+         *    @param      string     $path
+         *    @return     boolean
+         *    @method     boolean    dirExists
+         */
         public function dirExists($path)
         {
             if ($this->isDirpath($path)) {
@@ -511,29 +510,29 @@
             return false;
         }
         /**
-        *    Check valid filename
-        *
-        *    @since     1.0
-        *    @version   1.0.1
-        *    @param     string      $filename
-        *    @return    boolean
-        *    @method    boolean     isFilename
-        */
+         *    Check valid filename
+         *
+         *    @since     1.0
+         *    @version   1.0.1
+         *    @param     string      $filename
+         *    @return    boolean
+         *    @method    boolean     isFilename
+         */
         public function isFilename($filename)
         {
             $filename = basename($filename);
-            return (!empty($filename) && (is_string( $filename) || is_numeric($filename)));
+            return (!empty($filename) && (is_string($filename) || is_numeric($filename)));
         }
         /**
-        *    Validate mime type with allowed mime types,
-        *    but if allowed mime types is empty, this method return true
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @param     string      $mime
-        *    @return    boolean
-        *    @method    boolean     checkMimeType
-        */
+         *    Validate mime type with allowed mime types,
+         *    but if allowed mime types is empty, this method return true
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     string      $mime
+         *    @return    boolean
+         *    @method    boolean     checkMimeType
+         */
         public function checkMimeType($mime)
         {
             if (count($this->allowed_mime_types) == 0) {
@@ -542,61 +541,61 @@
             return in_array(strtolower($mime), $this->allowed_mime_types);
         }
         /**
-        *    Retrive status of upload
-        *
-        *    @since     1.0
-        *    @version   1.0
-        *    @return    boolean
-        *    @method    boolean    getStatus
-        */
+         *    Retrive status of upload
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @return    boolean
+         *    @method    boolean    getStatus
+         */
         public function getStatus()
         {
             return $this->file['status'];
         }
         /**
-        *    Check valid path
-        *
-        *    @since        1.0
-        *    @version    1.0.1
-        *    @param        string    $filename
-        *    @return     boolean
-        *    @method     boolean    isDirpath
-        */
+         *    Check valid path
+         *
+         *    @since        1.0
+         *    @version    1.0.1
+         *    @param        string    $filename
+         *    @return     boolean
+         *    @method     boolean    isDirpath
+         */
         public function isDirpath($path)
         {
-            if (!empty( $path) && (is_string( $path) || is_numeric($path) )) {
+            if (!empty($path) && (is_string($path) || is_numeric($path))) {
                 if (DIRECTORY_SEPARATOR == '/') {
-                    return (preg_match( '/^[^*?"<>|:]*$/' , $path) == 1 );
+                    return (preg_match('/^[^*?"<>|:]*$/', $path) == 1);
                 } else {
-                    return (preg_match( "/^[^*?\"<>|:]*$/" , substr($path,2) ) == 1);
+                    return (preg_match("/^[^*?\"<>|:]*$/", substr($path, 2)) == 1);
                 }
             }
             return false;
         }
         /**
-        *    Allow overwriting files
-        *
-        *    @since      1.0
-        *    @version    1.0
-        *    @return     object
-        *    @method     boolean    allowOverwriting
-        */
+         *    Allow overwriting files
+         *
+         *    @since      1.0
+         *    @version    1.0
+         *    @return     object
+         *    @method     boolean    allowOverwriting
+         */
         public function allowOverwriting()
         {
             $this->overwrite_file = true;
             return $this;
         }
         /**
-        *    File info
-        *
-        *    @since      1.0
-        *    @version    1.0
-        *    @return     object
-        *    @method     object    getInfo
-        */
+         *    File info
+         *
+         *    @since      1.0
+         *    @version    1.0
+         *    @return     object
+         *    @method     object    getInfo
+         */
         public function getInfo()
         {
-            return (object)$this->file;
+            return (object) $this->file;
         }
 
 
@@ -604,27 +603,26 @@
          * Check if the file is uploaded
          * @return boolean
          */
-        public function isUploaded(){
+        public function isUploaded() {
             return isset($this->file_array[$this->input])
             && is_uploaded_file($this->file_array[$this->input]['tmp_name']);
         }
 
         
         /**
-        *    Upload file
-        *
-        *    @since     1.0
-        *    @version   1.0.1
-        *    @return    boolean
-        *    @method    boolean    save
-        */
+         *    Upload file
+         *
+         *    @since     1.0
+         *    @version   1.0.1
+         *    @return    boolean
+         *    @method    boolean    save
+         */
         public function save(){
             if (count($this->file_array) > 0 && array_key_exists($this->input, $this->file_array)) {
                 // set original filename if not have a new name
                 if (empty($this->filename)) {
                     $this->filename = $this->file_array[$this->input]['name'];
-                }
-                else{
+                } else{
                     // Replace %s for extension in filename
                     // Before: /[\w\d]*(.[\d\w]+)$/i
                     // After: /^[\s[:alnum:]\-\_\.]*\.([\d\w]+)$/iu
@@ -648,10 +646,10 @@
                 $this->file['filename']     = $this->filename;
                 $this->file['error']        = $this->file_array[$this->input]['error'];
 
-                $this->logger->info('The upload file information to process is : ' .stringfy_vars($this->file));
+                $this->logger->info('The upload file information to process is : ' . stringfy_vars($this->file));
 
                 $error = $this->uploadHasError();
-                if($error){
+                if ($error) {
                     return false;
                 }
                 // Execute input callback
@@ -674,35 +672,35 @@
 
 
         /**
-        *    File size for humans.
-        *
-        *    @since      1.0
-        *    @version    1.0
-        *    @param      integer    $bytes
-        *    @param      integer    $precision
-        *    @return     string
-        *    @method     string     sizeFormat
-        */
+         *    File size for humans.
+         *
+         *    @since      1.0
+         *    @version    1.0
+         *    @param      integer    $bytes
+         *    @param      integer    $precision
+         *    @return     string
+         *    @method     string     sizeFormat
+         */
         public function sizeFormat($size, $precision = 2)
         {
-            if($size > 0){
+            if ($size > 0) {
                 $base       = log($size) / log(1024);
                 $suffixes   = array('B', 'K', 'M', 'G', 'T');
-                return round(pow(1024, $base - floor($base)), $precision) . ( isset($suffixes[floor($base)]) ? $suffixes[floor($base)] : '');
+                return round(pow(1024, $base - floor($base)), $precision) . (isset($suffixes[floor($base)]) ? $suffixes[floor($base)] : '');
             }
             return null;
         }
 
         
         /**
-        *    Convert human file size to bytes
-        *
-        *    @since      1.0
-        *    @version    1.0.1
-        *    @param      integer|double    $size
-        *    @return     integer|double
-        *    @method     string     sizeInBytes
-        */
+         *    Convert human file size to bytes
+         *
+         *    @since      1.0
+         *    @version    1.0.1
+         *    @param      integer|double    $size
+         *    @return     integer|double
+         *    @method     string     sizeInBytes
+         */
         public function sizeInBytes($size)
         {
             $unit = 'B';
@@ -712,14 +710,14 @@
             if (array_key_exists('unit', $matches)) {
                 $unit = strtoupper($matches['unit']);
             }
-            return (floatval($matches['size']) * pow(1024, $units[$unit]) ) ;
+            return (floatval($matches['size']) * pow(1024, $units[$unit]));
         }
 
         /**
          * Get the upload error message
          * @return string
          */
-        public function getError(){
+        public function getError() {
             return $this->error;
         }
 
@@ -727,7 +725,7 @@
          * Set the upload error message
          * @param string $message the upload error message to set
          */
-        public function setError($message){
+        public function setError($message) {
             $this->logger->info('The file upload got error : ' . $message);
             $this->error = $message;
         }
@@ -737,9 +735,9 @@
          * @param string $type the type of callback "input" or "output"
          * @return void 
          */
-        protected function runCallback($type){
-            if (!empty( $this->callbacks[$type])) {
-                call_user_func($this->callbacks[$type], (object)$this->file);
+        protected function runCallback($type) {
+            if (!empty($this->callbacks[$type])) {
+                call_user_func($this->callbacks[$type], (object) $this->file);
             }
         }
 
@@ -754,7 +752,7 @@
                 return true;
             }
 
-             //check for php upload error
+                //check for php upload error
             if(is_numeric($this->file['error']) && $this->file['error'] > 0){
                 $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
                 return true;
@@ -766,7 +764,7 @@
                 return true;
             }
 
-             // Check file size
+                // Check file size
             if ($this->max_file_size > 0 && $this->max_file_size < $this->file['size']) {
                 $this->setError(sprintf($this->error_messages['max_file_size'], $this->sizeFormat($this->max_file_size)));
                 return true;
@@ -785,7 +783,7 @@
          * @param  int $code the error code
          * @return string the error message
          */
-        private function getPhpUploadErrorMessageByCode($code){
+        private function getPhpUploadErrorMessageByCode($code) {
             $codeMessageMaps = array(
                 1 => $this->error_messages['upload_err_ini_size'],
                 2 => $this->error_messages['upload_err_form_size'],
