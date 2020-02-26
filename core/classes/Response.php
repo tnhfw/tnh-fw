@@ -24,19 +24,13 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Response{
+	class Response extends BaseStaticClass{
 
 		/**
 		 * The list of request header to send with response
 		 * @var array
 		 */
 		private static $headers = array();
-
-		/**
-		 * The logger instance
-		 * @var object
-		 */
-		private static $logger;
 		
 		/**
 		 * The final page content to display to user
@@ -85,31 +79,6 @@
 		}
 
 		
-		/**
-		 * The signleton of the logger
-		 * @return Object the Log instance
-		 */
-		public static function getLogger(){
-			if(self::$logger == null){
-				$logger = array();
-				$logger[0] =& class_loader('Log', 'classes');
-				$logger[0]->setLogger('Library::Response');
-				self::$logger = $logger[0];
-			}
-			return self::$logger;			
-		}
-
-		/**
-		 * Set the log instance for future use
-		 * @param object $logger the log object
-		 * @return object the log instance
-		 */
-		public static function setLogger($logger){
-			self::$logger = $logger;
-			return self::$logger;
-		}
-
-
 		/**
 		 * Send the HTTP Response headers
 		 * @param  integer $httpCode the HTTP status code

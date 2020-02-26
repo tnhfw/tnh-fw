@@ -25,7 +25,7 @@
     */
 
 
-     class FormValidation{
+     class FormValidation extends BaseClass{
 		 
         /**
          * The form validation status
@@ -73,12 +73,6 @@
         protected $_errorPhraseOverrides = array();
 
         /**
-         * The logger instance
-         * @var Log
-         */
-        private $logger;
-
-        /**
          * The data to be validated, the default is to use $_POST
          * @var array
          */
@@ -97,8 +91,7 @@
          * @return void
          */
         public function __construct() {
-            $this->logger =& class_loader('Log', 'classes');
-            $this->logger->setLogger('Library::FormValidation');
+            parent::__construct();
            
 		   //Load form validation language message
             Loader::lang('form_validation');

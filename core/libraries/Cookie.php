@@ -24,25 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Cookie{
-		
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private static $logger;
-
-		/**
-		 * The signleton of the logger
-		 * @return Object the Log instance
-		 */
-		private static function getLogger(){
-			if(self::$logger == null){
-				self::$logger[0] =& class_loader('Log', 'classes');
-				self::$logger[0]->setLogger('Library::Cookie');
-			}
-			return self::$logger[0];
-		}
+	class Cookie extends BaseStaticClass{
 
 		/**
 		 * Get the cookie item value

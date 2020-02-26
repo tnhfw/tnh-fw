@@ -24,7 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Controller{
+	class Controller extends BaseClass{
 		
 		/**
 		 * The name of the module if this controller belong to an module
@@ -38,19 +38,12 @@
 		 */
 		private static $instance;
 
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		protected $logger;
 
 		/**
 		 * Class constructor
-		 * @param object $logger the Log instance to use if is null will create one
 		 */
-		public function __construct(Log $logger = null){
-			//setting the Log instance
-			$this->setLoggerFromParamOrCreateNewInstance($logger);
+		public function __construct(){
+			parent::__construct();
 			
 			//instance of the super object
 			self::$instance = & $this;
@@ -114,19 +107,6 @@
 			}
 		}
 
-		/**
-		 * Set the Log instance using argument or create new instance
-		 * @param object $logger the Log instance if not null
-		 */
-		protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
-			if($logger !== null){
-	          $this->logger = $logger;
-	        }
-	        else{
-	            $this->logger =& class_loader('Log', 'classes');
-				$this->logger->setLogger('MainController');
-	        }
-		}
 
 		/**
 		 * This method is used to load the required resources for framework to work

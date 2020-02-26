@@ -23,14 +23,9 @@
    * along with this program; if not, write to the Free Software
    * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   */
-  class DatabaseQueryRunner{
+  class DatabaseQueryRunner extends BaseClass{
       
-    /**
-	* The logger instance
-	* @var object
-	*/
-    private $logger            = null;
-    
+   
   	/**
   	 * The last query result
   	 * @var object
@@ -97,6 +92,7 @@
      * @param boolean $returnAsArray whether to return the result as array or not
      */
     public function __construct(PDO $pdo = null, $query = null, $returnAsList = true, $returnAsArray = false){
+        parent::__construct();
         if (is_object($pdo)){
           $this->pdo = $pdo;
         }
@@ -246,24 +242,6 @@
      */
     public function setQueryResult(DatabaseQueryResult $queryResult){
       $this->queryResult = $queryResult;
-      return $this;
-    }
-    
-    /**
-     * Return the Log instance
-     * @return Log
-     */
-    public function getLogger(){
-      return $this->logger;
-    }
-
-    /**
-     * Set the log instance
-     * @param Log $logger the log object
-	 * @return object DatabaseQueryRunner
-     */
-    public function setLogger($logger){
-      $this->logger = $logger;
       return $this;
     }
     

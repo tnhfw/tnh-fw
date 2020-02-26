@@ -24,7 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Config{
+	class Config extends BaseStaticClass{
 		
 		/**
 		 * The list of loaded configuration
@@ -33,40 +33,10 @@
 		private static $config = array();
 
 		/**
-		 * The logger instance
-		 * @var object
-		 */
-		private static $logger;
-
-		/**
-		 * The signleton of the logger
-		 * @return Object the Log instance
-		 */
-		public static function getLogger(){
-			if(self::$logger == null){
-				$logger = array();
-				$logger[0] =& class_loader('Log', 'classes');
-				$logger[0]->setLogger('Library::Config');
-				self::$logger = $logger[0];
-			}
-			return self::$logger;			
-		}
-
-		/**
-		 * Set the log instance for future use
-		 * @param object $logger the log object
-		 * @return object the log instance
-		 */
-		public static function setLogger($logger){
-			self::$logger = $logger;
-			return self::$logger;
-		}
-
-		/**
 		 * Initialize the configuration by loading all the configuration from config file
 		 */
 		public static function init(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			$logger->debug('Initialization of the configuration');
 			self::$config = & load_configurations();
 			self::setBaseUrlUsingServerVar();
@@ -84,7 +54,7 @@
 		 * @return mixed          the config value if exist or the default value
 		 */
 		public static function get($item, $default = null){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			if(array_key_exists($item, self::$config)){
 				return self::$config[$item];
 			}
@@ -123,7 +93,7 @@
 		 * @return boolean true if the item exists and is deleted successfully otherwise will return false.
 		 */
 		public static function delete($item){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			if(array_key_exists($item, self::$config)){
 				$logger->info('Delete config item ['.$item.']');
 				unset(self::$config[$item]);
@@ -147,7 +117,7 @@
 		 * Set the configuration for "base_url" if is not set in the configuration
 		 */
 		private static function setBaseUrlUsingServerVar(){
-			$logger = static::getLogger();
+			$logger = self::getLogger();
 			if (! isset(self::$config['base_url']) || ! is_url(self::$config['base_url'])){
 				if(ENVIRONMENT == 'production'){
 					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');

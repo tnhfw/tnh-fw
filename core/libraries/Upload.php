@@ -37,7 +37,7 @@
     *    @package FileUpload
     *    @version 1.5
     */
-    class Upload{
+    class Upload extends BaseClass{
 
         /**
         *   Version
@@ -202,12 +202,6 @@
          */
         protected $error = null;
 
-        /**
-         * The logger instance
-         * @var Log
-         */
-        private $logger;
-
 
         /**
         *    Construct
@@ -218,8 +212,7 @@
         *    @method    object    __construct
         */
         public function __construct(){
-            $this->logger =& class_loader('Log', 'classes');
-            $this->logger->setLogger('Library::Upload');
+            parent::__construct();
 
             Loader::lang('file_upload');
             $obj =& get_instance();

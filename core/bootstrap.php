@@ -58,6 +58,16 @@
 	require_once CORE_PATH . 'common.php';
 
 	/**
+	 * Include of the file containing the BaseClass 
+	 */
+	require_once CORE_CLASSES_PATH . 'BaseClass.php';
+
+	/**
+	 * Include of the file containing the BaseClass 
+	 */
+	require_once CORE_CLASSES_PATH . 'BaseStaticClass.php';
+
+	/**
 	 * The Benchmark class
 	 */
 	$BENCHMARK =& class_loader('Benchmark');

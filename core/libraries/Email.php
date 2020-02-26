@@ -31,7 +31,7 @@
 	 * @version   1.7.1
 	 * @link      http://github.com/eoghanobrien/php-simple-mail
 	 */
-	class Email
+	class Email extends BaseClass
 	{
 		/**
 		 * @var int $_wrap
@@ -73,11 +73,6 @@
 		 */
 		protected $_uid;
 		
-		/**
-         * The logger instance
-         * @var Log
-         */
-		private $logger;
 
 		/**
 		 * __construct
@@ -86,8 +81,7 @@
 		 */
 		public function __construct()
 		{
-			$this->logger =& class_loader('Log', 'classes');
-            $this->logger->setLogger('Library::Email');
+			parent::__construct();
 			$this->reset();
 		}
 

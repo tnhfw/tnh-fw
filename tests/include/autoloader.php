@@ -10,6 +10,8 @@
 			'DBSessionHandlerModel' => CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php',
 			'Model' => CORE_CLASSES_MODEL_PATH . 'Model.php',
 			//Core classes
+			'BaseClass' => CORE_CLASSES_PATH . 'BaseClass.php',
+			'BaseStaticClass' => CORE_CLASSES_PATH . 'BaseStaticClass.php',
 			'Config' => CORE_CLASSES_PATH . 'Config.php',
 			'Controller' => CORE_CLASSES_PATH . 'Controller.php',
 			'Database' => CORE_CLASSES_DATABASE_PATH . 'Database.php',

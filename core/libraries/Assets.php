@@ -38,26 +38,7 @@
 	 *  @since 1.0.0
 	 *  @filesource
 	 */
-	class Assets{
-		
-		/**
-		 * The logger instance
-		 * @var object
-		 */
-		private static $logger;
-
-		/**
-		 * The signleton of the logger
-		 * @return Object the Log instance
-		 */
-		private static function getLogger(){
-			if(self::$logger == null){
-				//can't assign reference to static variable
-				self::$logger[0] =& class_loader('Log', 'classes');
-				self::$logger[0]->setLogger('Library::Assets');
-			}
-			return self::$logger[0];
-		}
+	class Assets extends BaseStaticClass{
 
 
 		/**

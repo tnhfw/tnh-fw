@@ -31,7 +31,7 @@
 		show_error('"SessionHandlerInterface" interface does not exists or is disabled can not use it to handler database session.');
 	}
 
-	class DBSessionHandler implements SessionHandlerInterface{
+	class DBSessionHandler extends BaseClass implements SessionHandlerInterface{
 		
 		/**
 		 * The encryption method to use to encrypt session data in database
@@ -70,12 +70,6 @@
 		private $sessionTableColumns = array();
 
 		/**
-		 * The instance of the Log 
-		 * @var Log
-		 */
-		private $logger;
-
-		/**
          * Instance of the Loader class
          * @var Loader
          */
@@ -86,8 +80,7 @@
          * @param object $modelInstance the model instance
          */
 		public function __construct(DBSessionHandlerModel $modelInstance = null){
-			//Set Log instance to use
-	        $this->setLoggerFromParamOrCreate(null);
+			parent::__construct();
 			
 	    	//Set Loader instance to use
 	        $this->setDependencyInstanceFromParamOrCreate('loader', null, 'Loader', 'classes');
@@ -153,7 +146,7 @@
 			$this->logger->info('Session secret: ' . $secret);
 
 			if (! is_object($this->modelInstance)){
-				$this->setModelInstanceFromConfig();
+				$this->setModelInstanceFromSessionConfig();
 			}
 			$this->setInitializerVector($secret);
 
@@ -250,7 +243,6 @@
 			}
 			$this->logger->info('Session data for SID: ' . $sid . ' not yet exists, insert it now');
 			return $instance->insert($params);
-			return true;
 		}
 
 
@@ -339,60 +331,10 @@
             return $this;
         }
 
-        /**
-	     * Return the Log instance
-	     * @return Log
-	     */
-	    public function getLogger(){
-	      return $this->logger;
-	    }
-
-	    /**
-	     * Set the log instance
-	     * @param Log $logger the log object
-	     */
-	    public function setLogger(Log $logger){
-	      $this->logger = $logger;
-	      return $this;
-	    }
-
-	    /**
-	     * Set the dependencies instance using argument or create new instance if is null
-	     * @param string $name this class property name.
-	     * @param object $instance the instance. If is not null will use it
-	     * otherwise will create new instance.
-	     * @param string $loadClassName the name of class to load using class_loader function.
-	     * @param string $loadClassPath the path of class to load using class_loader function.
-	     *
-	     * @return object this current instance
-	     */
-	    protected function setDependencyInstanceFromParamOrCreate($name, $instance = null, $loadClassName = null, $loadClassePath = 'classes'){
-	      if ($instance !== null){
-	        $this->{$name} = $instance;
-	        return $this;
-	      }
-	      $this->{$name} =& class_loader($loadClassName, $loadClassePath);
-	      return $this;
-	    }
-	    
-		   /**
-	     * Set the Log instance using argument or create new instance
-	     * @param object $logger the Log instance if not null
-	     *
-	     * @return object this current instance
-	     */
-	    protected function setLoggerFromParamOrCreate(Log $logger = null){
-	      $this->setDependencyInstanceFromParamOrCreate('logger', $logger, 'Log', 'classes');
-	      if ($logger === null){
-	        $this->logger->setLogger('Library::DBSessionHandler');
-	      }
-	      return $this;
-	    }
-
 	    /**
 	     * Set the model instance using the configuration for session
 	     */
-	    protected function setModelInstanceFromConfig(){
+	    protected function setModelInstanceFromSessionConfig(){
 	    	$modelName = get_config('session_save_path');
 			$this->logger->info('The database session model: ' . $modelName);
 			$this->loader->model($modelName, 'dbsessionhandlerinstance'); 

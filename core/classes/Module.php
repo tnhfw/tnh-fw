@@ -24,19 +24,13 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     */
    
-	class Module{
+	class Module extends BaseStaticClass{
 		
 		/**
 		 * list of loaded module
 		 * @var array
 		 */
 		private static $list = array();
-
-		/**
-		 * logger instance
-		 * @var object
-		 */
-		private static $logger;
 
 		/**
 		 * Initialise the module list by scanning the directory MODULE_PATH
@@ -62,31 +56,6 @@
 				$logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
 			}
 		}
-
-		/**
-		 * The signleton of the logger
-		 * @return Object the Log instance
-		 */
-		public static function getLogger(){
-			if (self::$logger == null){
-				$logger = array();
-				$logger[0] =& class_loader('Log', 'classes');
-				$logger[0]->setLogger('Library::Module');
-				self::$logger = $logger[0];
-			}
-			return self::$logger;			
-		}
-
-		/**
-		 * Set the log instance for future use
-		 * @param object $logger the log object
-		 * @return object the log instance
-		 */
-		public static function setLogger($logger){
-			self::$logger = $logger;
-			return self::$logger;
-		}
-
 		
 
 		/**

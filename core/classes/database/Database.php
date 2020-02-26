@@ -23,7 +23,7 @@
    * along with this program; if not, write to the Free Software
    * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   */
-  class Database{
+  class Database extends BaseClass{
 	
   	/**
   	 * The PDO instance
@@ -91,12 +91,6 @@
   	*/
     private $config              = array();
 	
-  	/**
-  	 * The logger instance
-  	 * @var object
-  	 */
-    private $logger              = null;
-
     /**
     * The cache instance
     * @var object
@@ -108,13 +102,13 @@
     * The DatabaseQueryBuilder instance
     * @var object
     */
-    private $queryBuilder        = null;
+    protected $queryBuilder        = null;
     
     /**
     * The DatabaseQueryRunner instance
     * @var object
     */
-    private $queryRunner         = null;
+    protected $queryRunner         = null;
 
 
     /**
@@ -123,8 +117,7 @@
      * @param boolean $autoConnect whether to connect to database automatically
      */
     public function __construct($overwriteConfig = array(), $autoConnect = true){
-        //Set Log instance to use
-        $this->setLoggerFromParamOrCreate(null);
+        parent::__construct();
 		
     		//Set DatabaseQueryBuilder instance to use
         $this->setDependencyInstanceFromParamOrCreate('queryBuilder', null, 'DatabaseQueryBuilder', 'classes/database');
@@ -336,25 +329,6 @@
      */
     public function setPdo(PDO $pdo){
       $this->pdo = $pdo;
-      return $this;
-    }
-
-
-    /**
-     * Return the Log instance
-     * @return Log
-     */
-    public function getLogger(){
-      return $this->logger;
-    }
-
-    /**
-     * Set the log instance
-     * @param Log $logger the log object
-	 * @return object Database
-     */
-    public function setLogger($logger){
-      $this->logger = $logger;
       return $this;
     }
 
@@ -700,38 +674,6 @@
       return md5($query . $returnAsList . $returnAsArray);
     }
 
-     /**
-     * Set the dependencies instance using argument or create new instance if is null
-     * @param string $name this class property name.
-     * @param object $instance the instance. If is not null will use it
-     * otherwise will create new instance.
-     * @param string $loadClassName the name of class to load using class_loader function.
-     * @param string $loadClassPath the path of class to load using class_loader function.
-     *
-     * @return object this current instance
-     */
-    protected function setDependencyInstanceFromParamOrCreate($name, $instance = null, $loadClassName = null, $loadClassePath = 'classes'){
-      if ($instance !== null){
-        $this->{$name} = $instance;
-        return $this;
-      }
-      $this->{$name} =& class_loader($loadClassName, $loadClassePath);
-      return $this;
-    }
-    
-	   /**
-     * Set the Log instance using argument or create new instance
-     * @param object $logger the Log instance if not null
-     *
-     * @return object this current instance
-     */
-    protected function setLoggerFromParamOrCreate(Log $logger = null){
-      $this->setDependencyInstanceFromParamOrCreate('logger', $logger, 'Log', 'classes');
-      if ($logger === null){
-        $this->logger->setLogger('Library::Database');
-      }
-      return $this;
-    }
 	
     /**
      * Reset the database class attributs to the initail values before each query.

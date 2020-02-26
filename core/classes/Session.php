@@ -23,31 +23,13 @@
 	 * along with this program; if not, write to the Free Software
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
-	class Session{
+	class Session extends BaseStaticClass{
 		
 		/**
 		 * The session flash key to use
 		 * @const
 		 */
 		const SESSION_FLASH_KEY = 'session_flash';
-
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private static $logger;
-
-		/**
-		 * Get the logger singleton instance
-		 * @return Log the logger instance
-		 */
-		private static function getLogger(){
-			if(self::$logger == null){
-				self::$logger[0] =& class_loader('Log', 'classes');
-				self::$logger[0]->setLogger('Library::Session');
-			}
-			return self::$logger[0];
-		}
 
 		/**
 		 * Get the session item value

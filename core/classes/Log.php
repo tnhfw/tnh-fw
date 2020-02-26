@@ -179,8 +179,8 @@
 			//debug info
 			$dtrace = debug_backtrace();
 			$fileInfo = $dtrace[0];
-			if ($dtrace[0]['file'] == __FILE__){
-				$fileInfo = $dtrace[1];
+			if ($dtrace[0]['file'] == __FILE__ || $dtrace[1]['file'] == __FILE__){
+				$fileInfo = $dtrace[2];
 			}
 			
 			$str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";

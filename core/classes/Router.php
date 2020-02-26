@@ -24,7 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Router {
+	class Router extends BaseClass{
 		/**
 		* @var array $pattern: The list of URIs to validate against
 		*/
@@ -88,16 +88,10 @@
 		protected $segments = array();
 
 		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private $logger;
-
-		/**
 		 * Construct the new Router instance
 		 */
 		public function __construct(){
-			$this->setLoggerFromParamOrCreateNewInstance(null);
+			parent::__construct();
 			
 			//loading routes for module
 			$moduleRouteList = array();
@@ -176,24 +170,6 @@
 		public function getSegments(){
 			return $this->segments;
 		}
-
-		/**
-	     * Return the Log instance
-	     * @return Log
-	     */
-	    public function getLogger(){
-	      return $this->logger;
-	    }
-
-	    /**
-	     * Set the log instance
-	     * @param Log $logger the log object
-		 * @return object
-	     */
-	    public function setLogger($logger){
-	      $this->logger = $logger;
-	      return $this;
-	    }
 
 	    /**
 		 * Get the route URI
@@ -607,18 +583,4 @@
 			}
 			return $this;
 		}
-
-		/**
-	     * Set the Log instance using argument or create new instance
-	     * @param object $logger the Log instance if not null
-	     */
-	    protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
-	      if ($logger !== null){
-	        $this->logger = $logger;
-	      }
-	      else{
-	          $this->logger =& class_loader('Log', 'classes');
-	          $this->logger->setLogger('Library::Router');
-	      }
-	    }
 	}

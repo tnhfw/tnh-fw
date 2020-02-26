@@ -24,26 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Security{
-		
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private static $logger;
-
-		/**
-		 * Get the logger singleton instance
-		 * @return Log the logger instance
-		 */
-		private static function getLogger(){
-			if(self::$logger == null){
-				self::$logger[0] =& class_loader('Log', 'classes');
-				self::$logger[0]->setLogger('Library::Security');
-			}
-			return self::$logger[0];
-		}
-
+	class Security extends BaseStaticClass{
 
 		/**
 		 * This method is used to generate the CSRF token

@@ -24,30 +24,15 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 	
-	class ApcCache implements CacheInterface{
+	class ApcCache extends BaseClass implements CacheInterface{
 
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private $logger;
 		
 		
-		public function __construct(Log $logger = null){
+		public function __construct(){
+			parent::__construct();
 			if(! $this->isSupported()){
 				show_error('The cache for APC[u] driver is not available. Check if APC[u] extension is loaded and enabled.');
 			}
-
-			/**
-	         * instance of the Log class
-	         */
-	        if(is_object($logger)){
-	          $this->logger = $logger;
-	        }
-	        else{
-	            $this->logger =& class_loader('Log', 'classes');
-	            $this->logger->setLogger('Library::ApcCache');
-	        }
 		}
 
 		/**
@@ -175,23 +160,6 @@
 		public function isSupported(){
 			return (extension_loaded('apc') || extension_loaded('apcu')) && ini_get('apc.enabled');
 		}
-
-		/**
-	     * Return the Log instance
-	     * @return Log
-	     */
-	    public function getLogger(){
-	      return $this->logger;
-	    }
-
-	    /**
-	     * Set the log instance
-	     * @param Log $logger the log object
-	     */
-	    public function setLogger(Log $logger){
-	      $this->logger = $logger;
-	      return $this;
-	    }
 		
 		/**
 		* Return the array of cache information

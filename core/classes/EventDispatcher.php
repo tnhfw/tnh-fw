@@ -29,7 +29,7 @@
 	 * also to dispatch the event
 	 */
 	
-	class EventDispatcher{
+	class EventDispatcher extends BaseClass{
 		
 		/**
 		 * The list of the registered listeners
@@ -38,15 +38,8 @@
 		private $listeners = array();
 		
 
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private $logger;
-
 		public function __construct(){
-			$this->logger =& class_loader('Log', 'classes');
-			$this->logger->setLogger('Library::EventDispatcher');
+			parent::__construct();
 		}
 
 		/**

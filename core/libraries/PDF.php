@@ -27,26 +27,19 @@
 	/**
 	 * PDF library to generate PDF document using the library DOMPDF
 	 */
-	class PDF{
+	class PDF extends BaseClass{
 		
 		/**
 		 * The dompdf instance
 		 * @var Dompdf
 		 */
 		private $dompdf = null;
-
-		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private $logger;
 		
 		/**
 		 * Create PDF library instance
 		 */
 		public function __construct(){
-	        $this->logger =& class_loader('Log', 'classes');
-	        $this->logger->setLogger('Library::PDF');
+			parent::__construct();
 
 			require_once VENDOR_PATH.'dompdf/dompdf_config.inc.php';
 			$this->dompdf = new Dompdf();

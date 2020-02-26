@@ -24,35 +24,22 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class FileCache implements CacheInterface{
+	class FileCache extends BaseClass implements CacheInterface{
 		
 		/**
 		 * Whether to enable compression of the cache data file.
 		 * @var boolean
 		 */
 		private $compressCacheData = true;
-		
+
 		/**
-		 * The logger instance
-		 * @var Log
+		 * Class constructor
 		 */
-		private $logger;
-		
-		
-		public function __construct(Log $logger = null){
+		public function __construct(){
+			parent::__construct();
 			if(! $this->isSupported()){
 				show_error('The cache for file system is not available. Check the cache directory if is exists or is writable.');
 			}
-			/**
-	         * instance of the Log class
-	         */
-	        if(is_object($logger)){
-	          $this->logger = $logger;
-	        }
-	        else{
-	            $this->logger =& class_loader('Log', 'classes');
-	            $this->logger->setLogger('Library::FileCache');
-	        }
 			
 			//if Zlib extension is not loaded set compressCacheData to false
 			if(! extension_loaded('zlib')){
@@ -283,23 +270,7 @@
 			return CACHE_PATH && is_dir(CACHE_PATH) && is_writable(CACHE_PATH);
 		}
 
-		/**
-	     * Return the Log instance
-	     * @return object
-	     */
-	    public function getLogger(){
-	      return $this->logger;
-	    }
-
-	    /**
-	     * Set the log instance
-	     * @param Log $logger the log object
-	     */
-	    public function setLogger(Log $logger){
-	      $this->logger = $logger;
-	      return $this;
-	    }
-		
+	
 		/**
 		* Get the cache file full path for the given key
 		*

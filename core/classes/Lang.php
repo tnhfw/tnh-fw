@@ -27,7 +27,7 @@
 	/**
 	 * For application languages management
 	 */
-	class Lang{
+	class Lang extends BaseClass{
 		
 		/**
 		 * The supported available language for this application.
@@ -59,17 +59,10 @@
 		protected $current = null;
 
 		/**
-		 * The logger instance
-		 * @var Log
-		 */
-		private $logger;
-
-		/**
 		 * Construct new Lang instance
 		 */
 		public function __construct(){
-	        $this->logger =& class_loader('Log', 'classes');
-	        $this->logger->setLogger('Library::Lang');
+			parent::__construct();
 
 			$this->default = get_config('default_language', 'en');
 			$this->logger->debug('Setting the supported languages');
