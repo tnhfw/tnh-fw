@@ -179,7 +179,7 @@
 		//check if the page already cached
 		if(! empty($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'get'){
 			$RESPONSE = & class_loader('Response', 'classes');
-			if($RESPONSE->renderFinalPageFromCache($CACHE)){
+			if ($RESPONSE->renderFinalPageFromCache($CACHE)){
 				return;
 			}
 		}

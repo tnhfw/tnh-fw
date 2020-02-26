@@ -178,7 +178,10 @@
 			
 			//debug info
 			$dtrace = debug_backtrace();
-			$fileInfo = $dtrace[0]['file'] == __FILE__ ? $dtrace[1] : $dtrace[0];
+			$fileInfo = $dtrace[0];
+			if ($dtrace[0]['file'] == __FILE__){
+				$fileInfo = $dtrace[1];
+			}
 			
 			$str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
 			$fp = fopen($path, 'a+');
@@ -261,11 +264,8 @@
 			);
 			//the default value is NONE, so means no need test for NONE
 			$value = self::NONE;
-			foreach ($levelMaps as $k => $v) {
-				if($level == $k){
-					$value = $v;
-					break;
-				}
+			if(isset($levelMaps[$level])){
+				$value = $levelMaps[$level];
 			}
 			return $value;
 		}
@@ -284,13 +284,9 @@
 				self::DEBUG   => 'DEBUG'
 			);
 			$value = '';
-			foreach ($levelMaps as $k => $v) {
-				if($level == $k){
-					$value = $v;
-					break;
-				}
+			if(isset($levelMaps[$level])){
+				$value = $levelMaps[$level];
 			}
-			//no need for ALL
 			return $value;
 		}
 

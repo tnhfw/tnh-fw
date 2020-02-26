@@ -132,9 +132,6 @@
 		public static function head($type = 1, $text = null, $nb = 1, array $attributes = array(), $return = true){
 			$nb = (int) $nb;
 			$type = (int) $type;
-			if($type <= 0 || $type > 6){
-				$type = 1;
-			}
 			$str = null;
 			for ($i = 1; $i <= $nb; $i++) {
 				$str .= '<h' . $type . attributes_to_string($attributes). '>' .$text. '</h' . $type . '>';
@@ -155,25 +152,10 @@
 		 * @return string|void the generated "ul" html  if $return is true or display it if not.
 		 */
 		public static function ul($data = array(), $attributes = array(), $return = true){
-			$data = (array) $data;
-			$str = null;
-			$ulAttributes = '';
-			if(! empty($attributes['ul'])){
-				$ulAttributes = ' ' . attributes_to_string($attributes['ul']);
-			}
-			$liAttributes = '';
-			if(! empty($attributes['li'])){
-				$liAttributes = ' ' . attributes_to_string($attributes['li']);
-			}
-			$str .= '<ul' . $ulAttributes . '>';
-			foreach ($data as $row) {
-				$str .= '<li' . $liAttributes .'>' .$row. '</li>';
-			}
-			$str .= '</ul>';
 			if($return){
-				return $str;
+				return self::buildUlOl($data, $attributes, true, 'ul');
 			}
-			echo $str;
+			self::buildUlOl($data, $attributes, false, 'ul');
 		}
 
 		/**
@@ -185,26 +167,12 @@
 		 * @return string|void the generated "ol" html  if $return is true or display it if not.
 		 */
 		public static function ol($data = array(), $attributes = array(), $return = true){
-			$data = (array) $data;
-			$str = null;
-			$olAttributes = '';
-			if(! empty($attributes['ol'])){
-				$olAttributes = ' ' . attributes_to_string($attributes['ol']);
-			}
-			$liAttributes = '';
-			if(! empty($attributes['li'])){
-				$liAttributes = ' ' . attributes_to_string($attributes['li']);
-			}
-			$str .= '<ol' . $olAttributes . '>';
-			foreach ($data as $row) {
-				$str .= '<li' . $liAttributes .'>' .$row. '</li>';
-			}
-			$str .= '</ol>';
 			if($return){
-				return $str;
+				return self::buildUlOl($data, $attributes, true, 'ol');
 			}
-			echo $str;
+			self::buildUlOl($data, $attributes, false, 'ol');
 		}
+
 
 		/**
 		 * Generate the html "table" tag
@@ -247,27 +215,25 @@
 		 */
 		protected static function buildTableHeader(array $headers, $attributes = array()){
 			$str = null;
-			if(! empty($headers)){
-				$theadAttributes = '';
-				if(! empty($attributes['thead'])){
-					$theadAttributes = ' ' . attributes_to_string($attributes['thead']);
-				}
-				$theadtrAttributes = '';
-				if(! empty($attributes['thead_tr'])){
-					$theadtrAttributes = ' ' . attributes_to_string($attributes['thead_tr']);
-				}
-				$thAttributes = '';
-				if(! empty($attributes['thead_th'])){
-					$thAttributes = ' ' . attributes_to_string($attributes['thead_th']);
-				}
-				$str .= '<thead' . $theadAttributes .'>';
-				$str .= '<tr' . $theadtrAttributes .'>';
-				foreach ($headers as $value) {
-					$str .= '<th' . $thAttributes .'>' .$value. '</th>';
-				}
-				$str .= '</tr>';
-				$str .= '</thead>';
+			$theadAttributes = '';
+			if(! empty($attributes['thead'])){
+				$theadAttributes = ' ' . attributes_to_string($attributes['thead']);
 			}
+			$theadtrAttributes = '';
+			if(! empty($attributes['thead_tr'])){
+				$theadtrAttributes = ' ' . attributes_to_string($attributes['thead_tr']);
+			}
+			$thAttributes = '';
+			if(! empty($attributes['thead_th'])){
+				$thAttributes = ' ' . attributes_to_string($attributes['thead_th']);
+			}
+			$str .= '<thead' . $theadAttributes .'>';
+			$str .= '<tr' . $theadtrAttributes .'>';
+			foreach ($headers as $value) {
+				$str .= '<th' . $thAttributes .'>' .$value. '</th>';
+			}
+			$str .= '</tr>';
+			$str .= '</thead>';
 			return $str;
 		}
 
@@ -291,6 +257,20 @@
 				$tbodytdAttributes = ' ' . attributes_to_string($attributes['tbody_td']);
 			}
 			$str .= '<tbody' . $tbodyAttributes .'>';
+			$str .= self::buildTableBodyContent($body, $tbodytrAttributes, $tbodytdAttributes);
+			$str .= '</tbody>';
+			return $str;
+		}
+
+		/**
+		 * This method is used to build the body content of the html table
+		 * @param  array  $body              the table body data
+		 * @param  string $tbodytrAttributes the html attributes for each tr in tbody
+		 * @param  string $tbodytdAttributes the html attributes for each td in tbody
+		 * @return string                    
+		 */
+		protected static function buildTableBodyContent(array $body, $tbodytrAttributes, $tbodytdAttributes){
+			$str = null;
 			foreach ($body as $row) {
 				if(is_array($row)){
 					$str .= '<tr' . $tbodytrAttributes .'>';
@@ -300,7 +280,6 @@
 					$str .= '</tr>';
 				}
 			}
-			$str .= '</tbody>';
 			return $str;
 		}
 
@@ -331,5 +310,34 @@
 				$str .= '</tr>';
 				$str .= '</tfoot>';
 			return $str;
+		}
+
+		/**
+		 * Return the HTML content for ol or ul tags
+		 * @see  Html::ol
+		 * @see  Html::ul
+		 * @param  string  $olul   the type 'ol' or 'ul'
+		 * @return void|string
+		 */
+		protected static function buildUlOl($data = array(), $attributes = array(), $return = true, $olul = 'ul'){
+			$data = (array) $data;
+			$str = null;
+			$olulAttributes = '';
+			if(! empty($attributes[$olul])){
+				$olulAttributes = ' ' . attributes_to_string($attributes[$olul]);
+			}
+			$liAttributes = '';
+			if(! empty($attributes['li'])){
+				$liAttributes = ' ' . attributes_to_string($attributes['li']);
+			}
+			$str .= '<' . $olul . $olulAttributes . '>';
+			foreach ($data as $row) {
+				$str .= '<li' . $liAttributes .'>' .$row. '</li>';
+			}
+			$str .= '</' . $olul . '>';
+			if($return){
+				return $str;
+			}
+			echo $str;
 		}
 	}

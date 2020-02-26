@@ -360,10 +360,7 @@
                 $this->trigger('after_update', array($data, $result));
                 return $result;
             }
-            else
-            {
-                return FALSE;
-            }
+            return FALSE;
         }
 
         /**
@@ -942,38 +939,24 @@
          */
         protected function validate(array $data)
         {
-            if ($this->skip_validation)
+            if ($this->skip_validation || empty($this->validate))
             {
                 return $data;
             }
-            if (!empty($this->validate))
-            {
-                $fv = null;
-                if (is_object($this->formValidationInstance)){
-                    $fv = $this->formValidationInstance;
-                }
-                else{
-                    Loader::library('FormValidation');
-                    $fv = $this->formvalidation;
-                    $this->setFormValidation($fv);
-                }
-               
-                $fv->setData($data);
-                $fv->setRules($this->validate);
+            $fv = $this->formValidationInstance;
+            if (! is_object($fv)){
+                 Loader::library('FormValidation');
+                $fv = $this->formvalidation;
+                $this->setFormValidation($fv);  
+            }
+            $fv->setData($data);
+            $fv->setRules($this->validate);
 
-                if ($fv->run())
-                {
-                    return $data;
-                }
-                else
-                {
-                    return FALSE;
-                }
-            }
-            else
+            if ($fv->run())
             {
                 return $data;
             }
+            return FALSE;
         }
 		
 		

@@ -245,18 +245,14 @@
 			if(empty($content)){
 				$logger->warning('The view content is empty after dispatch to event listeners.');
 			}
-			
+			//remove unsed space in the content
+			$content = preg_replace('~>\s*\n\s*<~', '><', $content);
 			//check whether need save the page into cache.
 			if($cachePageStatus){
 				$this->savePageContentIntoCache($content);
 			}
-			
-			// Parse out the elapsed time and memory usage,
-			// then swap the pseudo-variables with the data
-			$elapsedTime = $obj->benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-			$memoryUsage	= round($obj->benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
-			$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
-			
+			$content = $this->replaceElapseTimeAndMemoryUsage($content);
+
 			//compress the output if is available
 			$type = null;
 			if (self::$_canCompressOutput){
@@ -286,8 +282,9 @@
 			if($cacheInfo){
 				$status = $this->sendCacheNotYetExpireInfo($cacheInfo);
 				if($status === false){
-					return $this->sendPageContentToBrowser($cache);
+					return $this->sendCachePageContentToBrowser($cache);
 				}
+				return true;
 			}
 			return false;
 		}
@@ -390,11 +387,28 @@
 		}
 
 		/**
+		 * Set the value of '{elapsed_time}' and '{memory_usage}'
+		 * @param  string $content the page content
+		 * @return string          the page content after replace 
+		 * '{elapsed_time}', '{memory_usage}'
+		 */
+		protected function replaceElapseTimeAndMemoryUsage($content){
+			//load benchmark class
+			$benchmark = & class_loader('Benchmark');
+			
+			// Parse out the elapsed time and memory usage,
+			// then swap the pseudo-variables with the data
+			$elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+			$memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
+			return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);	
+		}
+
+		/**
 		 * Send the page content from cache to browser
 		 * @param object $cache the cache instance
 		 * @return boolean     the status of the operation
 		 */
-		protected function sendPageContentToBrowser(&$cache){
+		protected function sendCachePageContentToBrowser(&$cache){
 			$logger = self::getLogger();
 			$logger->info('The cache page content is expired or the browser doesn\'t send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->_currentUrl . '] send cache headers to tell the browser');
 			self::sendHeaders(200);
@@ -404,15 +418,7 @@
 			$content = $cache->get($pageCacheKey);
 			if($content){
 				$logger->info('The page content for the URL [' . $this->_currentUrl . '] already cached just display it');
-				//load benchmark class
-				$benchmark = & class_loader('Benchmark');
-				
-				// Parse out the elapsed time and memory usage,
-				// then swap the pseudo-variables with the data
-				$elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-				$memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
-				$content = str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);
-				
+				$content = $this->replaceElapseTimeAndMemoryUsage($content);
 				///display the final output
 				//compress the output if is available
 				$type = null;
@@ -449,7 +455,6 @@
 			$cacheInstance = $obj->cache;
 			//the current page cache key for identification
 			$cacheKey = $this->_currentUrlCacheKey;
-			
 			$logger->debug('Save the page content for URL [' . $url . '] into the cache ...');
 			$cacheInstance->set($cacheKey, $content, $viewCacheTtl);
 			
