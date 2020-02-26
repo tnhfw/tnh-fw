@@ -27,7 +27,7 @@
 	/**
 	 * This class represent the event detail to dispatch to correspond listener
 	 */
-	class EventInfo{
+	class EventInfo {
 		
 		/**
 		 * The event name
@@ -54,7 +54,7 @@
 		 */
 		public $stop;
 		
-		public function __construct($name, $payload = array(), $returnBack = false, $stop = false){
+		public function __construct($name, $payload = array(), $returnBack = false, $stop = false) {
 			$this->name = $name;
 			$this->payload = $payload;
 			$this->returnBack = $returnBack;

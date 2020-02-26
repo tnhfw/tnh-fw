@@ -144,8 +144,7 @@
 			foreach ($emails as $name => $email) {
 				if(is_numeric($name)){
 					$this->setTo($email);
-				}
-				else{
+				} else{
 					$this->setTo($email, $name);
 				}
 			}
@@ -275,8 +274,8 @@
 		 */
 		public function addAttachment($path, $filename = null, $data = null)
 		{
-			if(! file_exists($path)){
-				show_error('The file [' .$path. '] does not exists.');
+			if (!file_exists($path)) {
+				show_error('The file [' . $path . '] does not exists.');
 			}
 			$filename = empty($filename) ? basename($path) : $filename;
 			$filename = $this->encodeUtf8($this->filterOther((string) $filename));
@@ -298,13 +297,13 @@
 		 */
 		public function getAttachmentData($path)
 		{
-			if(! file_exists($path)){
-				show_error('The file [' .$path. '] does not exists.');
+			if (!file_exists($path)) {
+				show_error('The file [' . $path . '] does not exists.');
 			}
 			$filesize = filesize($path);
 			$handle = fopen($path, "r");
 			$attachment = null;
-			if(is_resource($handle)){
+			if (is_resource($handle)) {
 				$attachment = fread($handle, $filesize);
 				fclose($handle);
 			}

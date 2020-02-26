@@ -24,7 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Config extends BaseStaticClass{
+	class Config extends BaseStaticClass {
 		
 		/**
 		 * The list of loaded configuration
@@ -35,12 +35,12 @@
 		/**
 		 * Initialize the configuration by loading all the configuration from config file
 		 */
-		public static function init(){
+		public static function init() {
 			$logger = self::getLogger();
 			$logger->debug('Initialization of the configuration');
 			self::$config = & load_configurations();
 			self::setBaseUrlUsingServerVar();
-			if(ENVIRONMENT == 'production' && in_array(strtolower(self::$config['log_level']), array('debug', 'info','all'))){
+			if (ENVIRONMENT == 'production' && in_array(strtolower(self::$config['log_level']), array('debug', 'info', 'all'))) {
 				$logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
 			}
 			$logger->info('Configuration initialized successfully');
@@ -53,12 +53,12 @@
 		 * @param  mixed $default the default value to use if can not find the config item in the list
 		 * @return mixed          the config value if exist or the default value
 		 */
-		public static function get($item, $default = null){
+		public static function get($item, $default = null) {
 			$logger = self::getLogger();
-			if(array_key_exists($item, self::$config)){
+			if (array_key_exists($item, self::$config)) {
 				return self::$config[$item];
 			}
-			$logger->warning('Cannot find config item ['.$item.'] using the default value ['.$default.']');
+			$logger->warning('Cannot find config item [' . $item . '] using the default value [' . $default . ']');
 			return $default;
 		}
 
@@ -67,7 +67,7 @@
 		 * @param string $item  the config item name to set
 		 * @param mixed $value the config item value
 		 */
-		public static function set($item, $value){
+		public static function set($item, $value) {
 			self::$config[$item] = $value;
 		}
 
@@ -75,7 +75,7 @@
 		 * Get all the configuration values
 		 * @return array the config values
 		 */
-		public static function getAll(){
+		public static function getAll() {
 			return self::$config;
 		}
 
@@ -83,7 +83,7 @@
 		 * Set the configuration values bu merged with the existing configuration
 		 * @param array $config the config values to add in the configuration list
 		 */
-		public static function setAll(array $config = array()){
+		public static function setAll(array $config = array()) {
 			self::$config = array_merge(self::$config, $config);
 		}
 
@@ -98,8 +98,7 @@
 				$logger->info('Delete config item ['.$item.']');
 				unset(self::$config[$item]);
 				return true;
-			}
-			else{
+			} else{
 				$logger->warning('Config item ['.$item.'] to be deleted does not exists');
 				return false;
 			}
@@ -109,47 +108,46 @@
 		 * Load the configuration file. This an alias to Loader::config()
 		 * @param  string $config the config name to be loaded
 		 */
-		public static function load($config){
+		public static function load($config) {
 			Loader::config($config);
 		}
 
 		/**
 		 * Set the configuration for "base_url" if is not set in the configuration
 		 */
-		private static function setBaseUrlUsingServerVar(){
+		private static function setBaseUrlUsingServerVar() {
 			$logger = self::getLogger();
-			if (! isset(self::$config['base_url']) || ! is_url(self::$config['base_url'])){
-				if(ENVIRONMENT == 'production'){
+			if (!isset(self::$config['base_url']) || !is_url(self::$config['base_url'])) {
+				if (ENVIRONMENT == 'production') {
 					$logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
 				}
 				$baseUrl = null;
 				$protocol = 'http';
-				if(is_https()){
+				if (is_https()) {
 					$protocol = 'https';
 				}
-				$protocol .='://';
+				$protocol .= '://';
 
-				if (isset($_SERVER['SERVER_ADDR'])){
+				if (isset($_SERVER['SERVER_ADDR'])) {
 					$baseUrl = $_SERVER['SERVER_ADDR'];
 					//check if the server is running under IPv6
-					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE){
-						$baseUrl = '['.$_SERVER['SERVER_ADDR'].']';
+					if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE) {
+						$baseUrl = '[' . $_SERVER['SERVER_ADDR'] . ']';
 					}
 					$serverPort = 80;
 					if (isset($_SERVER['SERVER_PORT'])) {
 						$serverPort = $_SERVER['SERVER_PORT'];
 					}
 					$port = '';
-					if($serverPort && ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80))){
-						$port = ':'.$serverPort;
+					if ($serverPort && ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80))) {
+						$port = ':' . $serverPort;
 					}
 					$baseUrl = $protocol . $baseUrl . $port . substr(
 																		$_SERVER['SCRIPT_NAME'], 
 																		0, 
 																		strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME']))
 																	);
-				}
-				else{
+				} else{
 					$logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
 					$baseUrl = 'http://localhost/';
 				}

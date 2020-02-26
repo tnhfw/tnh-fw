@@ -27,7 +27,7 @@
 	/**
 	 * For application languages management
 	 */
-	class Lang extends BaseClass{
+	class Lang extends BaseClass {
 		
 		/**
 		 * The supported available language for this application.
@@ -61,7 +61,7 @@
 		/**
 		 * Construct new Lang instance
 		 */
-		public function __construct(){
+		public function __construct() {
 			parent::__construct();
 
 			$this->default = get_config('default_language', 'en');
@@ -69,8 +69,8 @@
 			
 			//add the supported languages ('key', 'display name')
 			$languages = get_config('languages', null);
-			if(! empty($languages)){
-				foreach($languages as $key => $displayName){
+			if (!empty($languages)) {
+				foreach ($languages as $key => $displayName) {
 					$this->addLang($key, $displayName);
 				}
 			}
@@ -84,8 +84,7 @@
 			if($cookieLang && $this->isValid($cookieLang)){
 				$this->current = $cookieLang;
 				$this->logger->info('Language from cookie [' .$cfgKey. '] is valid so we will set the language using the cookie value [' .$cookieLang. ']');
-			}
-			else{
+			} else{
 				$this->logger->info('Language from cookie [' .$cfgKey. '] is not set, use the default value [' .$this->getDefault(). ']');
 				$this->current = $this->getDefault();
 			}
@@ -96,7 +95,7 @@
 		 *
 		 * @return array the language message list
 		 */
-		public function getAll(){
+		public function getAll() {
 			return $this->languages;
 		}
 
@@ -106,7 +105,7 @@
 		 * @param string $key the language key to identify
 		 * @param string $value the language message value
 		 */
-		public function set($key, $value){
+		public function set($key, $value) {
 			$this->languages[$key] = $value;
 		}
 
@@ -118,11 +117,11 @@
 		 *
 		 * @return string the language message value
 		 */
-		public function get($key, $default = 'LANGUAGE_ERROR'){
-			if(isset($this->languages[$key])){
+		public function get($key, $default = 'LANGUAGE_ERROR') {
+			if (isset($this->languages[$key])) {
 				return $this->languages[$key];
 			}
-			$this->logger->warning('Language key  [' .$key. '] does not exist use the default value [' .$default. ']');
+			$this->logger->warning('Language key  [' . $key . '] does not exist use the default value [' . $default . ']');
 			return $default;
 		}
 
@@ -133,10 +132,10 @@
 		 *
 		 * @return boolean true if the language directory exists, false or not
 		 */
-		public function isValid($language){
+		public function isValid($language) {
 			$searchDir = array(CORE_LANG_PATH, APP_LANG_PATH);
-			foreach($searchDir as $dir){
-				if(file_exists($dir . $language) && is_dir($dir . $language)){
+			foreach ($searchDir as $dir) {
+				if (file_exists($dir . $language) && is_dir($dir . $language)) {
 					return true;
 				}
 			}
@@ -148,7 +147,7 @@
 		 *
 		 * @return string the default language
 		 */
-		public function getDefault(){
+		public function getDefault() {
 			return $this->default;
 		}
 
@@ -157,7 +156,7 @@
 		 *
 		 * @return string the current language
 		 */
-		public function getCurrent(){
+		public function getCurrent() {
 			return $this->current;
 		}
 
@@ -173,8 +172,7 @@
 			}
 			if($this->isValid($name)){
 				$this->availables[$name] = $description;
-			}
-			else{
+			} else{
 				show_error('The language [' . $name . '] is not valid or does not exists.');
 			}
 		}
@@ -184,7 +182,7 @@
 		 *
 		 * @return array the list of the application language
 		 */
-		public function getSupported(){
+		public function getSupported() {
 			return $this->availables;
 		}
 
@@ -193,7 +191,7 @@
 		 *
 		 * @param array $langs the languages array of the messages to be added
 		 */
-		public function addLangMessages(array $langs){
+		public function addLangMessages(array $langs) {
 			foreach ($langs as $key => $value) {
 				$this->set($key, $value);
 			}

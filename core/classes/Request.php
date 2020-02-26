@@ -24,7 +24,7 @@
 	 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	*/
 
-	class Request{
+	class Request {
 		
 		/**
 		 * The value for the super global $_GET
@@ -103,8 +103,7 @@
 			$this->header = array();
 			if(function_exists('apache_request_headers')){
 				$this->header = apache_request_headers();
-			}
-			else if(function_exists('getallheaders')){
+			} else if(function_exists('getallheaders')){
 				$this->header = getallheaders();
 			}
 		}
@@ -113,7 +112,7 @@
 		 * Get the request method
 		 * @return string
 		 */
-		public function method(){
+		public function method() {
 			return $this->method;
 		}
 		
@@ -121,7 +120,7 @@
 		 * Get the request URI
 		 * @return string
 		 */
-		public function requestUri(){
+		public function requestUri() {
 			return $this->requestUri;
 		}
 
@@ -131,13 +130,13 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function query($key = null, $xss = true){
-			if(empty($key)){
+		public function query($key = null, $xss = true) {
+			if (empty($key)) {
 				//return all
 				return $xss ? clean_input($this->query) : $this->query;
 			}
 			$query = array_key_exists($key, $this->query) ? $this->query[$key] : null;
-			if($xss){
+			if ($xss) {
 				$query = clean_input($query);
 			}
 			return $query;
@@ -149,13 +148,13 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function get($key = null, $xss = true){
-			if(empty($key)){
+		public function get($key = null, $xss = true) {
+			if (empty($key)) {
 				//return all
 				return $xss ? clean_input($this->get) : $this->get;
 			}
 			$get = array_key_exists($key, $this->get) ? $this->get[$key] : null;
-			if($xss){
+			if ($xss) {
 				$get = clean_input($get);
 			}
 			return $get;
@@ -167,13 +166,13 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function post($key = null, $xss = true){
-			if(empty($key)){
+		public function post($key = null, $xss = true) {
+			if (empty($key)) {
 				//return all
 				return $xss ? clean_input($this->post) : $this->post;
 			}
 			$post = array_key_exists($key, $this->post) ? $this->post[$key] : null;
-			if($xss){
+			if ($xss) {
 				$post = clean_input($post);
 			}
 			return $post;
@@ -185,13 +184,13 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function server($key = null, $xss = true){
-			if(empty($key)){
+		public function server($key = null, $xss = true) {
+			if (empty($key)) {
 				//return all
 				return $xss ? clean_input($this->server) : $this->server;
 			}
 			$server = array_key_exists($key, $this->server) ? $this->server[$key] : null;
-			if($xss){
+			if ($xss) {
 				$server = clean_input($server);
 			}
 			return $server;
@@ -203,13 +202,13 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function cookie($key = null, $xss = true){
-			if(empty($key)){
+		public function cookie($key = null, $xss = true) {
+			if (empty($key)) {
 				//return all
 				return $xss ? clean_input($this->cookie) : $this->cookie;
 			}
 			$cookie = array_key_exists($key, $this->cookie) ? $this->cookie[$key] : null;
-			if($xss){
+			if ($xss) {
 				$cookie = clean_input($cookie);
 			}
 			return $cookie;
@@ -220,7 +219,7 @@
 		 * @param  string  $key the item key to be fetched
 		 * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
 		 */
-		public function file($key){
+		public function file($key) {
 			$file = array_key_exists($key, $this->file) ? $this->file[$key] : null;
 			return $file;
 		}
@@ -231,9 +230,9 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return array|mixed       the item value if the key exists or null if the key does not exists
 		 */
-		public function session($key, $xss = true){
+		public function session($key, $xss = true) {
 			$session = $this->session->get($key);
-			if($xss){
+			if ($xss) {
 				$session = clean_input($session);
 			}
 			return $session;
@@ -245,9 +244,9 @@
 		 * @param  boolean $xss if need apply some XSS attack rule on the value
 		 * @return mixed       the item value if the key exists or null if the key does not exists
 		 */
-		public function header($key, $xss = true){
+		public function header($key, $xss = true) {
 			$header = array_key_exists($key, $this->header) ? $this->header[$key] : null;
-			if($xss){
+			if ($xss) {
 				$header = clean_input($header);
 			}
 			return $header;

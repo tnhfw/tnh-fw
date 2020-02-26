@@ -27,7 +27,7 @@
 	/**
 	 * Class for Benchmark
 	 */
-	class Benchmark{
+	class Benchmark {
 		/**
 		 * The markers for excution time
 		 * @var array
@@ -44,7 +44,7 @@
 		 * This method is used to mark one point for benchmark (execution time and memory usage)
 		 * @param  string $name the marker name
 		 */
-		public function mark($name){
+		public function mark($name) {
 			//Marker for execution time
 			$this->markersTime[$name] = microtime(true);
 			//Marker for memory usage
@@ -58,12 +58,12 @@
 		 * @param  integer $decimalCount   the number of decimal
 		 * @return string         the total execution time
 		 */
-		public function elapsedTime($startMarkerName = null, $endMarkerName = null, $decimalCount = 6){
-			if(! $startMarkerName || !isset($this->markersTime[$startMarkerName])){
+		public function elapsedTime($startMarkerName = null, $endMarkerName = null, $decimalCount = 6) {
+			if (!$startMarkerName || !isset($this->markersTime[$startMarkerName])) {
 				return 0;
 			}
 			
-			if(! isset($this->markersTime[$endMarkerName])){
+			if (!isset($this->markersTime[$endMarkerName])) {
 				$this->markersTime[$endMarkerName] = microtime(true);
 			}
 			return number_format($this->markersTime[$endMarkerName] - $this->markersTime[$startMarkerName], $decimalCount);
@@ -76,12 +76,12 @@
 		 * @param  integer $decimalCount   the number of decimal
 		 * @return string         the total memory usage
 		 */
-		public function memoryUsage($startMarkerName = null, $endMarkerName = null, $decimalCount = 6){
-			if(! $startMarkerName || !isset($this->markersMemory[$startMarkerName])){
+		public function memoryUsage($startMarkerName = null, $endMarkerName = null, $decimalCount = 6) {
+			if (!$startMarkerName || !isset($this->markersMemory[$startMarkerName])) {
 				return 0;
 			}
 			
-			if(! isset($this->markersMemory[$endMarkerName])){
+			if (!isset($this->markersMemory[$endMarkerName])) {
 				$this->markersMemory[$endMarkerName] = microtime(true);
 			}
 			return number_format($this->markersMemory[$endMarkerName] - $this->markersMemory[$startMarkerName], $decimalCount);
