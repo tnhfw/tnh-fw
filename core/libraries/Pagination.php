@@ -42,14 +42,14 @@
          * Create an instance of pagination
          * @param array $overwriteConfig the list of configuration to overwrite the defined configuration in config_pagination.php
          */
-        public function __construct(array $overwriteConfig = array()){
-            if (file_exists(CONFIG_PATH . 'config_pagination.php')){
+        public function __construct(array $overwriteConfig = array()) {
+            if (file_exists(CONFIG_PATH . 'config_pagination.php')) {
                 $config = array();
                 require_once CONFIG_PATH . 'config_pagination.php';
-                if (empty($config) || ! is_array($config)){
+                if (empty($config) || !is_array($config)) {
                     show_error('No configuration found in ' . CONFIG_PATH . 'config_pagination.php');
                 }
-                else{
+                else {
                     $config = array_merge($config, $overwriteConfig);
                     $this->config = $config;
                     //put it gobally
@@ -97,7 +97,7 @@
              * @param string $paginationQueryString the new value
              * @return object
              */
-        public function setPaginationQueryString($paginationQueryString){
+        public function setPaginationQueryString($paginationQueryString) {
             $this->paginationQueryString = $paginationQueryString;
             return $this;
         }
@@ -108,22 +108,22 @@
          * 
          * @return object
          */
-        public function determinePaginationQueryStringValue(){
+        public function determinePaginationQueryStringValue() {
             $pageQueryName = $this->config['page_query_string_name'];
             $queryString = Url::queryString();
             $currentUrl = Url::current();
             $query = '';
-                if ($queryString == ''){
+                if ($queryString == '') {
                 $query = '?' . $pageQueryName . '=';
-            } else{
+            } else {
                 $tab = explode($pageQueryName . '=', $queryString);
                 $nb = count($tab);
-                if ($nb == 1){
+                if ($nb == 1) {
                     $query = '?' . $queryString . '&' . $pageQueryName . '=';
-                } else{
-                    if ($tab[0] == ''){
+                } else {
+                    if ($tab[0] == '') {
                         $query = '?' . $pageQueryName . '=';
-                    } else{
+                    } else {
                         $query = '?' . $tab[0] . '' . $pageQueryName . '=';
                     }
                 }
@@ -141,10 +141,10 @@
          * 
          * @return string the pagination link
          */
-        public function getLink($totalRows, $currentPageNumber){
+        public function getLink($totalRows, $currentPageNumber) {
             $numberOfLink = $this->config['nb_link'];
             $numberOfRowPerPage = $this->config['pagination_per_page'];
-            if (empty($this->paginationQueryString)){
+            if (empty($this->paginationQueryString)) {
                 //determine the pagination query string value
                 $this->determinePaginationQueryStringValue();
             }
@@ -155,7 +155,7 @@
             $numberOfLink = (int) $numberOfLink;
             $numberOfRowPerPage = (int) $numberOfRowPerPage;
 			
-            if ($currentPageNumber <= 0){
+            if ($currentPageNumber <= 0) {
                 $currentPageNumber = 1;
             }
             if ($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0) {
@@ -170,18 +170,18 @@
          * @param  int $numberOfPage      the total number of page
          * @return string
          */
-        protected function buildPaginationNavbar($currentPageNumber, $numberOfPage){
+        protected function buildPaginationNavbar($currentPageNumber, $numberOfPage) {
             $values = $this->getPaginationBeginAndEndNumber($currentPageNumber, $numberOfPage);
             $begin = $values['begin'];
             $end   = $values['end'];
             $navbar = null;
-            if ($currentPageNumber == 1){
+            if ($currentPageNumber == 1) {
                 $navbar .= $this->buildPaginationLinkForFirstPage($begin, $end, $currentPageNumber);
             }
-            else if ($currentPageNumber > 1 && $currentPageNumber < $numberOfPage){
+            else if ($currentPageNumber > 1 && $currentPageNumber < $numberOfPage) {
                 $navbar .= $this->buildPaginationLinkForMiddlePage($begin, $end, $currentPageNumber);
             }
-            else if ($currentPageNumber == $numberOfPage){
+            else if ($currentPageNumber == $numberOfPage) {
                 $navbar .= $this->buildPaginationLinkForLastPage($begin, $end, $currentPageNumber);
             }
             $navbar = $this->config['pagination_open'] . $navbar . $this->config['pagination_close'];
@@ -202,20 +202,17 @@
             if ($numberOfLink % 2 == 0) {
                 $start = $currentPageNumber - ($numberOfLink / 2) + 1;
                 $end   = $currentPageNumber + ($numberOfLink / 2);
-            }
-            else {
+            } else {
                 $start = $currentPageNumber - floor($numberOfLink / 2);
                 $end   = $currentPageNumber + floor($numberOfLink / 2);
             }
             if ($start <= 1) {
                 $begin = 1;
                 $end   = $numberOfLink;
-            }
-            else if ($start > 1 && $end < $numberOfPage) {
+            } else if ($start > 1 && $end < $numberOfPage) {
                 $begin = $start;
                 $end = $end;
-            }
-            else {
+            } else {
                 $begin = ($numberOfPage - $numberOfLink) + 1;
                 $end   = $numberOfPage;
             }
@@ -242,8 +239,7 @@
             for ($i = $begin; $i <= $end; $i++) {
                 if ($i == $currentPageNumber) {
                     $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
-                }
-                else {
+                } else {
                     $navbar .= $this->config['digit_open'] 
                             . '<a href="' . $query . $i . '" ' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
                             . $this->config['digit_close'];
@@ -271,8 +267,7 @@
             for ($i = $begin; $i <= $end; $i++) {
                 if ($i == $currentPageNumber) {
                     $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
-                }
-                else {
+                } else {
                     $navbar .= $this->config['digit_open'] 
                                     . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
                                     . $this->config['digit_close'];
@@ -300,8 +295,7 @@
                     $navbar .= $this->config['active_link_open'] 
                                 . $currentPageNumber 
                                 . $this->config['active_link_close'];
-                }
-                else {
+                } else {
                     $navbar .= $this->config['digit_open'] 
                                 . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
                                 . $this->config['digit_close'];

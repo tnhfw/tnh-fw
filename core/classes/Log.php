@@ -24,7 +24,7 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
 
-    class Log{
+    class Log {
 		
         /**
          * The defined constante for Log level
@@ -52,14 +52,14 @@
         /**
          * Create new Log instance
          */
-        public function __construct(){
+        public function __construct() {
         }
 
         /**
          * Set the logger to identify each message in the log
          * @param string $logger the logger name
          */
-        public  function setLogger($logger){
+        public  function setLogger($logger) {
             $this->logger = $logger;
         }
 
@@ -68,7 +68,7 @@
          * @see Log::writeLog for more detail
          * @param  string $message the log message to save
          */
-        public function fatal($message){
+        public function fatal($message) {
             $this->writeLog($message, self::FATAL);
         } 
 		
@@ -77,7 +77,7 @@
          * @see Log::writeLog for more detail
          * @param  string $message the log message to save
          */
-        public function error($message){
+        public function error($message) {
             $this->writeLog($message, self::ERROR);
         } 
 
@@ -86,7 +86,7 @@
          * @see Log::writeLog for more detail
          * @param  string $message the log message to save
          */
-        public function warning($message){
+        public function warning($message) {
             $this->writeLog($message, self::WARNING);
         } 
 		
@@ -95,7 +95,7 @@
          * @see Log::writeLog for more detail
          * @param  string $message the log message to save
          */
-        public function info($message){
+        public function info($message) {
             $this->writeLog($message, self::INFO);
         } 
 		
@@ -104,7 +104,7 @@
          * @see Log::writeLog for more detail
          * @param  string $message the log message to save
          */
-        public function debug($message){
+        public function debug($message) {
             $this->writeLog($message, self::DEBUG);
         } 
 		
@@ -115,31 +115,31 @@
          * @param  integer|string $level   the log level in integer or string format, if is string will convert into integer
          * to allow check the log level threshold.
          */
-        public function writeLog($message, $level = self::INFO){
+        public function writeLog($message, $level = self::INFO) {
             $configLogLevel = get_config('log_level');
-            if(! $configLogLevel){
+            if (!$configLogLevel) {
                 //so means no need log just stop here
                 return;
             }
             //check config log level
-            if(! self::isValidConfigLevel($configLogLevel)){
+            if (!self::isValidConfigLevel($configLogLevel)) {
                 //NOTE: here need put the show_error() "logging" to false to prevent loop
                 show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
             }
 			
             //check if config log_logger_name and current log can save log data
-            if(! $this->canSaveLogDataForLogger()){
+            if (!$this->canSaveLogDataForLogger()) {
                 return;
             }
 			
             //if $level is not an integer
-            if(! is_numeric($level)){
+            if (!is_numeric($level)) {
                 $level = self::getLevelValue($level);
             }
 			
             //check if can logging regarding the log level config
             $configLevel = self::getLevelValue($configLogLevel);
-            if($configLevel > $level){
+            if ($configLevel > $level) {
                 //can't log
                 return;
             }
@@ -156,7 +156,7 @@
          * @param  string $message the log message to save
          * @return void
          */
-        protected function saveLogData($path, $level, $message){
+        protected function saveLogData($path, $level, $message) {
             //may be at this time helper user_agent not yet included
             require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 			
@@ -169,7 +169,7 @@
             $ip = get_ip();
 			
             //if $level is not an integer
-            if(! is_numeric($level)){
+            if (!is_numeric($level)) {
                 $level = self::getLevelValue($level);
             }
 
@@ -179,13 +179,13 @@
             //debug info
             $dtrace = debug_backtrace();
             $fileInfo = $dtrace[0];
-            if ($dtrace[0]['file'] == __FILE__ || $dtrace[1]['file'] == __FILE__){
+            if ($dtrace[0]['file'] == __FILE__ || $dtrace[1]['file'] == __FILE__) {
                 $fileInfo = $dtrace[2];
             }
 			
             $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
             $fp = fopen($path, 'a+');
-            if(is_resource($fp)){
+            if (is_resource($fp)) {
                 flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
                 fwrite($fp, $str);
                 fclose($fp);
@@ -197,13 +197,13 @@
          * of logger filter
          * @return boolean
          */
-        protected function canSaveLogDataForLogger(){
-            if(! empty($this->logger)){
+        protected function canSaveLogDataForLogger() {
+            if (!empty($this->logger)) {
                 $configLoggersName = get_config('log_logger_name', array());
                 if (!empty($configLoggersName)) {
                     //for best comparaison put all string to lowercase
                     $configLoggersName = array_map('strtolower', $configLoggersName);
-                    if(! in_array(strtolower($this->logger), $configLoggersName)){
+                    if (!in_array(strtolower($this->logger), $configLoggersName)) {
                         return false;
                     }
                 }
@@ -215,19 +215,19 @@
          * Check the file and directory 
          * @return string the log file path
          */
-        protected function checkAndSetLogFileDirectory(){
+        protected function checkAndSetLogFileDirectory() {
             $logSavePath = get_config('log_save_path');
-            if(! $logSavePath){
+            if (!$logSavePath) {
                 $logSavePath = LOGS_PATH;
             }
 			
-            if(! is_dir($logSavePath) || !is_writable($logSavePath)){
+            if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
                 //NOTE: here need put the show_error() "logging" to false to prevent loop
                 show_error('Error : the log dir does not exists or is not writable', $title = 'Log directory error', $logging = false);
             }
 			
             $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
-            if(! file_exists($path)){
+            if (!file_exists($path)) {
                 touch($path);
             }
             return $path;
@@ -240,7 +240,7 @@
          *
          * @return boolean        true if the given log level is valid, false if not
          */
-        protected static function isValidConfigLevel($level){
+        protected static function isValidConfigLevel($level) {
             $level = strtolower($level);
             return in_array($level, self::$validConfigLevel);
         }
@@ -251,7 +251,7 @@
          * 
          * @return int        the log level in integer format using the predefined constants
          */
-        protected static function getLevelValue($level){
+        protected static function getLevelValue($level) {
             $level = strtolower($level);
             $levelMaps = array(
                 'fatal'   => self::FATAL,
@@ -264,7 +264,7 @@
             );
             //the default value is NONE, so means no need test for NONE
             $value = self::NONE;
-            if(isset($levelMaps[$level])){
+            if (isset($levelMaps[$level])) {
                 $value = $levelMaps[$level];
             }
             return $value;
@@ -275,7 +275,7 @@
          * @param  integer $level the log level in integer format
          * @return string        the log level in string format
          */
-        protected static function getLevelName($level){
+        protected static function getLevelName($level) {
             $levelMaps = array(
                 self::FATAL   => 'FATAL',
                 self::ERROR   => 'ERROR',
@@ -284,7 +284,7 @@
                 self::DEBUG   => 'DEBUG'
             );
             $value = '';
-            if(isset($levelMaps[$level])){
+            if (isset($levelMaps[$level])) {
                 $value = $levelMaps[$level];
             }
             return $value;

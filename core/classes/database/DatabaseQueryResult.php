@@ -24,13 +24,13 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
   
-    class DatabaseQueryResult{
+    class DatabaseQueryResult {
   	
         /**
          * The database query result
          * @var mixed
          */
-        private $result  = null;
+        private $result = null;
   	
     
         /**
@@ -56,7 +56,7 @@
          *
          * @return mixed
          */
-    public function getResult(){
+    public function getResult() {
         return $this->result;
     }
 
@@ -66,7 +66,7 @@
      *
      * @return object DatabaseQueryResult
      */
-    public function setResult($result){
+    public function setResult($result) {
         $this->result = $result;
         return $this;
     }
@@ -76,7 +76,7 @@
      *
      * @return int
      */
-    public function getNumRows(){
+    public function getNumRows() {
         return $this->numRows;
     }
 
@@ -86,7 +86,7 @@
      *
      * @return object DatabaseQueryResult
      */
-    public function setNumRows($numRows){
+    public function setNumRows($numRows) {
         $this->numRows = $numRows;
         return $this;
     }

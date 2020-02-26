@@ -41,7 +41,7 @@
      */
 	
 	 
-    if(! function_exists('get_ip')){
+    if (!function_exists('get_ip')) {
         /**
          *  Retrieves the user's IP address
          *  
@@ -50,7 +50,7 @@
          *  
          *  @return string the IP address.
          */
-        function get_ip(){
+        function get_ip() {
             $ip = '127.0.0.1';
             $ipServerVars = array(
                                 'REMOTE_ADDR',
@@ -61,7 +61,7 @@
                                 'HTTP_FORWARDED'
                             );
             foreach ($ipServerVars as $var) {
-                if(isset($_SERVER[$var])){
+                if (isset($_SERVER[$var])) {
                     $ip = $_SERVER[$var];
                     break;
                 }

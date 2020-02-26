@@ -24,7 +24,7 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
 
-    class Html{
+    class Html {
 
         /**
          * Generate the html anchor link
@@ -35,19 +35,19 @@
          *
          * @return string|void             the anchor link generated html if $return is true or display it if not
          */
-        public static function a($link = '', $anchor = null, array $attributes = array(), $return = true){
+        public static function a($link = '', $anchor = null, array $attributes = array(), $return = true) {
             $link = Url::site_url($link);
-            if(! $anchor){
+            if (!$anchor) {
                 $anchor = $link;
             }
             $str = null;
-            $str .= '<a href = "'.$link.'"';
+            $str .= '<a href = "' . $link . '"';
             $str .= attributes_to_string($attributes);
             $str .= '>';
             $str .= $anchor;
             $str .= '</a>';
 
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;
@@ -62,18 +62,18 @@
          *
          * @return string|void             the generated html for mailto link if $return is true or display it if not
          */
-        public static function mailto($link, $anchor = null, array $attributes = array(), $return = true){
-            if(! $anchor){
+        public static function mailto($link, $anchor = null, array $attributes = array(), $return = true) {
+            if (!$anchor) {
                 $anchor = $link;
             }
             $str = null;
-            $str .= '<a href = "mailto:'.$link.'"';
+            $str .= '<a href = "mailto:' . $link . '"';
             $str .= attributes_to_string($attributes);
             $str .= '>';
             $str .= $anchor;
             $str .= '</a>';
 
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;
@@ -86,14 +86,14 @@
          *
          * @return string|void      the generated "br" html if $return is true or display it if not
          */
-        public static function br($nb = 1, $return = true){
+        public static function br($nb = 1, $return = true) {
             $nb = (int) $nb;
             $str = null;
             for ($i = 1; $i <= $nb; $i++) {
                 $str .= '<br />';
             }
 
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;
@@ -107,13 +107,13 @@
          *
          * @return string|void the generated "hr" html if $return is true or display it if not.
          */
-        public static function hr($nb = 1, array $attributes = array(), $return = true){
+        public static function hr($nb = 1, array $attributes = array(), $return = true) {
             $nb = (int) $nb;
             $str = null;
             for ($i = 1; $i <= $nb; $i++) {
-                $str .= '<hr' .attributes_to_string($attributes). ' />';
+                $str .= '<hr' . attributes_to_string($attributes) . ' />';
             }
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;
@@ -129,14 +129,14 @@
          *
          * @return string|void the generated header html if $return is true or display it if not.
          */
-        public static function head($type = 1, $text = null, $nb = 1, array $attributes = array(), $return = true){
+        public static function head($type = 1, $text = null, $nb = 1, array $attributes = array(), $return = true) {
             $nb = (int) $nb;
             $type = (int) $type;
             $str = null;
             for ($i = 1; $i <= $nb; $i++) {
-                $str .= '<h' . $type . attributes_to_string($attributes). '>' .$text. '</h' . $type . '>';
+                $str .= '<h' . $type . attributes_to_string($attributes) . '>' . $text . '</h' . $type . '>';
             }
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;
@@ -151,8 +151,8 @@
          *
          * @return string|void the generated "ul" html  if $return is true or display it if not.
          */
-        public static function ul($data = array(), $attributes = array(), $return = true){
-            if($return){
+        public static function ul($data = array(), $attributes = array(), $return = true) {
+            if ($return) {
                 return self::buildUlOl($data, $attributes, true, 'ul');
             }
             self::buildUlOl($data, $attributes, false, 'ul');
@@ -166,8 +166,8 @@
          * @param  boolean $return whether need return the generated html or just display it directly
          * @return string|void the generated "ol" html  if $return is true or display it if not.
          */
-        public static function ol($data = array(), $attributes = array(), $return = true){
-            if($return){
+        public static function ol($data = array(), $attributes = array(), $return = true) {
+            if ($return) {
                 return self::buildUlOl($data, $attributes, true, 'ol');
             }
             self::buildUlOl($data, $attributes, false, 'ol');
@@ -186,23 +186,23 @@
          * @param  boolean $return whether need return the generated html or just display it directly
          * @return string|void the generated "table" html  if $return is true or display it if not.
          */
-        public static function table($headers = array(), $body = array(), $attributes = array(), $use_footer = false, $return = true){
+        public static function table($headers = array(), $body = array(), $attributes = array(), $use_footer = false, $return = true) {
             $headers = (array) $headers;
             $body = (array) $body;
             $str = null;
             $tableAttributes = '';
-            if(! empty($attributes['table'])){
+            if (!empty($attributes['table'])) {
                 $tableAttributes = ' ' . attributes_to_string($attributes['table']);
             }
             $str .= '<table' . $tableAttributes . '>';
             $str .= self::buildTableHeader($headers, $attributes);
             $str .= self::buildTableBody($body, $attributes);
 
-            if($use_footer){
+            if ($use_footer) {
                 $str .= self::buildTableFooter($headers, $attributes);
             }
             $str .= '</table>';
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;
@@ -213,24 +213,24 @@
          * @see  Html::table 
          * @return string|null
          */
-        protected static function buildTableHeader(array $headers, $attributes = array()){
+        protected static function buildTableHeader(array $headers, $attributes = array()) {
             $str = null;
             $theadAttributes = '';
-            if(! empty($attributes['thead'])){
+            if (!empty($attributes['thead'])) {
                 $theadAttributes = ' ' . attributes_to_string($attributes['thead']);
             }
             $theadtrAttributes = '';
-            if(! empty($attributes['thead_tr'])){
+            if (!empty($attributes['thead_tr'])) {
                 $theadtrAttributes = ' ' . attributes_to_string($attributes['thead_tr']);
             }
             $thAttributes = '';
-            if(! empty($attributes['thead_th'])){
+            if (!empty($attributes['thead_th'])) {
                 $thAttributes = ' ' . attributes_to_string($attributes['thead_th']);
             }
-            $str .= '<thead' . $theadAttributes .'>';
-            $str .= '<tr' . $theadtrAttributes .'>';
+            $str .= '<thead' . $theadAttributes . '>';
+            $str .= '<tr' . $theadtrAttributes . '>';
             foreach ($headers as $value) {
-                $str .= '<th' . $thAttributes .'>' .$value. '</th>';
+                $str .= '<th' . $thAttributes . '>' . $value . '</th>';
             }
             $str .= '</tr>';
             $str .= '</thead>';
@@ -242,21 +242,21 @@
          * @see  Html::table 
          * @return string|null
          */
-        protected static function buildTableBody(array $body, $attributes = array()){
+        protected static function buildTableBody(array $body, $attributes = array()) {
             $str = null;
             $tbodyAttributes = '';
-            if(! empty($attributes['tbody'])){
+            if (!empty($attributes['tbody'])) {
                 $tbodyAttributes = ' ' . attributes_to_string($attributes['tbody']);
             }
             $tbodytrAttributes = '';
-            if(! empty($attributes['tbody_tr'])){
+            if (!empty($attributes['tbody_tr'])) {
                 $tbodytrAttributes = ' ' . attributes_to_string($attributes['tbody_tr']);
             }
             $tbodytdAttributes = '';
-            if(! empty($attributes['tbody_td'])){
+            if (!empty($attributes['tbody_td'])) {
                 $tbodytdAttributes = ' ' . attributes_to_string($attributes['tbody_td']);
             }
-            $str .= '<tbody' . $tbodyAttributes .'>';
+            $str .= '<tbody' . $tbodyAttributes . '>';
             $str .= self::buildTableBodyContent($body, $tbodytrAttributes, $tbodytdAttributes);
             $str .= '</tbody>';
             return $str;
@@ -269,13 +269,13 @@
          * @param  string $tbodytdAttributes the html attributes for each td in tbody
          * @return string                    
          */
-        protected static function buildTableBodyContent(array $body, $tbodytrAttributes, $tbodytdAttributes){
+        protected static function buildTableBodyContent(array $body, $tbodytrAttributes, $tbodytdAttributes) {
             $str = null;
             foreach ($body as $row) {
-                if(is_array($row)){
-                    $str .= '<tr' . $tbodytrAttributes .'>';
+                if (is_array($row)) {
+                    $str .= '<tr' . $tbodytrAttributes . '>';
                     foreach ($row as $value) {
-                        $str .= '<td' . $tbodytdAttributes .'>' .$value. '</td>';	
+                        $str .= '<td' . $tbodytdAttributes . '>' . $value . '</td>';	
                     }
                     $str .= '</tr>';
                 }
@@ -288,24 +288,24 @@
          * @see  Html::table 
          * @return string|null
          */
-        protected static function buildTableFooter(array $footers, $attributes = array()){
+        protected static function buildTableFooter(array $footers, $attributes = array()) {
             $str = null;
             $tfootAttributes = '';
-            if(! empty($attributes['tfoot'])){
+            if (!empty($attributes['tfoot'])) {
                 $tfootAttributes = ' ' . attributes_to_string($attributes['tfoot']);
             }
             $tfoottrAttributes = '';
-            if(! empty($attributes['tfoot_tr'])){
+            if (!empty($attributes['tfoot_tr'])) {
                 $tfoottrAttributes = ' ' . attributes_to_string($attributes['tfoot_tr']);
             }
             $thAttributes = '';
-            if(! empty($attributes['tfoot_th'])){
+            if (!empty($attributes['tfoot_th'])) {
                 $thAttributes = ' ' . attributes_to_string($attributes['tfoot_th']);
             }
-            $str .= '<tfoot' . $tfootAttributes .'>';
-                $str .= '<tr' . $tfoottrAttributes .'>';
+            $str .= '<tfoot' . $tfootAttributes . '>';
+                $str .= '<tr' . $tfoottrAttributes . '>';
                 foreach ($footers as $value) {
-                    $str .= '<th' . $thAttributes .'>' .$value. '</th>';
+                    $str .= '<th' . $thAttributes . '>' . $value . '</th>';
                 }
                 $str .= '</tr>';
                 $str .= '</tfoot>';
@@ -319,23 +319,23 @@
          * @param  string  $olul   the type 'ol' or 'ul'
          * @return void|string
          */
-        protected static function buildUlOl($data = array(), $attributes = array(), $return = true, $olul = 'ul'){
+        protected static function buildUlOl($data = array(), $attributes = array(), $return = true, $olul = 'ul') {
             $data = (array) $data;
             $str = null;
             $olulAttributes = '';
-            if(! empty($attributes[$olul])){
+            if (!empty($attributes[$olul])) {
                 $olulAttributes = ' ' . attributes_to_string($attributes[$olul]);
             }
             $liAttributes = '';
-            if(! empty($attributes['li'])){
+            if (!empty($attributes['li'])) {
                 $liAttributes = ' ' . attributes_to_string($attributes['li']);
             }
             $str .= '<' . $olul . $olulAttributes . '>';
             foreach ($data as $row) {
-                $str .= '<li' . $liAttributes .'>' .$row. '</li>';
+                $str .= '<li' . $liAttributes . '>' . $row . '</li>';
             }
             $str .= '</' . $olul . '>';
-            if($return){
+            if ($return) {
                 return $str;
             }
             echo $str;

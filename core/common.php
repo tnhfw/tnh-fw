@@ -53,14 +53,14 @@
         //put the first letter of class to upper case 
         $class = ucfirst($class);
         static $classes = array();
-        if (isset($classes[$class]) /*hack for duplicate log Logger name*/ && $class != 'Log'){
+        if (isset($classes[$class]) /*hack for duplicate log Logger name*/ && $class != 'Log') {
             return $classes[$class];
         }
         $found = false;
         foreach (array(ROOT_PATH, CORE_PATH) as $path) {
             $file = $path . $dir . '/' . $class . '.php';
-            if (file_exists($file)){
-                if (class_exists($class, false) === false){
+            if (file_exists($file)) {
+                if (class_exists($class, false) === false) {
                     require_once $file;
                 }
                 //already found
@@ -68,7 +68,7 @@
                 break;
             }
         }
-        if (! $found){
+        if (!$found) {
             //can't use show_error() at this time because some dependencies not yet loaded
             set_http_status_header(503);
             echo 'Cannot find the class [' . $class . ']';
@@ -78,7 +78,7 @@
         /*
 		   TODO use the best method to get the Log instance
 		 */
-        if ($class == 'Log'){
+        if ($class == 'Log') {
             //can't use the instruction like "return new Log()" 
             //because we need return the reference instance of the loaded class.
             $log = new Log();
@@ -102,7 +102,7 @@
      */
     function & class_loaded($class = null){
         static $list = array();
-        if ($class !== null){
+        if ($class !== null) {
             $list[strtolower($class)] = $class;
         }
         return $list;
@@ -117,14 +117,14 @@
      */
     function & load_configurations(array $overwrite_values = array()){
         static $config;
-        if (empty($config)){
+        if (empty($config)) {
             $file = CONFIG_PATH . 'config.php';
             $found = false;
-            if (file_exists($file)){
+            if (file_exists($file)) {
                 require_once $file;
                 $found = true;
             }
-            if (! $found){
+            if (!$found) {
                 set_http_status_header(503);
                 echo 'Unable to find the configuration file [' . $file . ']';
                 die();
@@ -144,9 +144,9 @@
      * 
      * @return mixed          the config value
      */
-    function get_config($key, $default = null){
+    function get_config($key, $default = null) {
         static $cfg;
-        if (empty($cfg)){
+        if (empty($cfg)) {
             $cfg[0] = & load_configurations();
         }
         return array_key_exists($key, $cfg[0]) ? $cfg[0][$key] : $default;
@@ -160,9 +160,9 @@
      * 
      * @codeCoverageIgnore
      */
-    function save_to_log($level, $message, $logger = null){
-        $log =& class_loader('Log', 'classes');
-        if ($logger){
+    function save_to_log($level, $message, $logger = null) {
+        $log = & class_loader('Log', 'classes');
+        if ($logger) {
             $log->setLogger($logger);
         }
         $log->writeLog($message, $level);
@@ -175,8 +175,8 @@
      * 
      * @codeCoverageIgnore
      */
-    function set_http_status_header($code = 200, $text = null){
-        if (empty($text)){
+    function set_http_status_header($code = 200, $text = null) {
+        if (empty($text)) {
             $http_status = array(
                                 100 => 'Continue',
                                 101 => 'Switching Protocols',
@@ -220,20 +220,20 @@
                                 504 => 'Gateway Timeout',
                                 505 => 'HTTP Version Not Supported',
                             );
-            if (isset($http_status[$code])){
+            if (isset($http_status[$code])) {
                 $text = $http_status[$code];
             }
-            else{
+            else {
                 show_error('No HTTP status text found for your code please check it.');
             }
         }
 		
-        if (strpos(php_sapi_name(), 'cgi') === 0){
+        if (strpos(php_sapi_name(), 'cgi') === 0) {
             header('Status: ' . $code . ' ' . $text, TRUE);
         }
-        else{
+        else {
             $proto = 'HTTP/1.1';
-            if(isset($_SERVER['SERVER_PROTOCOL'])){
+            if (isset($_SERVER['SERVER_PROTOCOL'])) {
                 $proto = $_SERVER['SERVER_PROTOCOL'];
             }
             header($proto . ' ' . $code . ' ' . $text, TRUE, $code);
@@ -249,13 +249,13 @@
      *  
      *  @codeCoverageIgnore
      */
-    function show_error($msg, $title = 'error', $logging = true){
+    function show_error($msg, $title = 'error', $logging = true) {
         $title = strtoupper($title);
         $data = array();
         $data['error'] = $msg;
         $data['title'] = $title;
-        if ($logging){
-            save_to_log('error', '['.$title.'] '.strip_tags($msg), 'GLOBAL::ERROR');
+        if ($logging) {
+            save_to_log('error', '[' . $title . '] ' . strip_tags($msg), 'GLOBAL::ERROR');
         }
         $response = & class_loader('Response', 'classes');
         $response->sendError($data);
@@ -269,18 +269,18 @@
      *  
      *  @return boolean true if the web server uses the https protocol, false if not.
      */
-    function is_https(){
+    function is_https() {
         /*
 		* some servers pass the "HTTPS" parameter in the server variable,
 		* if is the case, check if the value is "on", "true", "1".
 		*/
-        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off'){
+        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
             return true;
         }
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'){
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             return true;
         }
-        if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off'){
+        if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
             return true;
         }
         return false;
@@ -295,7 +295,7 @@
      *  
      *  @return boolean true if is a valid URL address or false.
      */
-    function is_url($url){
+    function is_url($url) {
         return preg_match('/^(http|https|ftp):\/\/(.*)/', $url) == 1;
     }
 	
@@ -305,8 +305,8 @@
      *  @param string $controllerClass the controller class name to be loaded
      *  @codeCoverageIgnore
      */
-    function autoload_controller($controllerClass){
-        if (file_exists($path = APPS_CONTROLLER_PATH . $controllerClass . '.php')){
+    function autoload_controller($controllerClass) {
+        if (file_exists($path = APPS_CONTROLLER_PATH . $controllerClass . '.php')) {
             require_once $path;
         }
     }
@@ -320,11 +320,11 @@
      *  
      *  @return boolean
      */
-    function php_exception_handler($ex){
-        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
-            show_error('An exception is occured in file '. $ex->getFile() .' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
+    function php_exception_handler($ex) {
+        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
+            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
         }
-        else{
+        else {
             save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
         }
         return true;
@@ -341,16 +341,16 @@
      *  
      *  @return boolean	
      */
-    function php_error_handler($errno , $errstr, $errfile , $errline){
+    function php_error_handler($errno, $errstr, $errfile, $errline) {
         $isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
-        if ($isError){
+        if ($isError) {
             set_http_status_header(500);
         }
-        if (! (error_reporting() & $errno)) {
+        if (!(error_reporting() & $errno)) {
             save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
             return;
         }
-        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
+        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
             $errorType = 'error';
             switch ($errno) {
                 case E_USER_WARNING:
@@ -360,9 +360,9 @@
                     $errorType = 'notice';
                     break;
             }
-            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline .'</b> raison : ' . $errstr, 'PHP ' . $errorType);
+            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
         }
-        if ($isError){
+        if ($isError) {
             die();
         }
         return true;
@@ -372,10 +372,10 @@
      * This function is used to run in shutdown situation of the script
      * @codeCoverageIgnore
      */
-    function php_shudown_handler(){
+    function php_shudown_handler() {
         $lastError = error_get_last();
         if (isset($lastError) &&
-            ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))){
+            ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
             php_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
         }
     }
@@ -393,11 +393,11 @@
      *   
      *  @return string string of the HTML attribute.
      */
-    function attributes_to_string(array $attributes){
+    function attributes_to_string(array $attributes) {
         $str = ' ';
         //we check that the array passed as an argument is not empty.
-        if (! empty($attributes)){
-            foreach($attributes as $key => $value){
+        if (!empty($attributes)) {
+            foreach ($attributes as $key => $value) {
                 $key = trim(htmlspecialchars($key));
                 $value = trim(htmlspecialchars($value));
                 /*
@@ -407,10 +407,10 @@
 				* 	$attr = array('placeholder' => 'I am a "puple"')
 				* 	$str = attributes_to_string($attr); => placeholder = "I am a \"puple\""
 				 */
-                if ($value && strpos('"', $value) !== false){
+                if ($value && strpos('"', $value) !== false) {
                     $value = addslashes($value);
                 }
-                $str .= $key.' = "'.$value.'" ';
+                $str .= $key . ' = "' . $value . '" ';
             }
         }
         //remove the space after using rtrim()
@@ -426,7 +426,7 @@
      *
      * @return string the stringfy value
      */
-    function stringfy_vars($var){
+    function stringfy_vars($var) {
         return print_r($var, true);
     }
 
@@ -437,18 +437,18 @@
      * 
      * @return mixed   the sanitize value
      */
-    function clean_input($str){
-        if (is_array($str)){
+    function clean_input($str) {
+        if (is_array($str)) {
             $str = array_map('clean_input', $str);
         }
-        else if (is_object($str)){
+        else if (is_object($str)) {
             $obj = $str;
             foreach ($str as $var => $value) {
                 $obj->$var = clean_input($value);
             }
             $str = $obj;
         }
-        else{
+        else {
             $str = htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
         }
         return $str;
@@ -466,11 +466,11 @@
      * 
      * @return string the string with the hidden part.
      */
-    function string_hidden($str, $startCount = 0, $endCount = 0, $hiddenChar = '*'){
+    function string_hidden($str, $startCount = 0, $endCount = 0, $hiddenChar = '*') {
         //get the string length
         $len = strlen($str);
         //if str is empty
-        if ($len <= 0){
+        if ($len <= 0) {
             return str_repeat($hiddenChar, 6);
         }
         //if the length is less than startCount and endCount
@@ -478,14 +478,14 @@
         //or startCount is negative or endCount is negative
         //return the full string hidden
 		
-        if ((($startCount + $endCount) > $len) || ($startCount == 0 && $endCount == 0) || ($startCount < 0 || $endCount < 0)){
+        if ((($startCount + $endCount) > $len) || ($startCount == 0 && $endCount == 0) || ($startCount < 0 || $endCount < 0)) {
             return str_repeat($hiddenChar, $len);
         }
         //the start non hidden string
         $startNonHiddenStr = substr($str, 0, $startCount);
         //the end non hidden string
         $endNonHiddenStr = null;
-        if ($endCount > 0){
+        if ($endCount > 0) {
             $endNonHiddenStr = substr($str, - $endCount);
         }
         //the hidden string
@@ -498,40 +498,40 @@
      * This function is used to set the initial session config regarding the configuration
      * @codeCoverageIgnore
      */
-    function set_session_config(){
+    function set_session_config() {
         //$_SESSION is not available on cli mode 
-        if (! IS_CLI){
-            $logger =& class_loader('Log', 'classes');
+        if (!IS_CLI) {
+            $logger = & class_loader('Log', 'classes');
             $logger->setLogger('PHPSession');
             //set session params
             $sessionHandler = get_config('session_handler', 'files'); //the default is to store in the files
             $sessionName = get_config('session_name');
-            if ($sessionName){
+            if ($sessionName) {
                 session_name($sessionName);
             }
             $logger->info('Session handler: ' . $sessionHandler);
             $logger->info('Session name: ' . $sessionName);
 
-            if ($sessionHandler == 'files'){
+            if ($sessionHandler == 'files') {
                 $sessionSavePath = get_config('session_save_path');
-                if ($sessionSavePath){
-                    if (! is_dir($sessionSavePath)){
+                if ($sessionSavePath) {
+                    if (!is_dir($sessionSavePath)) {
                         mkdir($sessionSavePath, 1773);
                     }
                     session_save_path($sessionSavePath);
                     $logger->info('Session save path: ' . $sessionSavePath);
                 }
             }
-            else if ($sessionHandler == 'database'){
+            else if ($sessionHandler == 'database') {
                 //load database session handle library
                 //Database Session handler Model
                 require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
 
-                $DBS =& class_loader('DBSessionHandler', 'classes');
+                $DBS = & class_loader('DBSessionHandler', 'classes');
                 session_set_save_handler($DBS, true);
                 $logger->info('session save path: ' . get_config('session_save_path'));
             }
-            else{
+            else {
                 show_error('Invalid session handler configuration');
             }
             $lifetime = get_config('session_cookie_lifetime', 0);
@@ -554,9 +554,9 @@
             $logger->info('Session lifetime: ' . $lifetime);
             $logger->info('Session cookie path: ' . $path);
             $logger->info('Session domain: ' . $domain);
-            $logger->info('Session is secure: ' . ($secure ? 'TRUE':'FALSE'));
+            $logger->info('Session is secure: ' . ($secure ? 'TRUE' : 'FALSE'));
 			
-            if ((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()){
+            if ((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()) {
                 $logger->info('Session not yet start, start it now');
                 session_start();
             }

@@ -23,94 +23,94 @@
      * along with this program; if not, write to the Free Software
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
-    class DatabaseQueryBuilder{
+    class DatabaseQueryBuilder {
         /**
          * The SQL SELECT statment
          * @var string
          */
-        private $select              = '*';
+        private $select = '*';
   	
         /**
          * The SQL FROM statment
          * @var string
          */
-        private $from              = null;
+        private $from = null;
   	
         /**
          * The SQL WHERE statment
          * @var string
          */
-        private $where               = null;
+        private $where = null;
   	
         /**
          * The SQL LIMIT statment
          * @var string
          */
-        private $limit               = null;
+        private $limit = null;
   	
         /**
          * The SQL JOIN statment
          * @var string
          */
-        private $join                = null;
+        private $join = null;
   	
         /**
          * The SQL ORDER BY statment
          * @var string
          */
-        private $orderBy             = null;
+        private $orderBy = null;
   	
         /**
          * The SQL GROUP BY statment
          * @var string
          */
-        private $groupBy             = null;
+        private $groupBy = null;
   	
         /**
          * The SQL HAVING statment
          * @var string
          */
-        private $having              = null;
+        private $having = null;
   	
         /**
          * The full SQL query statment after build for each command
          * @var string
          */
-        private $query               = null;
+        private $query = null;
   	
         /**
          * The list of SQL valid operators
          * @var array
          */
-    private $operatorList        = array('=','!=','<','>','<=','>=','<>');
+    private $operatorList = array('=', '!=', '<', '>', '<=', '>=', '<>');
   	
 	
     /**
      * The prefix used in each database table
      * @var string
      */
-    private $prefix              = null;
+    private $prefix = null;
     
 
     /**
      * The PDO instance
      * @var object
      */
-    private $pdo                 = null;
+    private $pdo = null;
 	
         /**
          * The database driver name used
          * @var string
          */
-        private $driver              = null;
+        private $driver = null;
   	
 	
     /**
      * Construct new DatabaseQueryBuilder
      * @param object $pdo the PDO object
      */
-    public function __construct(PDO $pdo = null){
-        if (is_object($pdo)){
+    public function __construct(PDO $pdo = null) {
+        if (is_object($pdo)) {
             $this->setPdo($pdo);
         }
     }
@@ -120,10 +120,10 @@
      * @param  string|array $table the table name or array of table list
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function from($table){
-        if (is_array($table)){
+    public function from($table) {
+        if (is_array($table)) {
         $froms = '';
-        foreach($table as $key){
+        foreach ($table as $key) {
             $froms .= $this->getPrefix() . $key . ', ';
         }
         $this->from = rtrim($froms, ', ');
@@ -138,7 +138,7 @@
      * @param  string|array $fields the field name or array of field list
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function select($fields){
+    public function select($fields) {
         $select = (is_array($fields) ? implode(', ', $fields) : $fields);
         $this->select = (($this->select == '*' || empty($this->select)) ? $select : $this->select . ', ' . $select);
         return $this;
@@ -149,7 +149,7 @@
      * @param  string $field the field name to distinct
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function distinct($field){
+    public function distinct($field) {
         $distinct = ' DISTINCT ' . $field;
         $this->select = (($this->select == '*' || empty($this->select)) ? $distinct : $this->select . ', ' . $distinct);
         return $this;
@@ -161,7 +161,7 @@
          * @param  string $name  if is not null represent the alias used for this field in the result
          * @return object        the current DatabaseQueryBuilder instance
          */
-    public function count($field = '*', $name = null){
+    public function count($field = '*', $name = null) {
         return $this->select_min_max_sum_count_avg('COUNT', $field, $name);
     }
     
@@ -171,7 +171,7 @@
      * @param  string $name  if is not null represent the alias used for this field in the result
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function min($field, $name = null){
+    public function min($field, $name = null) {
         return $this->select_min_max_sum_count_avg('MIN', $field, $name);
     }
 
@@ -181,7 +181,7 @@
      * @param  string $name  if is not null represent the alias used for this field in the result
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function max($field, $name = null){
+    public function max($field, $name = null) {
         return $this->select_min_max_sum_count_avg('MAX', $field, $name);
     }
 
@@ -191,7 +191,7 @@
      * @param  string $name  if is not null represent the alias used for this field in the result
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function sum($field, $name = null){
+    public function sum($field, $name = null) {
         return $this->select_min_max_sum_count_avg('SUM', $field, $name);
     }
 
@@ -201,7 +201,7 @@
      * @param  string $name  if is not null represent the alias used for this field in the result
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function avg($field, $name = null){
+    public function avg($field, $name = null) {
         return $this->select_min_max_sum_count_avg('AVG', $field, $name);
     }
 
@@ -216,19 +216,19 @@
      * @return object        the current DatabaseQueryBuilder instance
      */
     public function join($table, $field1 = null, $op = null, $field2 = null, $type = ''){
-      $on = $field1;
-      $table = $this->getPrefix() . $table;
-      if (! is_null($op)){
+        $on = $field1;
+        $table = $this->getPrefix() . $table;
+        if (! is_null($op)){
         $on = (! in_array($op, $this->operatorList) 
-													? ($this->getPrefix() . $field1 . ' = ' . $this->getPrefix() . $op) 
-													: ($this->getPrefix() . $field1 . ' ' . $op . ' ' . $this->getPrefix() . $field2));
-      }
-      if (empty($this->join)){
+                                                    ? ($this->getPrefix() . $field1 . ' = ' . $this->getPrefix() . $op) 
+                                                    : ($this->getPrefix() . $field1 . ' ' . $op . ' ' . $this->getPrefix() . $field2));
+        }
+        if (empty($this->join)){
         $this->join = ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
-      } else{
+        } else{
         $this->join = $this->join . ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
-      }
-      return $this;
+        }
+        return $this;
     }
 
     /**
@@ -236,7 +236,7 @@
      * @see  DatabaseQueryBuilder::join()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function innerJoin($table, $field1, $op = null, $field2 = ''){
+    public function innerJoin($table, $field1, $op = null, $field2 = '') {
         return $this->join($table, $field1, $op, $field2, 'INNER ');
     }
 
@@ -245,7 +245,7 @@
      * @see  DatabaseQueryBuilder::join()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function leftJoin($table, $field1, $op = null, $field2 = ''){
+    public function leftJoin($table, $field1, $op = null, $field2 = '') {
         return $this->join($table, $field1, $op, $field2, 'LEFT ');
     }
 
@@ -254,7 +254,7 @@
      * @see  DatabaseQueryBuilder::join()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function rightJoin($table, $field1, $op = null, $field2 = ''){
+    public function rightJoin($table, $field1, $op = null, $field2 = '') {
         return $this->join($table, $field1, $op, $field2, 'RIGHT ');
     }
 
@@ -263,7 +263,7 @@
      * @see  DatabaseQueryBuilder::join()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function fullOuterJoin($table, $field1, $op = null, $field2 = ''){
+    public function fullOuterJoin($table, $field1, $op = null, $field2 = '') {
         return $this->join($table, $field1, $op, $field2, 'FULL OUTER ');
     }
 
@@ -272,7 +272,7 @@
      * @see  DatabaseQueryBuilder::join()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function leftOuterJoin($table, $field1, $op = null, $field2 = ''){
+    public function leftOuterJoin($table, $field1, $op = null, $field2 = '') {
         return $this->join($table, $field1, $op, $field2, 'LEFT OUTER ');
     }
 
@@ -281,7 +281,7 @@
      * @see  DatabaseQueryBuilder::join()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function rightOuterJoin($table, $field1, $op = null, $field2 = ''){
+    public function rightOuterJoin($table, $field1, $op = null, $field2 = '') {
         return $this->join($table, $field1, $op, $field2, 'RIGHT OUTER ');
     }
 
@@ -291,13 +291,13 @@
      * @param  string $andOr the separator type used 'AND', 'OR', etc.
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function whereIsNull($field, $andOr = 'AND'){
-        if (is_array($field)){
-        foreach($field as $f){
+    public function whereIsNull($field, $andOr = 'AND') {
+        if (is_array($field)) {
+        foreach ($field as $f) {
             $this->whereIsNull($f, $andOr);
         }
         } else {
-            $this->setWhereStr($field.' IS NULL ', $andOr);
+            $this->setWhereStr($field . ' IS NULL ', $andOr);
         }
         return $this;
     }
@@ -308,13 +308,13 @@
      * @param  string $andOr the separator type used 'AND', 'OR', etc.
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function whereIsNotNull($field, $andOr = 'AND'){
-        if (is_array($field)){
-        foreach($field as $f){
+    public function whereIsNotNull($field, $andOr = 'AND') {
+        if (is_array($field)) {
+        foreach ($field as $f) {
             $this->whereIsNotNull($f, $andOr);
         }
         } else {
-            $this->setWhereStr($field.' IS NOT NULL ', $andOr);
+            $this->setWhereStr($field . ' IS NOT NULL ', $andOr);
         }
         return $this;
     }
@@ -330,18 +330,18 @@
      * @return object        the current DatabaseQueryBuilder instance
      */
     public function where($where, $op = null, $val = null, $type = '', $andOr = 'AND', $escape = true){
-      $whereStr = '';
-      if (is_array($where)){
+        $whereStr = '';
+        if (is_array($where)){
         $whereStr = $this->getWhereStrIfIsArray($where, $type, $andOr, $escape);
-      } else{
+        } else{
         if (is_array($op)){
-          $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
+            $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
         } else {
-          $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
+            $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
         }
-      }
-      $this->setWhereStr($whereStr, $andOr);
-      return $this;
+        }
+        $this->setWhereStr($whereStr, $andOr);
+        return $this;
     }
 
     /**
@@ -349,7 +349,7 @@
      * @see  DatabaseQueryBuilder::where()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orWhere($where, $op = null, $val = null, $escape = true){
+    public function orWhere($where, $op = null, $val = null, $escape = true) {
         return $this->where($where, $op, $val, '', 'OR', $escape);
     }
 
@@ -359,7 +359,7 @@
      * @see  DatabaseQueryBuilder::where()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function notWhere($where, $op = null, $val = null, $escape = true){
+    public function notWhere($where, $op = null, $val = null, $escape = true) {
         return $this->where($where, $op, $val, 'NOT ', 'AND', $escape);
     }
 
@@ -368,7 +368,7 @@
      * @see  DatabaseQueryBuilder::where()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orNotWhere($where, $op = null, $val = null, $escape = true){
+    public function orNotWhere($where, $op = null, $val = null, $escape = true) {
         return $this->where($where, $op, $val, 'NOT ', 'OR', $escape);
     }
 
@@ -378,11 +378,11 @@
      * @param  string $andOr the multiple conditions separator (AND, OR, etc.)
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function groupStart($type = '', $andOr = ' AND'){
-        if (empty($this->where)){
+    public function groupStart($type = '', $andOr = ' AND') {
+        if (empty($this->where)) {
         $this->where = $type . ' (';
         } else {
-            if (substr(trim($this->where), -1) == '('){
+            if (substr(trim($this->where), -1) == '(') {
             $this->where .= $type . ' (';
             } else {
                 $this->where .= $andOr . ' ' . $type . ' (';
@@ -396,7 +396,7 @@
      * @see  DatabaseQueryBuilder::groupStart()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function notGroupStart(){
+    public function notGroupStart() {
         return $this->groupStart('NOT');
     }
 
@@ -405,7 +405,7 @@
      * @see  DatabaseQueryBuilder::groupStart()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orGroupStart(){
+    public function orGroupStart() {
         return $this->groupStart('', ' OR');
     }
 
@@ -414,7 +414,7 @@
          * @see  DatabaseQueryBuilder::groupStart()
          * @return object        the current DatabaseQueryBuilder instance
          */
-    public function orNotGroupStart(){
+    public function orNotGroupStart() {
         return $this->groupStart('NOT', ' OR');
     }
 
@@ -422,7 +422,7 @@
      * Close the parenthesis for the grouped SQL
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function groupEnd(){
+    public function groupEnd() {
         $this->where .= ')';
         return $this;
     }
@@ -436,10 +436,10 @@
      * @param  boolean $escape whether to escape or not the values
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function in($field, array $keys, $type = '', $andOr = 'AND', $escape = true){
+    public function in($field, array $keys, $type = '', $andOr = 'AND', $escape = true) {
         $_keys = array();
-        foreach ($keys as $k => $v){
-        if (is_null($v)){
+        foreach ($keys as $k => $v) {
+        if (is_null($v)) {
             $v = '';
         }
         $_keys[] = (is_numeric($v) ? $v : $this->escape($v, $escape));
@@ -455,7 +455,7 @@
      * @see  DatabaseQueryBuilder::in()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function notIn($field, array $keys, $escape = true){
+    public function notIn($field, array $keys, $escape = true) {
         return $this->in($field, $keys, 'NOT ', 'AND', $escape);
     }
 
@@ -464,7 +464,7 @@
      * @see  DatabaseQueryBuilder::in()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orIn($field, array $keys, $escape = true){
+    public function orIn($field, array $keys, $escape = true) {
         return $this->in($field, $keys, '', 'OR', $escape);
     }
 
@@ -473,7 +473,7 @@
      * @see  DatabaseQueryBuilder::in()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orNotIn($field, array $keys, $escape = true){
+    public function orNotIn($field, array $keys, $escape = true) {
         return $this->in($field, $keys, 'NOT ', 'OR', $escape);
     }
 
@@ -487,11 +487,11 @@
      * @param  boolean $escape whether to escape or not the values
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function between($field, $value1, $value2, $type = '', $andOr = 'AND', $escape = true){
-        if (is_null($value1)){
+    public function between($field, $value1, $value2, $type = '', $andOr = 'AND', $escape = true) {
+        if (is_null($value1)) {
         $value1 = '';
         }
-        if (is_null($value2)){
+        if (is_null($value2)) {
         $value2 = '';
         }
         $whereStr = $field . ' ' . $type . ' BETWEEN ' . $this->escape($value1, $escape) . ' AND ' . $this->escape($value2, $escape);
@@ -504,7 +504,7 @@
      * @see  DatabaseQueryBuilder::between()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function notBetween($field, $value1, $value2, $escape = true){
+    public function notBetween($field, $value1, $value2, $escape = true) {
         return $this->between($field, $value1, $value2, 'NOT ', 'AND', $escape);
     }
 
@@ -513,7 +513,7 @@
      * @see  DatabaseQueryBuilder::between()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orBetween($field, $value1, $value2, $escape = true){
+    public function orBetween($field, $value1, $value2, $escape = true) {
         return $this->between($field, $value1, $value2, '', 'OR', $escape);
     }
 
@@ -522,7 +522,7 @@
      * @see  DatabaseQueryBuilder::between()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orNotBetween($field, $value1, $value2, $escape = true){
+    public function orNotBetween($field, $value1, $value2, $escape = true) {
         return $this->between($field, $value1, $value2, 'NOT ', 'OR', $escape);
     }
 
@@ -535,8 +535,8 @@
      * @param  boolean $escape whether to escape or not the values
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function like($field, $data, $type = '', $andOr = 'AND', $escape = true){
-        if (empty($data)){
+    public function like($field, $data, $type = '', $andOr = 'AND', $escape = true) {
+        if (empty($data)) {
         $data = '';
         }
         $this->setWhereStr($field . ' ' . $type . ' LIKE ' . ($this->escape($data, $escape)), $andOr);
@@ -548,7 +548,7 @@
      * @see  DatabaseQueryBuilder::like()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orLike($field, $data, $escape = true){
+    public function orLike($field, $data, $escape = true) {
         return $this->like($field, $data, '', 'OR', $escape);
     }
 
@@ -557,7 +557,7 @@
      * @see  DatabaseQueryBuilder::like()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function notLike($field, $data, $escape = true){
+    public function notLike($field, $data, $escape = true) {
         return $this->like($field, $data, 'NOT ', 'AND', $escape);
     }
 
@@ -566,7 +566,7 @@
      * @see  DatabaseQueryBuilder::like()
      * @return object        the current DatabaseQueryBuilder instance
      */
-    public function orNotLike($field, $data, $escape = true){
+    public function orNotLike($field, $data, $escape = true) {
         return $this->like($field, $data, 'NOT ', 'OR', $escape);
     }
 
@@ -578,15 +578,15 @@
      * @return object        the current DatabaseQueryBuilder instance
      */
     public function limit($limit, $limitEnd = null){
-      if (empty($limit)){
+        if (empty($limit)){
         $limit = 0;
-      }
-      if (! is_null($limitEnd)){
+        }
+        if (! is_null($limitEnd)){
         $this->limit = $limit . ', ' . $limitEnd;
-      } else{
+        } else{
         $this->limit = $limit;
-      }
-      return $this;
+        }
+        return $this;
     }
 
     /**
@@ -596,14 +596,14 @@
      * @return object        the current DatabaseQueryBuilder instance
      */
     public function orderBy($orderBy, $orderDir = ' ASC'){
-      if (stristr($orderBy, ' ') || $orderBy == 'rand()'){
+        if (stristr($orderBy, ' ') || $orderBy == 'rand()'){
         $this->orderBy = empty($this->orderBy) ? $orderBy : $this->orderBy . ', ' . $orderBy;
-      } else{
+        } else{
         $this->orderBy = empty($this->orderBy) 
-						? ($orderBy . ' ' . strtoupper($orderDir)) 
-						: $this->orderBy . ', ' . $orderBy . ' ' . strtoupper($orderDir);
-      }
-      return $this;
+                        ? ($orderBy . ' ' . strtoupper($orderDir)) 
+                        : $this->orderBy . ', ' . $orderBy . ' ' . strtoupper($orderDir);
+        }
+        return $this;
     }
 
     /**
@@ -612,12 +612,12 @@
      * @return object        the current DatabaseQueryBuilder instance
      */
     public function groupBy($field){
-      if (is_array($field)){
+        if (is_array($field)){
         $this->groupBy = implode(', ', $field);
-      } else{
+        } else{
         $this->groupBy = $field;
-      }
-      return $this;
+        }
+        return $this;
     }
 
     /**
@@ -629,20 +629,20 @@
      * @return object        the current DatabaseQueryBuilder instance
      */
     public function having($field, $op = null, $val = null, $escape = true){
-      if (is_array($op)){
+        if (is_array($op)){
         $this->having = $this->getHavingStrIfOperatorIsArray($field, $op, $escape);
-      } else if (! in_array($op, $this->operatorList)){
+        } else if (! in_array($op, $this->operatorList)){
         if (is_null($op)){
-          $op = '';
+            $op = '';
         }
         $this->having = $field . ' > ' . ($this->escape($op, $escape));
-      } else{
+        } else{
         if (is_null($val)){
-          $val = '';
+            $val = '';
         }
         $this->having = $field . ' ' . $op . ' ' . ($this->escape($val, $escape));
-      }
-      return $this;
+        }
+        return $this;
     }
 
     /**
@@ -651,7 +651,7 @@
      * @param  boolean $escape  whether to escape or not the values
      * @return object  the current DatabaseQueryBuilder instance        
      */
-    public function insert($data = array(), $escape = true){
+    public function insert($data = array(), $escape = true) {
         $columns = array_keys($data);
         $column = implode(', ', $columns);
         $val = implode(', ', ($escape ? array_map(array($this, 'escape'), $data) : $data));
@@ -666,22 +666,22 @@
      * @param  boolean $escape  whether to escape or not the values
      * @return object  the current DatabaseQueryBuilder instance 
      */
-    public function update($data = array(), $escape = true){
+    public function update($data = array(), $escape = true) {
         $query = 'UPDATE ' . $this->from . ' SET ';
         $values = array();
-        foreach ($data as $column => $val){
+        foreach ($data as $column => $val) {
         $values[] = $column . ' = ' . ($this->escape($val, $escape));
         }
         $query .= implode(', ', $values);
-        if (! empty($this->where)){
+        if (!empty($this->where)) {
         $query .= ' WHERE ' . $this->where;
         }
 
-        if (! empty($this->orderBy)){
+        if (!empty($this->orderBy)) {
         $query .= ' ORDER BY ' . $this->orderBy;
         }
 
-        if (! empty($this->limit)){
+        if (!empty($this->limit)) {
         $query .= ' LIMIT ' . $this->limit;
         }
         $this->query = $query;
@@ -692,22 +692,22 @@
      * Delete the record in database
      * @return object  the current DatabaseQueryBuilder instance 
      */
-    public function delete(){
+    public function delete() {
         $query = 'DELETE FROM ' . $this->from;
         $isTruncate = $query;
-        if (! empty($this->where)){
+        if (!empty($this->where)) {
             $query .= ' WHERE ' . $this->where;
         }
 
-        if (! empty($this->orderBy)){
+        if (!empty($this->orderBy)) {
             $query .= ' ORDER BY ' . $this->orderBy;
         }
 
-        if (! empty($this->limit)){
+        if (!empty($this->limit)) {
             $query .= ' LIMIT ' . $this->limit;
         }
 
-            if ($isTruncate == $query && $this->driver != 'sqlite'){  
+            if ($isTruncate == $query && $this->driver != 'sqlite') {  
             $query = 'TRUNCATE TABLE ' . $this->from;
             }
         $this->query = $query;
@@ -720,9 +720,9 @@
      * @param boolean $escaped whether we can do escape of not 
      * @return mixed       the data after escaped or the same data if not
      */
-    public function escape($data, $escaped = true){
+    public function escape($data, $escaped = true) {
         $data = trim($data);
-        if($escaped){
+        if ($escaped) {
         return $this->pdo->quote($data);
         }
         return $data;  
@@ -733,31 +733,31 @@
      * Return the current SQL query string
      * @return string
      */
-    public function getQuery(){
+    public function getQuery() {
         //INSERT, UPDATE, DELETE already set it, if is the SELECT we need set it now
-        if(empty($this->query)){
+        if (empty($this->query)) {
             $query = 'SELECT ' . $this->select . ' FROM ' . $this->from;
-            if (! empty($this->join)){
+            if (!empty($this->join)) {
             $query .= $this->join;
             }
   		  
-            if (! empty($this->where)){
+            if (!empty($this->where)) {
             $query .= ' WHERE ' . $this->where;
             }
 
-            if (! empty($this->groupBy)){
+            if (!empty($this->groupBy)) {
             $query .= ' GROUP BY ' . $this->groupBy;
             }
 
-            if (! empty($this->having)){
+            if (!empty($this->having)) {
             $query .= ' HAVING ' . $this->having;
             }
 
-            if (! empty($this->orderBy)){
+            if (!empty($this->orderBy)) {
                 $query .= ' ORDER BY ' . $this->orderBy;
             }
 
-            if (! empty($this->limit)){
+            if (!empty($this->limit)) {
             $query .= ' LIMIT ' . $this->limit;
             }
             $this->query = $query;
@@ -770,7 +770,7 @@
          * Return the PDO instance
          * @return object
          */
-    public function getPdo(){
+    public function getPdo() {
         return $this->pdo;
     }
 
@@ -779,7 +779,7 @@
      * @param PDO $pdo the pdo object
      * @return object DatabaseQueryBuilder
      */
-    public function setPdo(PDO $pdo = null){
+    public function setPdo(PDO $pdo = null) {
         $this->pdo = $pdo;
         return $this;
     }
@@ -788,7 +788,7 @@
      * Return the database table prefix
      * @return string
      */
-    public function getPrefix(){
+    public function getPrefix() {
         return $this->prefix;
     }
 
@@ -797,7 +797,7 @@
      * @param string $prefix the new prefix
      * @return object DatabaseQueryBuilder
      */
-    public function setPrefix($prefix){
+    public function setPrefix($prefix) {
         $this->prefix = $prefix;
         return $this;
     }
@@ -806,7 +806,7 @@
          * Return the database driver
          * @return string
          */
-    public function getDriver(){
+    public function getDriver() {
         return $this->driver;
     }
 
@@ -815,7 +815,7 @@
      * @param string $driver the new driver
      * @return object DatabaseQueryBuilder
      */
-    public function setDriver($driver){
+    public function setDriver($driver) {
         $this->driver = $driver;
         return $this;
     }
@@ -824,7 +824,7 @@
          * Reset the DatabaseQueryBuilder class attributs to the initial values before each query.
          * @return object  the current DatabaseQueryBuilder instance 
          */
-    public function reset(){
+    public function reset() {
         $this->select   = '*';
         $this->from     = null;
         $this->where    = null;
@@ -843,12 +843,12 @@
          *
          * @return string
          */
-    protected function getHavingStrIfOperatorIsArray($field, $op = null, $escape = true){
+    protected function getHavingStrIfOperatorIsArray($field, $op = null, $escape = true) {
         $x = explode('?', $field);
         $w = '';
-        foreach($x as $k => $v){
-            if (!empty($v)){
-            if (! isset($op[$k])){
+        foreach ($x as $k => $v) {
+            if (!empty($v)) {
+            if (!isset($op[$k])) {
                 $op[$k] = '';
             }
                 $w .= $v . (isset($op[$k]) ? $this->escape($op[$k], $escape) : '');
@@ -864,15 +864,15 @@
      *
      * @return string
      */
-    protected function getWhereStrIfIsArray(array $where, $type = '', $andOr = 'AND', $escape = true){
+    protected function getWhereStrIfIsArray(array $where, $type = '', $andOr = 'AND', $escape = true) {
         $_where = array();
-        foreach ($where as $column => $data){
-        if (is_null($data)){
+        foreach ($where as $column => $data) {
+        if (is_null($data)) {
             $data = '';
         }
         $_where[] = $type . $column . ' = ' . ($this->escape($data, $escape));
         }
-        $where = implode(' '.$andOr.' ', $_where);
+        $where = implode(' ' . $andOr . ' ', $_where);
         return $where;
     }
 
@@ -882,12 +882,12 @@
          *
          * @return string
          */
-    protected function getWhereStrIfOperatorIsArray($where, array $op, $type = '', $escape = true){
+    protected function getWhereStrIfOperatorIsArray($where, array $op, $type = '', $escape = true) {
         $x = explode('?', $where);
         $w = '';
-        foreach($x as $k => $v){
-        if (! empty($v)){
-            if (isset($op[$k]) && is_null($op[$k])){
+        foreach ($x as $k => $v) {
+        if (!empty($v)) {
+            if (isset($op[$k]) && is_null($op[$k])) {
                 $op[$k] = '';
             }
             $w .= $type . $v . (isset($op[$k]) ? ($this->escape($op[$k], $escape)) : '');
@@ -902,15 +902,15 @@
      *
      * @return string
      */
-    protected function getWhereStrForOperator($where, $op = null, $val = null, $type = '', $escape = true){
+    protected function getWhereStrForOperator($where, $op = null, $val = null, $type = '', $escape = true) {
         $w = '';
-        if (! in_array((string)$op, $this->operatorList)){
-            if (is_null($op)){
+        if (!in_array((string) $op, $this->operatorList)) {
+            if (is_null($op)) {
             $op = '';
             }
             $w = $type . $where . ' = ' . ($this->escape($op, $escape));
         } else {
-            if (is_null($val)){
+            if (is_null($val)) {
             $val = '';
             }
             $w = $type . $where . $op . ($this->escape($val, $escape));
@@ -923,14 +923,14 @@
          * @param string $whereStr the WHERE clause string
          * @param  string  $andOr the separator type used 'AND', 'OR', etc.
          */
-        protected function setWhereStr($whereStr, $andOr = 'AND'){
-        if (empty($this->where)){
+        protected function setWhereStr($whereStr, $andOr = 'AND') {
+        if (empty($this->where)) {
             $this->where = $whereStr;
         } else {
-            if (substr(trim($this->where), -1) == '('){
+            if (substr(trim($this->where), -1) == '(') {
             $this->where = $this->where . ' ' . $whereStr;
             } else {
-            $this->where = $this->where . ' '.$andOr.' ' . $whereStr;
+            $this->where = $this->where . ' ' . $andOr . ' ' . $whereStr;
             }
         }
         }
@@ -946,7 +946,7 @@
          * @see  DatabaseQueryBuilder::avg
          * @return object
          */
-    protected function select_min_max_sum_count_avg($clause, $field, $name = null){
+    protected function select_min_max_sum_count_avg($clause, $field, $name = null) {
         $clause = strtoupper($clause);
         $func = $clause . '(' . $field . ')' . (!is_null($name) ? ' AS ' . $name : '');
         $this->select = ($this->select == '*' ? $func : $this->select . ', ' . $func);

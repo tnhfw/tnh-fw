@@ -24,7 +24,7 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
 
-    class BaseClass{
+    class BaseClass {
         /**
          * The logger instance
          * @var object
@@ -34,7 +34,7 @@
         /**
          * Class constructor
          */
-        public function __construct(){
+        public function __construct() {
             //Set Log instance to use
                 $this->setLoggerFromParamOrCreate(null);
         }
@@ -49,12 +49,12 @@
          *
          * @return object this current instance
          */
-        protected function setDependencyInstanceFromParamOrCreate($name, $instance = null, $loadClassName = null, $loadClassePath = 'classes'){
-            if ($instance !== null){
+        protected function setDependencyInstanceFromParamOrCreate($name, $instance = null, $loadClassName = null, $loadClassePath = 'classes') {
+            if ($instance !== null) {
             $this->{$name} = $instance;
             return $this;
             }
-            $this->{$name} =& class_loader($loadClassName, $loadClassePath);
+            $this->{$name} = & class_loader($loadClassName, $loadClassePath);
             return $this;
         }
 
@@ -62,7 +62,7 @@
          * Return the Log instance
          * @return object
          */
-        public function getLogger(){
+        public function getLogger() {
             return $this->logger;
         }
 
@@ -71,7 +71,7 @@
          * @param object $logger the log object
          * @return object Database
          */
-        public function setLogger($logger){
+        public function setLogger($logger) {
             $this->logger = $logger;
             return $this;
         }
@@ -82,9 +82,9 @@
          *
          * @return object this current instance
          */
-        protected function setLoggerFromParamOrCreate(Log $logger = null){
+        protected function setLoggerFromParamOrCreate(Log $logger = null) {
             $this->setDependencyInstanceFromParamOrCreate('logger', $logger, 'Log', 'classes');
-            if ($logger === null){
+            if ($logger === null) {
             $this->logger->setLogger('Class::' . get_class($this));
             }
             return $this;

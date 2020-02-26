@@ -39,7 +39,7 @@
      *  @filesource
      */
 
-    if(! function_exists('get_random_string')){
+    if (!function_exists('get_random_string')) {
         /**
          * Generate a random string
          * @param  string $type the type of generation. It can take the values: "alpha" for alphabetic characters,
@@ -49,21 +49,21 @@
          * @param  boolean $lower if we return the generated string in lowercase (true). By default it's false.
          * @return string the generated string.
          */
-        function get_random_string($type = 'alnum', $length = 10, $lower = false){
+        function get_random_string($type = 'alnum', $length = 10, $lower = false) {
             $chars = array(
                             'alpha' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
                             'alnum' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
                             'num' => '1234567890'
                         );
             $str = null;
-            if(isset($chars[$type])){
+            if (isset($chars[$type])) {
                 $str = $chars[$type];
             }
             $random = null;
-            for($i = 0; $i < $length; $i++){
+            for ($i = 0; $i < $length; $i++) {
                 $random .= $str[mt_rand() % strlen($str)];
             }
-            if($lower){
+            if ($lower) {
                 $random = strtolower($random);
             }
             return $random;

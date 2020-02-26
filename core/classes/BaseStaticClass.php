@@ -24,7 +24,7 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
 
-    class BaseStaticClass{
+    class BaseStaticClass {
         /**
          * The logger instance
          * @var object
@@ -35,10 +35,10 @@
          * The signleton of the logger
          * @return Object the Log instance
          */
-        public static function getLogger(){
-            if(self::$logger == null){
+        public static function getLogger() {
+            if (self::$logger == null) {
                 $logger = array();
-                $logger[0] =& class_loader('Log', 'classes');
+                $logger[0] = & class_loader('Log', 'classes');
                 $logger[0]->setLogger('Class::' . get_called_class());
                 self::$logger = $logger[0];
             }
@@ -50,7 +50,7 @@
          * @param object $logger the log object
          * @return object the log instance
          */
-        public static function setLogger($logger){
+        public static function setLogger($logger) {
             self::$logger = $logger;
             return self::$logger;
         }
