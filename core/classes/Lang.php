@@ -78,14 +78,14 @@
 
             //if the language exists in cookie use it
             $cfgKey = get_config('language_cookie_name');
-            $this->logger->debug('Getting current language from cookie [' .$cfgKey. ']');
+            $this->logger->debug('Getting current language from cookie [' . $cfgKey . ']');
             $objCookie = & class_loader('Cookie');
             $cookieLang = $objCookie->get($cfgKey);
-            if($cookieLang && $this->isValid($cookieLang)){
+            if ($cookieLang && $this->isValid($cookieLang)) {
                 $this->current = $cookieLang;
-                $this->logger->info('Language from cookie [' .$cfgKey. '] is valid so we will set the language using the cookie value [' .$cookieLang. ']');
-            } else{
-                $this->logger->info('Language from cookie [' .$cfgKey. '] is not set, use the default value [' .$this->getDefault(). ']');
+                $this->logger->info('Language from cookie [' . $cfgKey . '] is valid so we will set the language using the cookie value [' . $cookieLang . ']');
+            } else {
+                $this->logger->info('Language from cookie [' . $cfgKey . '] is not set, use the default value [' . $this->getDefault() . ']');
                 $this->current = $this->getDefault();
             }
         }
@@ -166,13 +166,13 @@
          * @param string $name the short language name like "en", "fr".
          * @param string $description the human readable description of this language
          */
-        public function addLang($name, $description){
-            if(isset($this->availables[$name])){
+        public function addLang($name, $description) {
+            if (isset($this->availables[$name])) {
                 return; //already added cost in performance
             }
-            if($this->isValid($name)){
+            if ($this->isValid($name)) {
                 $this->availables[$name] = $description;
-            } else{
+            } else {
                 show_error('The language [' . $name . '] is not valid or does not exists.');
             }
         }

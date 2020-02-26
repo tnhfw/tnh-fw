@@ -245,9 +245,9 @@
             $this->_forceFail = false;
 
             foreach ($this->getData() as $inputName => $inputVal) {
-                if(is_array($this->data[$inputName])){
+                if (is_array($this->data[$inputName])) {
                     $this->data[$inputName] = array_map('trim', $this->data[$inputName]);
-                } else{
+                } else {
                     $this->data[$inputName] = trim($this->data[$inputName]);
                 }
 
@@ -607,12 +607,12 @@
          */
         protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if(array_key_exists(1, $ruleArgs) && function_exists($ruleArgs[1])) {
+            if (array_key_exists(1, $ruleArgs) && function_exists($ruleArgs[1])) {
                 $callbackReturn = $this->_runEmptyCallback($ruleArgs[1]);
                 if ($inputVal == '' && $callbackReturn == true) {
                     $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
                 }
-            } else if($inputVal == '') {
+            } else if ($inputVal == '') {
                 $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
             }
         }

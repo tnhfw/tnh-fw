@@ -55,14 +55,14 @@
          * @return string|void               if $stream is true send PDF document to browser for download, else return the generated PDF
          * content like to join in Email attachment of for other purpose use.
          */
-        public function generate($html, $filename = 'output.pdf', $stream = true, $paper = 'A4', $orientation = 'portrait'){
-            $this->logger->info('Generating of PDF document: filename [' .$filename. '], stream [' .($stream ? 'TRUE':'FALSE'). '], paper [' .$paper. '], orientation [' .$orientation. ']');
+        public function generate($html, $filename = 'output.pdf', $stream = true, $paper = 'A4', $orientation = 'portrait') {
+            $this->logger->info('Generating of PDF document: filename [' . $filename . '], stream [' . ($stream ? 'TRUE' : 'FALSE') . '], paper [' . $paper . '], orientation [' . $orientation . ']');
             $this->dompdf->load_html($html);
             $this->dompdf->set_paper($paper, $orientation);
             $this->dompdf->render();
-            if($stream){
+            if ($stream) {
                 $this->dompdf->stream($filename);
-            } else{
+            } else {
                 return $this->dompdf->output();
             }
         }

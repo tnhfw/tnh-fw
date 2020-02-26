@@ -65,15 +65,15 @@
          * @param  mixed $default the default value to use if can not find the session flash item in the list
          * @return mixed          the session flash value if exist or the default value
          */
-        public static function getFlash($item, $default = null){
+        public static function getFlash($item, $default = null) {
             $logger = self::getLogger();
-            $key = self::SESSION_FLASH_KEY.'_'.$item;
+            $key = self::SESSION_FLASH_KEY . '_' . $item;
             $return = array_key_exists($key, $_SESSION) ?
             ($_SESSION[$key]) : $default;
-            if(array_key_exists($key, $_SESSION)){
+            if (array_key_exists($key, $_SESSION)) {
                 unset($_SESSION[$key]);
-            } else{
-                $logger->warning('Cannot find session flash item ['. $key .'] using the default value ['. $default .']');
+            } else {
+                $logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . $default . ']');
             }
             return $return;
         }
@@ -102,13 +102,13 @@
          * Clear the session item in the list
          * @param  string $item the session item name to be deleted
          */
-        public static function clear($item){
+        public static function clear($item) {
             $logger = self::getLogger();
-            if(array_key_exists($item, $_SESSION)){
-                $logger->info('Deleting of session for item ['.$item.' ]');
+            if (array_key_exists($item, $_SESSION)) {
+                $logger->info('Deleting of session for item [' . $item . ' ]');
                 unset($_SESSION[$item]);
-            } else{
-                $logger->warning('Session item ['.$item.'] to be deleted does not exists');
+            } else {
+                $logger->warning('Session item [' . $item . '] to be deleted does not exists');
             }
         }
 		
@@ -116,14 +116,14 @@
          * Clear the session flash item in the list
          * @param  string $item the session flash item name to be deleted
          */
-        public static function clearFlash($item){
+        public static function clearFlash($item) {
             $logger = self::getLogger();
-            $key = self::SESSION_FLASH_KEY.'_'.$item;
-            if(array_key_exists($key, $_SESSION)){
-                $logger->info('Delete session flash for item ['.$item.']');
+            $key = self::SESSION_FLASH_KEY . '_' . $item;
+            if (array_key_exists($key, $_SESSION)) {
+                $logger->info('Delete session flash for item [' . $item . ']');
                 unset($_SESSION[$item]);
-            } else{
-                $logger->warning('Dession flash item ['.$item.'] to be deleted does not exists');
+            } else {
+                $logger->warning('Dession flash item [' . $item . '] to be deleted does not exists');
             }
         }
 

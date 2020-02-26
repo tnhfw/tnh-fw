@@ -242,8 +242,7 @@
             //if the application is running in CLI mode use the first argument
             else if (IS_CLI && isset($_SERVER['argv'][1])) {
                 $routeUri = $_SERVER['argv'][1];
-            }
-            else if (isset($_SERVER['REQUEST_URI'])) {
+            } else if (isset($_SERVER['REQUEST_URI'])) {
                 $routeUri = $_SERVER['REQUEST_URI'];
             }
             $this->logger->debug('Check if URL suffix is enabled in the configuration');
@@ -339,15 +338,13 @@
                 if (!class_exists($controller, false)) {
                     $e404 = true;
                     $this->logger->warning('The controller file [' . $classFilePath . '] exists but does not contain the class [' . $controller . ']');
-                }
-                else {
+                } else {
                     $controllerInstance = new $controller();
                     $controllerMethod = $this->getMethod();
                     if (!method_exists($controllerInstance, $controllerMethod)) {
                         $e404 = true;
                         $this->logger->warning('The controller [' . $controller . '] exist but does not contain the method [' . $controllerMethod . ']');
-                    }
-                    else {
+                    } else {
                         $this->logger->info('Routing data is set correctly now GO!');
                         call_user_func_array(array($controllerInstance, $controllerMethod), $this->args);
                         //render the final page to user
@@ -355,8 +352,7 @@
                         get_instance()->response->renderFinalPage();
                     }
                 }
-            }
-            else {
+            } else {
                 $this->logger->info('The controller file path [' . $classFilePath . '] does not exist');
                 $e404 = true;
             }
@@ -462,8 +458,7 @@
                         $this->logger->info('The current request use the module [' . $moduleControllerMethod[0] . ']');
                         $this->module = $moduleControllerMethod[0];
                         $moduleControllerMethod = explode('@', $moduleControllerMethod[1]);
-                    }
-                    else {
+                    } else {
                         $this->logger->info('The current request does not use the module');
                         $moduleControllerMethod = explode('@', $this->callback[$index]);
                     }
@@ -519,8 +514,7 @@
                     }
                     //args
                     $this->args = $segment;
-                }
-                else {
+                } else {
                     $this->logger->info('The application contains a loaded module will check if the current request is found in the module list');
                     if (in_array($segment[0], $modules)) {
                         $this->logger->info('Found, the current request use the module [' . $segment[0] . ']');
@@ -534,8 +528,7 @@
                             if (!$path) {
                                 $this->logger->info('The controller [' . $this->controller . '] not found in the module, may be will use the module [' . $this->module . '] as controller');
                                 $this->controller = $this->module;
-                            }
-                            else {
+                            } else {
                                 $this->controllerPath = $path;
                                 array_shift($segment);
                             }
@@ -547,8 +540,7 @@
                         }
                         //the remaining is for args
                         $this->args = $segment;
-                    }
-                    else {
+                    } else {
                         $this->logger->info('The current request information is not found in the module list');
                         //controller
                         if (isset($segment[0])) {

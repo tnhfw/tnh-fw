@@ -48,16 +48,14 @@
                 require_once CONFIG_PATH . 'config_pagination.php';
                 if (empty($config) || !is_array($config)) {
                     show_error('No configuration found in ' . CONFIG_PATH . 'config_pagination.php');
-                }
-                else {
+                } else {
                     $config = array_merge($config, $overwriteConfig);
                     $this->config = $config;
                     //put it gobally
                     Config::setAll($config);
                     unset($config);
                 }
-            }
-            else {
+            } else {
                 show_error('Unable to find the pagination configuration file');
             }
         }
@@ -177,11 +175,9 @@
             $navbar = null;
             if ($currentPageNumber == 1) {
                 $navbar .= $this->buildPaginationLinkForFirstPage($begin, $end, $currentPageNumber);
-            }
-            else if ($currentPageNumber > 1 && $currentPageNumber < $numberOfPage) {
+            } else if ($currentPageNumber > 1 && $currentPageNumber < $numberOfPage) {
                 $navbar .= $this->buildPaginationLinkForMiddlePage($begin, $end, $currentPageNumber);
-            }
-            else if ($currentPageNumber == $numberOfPage) {
+            } else if ($currentPageNumber == $numberOfPage) {
                 $navbar .= $this->buildPaginationLinkForLastPage($begin, $end, $currentPageNumber);
             }
             $navbar = $this->config['pagination_open'] . $navbar . $this->config['pagination_close'];

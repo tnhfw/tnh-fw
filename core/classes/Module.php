@@ -35,23 +35,23 @@
         /**
          * Initialise the module list by scanning the directory MODULE_PATH
          */
-        public function init(){
+        public function init() {
             $logger = self::getLogger();
             $logger->debug('Check if the application contains the modules ...');
             $moduleDir = opendir(MODULE_PATH);
-            if (is_resource($moduleDir)){
-                while(($module = readdir($moduleDir)) !== false){
-                    if (preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
+            if (is_resource($moduleDir)) {
+                while (($module = readdir($moduleDir)) !== false) {
+                    if (preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)) {
                         self::$list[] = $module;
-                    } else{
-                        $logger->info('Skipping [' .$module. '], may be this is not a directory or does not exists or is invalid name');
+                    } else {
+                        $logger->info('Skipping [' . $module . '], may be this is not a directory or does not exists or is invalid name');
                     }
                 }
                 closedir($moduleDir);
             }
             ksort(self::$list);
 			
-            if (! empty(self::$list)){
+            if (!empty(self::$list)) {
                 $logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
             }
         }

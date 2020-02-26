@@ -264,8 +264,7 @@
                 $this->trigger('after_create', $insert_id);
                 //if the table doesn't have the auto increment field or sequence, the value of 0 will be returned 
                 return !$insert_id ? true : $insert_id;
-            }
-            else
+            } else
             {
                 return FALSE;
             }
@@ -383,8 +382,7 @@
             {
                 $this->getQueryBuilder()->from($this->_table);	
                 $result = $this->_database->update(array($this->soft_delete_key => TRUE));
-            }
-            else
+            } else
             {
                 $this->getQueryBuilder()->from($this->_table); 
                 $result = $this->_database->delete();
@@ -407,8 +405,7 @@
             {
                 $this->getQueryBuilder()->from($this->_table);	
                 $result = $this->_database->update(array($this->soft_delete_key => TRUE));
-            }
-            else
+            } else
             {
                 $this->getQueryBuilder()->from($this->_table); 
                 $result = $this->_database->delete();
@@ -429,8 +426,7 @@
             {
                 $this->getQueryBuilder()->from($this->_table);	
                 $result = $this->_database->update(array($this->soft_delete_key => TRUE));
-            }
-            else
+            } else
             {
                 $this->getQueryBuilder()->from($this->_table); 
                 $result = $this->_database->delete();

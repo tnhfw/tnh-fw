@@ -149,7 +149,7 @@
             $this->updateQueryBuilderAndRunnerProperties();
 
             return is_object($this->pdo);
-            } catch (PDOException $e){
+            } catch (PDOException $e) {
             $this->logger->fatal($e->getMessage());
             show_error('Cannot connect to Database.');
             return false;
@@ -596,17 +596,17 @@
      * @param  string $driver the driver name
      * @return string|null         the dsn name
      */
-    protected function getDsnValueForDriver($driver){
+    protected function getDsnValueForDriver($driver) {
         $dsn = '';
         $config = $this->getDatabaseConfiguration();
-        if (empty($config)){
+        if (empty($config)) {
         return null;
         }
         switch ($driver) {
             case 'mysql':
             case 'pgsql':
               $port = '';
-                if (! empty($config['port'])) {
+                if (!empty($config['port'])) {
                 $port = 'port=' . $config['port'] . ';';
                 }
                 $dsn = $driver . ':host=' . $config['hostname'] . ';' . $port . 'dbname=' . $config['database'];

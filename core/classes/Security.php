@@ -38,13 +38,13 @@
             $expire = get_config('csrf_expire', 60);
             $keyExpire = 'csrf_expire';
             $currentTime = time();
-            if(Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) > $currentTime){
+            if (Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) > $currentTime) {
                 $logger->info('The CSRF token not yet expire just return it');
                 return Session::get($key);
-            } else{
+            } else {
                 $newTime = $currentTime + $expire;
                 $token = sha1(uniqid()) . sha1(uniqid());
-                $logger->info('The CSRF informations are listed below: key [' .$key. '], key expire [' .$keyExpire. '], expire time [' .$expire. '], token [' .$token. ']');
+                $logger->info('The CSRF informations are listed below: key [' . $key . '], key expire [' . $keyExpire . '], expire time [' . $expire . '], token [' . $token . ']');
                 Session::set($keyExpire, $newTime);
                 Session::set($key, $token);
                 return Session::get($key);
@@ -87,23 +87,23 @@
         /**
          * This method is used to check the whitelist IP address access
          */
-            public static function checkWhiteListIpAccess(){
+            public static function checkWhiteListIpAccess() {
             $logger = self::getLogger();
             $logger->debug('Validation of the IP address access ...');
             $logger->debug('Check if whitelist IP access is enabled in the configuration ...');
             $isEnable = get_config('white_list_ip_enable', false);
-            if($isEnable){
+            if ($isEnable) {
                 $logger->info('Whitelist IP access is enabled in the configuration');
                 $list = get_config('white_list_ip_addresses', array());
-                if(! empty($list)){
+                if (!empty($list)) {
                     //Can't use Loader::functions() at this time because teh "Loader" library is loader after the security prossessing
                     require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
                     $ip = get_ip();
-                    if((count($list) == 1 && $list[0] == '*') || in_array($ip, $list)){
+                    if ((count($list) == 1 && $list[0] == '*') || in_array($ip, $list)) {
                         $logger->info('IP address ' . $ip . ' allowed using the wildcard "*" or the full IP');
                         //wildcard to access all ip address
                         return;
-                    } else{
+                    } else {
                         // go through all whitelisted ips
                         foreach ($list as $ipaddr) {
                             // find the wild card * in whitelisted ip (f.e. find position in "127.0.*" or "127*")
@@ -128,7 +128,7 @@
                         show_error('Access to this application is not allowed');
                     }
                 }
-            } else{
+            } else {
                 $logger->info('Whitelist IP access is not enabled in the configuration, ignore checking');
             }
             }

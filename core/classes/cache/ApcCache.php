@@ -47,8 +47,7 @@
             if ($success === false) {
                 $this->logger->info('No cache found for the key [' . $key . '], return false');
                 return false;
-            }
-            else {
+            } else {
                 $cacheInfo = $this->_getCacheInfo($key);
                 $expire = time();
                 if ($cacheInfo) {
@@ -74,8 +73,7 @@
             if ($result === false) {
                 $this->logger->error('Can not write cache data for the key [' . $key . '], return false');
                 return false;
-            }
-            else {
+            } else {
                 $this->logger->info('Cache data saved for the key [' . $key . ']');
                 return true;
             }
@@ -94,8 +92,7 @@
             if ($cacheInfo === false) {
                 $this->logger->info('This cache data does not exists skipping');
                 return false;
-            }
-            else {
+            } else {
                 $this->logger->info('Found cache data for the key [' . $key . '] remove it');
                     return apc_delete($key) === true;
             }
@@ -119,8 +116,7 @@
                             'ttl' => $cacheInfos['ttl']
                             );
                 return $data;
-            }
-            else {
+            } else {
                 $this->logger->info('This cache does not exists skipping');
                 return false;
             }
@@ -144,8 +140,7 @@
             if (empty($cacheInfos['cache_list'])) {
                 $this->logger->info('No cache data were found skipping');
                 return false;
-            }
-            else {
+            } else {
                 $this->logger->info('Found [' . count($cacheInfos) . '] cache data to remove');
                 return apc_clear_cache('user');
             }

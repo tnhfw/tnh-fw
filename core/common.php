@@ -222,16 +222,14 @@
                             );
             if (isset($http_status[$code])) {
                 $text = $http_status[$code];
-            }
-            else {
+            } else {
                 show_error('No HTTP status text found for your code please check it.');
             }
         }
 		
         if (strpos(php_sapi_name(), 'cgi') === 0) {
             header('Status: ' . $code . ' ' . $text, TRUE);
-        }
-        else {
+        } else {
             $proto = 'HTTP/1.1';
             if (isset($_SERVER['SERVER_PROTOCOL'])) {
                 $proto = $_SERVER['SERVER_PROTOCOL'];
@@ -323,8 +321,7 @@
     function php_exception_handler($ex) {
         if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
             show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
-        }
-        else {
+        } else {
             save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
         }
         return true;
@@ -440,15 +437,13 @@
     function clean_input($str) {
         if (is_array($str)) {
             $str = array_map('clean_input', $str);
-        }
-        else if (is_object($str)) {
+        } else if (is_object($str)) {
             $obj = $str;
             foreach ($str as $var => $value) {
                 $obj->$var = clean_input($value);
             }
             $str = $obj;
-        }
-        else {
+        } else {
             $str = htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
         }
         return $str;
@@ -521,8 +516,7 @@
                     session_save_path($sessionSavePath);
                     $logger->info('Session save path: ' . $sessionSavePath);
                 }
-            }
-            else if ($sessionHandler == 'database') {
+            } else if ($sessionHandler == 'database') {
                 //load database session handle library
                 //Database Session handler Model
                 require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
@@ -530,8 +524,7 @@
                 $DBS = & class_loader('DBSessionHandler', 'classes');
                 session_set_save_handler($DBS, true);
                 $logger->info('session save path: ' . get_config('session_save_path'));
-            }
-            else {
+            } else {
                 show_error('Invalid session handler configuration');
             }
             $lifetime = get_config('session_cookie_lifetime', 0);
