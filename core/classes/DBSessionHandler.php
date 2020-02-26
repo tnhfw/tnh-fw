@@ -27,7 +27,7 @@
 	/**
 	 * check if the interface "SessionHandlerInterface" exists (normally in PHP 5.4 this already exists)
 	 */
-	if( !interface_exists('SessionHandlerInterface')){
+	if ( !interface_exists('SessionHandlerInterface')){
 		show_error('"SessionHandlerInterface" interface does not exists or is disabled can not use it to handler database session.');
 	}
 
@@ -58,10 +58,10 @@
 		private $iv = null;
 
 		/**
-		 * The model instance name to use after load model
+		 * The model instance to use
 		 * @var object
 		 */
-		private $modelInstanceName = null;
+		private $modelInstance = null;
 
 		/**
 		 * The columns of the table to use to store session data
@@ -81,25 +81,20 @@
          */
         protected $loader = null;
 
-		public function __construct(DBSessionHandlerModel $modelInstance = null, Log $logger = null, Loader $loader = null){
-			/**
-	         * instance of the Log class
-	         */
-	        if(is_object($logger)){
-	          $this->setLogger($logger);
-	        }
-	        else{
-	            $this->logger =& class_loader('Log', 'classes');
-	            $this->logger->setLogger('Library::DBSessionHandler');
-	        }
-
-	        if(is_object($loader)){
-	          $this->setLoader($loader);
-	        }
+        /**
+         * Create new instance of Database session handler
+         * @param object $modelInstance the model instance
+         */
+		public function __construct(DBSessionHandlerModel $modelInstance = null){
+			//Set Log instance to use
+	        $this->setLoggerFromParamOrCreate(null);
+			
+	    	//Set Loader instance to use
+	        $this->setDependencyInstanceFromParamOrCreate('loader', null, 'Loader', 'classes');
+	       
 		    $this->OBJ = & get_instance();
-
 		    
-			if(is_object($modelInstance)){
+			if (is_object($modelInstance)){
 				$this->setModelInstance($modelInstance);
 			}
 		}
@@ -124,12 +119,12 @@
 
 		/**
 		 * Set the initializer vector for openssl 
-		 * @param string $key the session secret used
+		 * @param string $key the session secret used in base64 format
 		 */
 		public function setInitializerVector($key){
-			$iv_length = openssl_cipher_iv_length(self::DB_SESSION_HASH_METHOD);
+			$ivLength = openssl_cipher_iv_length(self::DB_SESSION_HASH_METHOD);
 			$key = base64_decode($key);
-			$this->iv = substr(hash('sha256', $key), 0, $iv_length);
+			$this->iv = substr(hash('sha256', $key), 0, $ivLength);
 			return $this;
 		}
 
@@ -151,21 +146,21 @@
 			$this->logger->debug('Opening database session handler for [' . $sessionName . ']');
 			//try to check if session secret is set before
 			$secret = $this->getSessionSecret();
-			if(empty($secret)){
+			if (empty($secret)){
 				$secret = get_config('session_secret', null);
 				$this->setSessionSecret($secret);
 			}
 			$this->logger->info('Session secret: ' . $secret);
 
-			if(! $this->getModelInstance()){
+			if (! is_object($this->modelInstance)){
 				$this->setModelInstanceFromConfig();
 			}
 			$this->setInitializerVector($secret);
 
 			//set session tables columns
-			$this->sessionTableColumns = $this->getModelInstance()->getSessionTableColumns();
+			$this->sessionTableColumns = $this->modelInstance->getSessionTableColumns();
 
-			if(empty($this->sessionTableColumns)){
+			if (empty($this->sessionTableColumns)){
 				show_error('The session handler is "database" but the table columns not set');
 			}
 			$this->logger->info('Database session, the model columns are listed below: ' . stringfy_vars($this->sessionTableColumns));
@@ -195,24 +190,18 @@
 			$this->logger->debug('Reading database session data for SID: ' . $sid);
 			$instance = $this->getModelInstance();
 			$columns = $this->sessionTableColumns;
-			if($this->getLoader()){
-				$this->getLoader()->functions('user_agent'); 
-				$this->getLoader()->library('Browser'); 
-			}
-			else{
-            	Loader::functions('user_agent');
-            	Loader::library('Browser');
-            }
+			$this->loader->functions('user_agent'); 
+			$this->loader->library('Browser'); 
 			
 			$ip = get_ip();
 			$host = @gethostbyaddr($ip) or null;
 			$browser = $this->OBJ->browser->getPlatform().', '.$this->OBJ->browser->getBrowser().' '.$this->OBJ->browser->getVersion();
 			
 			$data = $instance->get_by(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
-			if($data && isset($data->{$columns['sdata']})){
+			if ($data && isset($data->{$columns['sdata']})){
 				//checking inactivity 
 				$timeInactivity = time() - get_config('session_inactivity_time', 100);
-				if($data->{$columns['stime']} < $timeInactivity){
+				if ($data->{$columns['stime']} < $timeInactivity){
 					$this->logger->info('Database session data for SID: ' . $sid . ' already expired, destroy it');
 					$this->destroy($sid);
 					return null;
@@ -234,14 +223,8 @@
 			$instance = $this->getModelInstance();
 			$columns = $this->sessionTableColumns;
 
-			if($this->getLoader()){
-				$this->getLoader()->functions('user_agent'); 
-				$this->getLoader()->library('Browser'); 
-			}
-			else{
-            	Loader::functions('user_agent');
-            	Loader::library('Browser');
-            }
+			$this->loader->functions('user_agent'); 
+			$this->loader->library('Browser'); 
 
 			$ip = get_ip();
 			$keyValue = $instance->getKeyValue();
@@ -259,16 +242,14 @@
 						);
 			$this->logger->info('Database session data to save are listed below :' . stringfy_vars($params));
 			$exists = $instance->get($sid);
-			if($exists){
+			if ($exists){
 				$this->logger->info('Session data for SID: ' . $sid . ' already exists, just update it');
 				//update
 				unset($params[$columns['sid']]);
-				$instance->update($sid, $params);
+				return $instance->update($sid, $params);
 			}
-			else{
-				$this->logger->info('Session data for SID: ' . $sid . ' not yet exists, insert it now');
-				$instance->insert($params);
-			}
+			$this->logger->info('Session data for SID: ' . $sid . ' not yet exists, insert it now');
+			return $instance->insert($params);
 			return true;
 		}
 
@@ -280,7 +261,7 @@
 		 */
 		public function destroy($sid){
 			$this->logger->debug('Destroy of session data for SID: ' . $sid);
-			$instance = $this->modelInstanceName;
+			$instance = $this->modelInstance;
 			$instance->delete($sid);
 			return true;
 		}
@@ -291,7 +272,7 @@
 		 * @return boolean
 		 */
 		public function gc($maxLifetime){
-			$instance = $this->modelInstanceName;
+			$instance = $this->modelInstance;
 			$time = time() - $maxLifetime;
 			$this->logger->debug('Garbage collector of expired session. maxLifetime [' . $maxLifetime . '] sec, expired time [' . $time . ']');
 			$instance->deleteByTime($time);
@@ -346,7 +327,7 @@
          * @return object DBSessionHandlerModel the model instance
          */
         public function getModelInstance(){
-            return $this->modelInstanceName;
+            return $this->modelInstance;
         }
 
         /**
@@ -354,7 +335,7 @@
          * @param DBSessionHandlerModel $modelInstance the model object
          */
          public function setModelInstance(DBSessionHandlerModel $modelInstance){
-            $this->modelInstanceName = $modelInstance;
+            $this->modelInstance = $modelInstance;
             return $this;
         }
 
@@ -376,24 +357,54 @@
 	    }
 
 	    /**
+	     * Set the dependencies instance using argument or create new instance if is null
+	     * @param string $name this class property name.
+	     * @param object $instance the instance. If is not null will use it
+	     * otherwise will create new instance.
+	     * @param string $loadClassName the name of class to load using class_loader function.
+	     * @param string $loadClassPath the path of class to load using class_loader function.
+	     *
+	     * @return object this current instance
+	     */
+	    protected function setDependencyInstanceFromParamOrCreate($name, $instance = null, $loadClassName = null, $loadClassePath = 'classes'){
+	      if ($instance !== null){
+	        $this->{$name} = $instance;
+	        return $this;
+	      }
+	      $this->{$name} =& class_loader($loadClassName, $loadClassePath);
+	      return $this;
+	    }
+	    
+		   /**
+	     * Set the Log instance using argument or create new instance
+	     * @param object $logger the Log instance if not null
+	     *
+	     * @return object this current instance
+	     */
+	    protected function setLoggerFromParamOrCreate(Log $logger = null){
+	      $this->setDependencyInstanceFromParamOrCreate('logger', $logger, 'Log', 'classes');
+	      if ($logger === null){
+	        $this->logger->setLogger('Library::DBSessionHandler');
+	      }
+	      return $this;
+	    }
+
+	    /**
 	     * Set the model instance using the configuration for session
 	     */
-	    private function setModelInstanceFromConfig(){
+	    protected function setModelInstanceFromConfig(){
 	    	$modelName = get_config('session_save_path');
 			$this->logger->info('The database session model: ' . $modelName);
-			if($this->getLoader()){
-				$this->getLoader()->model($modelName, 'dbsessionhandlerinstance'); 
-			}
+			$this->loader->model($modelName, 'dbsessionhandlerinstance'); 
 			//@codeCoverageIgnoreStart
-			else{
-            	Loader::model($modelName, 'dbsessionhandlerinstance'); 
-            }
-            if(isset($this->OBJ->dbsessionhandlerinstance) && ! $this->OBJ->dbsessionhandlerinstance instanceof DBSessionHandlerModel){
-				show_error('To use database session handler, your class model "'.get_class($this->OBJ->dbsessionhandlerinstance).'" need extends "DBSessionHandlerModel"');
+            if (isset($this->OBJ->dbsessionhandlerinstance) 
+            	&& ! ($this->OBJ->dbsessionhandlerinstance instanceof DBSessionHandlerModel)
+            ) {
+				show_error('To use database session handler, your class model "' . get_class($this->OBJ->dbsessionhandlerinstance) . '" need extends "DBSessionHandlerModel"');
 			}  
 			//@codeCoverageIgnoreEnd
 			
 			//set model instance
-			$this->setModelInstance($this->OBJ->dbsessionhandlerinstance);
+			$this->modelInstance = $this->OBJ->dbsessionhandlerinstance;
 	    }
 	}

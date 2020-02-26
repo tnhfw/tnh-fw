@@ -180,7 +180,6 @@
 			$http_status = array(
 								100 => 'Continue',
 								101 => 'Switching Protocols',
-
 								200 => 'OK',
 								201 => 'Created',
 								202 => 'Accepted',
@@ -188,7 +187,6 @@
 								204 => 'No Content',
 								205 => 'Reset Content',
 								206 => 'Partial Content',
-
 								300 => 'Multiple Choices',
 								301 => 'Moved Permanently',
 								302 => 'Found',
@@ -196,7 +194,6 @@
 								304 => 'Not Modified',
 								305 => 'Use Proxy',
 								307 => 'Temporary Redirect',
-
 								400 => 'Bad Request',
 								401 => 'Unauthorized',
 								402 => 'Payment Required',
@@ -216,7 +213,6 @@
 								416 => 'Requested Range Not Satisfiable',
 								417 => 'Expectation Failed',
 								418 => 'I\'m a teapot',
-
 								500 => 'Internal Server Error',
 								501 => 'Not Implemented',
 								502 => 'Bad Gateway',
@@ -236,7 +232,10 @@
 			header('Status: ' . $code . ' ' . $text, TRUE);
 		}
 		else{
-			$proto = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
+			$proto = 'HTTP/1.1';
+			if(isset($_SERVER['SERVER_PROTOCOL'])){
+				$proto = $_SERVER['SERVER_PROTOCOL'];
+			}
 			header($proto . ' ' . $code . ' ' . $text, TRUE, $code);
 		}
 	}
@@ -278,10 +277,10 @@
 		if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off'){
 			return true;
 		}
-		else if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'){
+		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'){
 			return true;
 		}
-		else if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off'){
+		if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off'){
 			return true;
 		}
 		return false;
@@ -354,17 +353,11 @@
 		if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))){
 			$errorType = 'error';
 			switch ($errno) {
-				case E_USER_ERROR:
-					$errorType = 'error';
-					break;
 				case E_USER_WARNING:
 					$errorType = 'warning';
 					break;
 				case E_USER_NOTICE:
 					$errorType = 'notice';
-					break;
-				default:
-					$errorType = 'error';
 					break;
 			}
 			show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline .'</b> raison : ' . $errstr, 'PHP ' . $errorType);

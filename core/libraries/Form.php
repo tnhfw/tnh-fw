@@ -110,10 +110,9 @@
 			$obj = & get_instance();
 			if(isset($obj->formvalidation)){
 				$errors = $obj->formvalidation->returnErrors();
-				$error =  isset($errors[$name]) ? $errors[$name] : null;
-				if($error){
+				if(isset($errors[$name])){
 					list($errorStart, $errorEnd) = $obj->formvalidation->getErrorDelimiter();
-					$return = $errorStart . $error . $errorEnd;
+					$return = $errorStart . $errors[$name] . $errorEnd;
 				}
 			}
 			return $return;
@@ -127,7 +126,10 @@
 		 */
 		public static function value($name, $default = null){
 			$value = get_instance()->request->query($name);
-			return $value ? $value : $default;
+			if(strlen($value) > 0){
+				return $value;
+			}
+			return $default;
 		}
 
 		/**

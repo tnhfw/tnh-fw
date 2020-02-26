@@ -101,7 +101,7 @@
 			
 			//loading routes for module
 			$moduleRouteList = array();
-			$modulesRoutes = Module::getModulesRoutes();
+			$modulesRoutes = Module::getModulesRoutesConfig();
 			if($modulesRoutes && is_array($modulesRoutes)){
 				$moduleRouteList = $modulesRoutes;
 				unset($modulesRoutes);

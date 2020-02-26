@@ -319,7 +319,7 @@
 			if(! empty($moduleInfo['file'])){
 				$file = $moduleInfo['file'];
 			}
-			$moduleLanguagePath = Module::findLanguageFullPath($language, $module, $appLang);
+			$moduleLanguagePath = Module::findLanguageFullPath($language, $appLang, $module);
 			if ($moduleLanguagePath){
 				$logger->info('Found language [' . $language . '] from module [' .$module. '], the file path is [' .$moduleLanguagePath. '] we will used it');
 				$languageFilePath = $moduleLanguagePath;

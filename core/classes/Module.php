@@ -34,21 +34,9 @@
 
 		/**
 		 * logger instance
-		 * @var Log
+		 * @var object
 		 */
 		private static $logger;
-
-		/**
-		 * The signleton of the logger
-		 * @return Object the Log instance
-		 */
-		private static function getLogger(){
-			if(self::$logger == null){
-				self::$logger[0] =& class_loader('Log', 'classes');
-				self::$logger[0]->setLogger('Library::Module');
-			}
-			return self::$logger[0];
-		}
 
 		/**
 		 * Initialise the module list by scanning the directory MODULE_PATH
@@ -57,9 +45,9 @@
 			$logger = self::getLogger();
 			$logger->debug('Check if the application contains the modules ...');
 			$moduleDir = opendir(MODULE_PATH);
-			if(is_resource($moduleDir)){
+			if (is_resource($moduleDir)){
 				while(($module = readdir($moduleDir)) !== false){
-					if(preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
+					if (preg_match('/^([a-z0-9-_]+)$/i', $module) && is_dir(MODULE_PATH . $module)){
 						self::$list[] = $module;
 					}
 					else{
@@ -70,9 +58,46 @@
 			}
 			ksort(self::$list);
 			
-			if(self::hasModule()){
+			if (! empty(self::$list)){
 				$logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
 			}
+		}
+
+		/**
+		 * The signleton of the logger
+		 * @return Object the Log instance
+		 */
+		public static function getLogger(){
+			if (self::$logger == null){
+				$logger = array();
+				$logger[0] =& class_loader('Log', 'classes');
+				$logger[0]->setLogger('Library::Module');
+				self::$logger = $logger[0];
+			}
+			return self::$logger;			
+		}
+
+		/**
+		 * Set the log instance for future use
+		 * @param object $logger the log object
+		 * @return object the log instance
+		 */
+		public static function setLogger($logger){
+			self::$logger = $logger;
+			return self::$logger;
+		}
+
+		
+
+		/**
+		 * Add new module in the list
+		 * @param string $name the name of the module
+		 *
+		 * @return object the current instance
+		 */
+		public function add($name){
+			self::$list[] = $name;
+			return $this;
 		}
 		
 		/**
@@ -81,7 +106,7 @@
 		 */
 		public static function getModulesAutoloadConfig(){
 			$logger = self::getLogger();
-			if(! self::hasModule()){
+			if (empty(self::$list)){
 				$logger->info('No module was loaded skipping.');
 				return false;
 			}
@@ -94,10 +119,10 @@
 			
 			foreach (self::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
-				if(file_exists($file)){
+				if (file_exists($file)){
 					$autoload = array();
 					require_once $file;
-					if(! empty($autoload) && is_array($autoload)){
+					if (! empty($autoload) && is_array($autoload)){
 						$autoloads = array_merge_recursive($autoloads, $autoload);
 						unset($autoload);
 					}
@@ -110,19 +135,19 @@
 		 * Get the list of the custom routes configuration from module if exists
 		 * @return array|boolean the routes list or false if no module contains the routes configuration
 		 */
-		public static function getModulesRoutes(){
+		public static function getModulesRoutesConfig(){
 			$logger = self::getLogger();
-			if(! self::hasModule()){
+			if (empty(self::$list)){
 				$logger->info('No module was loaded skipping.');
 				return false;
 			}
 			$routes = array();
 			foreach (self::$list as $module) {
 				$file = MODULE_PATH . $module . DS . 'config' . DS . 'routes.php';
-				if(file_exists($file)){
+				if (file_exists($file)){
 					$route = array();
 					require_once $file;
-					if(! empty($route) && is_array($route)){
+					if (! empty($route) && is_array($route)){
 						$routes = array_merge($routes, $route);
 						unset($route);
 					}
@@ -134,180 +159,66 @@
 
 		/**
 		 * Check if in module list can have this controller
-		 * @param  string $class the controller class
-		 * @param  string $module  the module name
+		 * @see Module::findClassInModuleFullFilePath
 		 * @return boolean|string  false or null if no module have this controller, path the full path of the controller
 		 */
 		public static function findControllerFullPath($class, $module = null){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$class = str_ireplace('.php', '', $class);
-			$class = ucfirst($class);
-			$classFile = $class.'.php';
-			$logger->debug('Checking the controller [' . $class . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'controllers' . DS . $classFile;
-			if(file_exists($filePath)){
-				$logger->info('Found controller [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('Controller [' . $class . '] does not exist in the module [' .$module. ']');
-			return false;
+			return self::findClassInModuleFullFilePath($class, $module, 'controllers');
 		}
 
 		/**
 		 * Check if in module list can have this model
-		 * @param  string $class the model class
-		 * @param string $module the module name
+		 * @see Module::findClassInModuleFullFilePath
 		 * @return boolean|string  false or null if no module have this model, return the full path of this model
 		 */
 		public static function findModelFullPath($class, $module = null){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$class = str_ireplace('.php', '', $class);
-			$class = ucfirst($class);
-			$classFile = $class.'.php';
-			$logger->debug('Checking model [' . $class . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'models' . DS . $classFile;
-			if(file_exists($filePath)){
-				$logger->info('Found model [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('Model [' . $class . '] does not exist in the module [' .$module. ']');
-			return false;
+			return self::findClassInModuleFullFilePath($class, $module, 'models');
 		}
+
+		/**
+		 * Check if in module list can have this library
+		 * @see Module::findClassInModuleFullFilePath
+		 * @return boolean|string  false or null if no module have this library,  return the full path of this library
+		 */
+		public static function findLibraryFullPath($class, $module = null){
+			return self::findClassInModuleFullFilePath($class, $module, 'libraries');
+		}
+
 		
 		/**
 		 * Check if in module list can have this config
-		 * @param  string $configuration the config name
-		 * @param string $module the module name
+		 * @see  Module::findNonClassInModuleFullFilePath
 		 * @return boolean|string  false or null if no module have this configuration,  return the full path of this configuration
 		 */
 		public static function findConfigFullPath($configuration, $module = null){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$configuration = str_ireplace('.php', '', $configuration);
-			$file = $configuration.'.php';
-			$logger->debug('Checking configuration [' . $configuration . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'config' . DS . $file;
-			if(file_exists($filePath)){
-				$logger->info('Found configuration [' . $configuration . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('Configuration [' . $configuration . '] does not exist in the module [' .$module. ']');
-			return false;
+			return self::findNonClassInModuleFullFilePath($configuration, $module, 'config');
 		}
 
 		/**
 		 * Check if in module list can have this helper
-		 * @param  string $helper the helper name
-		 * @param string $module the module name
+		 * @see  Module::findNonClassInModuleFullFilePath
 		 * @return boolean|string  false or null if no module have this helper,  return the full path of this helper
 		 */
 		public static function findFunctionFullPath($helper, $module = null){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$helper = str_ireplace('.php', '', $helper);
-			$helper = str_ireplace('function_', '', $helper);
-			$file = 'function_'.$helper.'.php';
-			$logger->debug('Checking helper [' . $helper . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'functions' . DS . $file;
-			if(file_exists($filePath)){
-				$logger->info('Found helper [' . $helper . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('Helper [' . $helper . '] does not exist in the module [' .$module. ']');
-			return false;
-			
+			return self::findNonClassInModuleFullFilePath($helper, $module, 'functions');
 		}
-
-
-		/**
-		 * Check if in module list can have this library
-		 * @param  string $class the library name
-		 * @param string $module the module name
-		 * @return boolean|string  false or null if no module have this library,  return the full path of this library
-		 */
-		public static function findLibraryFullPath($class, $module = null){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$class = str_ireplace('.php', '', $class);
-			$file = $class.'.php';
-			$logger->debug('Checking library [' . $class . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'libraries' . DS . $file;
-			if(file_exists($filePath)){
-				$logger->info('Found library [' . $class . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('Library [' . $class . '] does not exist in the module [' .$module. ']');
-			return false;
-		}
-
 
 		/**
 		 * Check if in module list can have this view
-		 * @param  string $view the view path
-		 * @param string $module the module name to check
+		 * @see  Module::findNonClassInModuleFullFilePath
 		 * @return boolean|string  false or null if no module have this view, path the full path of the view
 		 */
 		public static function findViewFullPath($view, $module = null){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$view = str_ireplace('.php', '', $view);
-			$view = trim($view, '/\\');
-			$view = str_ireplace('/', DS, $view);
-			$viewFile = $view . '.php';
-			$logger->debug('Checking view [' . $view . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'views' . DS . $viewFile;
-			if(file_exists($filePath)){
-				$logger->info('Found view [' . $view . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('View [' . $view . '] does not exist in the module [' .$module. ']');
-			return false;
+			return self::findNonClassInModuleFullFilePath($view, $module, 'views');
 		}
 
 		/**
 		 * Check if in module list can have this language
-		 * @param  string $language the language name
-		 * @param string $module the module name
-		 * @param string $appLang the application language like 'en', 'fr'
+		 * @see  Module::findNonClassInModuleFullFilePath
 		 * @return boolean|string  false or null if no module have this language,  return the full path of this language
 		 */
-		public static function findLanguageFullPath($language, $module = null, $appLang){
-			$logger = self::getLogger();
-			if(! self::hasModule()){
-				$logger->info('No module was loaded skiping.');
-				return false;
-			}
-			$language = str_ireplace('.php', '', $language);
-			$language = str_ireplace('lang_', '', $language);
-			$file = 'lang_'.$language.'.php';
-			$logger->debug('Checking language [' . $language . '] in module [' .$module. '] ...');
-			$filePath = MODULE_PATH . $module . DS . 'lang' . DS . $appLang . DS . $file;
-			if(file_exists($filePath)){
-				$logger->info('Found language [' . $language . '] in module [' .$module. '], the file path is [' .$filePath. ']');
-				return $filePath;
-			}
-			$logger->info('Language [' . $language . '] does not exist in the module [' .$module. ']');
-			return false;
+		public static function findLanguageFullPath($language, $appLang, $module = null){
+			return self::findNonClassInModuleFullFilePath($language, $module, 'lang', $appLang);
 		}
 
 		/**
@@ -324,6 +235,70 @@
 		 */
 		public static function hasModule(){
 			return !empty(self::$list);
+		}
+
+		/**
+		 * Check if in module list can have the model, controller, library
+		 * @param  string $class the class name of library, model, controller
+		 * @param string $module the module name
+		 * @param string $type the name of the type "controllers", "libraries", "models"
+		 * @return boolean|string  false or null if no module 
+		 * have this class, return the full path of the class
+		 */
+		protected static function findClassInModuleFullFilePath($class, $module, $type){
+			$logger = self::getLogger();
+		    $class = str_ireplace('.php', '', $class);
+		    $class = ucfirst($class);
+		    $classFile = $class.'.php';
+		    $logger->debug('Checking the class [' . $class . '] in module [' . $module . '] for [' . $type . '] ...');
+		    $filePath = MODULE_PATH . $module . DS . $type . DS . $classFile;
+		    if (file_exists($filePath)){
+		        $logger->info('Found class [' . $class . '] in module [' . $module . '] for [' . $type . '] the file path is [' .$filePath. ']');
+		        return $filePath;
+		    }
+		    $logger->info('Class [' . $class . '] does not exist in the module [' .$module. '] for [' . $type . ']');
+		    return false;
+		}
+
+		/**
+		 * Check if in module list can have the config, view, helper, language
+		 * @param string $name the name of config, view, helper, language
+		 * @param string $module the module name
+		 * @param string $type the name of the type "config", "functions", "views", "lang"
+		 * @param string|null $appLang the application language. This is use only when $type = "lang"
+		 * @return boolean|string  false or null if no module 
+		 * have this resource, return the full path of the resource
+		 */
+		protected static function findNonClassInModuleFullFilePath($name, $module, $type, $appLang = null){
+		    $logger = self::getLogger();
+		    $name = str_ireplace('.php', '', $name);
+		    $file = $name.'.php';
+		    $filePath = MODULE_PATH . $module . DS . $type . DS . $file;
+		    switch($type){
+		        case 'functions':
+		            $name = str_ireplace('function_', '', $name);
+		            $file = 'function_'.$name.'.php';
+		            $filePath = MODULE_PATH . $module . DS . $type . DS . $file;
+		        break;
+		        case 'views':
+		            $name = trim($name, '/\\');
+		            $name = str_ireplace('/', DS, $name);
+		            $file = $name . '.php';
+		            $filePath = MODULE_PATH . $module . DS . $type . DS . $file;
+		        break;
+		        case 'lang':
+		            $name = str_ireplace('lang_', '', $name);
+		            $file = 'lang_'.$name.'.php';
+		            $filePath = MODULE_PATH . $module . DS . $type . DS . $appLang . DS . $file;
+		        break;
+		    }
+		    $logger->debug('Checking resource [' . $name . '] in module [' .$module. '] for [' . $type . '] ...');
+		    if (file_exists($filePath)){
+		        $logger->info('Found resource [' . $name . '] in module [' .$module. '] for [' . $type . '] the file path is [' .$filePath. ']');
+		        return $filePath;
+		    }
+		    $logger->info('Resource [' . $name . '] does not exist in the module [' .$module. '] for [' . $type . ']');
+		    return false;
 		}
 
 	}

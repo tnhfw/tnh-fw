@@ -129,8 +129,9 @@
 			
 			
 		public function testUsingCustomLogInstance(){
-			$dbsh = new DBSessionHandler($this->model, new Log());
+			$dbsh = new DBSessionHandler($this->model);
 			$dbsh->setSessionSecret($this->secret);
+            $dbsh->setLogger(new Log());
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
@@ -156,8 +157,9 @@
 		}
 		
 		public function testUsingCustomLoaderInstance(){
-			$dbsh = new DBSessionHandler($this->model, null, new Loader());
+			$dbsh = new DBSessionHandler($this->model);
 			$dbsh->setSessionSecret($this->secret);
+            $dbsh->setLoader(new Loader());
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
@@ -184,7 +186,7 @@
 		
 		
 		public function testWhenModelInsanceIsNotSet(){
-			$dbsh = new DBSessionHandler(null, null, new Loader());
+			$dbsh = new DBSessionHandler();
 			$dbsh->setSessionSecret($this->secret);
 			
 			$this->assertTrue($dbsh->open(null, null));

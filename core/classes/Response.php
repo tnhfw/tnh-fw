@@ -280,7 +280,7 @@
 			//get the cache information to prepare header to send to browser
 			$cacheInfo = $cache->getInfo($pageCacheKey);
 			if($cacheInfo){
-				$status = $this->sendCacheNotYetExpireInfo($cacheInfo);
+				$status = $this->sendCacheNotYetExpireInfoToBrowser($cacheInfo);
 				if($status === false){
 					return $this->sendCachePageContentToBrowser($cache);
 				}
@@ -367,7 +367,7 @@
 		 * @param  array $cacheInfo the cache information
 		 * @return boolean            true if the information is sent otherwise false
 		 */
-		protected function sendCacheNotYetExpireInfo($cacheInfo){
+		protected function sendCacheNotYetExpireInfoToBrowser($cacheInfo){
 			if(! empty($cacheInfo)){
 				$logger = self::getLogger();
 				$lastModified = $cacheInfo['mtime'];
@@ -410,7 +410,7 @@
 		 */
 		protected function sendCachePageContentToBrowser(&$cache){
 			$logger = self::getLogger();
-			$logger->info('The cache page content is expired or the browser doesn\'t send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->_currentUrl . '] send cache headers to tell the browser');
+			$logger->info('The cache page content is expired or the browser does not send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->_currentUrl . '] send cache headers to tell the browser');
 			self::sendHeaders(200);
 			//current page cache key
 			$pageCacheKey = $this->_currentUrlCacheKey;
@@ -528,13 +528,14 @@
 				require $path;
 				$content = ob_get_clean();
 				if($return){
-					return $content;
+					//remove unused html space 
+					return preg_replace('~>\s*\n\s*<~', '><', $content);
 				}
 				$this->_pageRender .= $content;
 				$found = true;
 			}
 			if(! $found){
-				show_error('Unable to find view [' .$view . ']');
+				show_error('Unable to find view [' .$path . ']');
 			}
 		}
 
