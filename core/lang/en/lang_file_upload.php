@@ -3,7 +3,7 @@
         /**
          * File upload language messages (English) 
          */
-        $lang['fu_upload_err_ini_size']     = 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
+        $lang['fu_upload_err_ini_size'] = 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
     $lang['fu_upload_err_form_size']   	= 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.';
     $lang['fu_upload_err_partial']   	= 'The uploaded file was only partially uploaded.';
     $lang['fu_upload_err_no_file'] = 'No file was choosed. Please select one.';

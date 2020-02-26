@@ -42,41 +42,41 @@
 				'sbrowser' => '', //VARCHAR(255) 
 				'skey' => '' //VARCHAR(255) 
 			);
-		 */
-		protected $sessionTableColumns = array();
+         */
+        protected $sessionTableColumns = array();
 
-		public function __construct(Database $db = null) {
-			parent::__construct($db);
-		}
+        public function __construct(Database $db = null) {
+            parent::__construct($db);
+        }
 
-		/**
-		 * Return the session database table columns
-		 * @return array 
-		 */
-		public function getSessionTableColumns() {
-			return $this->sessionTableColumns;
-		}
+        /**
+         * Return the session database table columns
+         * @return array 
+         */
+        public function getSessionTableColumns() {
+            return $this->sessionTableColumns;
+        }
 
-		/**
-		 * Set the session database table columns
-		 * @param array $columns the columns definition
-		 */
-		public function setSessionTableColumns(array $columns) {
-			$this->sessionTableColumns = $columns;
-			return $this;
-		}
+        /**
+         * Set the session database table columns
+         * @param array $columns the columns definition
+         */
+        public function setSessionTableColumns(array $columns) {
+            $this->sessionTableColumns = $columns;
+            return $this;
+        }
 
-		/**
-		 * Delete the expire session
-		 * @param  int $time the unix timestamp
-		 * @return int       affected rows
-		 */
-		abstract public function deleteByTime($time);
+        /**
+         * Delete the expire session
+         * @param  int $time the unix timestamp
+         * @return int       affected rows
+         */
+        abstract public function deleteByTime($time);
 
 		
-		/**
-		 * How to get the value of the table column key. Generally is the session key
-		 * @return mixed the key value like used to identify the data
-		 */
-		abstract public function getKeyValue();
-	}
+        /**
+         * How to get the value of the table column key. Generally is the session key
+         * @return mixed the key value like used to identify the data
+         */
+        abstract public function getKeyValue();
+    }

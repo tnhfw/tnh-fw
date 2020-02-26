@@ -23,14 +23,14 @@
      * along with this program; if not, write to the Free Software
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
-    class DatabaseQueryRunner extends BaseClass{
+    class DatabaseQueryRunner extends BaseClass {
       
    
         /**
          * The last query result
          * @var object
          */
-        private $queryResult       = null;
+        private $queryResult = null;
   	
         /**
          * The benchmark instance
@@ -42,45 +42,45 @@
      * The SQL query statment to execute
      * @var string
      */
-    private $query             = null;
+    private $query = null;
     
     /**
      * Indicate if we need return result as list (boolean) 
      * or the data used to replace the placeholder (array)
      * @var array|boolean
      */
-        private $returnAsList     = true;
+        private $returnAsList = true;
      
      
         /**
          * Indicate if we need return result as array or not
          * @var boolean
          */
-        private $returnAsArray     = true;
+        private $returnAsArray = true;
      
         /**
          * The last PDOStatment instance
          * @var object
          */
-        private $pdoStatment       = null;
+        private $pdoStatment = null;
      
         /**
          * The error returned for the last query
          * @var string
          */
-        private $error             = null;
+        private $error = null;
 	
     /**
      * The PDO instance
      * @var object
      */
-    private $pdo                = null;
+    private $pdo = null;
   
     /**
      * The database driver name used
      * @var string
      */
-    private $driver             = null;
+    private $driver = null;
 
 
 	
@@ -91,9 +91,9 @@
      * @param boolean $returnAsList if need return as list or just one row
      * @param boolean $returnAsArray whether to return the result as array or not
      */
-    public function __construct(PDO $pdo = null, $query = null, $returnAsList = true, $returnAsArray = false){
+    public function __construct(PDO $pdo = null, $query = null, $returnAsList = true, $returnAsArray = false) {
         parent::__construct();
-        if (is_object($pdo)){
+        if (is_object($pdo)) {
             $this->pdo = $pdo;
         }
         $this->query         = $query;
@@ -108,13 +108,13 @@
      * 
      * @return object|void
      */
-    public function execute(){
+    public function execute() {
         //reset instance
         $this->reset();
        
         //for database query execution time
         $benchmarkMarkerKey = $this->getBenchmarkKey();
-        if (! is_object($this->benchmarkInstance)){
+        if (!is_object($this->benchmarkInstance)) {
             $this->benchmarkInstance = & class_loader('Benchmark');
         }
         
@@ -128,97 +128,97 @@
         $responseTime = $this->benchmarkInstance->elapsedTime(
                                                                 'DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 
                                                                 'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')'
-                                                              );
-		    //TODO use the configuration value for the high response time currently is 1 second
+                                                                );
+            //TODO use the configuration value for the high response time currently is 1 second
         if ($responseTime >= 1 ){
             $this->logger->warning(
                                     'High response time while processing database query [' . $this->query . ']. 
                                      The response time is [' .$responseTime. '] sec.'
-                                  );
+                                    );
         }
 		
         if ($this->pdoStatment !== false){
-          $isSqlSELECTQuery = stristr($this->query, 'SELECT') !== false;
-          if($isSqlSELECTQuery){
-              $this->setResultForSelect();              
-          } else{
-              $this->setResultForNonSelect();
-          }
-          return $this->queryResult;
+            $isSqlSELECTQuery = stristr($this->query, 'SELECT') !== false;
+            if($isSqlSELECTQuery){
+                $this->setResultForSelect();              
+            } else{
+                $this->setResultForNonSelect();
+            }
+            return $this->queryResult;
         }
         $this->setQueryRunnerError();
     }
 	
-   /**
-   * Return the result for SELECT query
-   * @see DatabaseQueryRunner::execute
-   */
+    /**
+     * Return the result for SELECT query
+     * @see DatabaseQueryRunner::execute
+     */
     protected function setResultForSelect(){
-      //if need return all result like list of record
-      $result = null;
-      $numRows = 0;
-      $fetchMode = PDO::FETCH_OBJ;
-      if($this->returnAsArray){
+        //if need return all result like list of record
+        $result = null;
+        $numRows = 0;
+        $fetchMode = PDO::FETCH_OBJ;
+        if($this->returnAsArray){
         $fetchMode = PDO::FETCH_ASSOC;
-      }
-      if ($this->returnAsList){
-          $result = $this->pdoStatment->fetchAll($fetchMode);
-      } else{
-          $result = $this->pdoStatment->fetch($fetchMode);
-      }
-      //Sqlite and pgsql always return 0 when using rowCount()
-      if (in_array($this->driver, array('sqlite', 'pgsql'))){
+        }
+        if ($this->returnAsList){
+            $result = $this->pdoStatment->fetchAll($fetchMode);
+        } else{
+            $result = $this->pdoStatment->fetch($fetchMode);
+        }
+        //Sqlite and pgsql always return 0 when using rowCount()
+        if (in_array($this->driver, array('sqlite', 'pgsql'))){
         $numRows = count($result);  
-      } else{
+        } else{
         $numRows = $this->pdoStatment->rowCount(); 
-      }
-      if(! is_object($this->queryResult)){
-          $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
-      }
-      $this->queryResult->setResult($result);
-      $this->queryResult->setNumRows($numRows);
+        }
+        if(! is_object($this->queryResult)){
+            $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
+        }
+        $this->queryResult->setResult($result);
+        $this->queryResult->setNumRows($numRows);
     }
 
     /**
-   * Return the result for non SELECT query
-   * @see DatabaseQueryRunner::execute
-   */
+     * Return the result for non SELECT query
+     * @see DatabaseQueryRunner::execute
+     */
     protected function setResultForNonSelect(){
-      //Sqlite and pgsql always return 0 when using rowCount()
-      $result = false;
-      $numRows = 0;
-      if (in_array($this->driver, array('sqlite', 'pgsql'))){
+        //Sqlite and pgsql always return 0 when using rowCount()
+        $result = false;
+        $numRows = 0;
+        if (in_array($this->driver, array('sqlite', 'pgsql'))){
         $result = true; //to test the result for the query like UPDATE, INSERT, DELETE
         $numRows = 1; //TODO use the correct method to get the exact affected row
-      } else{
-          //to test the result for the query like UPDATE, INSERT, DELETE
-          $result  = $this->pdoStatment->rowCount() >= 0; 
-          $numRows = $this->pdoStatment->rowCount(); 
-      }
-      if(! is_object($this->queryResult)){
-          $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
-      }
-      $this->queryResult->setResult($result);
-      $this->queryResult->setNumRows($numRows);
+        } else{
+            //to test the result for the query like UPDATE, INSERT, DELETE
+            $result  = $this->pdoStatment->rowCount() >= 0; 
+            $numRows = $this->pdoStatment->rowCount(); 
+        }
+        if(! is_object($this->queryResult)){
+            $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
+        }
+        $this->queryResult->setResult($result);
+        $this->queryResult->setNumRows($numRows);
     }
 
 
-	/**
+    /**
      * Return the benchmark instance
      * @return Benchmark
      */
     public function getBenchmark() {
-      return $this->benchmarkInstance;
+        return $this->benchmarkInstance;
     }
 
     /**
      * Set the benchmark instance
      * @param Benchmark $benchmark the benchmark object
-	 * @return object DatabaseQueryRunner
+     * @return object DatabaseQueryRunner
      */
     public function setBenchmark($benchmark) {
-      $this->benchmarkInstance = $benchmark;
-      return $this;
+        $this->benchmarkInstance = $benchmark;
+        return $this;
     }
     
     /**
@@ -226,7 +226,7 @@
      *
      * @return object DatabaseQueryResult
      */
-    public function getQueryResult(){
+    public function getQueryResult() {
         return $this->queryResult;
     }
 
@@ -236,7 +236,7 @@
      *
      * @return object DatabaseQueryRunner
      */
-    public function setQueryResult(DatabaseQueryResult $queryResult){
+    public function setQueryResult(DatabaseQueryResult $queryResult) {
         $this->queryResult = $queryResult;
         return $this;
     }
@@ -245,7 +245,7 @@
      * Return the current query SQL string
      * @return string
      */
-    public function getQuery(){
+    public function getQuery() {
         return $this->query;
     }
     
@@ -254,7 +254,7 @@
      * @param string $query the SQL query to set
      * @return object DatabaseQueryRunner
      */
-    public function setQuery($query){
+    public function setQuery($query) {
         $this->query = $query;
         return $this;
     }
@@ -264,7 +264,7 @@
      * @param boolean $returnType
      * @return object DatabaseQueryRunner
      */
-    public function setReturnType($returnType){
+    public function setReturnType($returnType) {
         $this->returnAsList = $returnType;
         return $this;
     }
@@ -274,7 +274,7 @@
      * @param boolean $status the status if true will return as array
      * @return object DatabaseQueryRunner
      */
-    public function setReturnAsArray($status = true){
+    public function setReturnAsArray($status = true) {
         $this->returnAsArray = $status;
         return $this;
     }
@@ -283,7 +283,7 @@
      * Return the error for last query execution
      * @return string
      */
-    public function getQueryError(){
+    public function getQueryError() {
         return $this->error;
     }
 
@@ -291,7 +291,7 @@
      * Return the PDO instance
      * @return object
      */
-    public function getPdo(){
+    public function getPdo() {
         return $this->pdo;
     }
 
@@ -300,7 +300,7 @@
      * @param PDO $pdo the pdo object
      * @return object DatabaseQueryRunner
      */
-    public function setPdo(PDO $pdo = null){
+    public function setPdo(PDO $pdo = null) {
         $this->pdo = $pdo;
         return $this;
     }
@@ -309,7 +309,7 @@
          * Return the database driver
          * @return string
          */
-    public function getDriver(){
+    public function getDriver() {
         return $this->driver;
     }
 
@@ -318,7 +318,7 @@
      * @param string $driver the new driver
      * @return object DatabaseQueryRunner
      */
-    public function setDriver($driver){
+    public function setDriver($driver) {
         $this->driver = $driver;
         return $this;
     }
@@ -328,14 +328,14 @@
      * 
      *  @return string
      */
-    protected function getBenchmarkKey(){
+    protected function getBenchmarkKey() {
         return md5($this->query . $this->returnAsList . $this->returnAsArray);
     }
     
     /**
      * Set error for database query execution
      */
-    protected function setQueryRunnerError(){
+    protected function setQueryRunnerError() {
         $error = $this->pdo->errorInfo();
         $this->error = isset($error[2]) ? $error[2] : '';
         $this->logger->error('The database query execution got an error: ' . stringfy_vars($error));
@@ -348,18 +348,18 @@
      * @param object $logger the Log instance if not null
      */
     protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null){
-      if ($logger !== null){
+        if ($logger !== null){
         $this->logger = $logger;
-      } else{
-          $this->logger =& class_loader('Log', 'classes');
-          $this->logger->setLogger('Library::DatabaseQueryRunner');
-      }
+        } else{
+            $this->logger =& class_loader('Log', 'classes');
+            $this->logger->setLogger('Library::DatabaseQueryRunner');
+        }
     }
     
     
     /**
-    * Reset the instance before run each query
-    */
+     * Reset the instance before run each query
+     */
     private function reset() {
         $this->error = null;
         $this->pdoStatment = null;

@@ -145,12 +145,12 @@
          * Initialise the model, tie into the CodeIgniter superobject and
          * try our best to guess the table name.
          */
-        public function __construct(Database $db = null){
-            if (is_object($db)){
+        public function __construct(Database $db = null) {
+            if (is_object($db)) {
                 $this->setDatabaseInstance($db);
-            } else{
+            } else {
                 $obj = & get_instance();
-                if (isset($obj->database) && is_object($obj->database)){
+                if (isset($obj->database) && is_object($obj->database)) {
                     /**
                      * NOTE: Need use "clone" because some Model need have the personal instance of the database library
                      * to prevent duplication
@@ -228,9 +228,9 @@
             $this->trigger('before_get');
             if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
             {
-                $this->getQueryBuilder()->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
+                $this->getQueryBuilder()->where($this->soft_delete_key, (bool) $this->_temporary_only_deleted);
             }
-            $type = $this->_temporary_return_type == 'array' ? 'array':false;
+            $type = $this->_temporary_return_type == 'array' ? 'array' : false;
             $this->getQueryBuilder()->from($this->_table);
             $result = $this->_database->getAll($type);
             $this->_temporary_return_type = $this->return_type;
@@ -263,7 +263,7 @@
                 $insert_id = $this->_database->insertId();
                 $this->trigger('after_create', $insert_id);
                 //if the table doesn't have the auto increment field or sequence, the value of 0 will be returned 
-                return ! $insert_id ? true : $insert_id;
+                return !$insert_id ? true : $insert_id;
             }
             else
             {
@@ -342,8 +342,7 @@
                 if (is_array($args[1])) {
                     $data = array_pop($args);
                 }
-            }
-            else if (count($args) == 3) {
+            } else if (count($args) == 3) {
                 if (is_array($args[2])) {
                     $data = array_pop($args);
                 }
@@ -383,7 +382,7 @@
             if ($this->soft_delete)
             {
                 $this->getQueryBuilder()->from($this->_table);	
-                $result = $this->_database->update(array( $this->soft_delete_key => TRUE ));
+                $result = $this->_database->update(array($this->soft_delete_key => TRUE));
             }
             else
             {
@@ -407,7 +406,7 @@
             if ($this->soft_delete)
             {
                 $this->getQueryBuilder()->from($this->_table);	
-                $result = $this->_database->update(array( $this->soft_delete_key => TRUE ));
+                $result = $this->_database->update(array($this->soft_delete_key => TRUE));
             }
             else
             {
@@ -429,7 +428,7 @@
             if ($this->soft_delete)
             {
                 $this->getQueryBuilder()->from($this->_table);	
-                $result = $this->_database->update(array( $this->soft_delete_key => TRUE ));
+                $result = $this->_database->update(array($this->soft_delete_key => TRUE));
             }
             else
             {
@@ -549,8 +548,8 @@
         /**
          * Enabled cache temporary
          */
-        public function cached($ttl = 0){
-            if ($ttl > 0){
+        public function cached($ttl = 0) {
+            if ($ttl > 0) {
             $this->_database = $this->_database->cached($ttl);
             }
             return $this;
@@ -701,13 +700,12 @@
             {
                 if (is_object($row))
                 {
-                    if (isset($row->$attr)){
+                    if (isset($row->$attr)) {
                         unset($row->$attr);
                     }
-                }
-                else
+                } else
                 {
-                    if (isset($row[$attr])){
+                    if (isset($row[$attr])) {
                         unset($row[$attr]);
                     }
                 }
@@ -719,7 +717,7 @@
              * Return the database instance
              * @return Database the database instance
              */
-        public function getDatabaseInstance(){
+        public function getDatabaseInstance() {
             return $this->_database;
         }
 
@@ -727,9 +725,9 @@
          * set the Database instance for future use
          * @param Database $db the database object
          */
-            public function setDatabaseInstance($db){
+            public function setDatabaseInstance($db) {
             $this->_database = $db;
-            if ($this->dbCacheTime > 0){
+            if ($this->dbCacheTime > 0) {
                 $this->_database->setCache($this->dbCacheTime);
             }
             return $this;
@@ -748,7 +746,7 @@
          * @param Loader $loader the loader object
          * @return object
          */
-            public function setLoader($loader){
+            public function setLoader($loader) {
             $this->loaderInstance = $loader;
             return $this;
         }
@@ -766,7 +764,7 @@
          * @param object $queryBuilder the DatabaseQueryBuilder object
          * @return object
          */
-            public function setQueryBuilder($queryBuilder){
+            public function setQueryBuilder($queryBuilder) {
             $this->_database->setQueryBuilder($queryBuilder);
             return $this;
         }
@@ -785,7 +783,7 @@
          * @param FormValidation $fv the form validation object
          * @return object
          */
-            public function setFormValidation($fv){
+            public function setFormValidation($fv) {
             $this->formValidationInstance = $fv;
             return $this;
         }
@@ -829,13 +827,13 @@
          * relate for the relation "belongs_to"
          * @return mixed
          */
-        protected function relateBelongsTo($row){
+        protected function relateBelongsTo($row) {
             foreach ($this->belongs_to as $key => $value)
             {
                 if (is_string($value))
                 {
                     $relationship = $value;
-                    $options = array( 'primary_key' => $value . '_id', 'model' => $value . '_model' );
+                    $options = array('primary_key' => $value . '_id', 'model' => $value . '_model');
                 } else
                 {
                     $relationship = $key;
@@ -846,15 +844,13 @@
                 {
                     if (is_object($this->loaderInstance)) {
                         $this->loaderInstance->model($options['model'], $relationship . '_model');
-                    }
-                    else {
+                    } else {
                         Loader::model($options['model'], $relationship . '_model');    
                     }
                     if (is_object($row))
                     {
                         $row->{$relationship} = $this->{$relationship . '_model'}->get($row->{$options['primary_key']});
-                    }
-                    else
+                    } else
                     {
                         $row[$relationship] = $this->{$relationship . '_model'}->get($row[$options['primary_key']]);
                     }
@@ -867,13 +863,13 @@
          * relate for the relation "has_many"
          * @return mixed
          */
-        protected function relateHasMany($row){
+        protected function relateHasMany($row) {
             foreach ($this->has_many as $key => $value)
             {
                 if (is_string($value))
                 {
                     $relationship = $value;
-                    $options = array( 'primary_key' => $this->_table . '_id', 'model' => $value . '_model' );
+                    $options = array('primary_key' => $this->_table . '_id', 'model' => $value . '_model');
                 } else
                 {
                     $relationship = $key;
@@ -884,15 +880,13 @@
                 {
                     if (is_object($this->loaderInstance)) {
                         $this->loaderInstance->model($options['model'], $relationship . '_model');
-                    }
-                    else {
+                    } else {
                         Loader::model($options['model'], $relationship . '_model');    
                     }
                     if (is_object($row))
                     {
                         $row->{$relationship} = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row->{$this->primary_key});
-                    }
-                    else
+                    } else
                     {
                         $row[$relationship] = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row[$this->primary_key]);
                     }
@@ -934,7 +928,7 @@
                 return $data;
             }
             $fv = $this->formValidationInstance;
-            if (! is_object($fv)){
+            if (!is_object($fv)) {
                     Loader::library('FormValidation');
                 $fv = $this->formvalidation;
                 $this->setFormValidation($fv);  
@@ -954,20 +948,18 @@
          * Set WHERE parameters, when is array
          * @param array $params
          */
-        protected function _set_where_array(array $params){
+        protected function _set_where_array(array $params) {
             foreach ($params as $field => $filter)
             {
                 if (is_array($filter))
                 {
                     $this->getQueryBuilder()->in($field, $filter);
-                }
-                else
+                } else
                 {
                     if (is_int($field))
                     {
                         $this->getQueryBuilder()->where($filter);
-                    }
-                    else
+                    } else
                     {
                         $this->getQueryBuilder()->where($field, $filter);
                     }
@@ -984,33 +976,27 @@
             if (count($params) == 1 && is_array($params[0]))
             {
                 $this->_set_where_array($params[0]);
-            }
-            else if (count($params) == 1)
+            } else if (count($params) == 1)
             {
                 $this->getQueryBuilder()->where($params[0]);
-            }
-            else if (count($params) == 2)
+            } else if (count($params) == 2)
             {
                 if (is_array($params[1]))
                 {
                     $this->getQueryBuilder()->in($params[0], $params[1]);
-                }
-                else
+                } else
                 {
                     $this->getQueryBuilder()->where($params[0], $params[1]);
                 }
-            }
-            else if (count($params) == 3)
+            } else if (count($params) == 3)
             {
                 $this->getQueryBuilder()->where($params[0], $params[1], $params[2]);
-            }
-            else
+            } else
             {
                 if (is_array($params[1]))
                 {
                     $this->getQueryBuilder()->in($params[0], $params[1]);
-                }
-                else
+                } else
                 {
                     $this->getQueryBuilder()->where($params[0], $params[1]);
                 }
@@ -1020,7 +1006,7 @@
         /**
             Shortcut to controller
          */
-        public function __get($key){
+        public function __get($key) {
             return get_instance()->{$key};
         }
 

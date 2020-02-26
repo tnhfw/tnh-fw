@@ -38,7 +38,7 @@
      *  @since 1.0.0
      *  @filesource
      */
-    class Assets extends BaseStaticClass{
+    class Assets extends BaseStaticClass {
 
 
         /**
@@ -53,13 +53,13 @@
          *  @param string $asset the name of the assets file path with the extension.
          *  @return string|null the absolute path of the assets file, if it exists otherwise returns null if the file does not exist.
          */
-        public static function path($asset){
+        public static function path($asset) {
             $logger = self::getLogger();	
             $path = ASSETS_PATH . $asset;
 			
             $logger->debug('Including the Assets file [' . $path . ']');
             //Check if the file exists
-            if(file_exists($path)){
+            if (file_exists($path)) {
                 $logger->info('Assets file [' . $path . '] included successfully');
                 return Url::base_url($path);
             }
@@ -79,7 +79,7 @@
          *  @param string $path the name of the css file without the extension.
          *  @return string|null the absolute path of the css file, if it exists otherwise returns null if the file does not exist.
          */
-        public static function css($path){
+        public static function css($path) {
             $logger = self::getLogger();
             /*
 			* if the file name contains the ".css" extension, replace it with 
@@ -90,7 +90,7 @@
 			
             $logger->debug('Including the Assets file [' . $path . '] for CSS');
             //Check if the file exists
-            if(file_exists($path)){
+            if (file_exists($path)) {
                 $logger->info('Assets file [' . $path . '] for CSS included successfully');
                 return Url::base_url($path);
             }
@@ -110,12 +110,12 @@
          *  @param string $path the name of the javascript file without the extension.
          *  @return string|null the absolute path of the javascript file, if it exists otherwise returns null if the file does not exist.
          */
-        public static function js($path){
+        public static function js($path) {
             $logger = self::getLogger();
             $path = str_ireplace('.js', '', $path);
             $path = ASSETS_PATH . 'js/' . $path . '.js';
             $logger->debug('Including the Assets file [' . $path . '] for javascript');
-            if(file_exists($path)){
+            if (file_exists($path)) {
                 $logger->info('Assets file [' . $path . '] for Javascript included successfully');
                 return Url::base_url($path);
             }
@@ -135,11 +135,11 @@
          *  @param string $path the name of the image file with the extension.
          *  @return string|null the absolute path of the image file, if it exists otherwise returns null if the file does not exist.
          */
-        public static function img($path){
+        public static function img($path) {
             $logger = self::getLogger();
             $path = ASSETS_PATH . 'images/' . $path;
             $logger->debug('Including the Assets file [' . $path . '] for image');
-            if(file_exists($path)){
+            if (file_exists($path)) {
                 $logger->info('Assets file [' . $path . '] for image included successfully');
                 return Url::base_url($path);
             }

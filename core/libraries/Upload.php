@@ -37,7 +37,7 @@
      *    @package FileUpload
      *    @version 1.5
      */
-    class Upload extends BaseClass{
+    class Upload extends BaseClass {
 
         /**
          *   Version
@@ -69,7 +69,7 @@
          *    @version    1.0
          *    @var        array
          */
-        private $file_array    = array();
+        private $file_array = array();
 
         /**
          *    If the file you are trying to upload already exists it will
@@ -119,7 +119,7 @@
          *    @version    1.0
          *    @var        float
          */
-        private $max_file_size= 0.0;
+        private $max_file_size = 0.0;
 
         /**
          *    List of allowed mime types
@@ -211,11 +211,11 @@
          *    @return    object
          *    @method    object    __construct
          */
-        public function __construct(){
+        public function __construct() {
             parent::__construct();
 
             Loader::lang('file_upload');
-            $obj =& get_instance();
+            $obj = & get_instance();
 
             $this->error_messages = array(
                 'upload_err_ini_size' => $obj->lang->get('fu_upload_err_ini_size'),
@@ -470,8 +470,8 @@
                     if (mkdir($destination_directory, 0775, true)) {
                         $this->destination_directory = $destination_directory;
                         chdir($destination_directory);
-                    } else{
-                        $this->logger->warning('Can not create the upload directory [' .$destination_directory. ']');
+                    } else {
+                        $this->logger->warning('Can not create the upload directory [' . $destination_directory . ']');
                     }
                 }
             }
@@ -617,12 +617,12 @@
          *    @return    boolean
          *    @method    boolean    save
          */
-        public function save(){
+        public function save() {
             if (count($this->file_array) > 0 && array_key_exists($this->input, $this->file_array)) {
                 // set original filename if not have a new name
                 if (empty($this->filename)) {
                     $this->filename = $this->file_array[$this->input]['name'];
-                } else{
+                } else {
                     // Replace %s for extension in filename
                     // Before: /[\w\d]*(.[\d\w]+)$/i
                     // After: /^[\s[:alnum:]\-\_\.]*\.([\d\w]+)$/iu
@@ -745,21 +745,21 @@
          * Check if file upload has error
          * @return boolean
          */
-        protected function uploadHasError(){
+        protected function uploadHasError() {
             //check if file upload is  allowed in the configuration
-            if(! ini_get('file_uploads')){
+            if (!ini_get('file_uploads')) {
                 $this->setError($this->error_messages['file_uploads']);
                 return true;
             }
 
                 //check for php upload error
-            if(is_numeric($this->file['error']) && $this->file['error'] > 0){
+            if (is_numeric($this->file['error']) && $this->file['error'] > 0) {
                 $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
                 return true;
             }
             
             //check for mime type
-            if (! $this->checkMimeType($this->file['mime'])) {
+            if (!$this->checkMimeType($this->file['mime'])) {
                 $this->setError($this->error_messages['accept_file_types']);
                 return true;
             }

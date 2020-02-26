@@ -24,7 +24,7 @@
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
 
-    class Controller extends BaseClass{
+    class Controller extends BaseClass {
 		
         /**
          * The name of the module if this controller belong to an module
@@ -42,7 +42,7 @@
         /**
          * Class constructor
          */
-        public function __construct(){
+        public function __construct() {
             parent::__construct();
 			
             //instance of the super object
@@ -50,8 +50,8 @@
 
             //Load the resources loaded during the application bootstrap
             $this->logger->debug('Adding the loaded classes to the super instance');
-            foreach (class_loaded() as $var => $class){
-                $this->$var =& class_loader($class);
+            foreach (class_loaded() as $var => $class) {
+                $this->$var = & class_loader($class);
             }
 			
             //set module using the router
@@ -83,9 +83,9 @@
         /**
          * This method is used to set the module name
          */
-        protected function setModuleNameFromRouter(){
+        protected function setModuleNameFromRouter() {
             //set the module using the router instance
-            if(isset($this->router) && $this->router->getModule()){
+            if (isset($this->router) && $this->router->getModule()) {
                 $this->moduleName = $this->router->getModule();
             }
         }
@@ -94,13 +94,13 @@
          * Set the cache using the argument otherwise will use the configuration
          * @param CacheInterface $cache the implementation of CacheInterface if null will use the configured
          */
-        protected function setCacheFromParamOrConfig(CacheInterface $cache = null){
+        protected function setCacheFromParamOrConfig(CacheInterface $cache = null) {
             $this->logger->debug('Setting the cache handler instance');
             //set cache handler instance
-            if(get_config('cache_enable', false)){
-                if ($cache !== null){
+            if (get_config('cache_enable', false)) {
+                if ($cache !== null) {
                     $this->cache = $cache;
-                } else if (isset($this->{strtolower(get_config('cache_handler'))})){
+                } else if (isset($this->{strtolower(get_config('cache_handler'))})) {
                     $this->cache = $this->{strtolower(get_config('cache_handler'))};
                     unset($this->{strtolower(get_config('cache_handler'))});
                 } 
@@ -112,15 +112,15 @@
          * This method is used to load the required resources for framework to work
          * @return void 
          */
-        private function loadRequiredResources(){
+        private function loadRequiredResources() {
             $this->logger->debug('Loading the required classes into super instance');
-            $this->eventdispatcher =& class_loader('EventDispatcher', 'classes');
-            $this->loader =& class_loader('Loader', 'classes');
-            $this->lang =& class_loader('Lang', 'classes');
-            $this->request =& class_loader('Request', 'classes');
+            $this->eventdispatcher = & class_loader('EventDispatcher', 'classes');
+            $this->loader = & class_loader('Loader', 'classes');
+            $this->lang = & class_loader('Lang', 'classes');
+            $this->request = & class_loader('Request', 'classes');
             //dispatch the request instance created event
             $this->eventdispatcher->dispatch('REQUEST_CREATED');
-            $this->response =& class_loader('Response', 'classes', 'classes');
+            $this->response = & class_loader('Response', 'classes', 'classes');
         }
 
     }

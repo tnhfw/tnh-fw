@@ -23,92 +23,92 @@
      * along with this program; if not, write to the Free Software
      * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
-    class Database extends BaseClass{
+    class Database extends BaseClass {
 	
         /**
          * The PDO instance
          * @var object
          */
-    private $pdo                 = null;
+    private $pdo = null;
     
         /**
          * The database name used for the application
          * @var string
          */
-        private $databaseName        = null;
+        private $databaseName = null;
 	
         /**
          * The number of rows returned by the last query
          * @var int
          */
-    private $numRows             = 0;
+    private $numRows = 0;
 	
         /**
          * The last insert id for the primary key column that have auto increment or sequence
          * @var mixed
          */
-    private $insertId            = null;
+    private $insertId = null;
 	
         /**
          * The full SQL query statment after build for each command
          * @var string
          */
-    private $query               = null;
+    private $query = null;
 	
         /**
          * The result returned for the last query
          * @var mixed
          */
-    private $result              = array();
+    private $result = array();
 	
         /**
          * The cache default time to live in second. 0 means no need to use the cache feature
          * @var int
          */
-        private $cacheTtl             = 0;
+        private $cacheTtl = 0;
 	
         /**
          * The cache current time to live. 0 means no need to use the cache feature
          * @var int
          */
-    private $temporaryCacheTtl   = 0;
+    private $temporaryCacheTtl = 0;
 	
         /**
          * The number of executed query for the current request
          * @var int
          */
-    private $queryCount          = 0;
+    private $queryCount = 0;
 	
         /**
          * The default data to be used in the statments query INSERT, UPDATE
          * @var array
          */
-    private $data                = array();
+    private $data = array();
 	
         /**
          * The database configuration
          * @var array
          */
-    private $config              = array();
+    private $config = array();
 	
     /**
      * The cache instance
      * @var object
      */
-    private $cacheInstance       = null;
+    private $cacheInstance = null;
 
     
         /**
          * The DatabaseQueryBuilder instance
          * @var object
          */
-    protected $queryBuilder        = null;
+    protected $queryBuilder = null;
     
     /**
      * The DatabaseQueryRunner instance
      * @var object
      */
-    protected $queryRunner         = null;
+    protected $queryRunner = null;
 
 
     /**
@@ -136,10 +136,10 @@
      * This is used to connect to database
      * @return bool 
      */
-    public function connect(){
+    public function connect() {
         $config = $this->getDatabaseConfiguration();
-        if (! empty($config)){
-        try{
+        if (!empty($config)) {
+        try {
             $this->pdo = new PDO($this->getDsnValueFromConfig(), $config['username'], $config['password']);
             $this->pdo->exec("SET NAMES '" . $config['charset'] . "' COLLATE '" . $config['collation'] . "'");
             $this->pdo->exec("SET CHARACTER SET '" . $config['charset'] . "'");
@@ -149,13 +149,13 @@
             $this->updateQueryBuilderAndRunnerProperties();
 
             return is_object($this->pdo);
-          } catch (PDOException $e){
+            } catch (PDOException $e){
             $this->logger->fatal($e->getMessage());
             show_error('Cannot connect to Database.');
             return false;
-          }
-      }
-      return false;
+            }
+        }
+        return false;
     }
 
 
@@ -163,7 +163,7 @@
      * Return the number of rows returned by the current query
      * @return int
      */
-    public function numRows(){
+    public function numRows() {
         return $this->numRows;
     }
 
@@ -171,7 +171,7 @@
      * Return the last insert id value
      * @return mixed
      */
-    public function insertId(){
+    public function insertId() {
         return $this->insertId;
     }
 
@@ -182,10 +182,10 @@
      * If is string will determine the result type "array" or "object"
      * @return mixed       the query SQL string or the record result
      */
-    public function get($returnSQLQueryOrResultType = false){
+    public function get($returnSQLQueryOrResultType = false) {
         $this->queryBuilder->limit(1);
         $query = $this->getAll(true);
-        if ($returnSQLQueryOrResultType === true){
+        if ($returnSQLQueryOrResultType === true) {
         return $query;
         } else {
         return $this->query($query, false, $returnSQLQueryOrResultType == 'array');
@@ -198,9 +198,9 @@
      * If is string will determine the result type "array" or "object"
      * @return mixed       the query SQL string or the record result
      */
-    public function getAll($returnSQLQueryOrResultType = false){
+    public function getAll($returnSQLQueryOrResultType = false) {
         $query = $this->queryBuilder->getQuery();
-        if ($returnSQLQueryOrResultType === true){
+        if ($returnSQLQueryOrResultType === true) {
             return $query;
         }
         return $this->query($query, true, $returnSQLQueryOrResultType == 'array');
@@ -212,18 +212,18 @@
      * @param  boolean $escape  whether to escape or not the values
      * @return mixed          the insert id of the new record or null
      */
-    public function insert($data = array(), $escape = true){
-        if (empty($data) && ! empty($this->data)){
+    public function insert($data = array(), $escape = true) {
+        if (empty($data) && !empty($this->data)) {
         //as when using $this->setData() may be the data already escaped
         $escape = false;
         $data = $this->data;
         }
         $query = $this->queryBuilder->insert($data, $escape)->getQuery();
         $result = $this->query($query);
-        if ($result){
+        if ($result) {
         $this->insertId = $this->pdo->lastInsertId();
             //if the table doesn't have the auto increment field or sequence, the value of 0 will be returned 
-        return ! ($this->insertId) ? true : $this->insertId;
+        return !($this->insertId) ? true : $this->insertId;
         }
         return false;
     }
@@ -234,8 +234,8 @@
      * @param  boolean $escape  whether to escape or not the values
      * @return mixed          the update status
      */
-    public function update($data = array(), $escape = true){
-        if (empty($data) && ! empty($this->data)){
+    public function update($data = array(), $escape = true) {
+        if (empty($data) && !empty($this->data)) {
         //as when using $this->setData() may be the data already escaped
         $escape = false;
         $data = $this->data;
@@ -248,7 +248,7 @@
      * Delete the record in database
      * @return mixed the delete status
      */
-    public function delete(){
+    public function delete() {
             $query = $this->queryBuilder->delete()->getQuery();
         return $this->query($query);
     }
@@ -258,7 +258,7 @@
      * @param integer $ttl the cache time to live in second
      * @return object        the current Database instance
      */
-    public function setCache($ttl = 0){
+    public function setCache($ttl = 0) {
         $this->cacheTtl = $ttl;
         $this->temporaryCacheTtl = $ttl;
         return $this;
@@ -269,7 +269,7 @@
      * @param  integer $ttl the cache time to live in second
      * @return object        the current Database instance
      */
-        public function cached($ttl = 0){
+        public function cached($ttl = 0) {
         $this->temporaryCacheTtl = $ttl;
         return $this;
     }
@@ -281,9 +281,9 @@
      * @return mixed       the data after escaped or the same data if no
      * need escaped
      */
-    public function escape($data, $escaped = true){
+    public function escape($data, $escaped = true) {
         $data = trim($data);
-        if($escaped){
+        if ($escaped) {
         return $this->pdo->quote($data);
         }
         return $data; 
@@ -293,7 +293,7 @@
      * Return the number query executed count for the current request
      * @return int
      */
-    public function queryCount(){
+    public function queryCount() {
         return $this->queryCount;
     }
 
@@ -301,7 +301,7 @@
      * Return the current query SQL string
      * @return string
      */
-    public function getQuery(){
+    public function getQuery() {
         return $this->query;
     }
 
@@ -309,7 +309,7 @@
      * Return the application database name
      * @return string
      */
-    public function getDatabaseName(){
+    public function getDatabaseName() {
         return $this->databaseName;
     }
 
@@ -317,7 +317,7 @@
      * Return the PDO instance
      * @return object
      */
-    public function getPdo(){
+    public function getPdo() {
         return $this->pdo;
     }
 
@@ -326,7 +326,7 @@
      * @param object $pdo the pdo object
      * @return object Database
      */
-    public function setPdo(PDO $pdo){
+    public function setPdo(PDO $pdo) {
         $this->pdo = $pdo;
         return $this;
     }
@@ -335,7 +335,7 @@
          * Return the cache instance
          * @return CacheInterface
          */
-    public function getCacheInstance(){
+    public function getCacheInstance() {
         return $this->cacheInstance;
     }
 
@@ -344,7 +344,7 @@
      * @param CacheInterface $cache the cache object
      * @return object Database
      */
-    public function setCacheInstance($cache){
+    public function setCacheInstance($cache) {
         $this->cacheInstance = $cache;
         return $this;
     }
@@ -354,7 +354,7 @@
          * Return the DatabaseQueryBuilder instance
          * @return object DatabaseQueryBuilder
          */
-    public function getQueryBuilder(){
+    public function getQueryBuilder() {
         return $this->queryBuilder;
     }
 
@@ -362,7 +362,7 @@
      * Set the DatabaseQueryBuilder instance
      * @param object DatabaseQueryBuilder $queryBuilder the DatabaseQueryBuilder object
      */
-    public function setQueryBuilder(DatabaseQueryBuilder $queryBuilder){
+    public function setQueryBuilder(DatabaseQueryBuilder $queryBuilder) {
         $this->queryBuilder = $queryBuilder;
         return $this;
     }
@@ -371,7 +371,7 @@
      * Return the DatabaseQueryRunner instance
      * @return object DatabaseQueryRunner
      */
-    public function getQueryRunner(){
+    public function getQueryRunner() {
         return $this->queryRunner;
     }
 
@@ -379,7 +379,7 @@
      * Set the DatabaseQueryRunner instance
      * @param object DatabaseQueryRunner $queryRunner the DatabaseQueryRunner object
      */
-    public function setQueryRunner(DatabaseQueryRunner $queryRunner){
+    public function setQueryRunner(DatabaseQueryRunner $queryRunner) {
         $this->queryRunner = $queryRunner;
         return $this;
     }
@@ -388,7 +388,7 @@
      * Return the data to be used for insert, update, etc.
      * @return array
      */
-    public function getData(){
+    public function getData() {
         return $this->data;
     }
 
@@ -399,9 +399,9 @@
      * @param boolean $escape whether to escape or not the $value
      * @return object        the current Database instance
      */
-    public function setData($key, $value = null, $escape = true){
-        if (is_array($key)){
-            foreach($key as $k => $v){
+    public function setData($key, $value = null, $escape = true) {
+        if (is_array($key)) {
+            foreach ($key as $k => $v) {
                 $this->setData($k, $v, $escape);
             }	
         } else {
@@ -417,7 +417,7 @@
          * @param  boolean $returnAsArray return the result as array or not
          * @return mixed         the query result
          */
-    public function query($query, $returnAsList = true, $returnAsArray = false){
+    public function query($query, $returnAsList = true, $returnAsArray = false) {
         $this->reset();
         $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
         //If is the SELECT query
@@ -438,12 +438,12 @@
         //if can use cache feature for this query
         $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
     
-        if ($dbCacheStatus && $isSqlSELECTQuery){
+        if ($dbCacheStatus && $isSqlSELECTQuery) {
             $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
             $cacheContent = $this->getCacheContentForQuery($query, $returnAsList, $returnAsArray);  
         }
       
-        if (!$cacheContent){
+        if (!$cacheContent) {
                 //count the number of query execution to server
         $this->queryCount++;
         
@@ -452,19 +452,19 @@
                                             ->setReturnAsArray($returnAsArray)
                                             ->execute();
 
-        if (!is_object($queryResult)){
+        if (!is_object($queryResult)) {
             $this->result = false;
             $this->numRows = 0;
             return $this->result;
         }
         $this->result  = $queryResult->getResult();
         $this->numRows = $queryResult->getNumRows();
-        if ($isSqlSELECTQuery && $dbCacheStatus){
+        if ($isSqlSELECTQuery && $dbCacheStatus) {
             $key = $this->getCacheKeyForQuery($this->query, $returnAsList, $returnAsArray);
             $this->setCacheContentForQuery($this->query, $key, $this->result, $cacheExpire);
         }
-        } else if ($isSqlSELECTQuery){
-            $this->logger->info('The result for query [' .$this->query. '] already cached use it');
+        } else if ($isSqlSELECTQuery) {
+            $this->logger->info('The result for query [' . $this->query . '] already cached use it');
             $this->result = $cacheContent;
             $this->numRows = count($this->result);
         }
@@ -478,9 +478,9 @@
      * @param boolean $autoConnect whether to connect to database after set the configuration
      * @return object Database
      */
-    public function setDatabaseConfiguration(array $overwriteConfig = array(), $useConfigFile = true, $autoConnect = false){
+    public function setDatabaseConfiguration(array $overwriteConfig = array(), $useConfigFile = true, $autoConnect = false) {
         $db = array();
-        if ($useConfigFile && file_exists(CONFIG_PATH . 'database.php')){
+        if ($useConfigFile && file_exists(CONFIG_PATH . 'database.php')) {
             //here don't use require_once because somewhere user can create database instance directly
             require CONFIG_PATH . 'database.php';
         }
@@ -495,7 +495,7 @@
         //determine the port using the hostname like localhost:3307
         //hostname will be "localhost", and port "3307"
         $p = explode(':', $config['hostname']);
-        if (count($p) >= 2){
+        if (count($p) >= 2) {
             $config['hostname'] = $p[0];
             $config['port'] = $p[1];
             }
@@ -509,7 +509,7 @@
                                                             array('password' => string_hidden($this->config['password']))
                                                 ))
                             );
-        if($autoConnect){
+        if ($autoConnect) {
                 //Now connect to the database
                 $this->connect();
             }
@@ -520,14 +520,14 @@
      * Return the database configuration
      * @return array
      */
-    public  function getDatabaseConfiguration(){
+    public  function getDatabaseConfiguration() {
         return $this->config;
     }
 
     /**
      * Close the connexion
      */
-    public function close(){
+    public function close() {
         $this->pdo = null;
     }
 
@@ -535,7 +535,7 @@
      * Return the database default configuration
      * @return array
      */
-    protected function getDatabaseDefaultConfiguration(){
+    protected function getDatabaseDefaultConfiguration() {
         return array(
                 'driver' => '',
                 'username' => '',
@@ -553,16 +553,16 @@
      * Update the DatabaseQueryBuilder and DatabaseQueryRunner properties
      * @return void
      */
-    protected function updateQueryBuilderAndRunnerProperties(){
+    protected function updateQueryBuilderAndRunnerProperties() {
         //update queryBuilder with some properties needed
-        if (is_object($this->queryBuilder)){
+        if (is_object($this->queryBuilder)) {
         $this->queryBuilder->setDriver($this->config['driver'])
                             ->setPrefix($this->config['prefix'])
                             ->setPdo($this->pdo);
         }
 
         //update queryRunner with some properties needed
-        if (is_object($this->queryRunner)){
+        if (is_object($this->queryRunner)) {
         $this->queryRunner->setDriver($this->config['driver'])
                             ->setPdo($this->pdo);
         }
@@ -573,10 +573,10 @@
      * This method is used to get the PDO DSN string using the configured driver
      * @return string|null the DSN string or null if can not find it
      */
-    protected function getDsnValueFromConfig(){
+    protected function getDsnValueFromConfig() {
         $dsn = null;
         $config = $this->getDatabaseConfiguration();
-        if (! empty($config)){
+        if (!empty($config)) {
         $driver = $config['driver'];
         $driverDsnMap = array(
                                 'mysql'  => $this->getDsnValueForDriver('mysql'),
@@ -584,7 +584,7 @@
                                 'sqlite' => $this->getDsnValueForDriver('sqlite'),
                                 'oracle' => $this->getDsnValueForDriver('oracle')
                                 );
-        if (isset($driverDsnMap[$driver])){
+        if (isset($driverDsnMap[$driver])) {
             $dsn = $driverDsnMap[$driver];
         }
         }    
@@ -603,23 +603,23 @@
         return null;
         }
         switch ($driver) {
-        case 'mysql':
-        case 'pgsql':
-          $port = '';
-            if (! empty($config['port'])) {
-            $port = 'port=' . $config['port'] . ';';
-            }
-            $dsn = $driver . ':host=' . $config['hostname'] . ';' . $port . 'dbname=' . $config['database'];
-            break;
-        case 'sqlite':
-          $dsn = 'sqlite:' . $config['database'];
-            break;
+            case 'mysql':
+            case 'pgsql':
+              $port = '';
+                if (! empty($config['port'])) {
+                $port = 'port=' . $config['port'] . ';';
+                }
+                $dsn = $driver . ':host=' . $config['hostname'] . ';' . $port . 'dbname=' . $config['database'];
+                break;
+            case 'sqlite':
+              $dsn = 'sqlite:' . $config['database'];
+                break;
             case 'oracle':
           $port = '';
-            if (! empty($config['port'])) {
+            if (!empty($config['port'])) {
             $port = ':' . $config['port'];
             }
-            $dsn =  'oci:dbname=' . $config['hostname'] . $port . '/' . $config['database'];
+            $dsn = 'oci:dbname=' . $config['hostname'] . $port . '/' . $config['database'];
             break;
         }
         return $dsn;
@@ -631,9 +631,9 @@
      *      
      * @return mixed
      */
-    protected function getCacheContentForQuery($query, $returnAsList, $returnAsArray){
+    protected function getCacheContentForQuery($query, $returnAsList, $returnAsArray) {
         $cacheKey = $this->getCacheKeyForQuery($query, $returnAsList, $returnAsArray);
-        if (! is_object($this->cacheInstance)){
+        if (!is_object($this->cacheInstance)) {
                 //can not call method with reference in argument
                 //like $this->setCacheInstance(& get_instance()->cache);
                 //use temporary variable
@@ -650,9 +650,9 @@
      * @param mixed $result the query result to save
      * @param int $expire the cache TTL
      */
-        protected function setCacheContentForQuery($query, $key, $result, $expire){
-        $this->logger->info('Save the result for query [' .$query. '] into cache for future use');
-        if (! is_object($this->cacheInstance)){
+        protected function setCacheContentForQuery($query, $key, $result, $expire) {
+        $this->logger->info('Save the result for query [' . $query . '] into cache for future use');
+        if (!is_object($this->cacheInstance)) {
                     //can not call method with reference in argument
                     //like $this->setCacheInstance(& get_instance()->cache);
                     //use temporary variable
@@ -669,7 +669,7 @@
          * 
          *  @return string
          */
-    protected function getCacheKeyForQuery($query, $returnAsList, $returnAsArray){
+    protected function getCacheKeyForQuery($query, $returnAsList, $returnAsArray) {
         return md5($query . $returnAsList . $returnAsArray);
     }
 
@@ -677,7 +677,7 @@
     /**
      * Reset the database class attributs to the initail values before each query.
      */
-    private function reset(){
+    private function reset() {
         //query builder reset
         $this->queryBuilder->reset();
         $this->numRows  = 0;
@@ -690,7 +690,7 @@
     /**
      * The class destructor
      */
-    public function __destruct(){
+    public function __destruct() {
         $this->pdo = null;
     }
 

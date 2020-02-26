@@ -27,11 +27,11 @@
     /**
      * check if the interface "SessionHandlerInterface" exists (normally in PHP 5.4 this already exists)
      */
-    if ( !interface_exists('SessionHandlerInterface')){
+    if (!interface_exists('SessionHandlerInterface')) {
         show_error('"SessionHandlerInterface" interface does not exists or is disabled can not use it to handler database session.');
     }
 
-    class DBSessionHandler extends BaseClass implements SessionHandlerInterface{
+    class DBSessionHandler extends BaseClass implements SessionHandlerInterface {
 		
         /**
          * The encryption method to use to encrypt session data in database
@@ -79,7 +79,7 @@
          * Create new instance of Database session handler
          * @param object $modelInstance the model instance
          */
-        public function __construct(DBSessionHandlerModel $modelInstance = null){
+        public function __construct(DBSessionHandlerModel $modelInstance = null) {
             parent::__construct();
 			
             //Set Loader instance to use
@@ -87,7 +87,7 @@
 	       
             $this->OBJ = & get_instance();
 		    
-            if (is_object($modelInstance)){
+            if (is_object($modelInstance)) {
                 $this->setModelInstance($modelInstance);
             }
         }
@@ -96,7 +96,7 @@
          * Set the session secret used to encrypt the data in database 
          * @param string $secret the base64 string secret
          */
-        public function setSessionSecret($secret){
+        public function setSessionSecret($secret) {
             $this->sessionSecret = $secret;
             return $this;
         }
@@ -105,7 +105,7 @@
          * Return the session secret
          * @return string 
          */
-        public function getSessionSecret(){
+        public function getSessionSecret() {
             return $this->sessionSecret;
         }
 
@@ -114,7 +114,7 @@
          * Set the initializer vector for openssl 
          * @param string $key the session secret used in base64 format
          */
-        public function setInitializerVector($key){
+        public function setInitializerVector($key) {
             $ivLength = openssl_cipher_iv_length(self::DB_SESSION_HASH_METHOD);
             $key = base64_decode($key);
             $this->iv = substr(hash('sha256', $key), 0, $ivLength);
@@ -125,7 +125,7 @@
          * Return the initializer vector
          * @return string 
          */
-        public function getInitializerVector(){
+        public function getInitializerVector() {
             return $this->iv;
         }
 
@@ -135,17 +135,17 @@
          * @param  string $sessionName the session name
          * @return boolean 
          */
-        public function open($savePath, $sessionName){
+        public function open($savePath, $sessionName) {
             $this->logger->debug('Opening database session handler for [' . $sessionName . ']');
             //try to check if session secret is set before
             $secret = $this->getSessionSecret();
-            if (empty($secret)){
+            if (empty($secret)) {
                 $secret = get_config('session_secret', null);
                 $this->setSessionSecret($secret);
             }
             $this->logger->info('Session secret: ' . $secret);
 
-            if (! is_object($this->modelInstance)){
+            if (!is_object($this->modelInstance)) {
                 $this->setModelInstanceFromSessionConfig();
             }
             $this->setInitializerVector($secret);
@@ -153,7 +153,7 @@
             //set session tables columns
             $this->sessionTableColumns = $this->modelInstance->getSessionTableColumns();
 
-            if (empty($this->sessionTableColumns)){
+            if (empty($this->sessionTableColumns)) {
                 show_error('The session handler is "database" but the table columns not set');
             }
             $this->logger->info('Database session, the model columns are listed below: ' . stringfy_vars($this->sessionTableColumns));
@@ -169,7 +169,7 @@
          * Close the session
          * @return boolean
          */
-        public function close(){
+        public function close() {
             $this->logger->debug('Closing database session handler');
             return true;
         }
@@ -179,7 +179,7 @@
          * @param  string $sid the session id to use
          * @return string      the session data in serialiaze format
          */
-        public function read($sid){
+        public function read($sid) {
             $this->logger->debug('Reading database session data for SID: ' . $sid);
             $instance = $this->getModelInstance();
             $columns = $this->sessionTableColumns;
@@ -188,13 +188,13 @@
 			
             $ip = get_ip();
             $host = @gethostbyaddr($ip) or null;
-            $browser = $this->OBJ->browser->getPlatform().', '.$this->OBJ->browser->getBrowser().' '.$this->OBJ->browser->getVersion();
+            $browser = $this->OBJ->browser->getPlatform() . ', ' . $this->OBJ->browser->getBrowser() . ' ' . $this->OBJ->browser->getVersion();
 			
             $data = $instance->get_by(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
-            if ($data && isset($data->{$columns['sdata']})){
+            if ($data && isset($data->{$columns['sdata']})) {
                 //checking inactivity 
                 $timeInactivity = time() - get_config('session_inactivity_time', 100);
-                if ($data->{$columns['stime']} < $timeInactivity){
+                if ($data->{$columns['stime']} < $timeInactivity) {
                     $this->logger->info('Database session data for SID: ' . $sid . ' already expired, destroy it');
                     $this->destroy($sid);
                     return null;
@@ -211,7 +211,7 @@
          * @param  mixed $data the session data to save in serialize format
          * @return boolean 
          */
-        public function write($sid, $data){
+        public function write($sid, $data) {
             $this->logger->debug('Saving database session data for SID: ' . $sid . ', data: ' . stringfy_vars($data));
             $instance = $this->getModelInstance();
             $columns = $this->sessionTableColumns;
@@ -222,7 +222,7 @@
             $ip = get_ip();
             $keyValue = $instance->getKeyValue();
             $host = @gethostbyaddr($ip) or null;
-            $browser = $this->OBJ->browser->getPlatform().', '.$this->OBJ->browser->getBrowser().' '.$this->OBJ->browser->getVersion();
+            $browser = $this->OBJ->browser->getPlatform() . ', ' . $this->OBJ->browser->getBrowser() . ' ' . $this->OBJ->browser->getVersion();
             $data = $this->encode($data);
             $params = array(
                             $columns['sid'] => $sid,
@@ -235,7 +235,7 @@
                         );
             $this->logger->info('Database session data to save are listed below :' . stringfy_vars($params));
             $exists = $instance->get($sid);
-            if ($exists){
+            if ($exists) {
                 $this->logger->info('Session data for SID: ' . $sid . ' already exists, just update it');
                 //update
                 unset($params[$columns['sid']]);
@@ -251,7 +251,7 @@
          * @param  string $sid the session id value
          * @return boolean
          */
-        public function destroy($sid){
+        public function destroy($sid) {
             $this->logger->debug('Destroy of session data for SID: ' . $sid);
             $instance = $this->modelInstance;
             $instance->delete($sid);
@@ -263,7 +263,7 @@
          * @param  integer $maxLifetime the max lifetime
          * @return boolean
          */
-        public function gc($maxLifetime){
+        public function gc($maxLifetime) {
             $instance = $this->modelInstance;
             $time = time() - $maxLifetime;
             $this->logger->debug('Garbage collector of expired session. maxLifetime [' . $maxLifetime . '] sec, expired time [' . $time . ']');
@@ -276,9 +276,9 @@
          * @param  mixed $data the session data to encode
          * @return mixed the encoded session data
          */
-        public function encode($data){
+        public function encode($data) {
             $key = base64_decode($this->sessionSecret);
-            $dataEncrypted = openssl_encrypt($data , self::DB_SESSION_HASH_METHOD, $key, OPENSSL_RAW_DATA, $this->getInitializerVector());
+            $dataEncrypted = openssl_encrypt($data, self::DB_SESSION_HASH_METHOD, $key, OPENSSL_RAW_DATA, $this->getInitializerVector());
             $output = base64_encode($dataEncrypted);
             return $output;
         }
@@ -289,7 +289,7 @@
          * @param  mixed $data the data to decode
          * @return mixed       the decoded data
          */
-        public function decode($data){
+        public function decode($data) {
             $key = base64_decode($this->sessionSecret);
             $data = base64_decode($data);
             $data = openssl_decrypt($data, self::DB_SESSION_HASH_METHOD, $key, OPENSSL_RAW_DATA, $this->getInitializerVector());
@@ -309,7 +309,7 @@
          * set the loader instance for future use
          * @param object Loader $loader the loader object
          */
-            public function setLoader($loader){
+            public function setLoader($loader) {
             $this->loader = $loader;
             return $this;
         }
@@ -326,7 +326,7 @@
          * set the model instance for future use
          * @param DBSessionHandlerModel $modelInstance the model object
          */
-            public function setModelInstance(DBSessionHandlerModel $modelInstance){
+            public function setModelInstance(DBSessionHandlerModel $modelInstance) {
             $this->modelInstance = $modelInstance;
             return $this;
         }
@@ -334,13 +334,13 @@
         /**
          * Set the model instance using the configuration for session
          */
-        protected function setModelInstanceFromSessionConfig(){
+        protected function setModelInstanceFromSessionConfig() {
             $modelName = get_config('session_save_path');
             $this->logger->info('The database session model: ' . $modelName);
             $this->loader->model($modelName, 'dbsessionhandlerinstance'); 
             //@codeCoverageIgnoreStart
             if (isset($this->OBJ->dbsessionhandlerinstance) 
-                && ! ($this->OBJ->dbsessionhandlerinstance instanceof DBSessionHandlerModel)
+                && !($this->OBJ->dbsessionhandlerinstance instanceof DBSessionHandlerModel)
             ) {
                 show_error('To use database session handler, your class model "' . get_class($this->OBJ->dbsessionhandlerinstance) . '" need extends "DBSessionHandlerModel"');
             }  

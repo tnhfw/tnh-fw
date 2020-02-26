@@ -25,13 +25,13 @@
      */
 
 
-        class FormValidation extends BaseClass{
+        class FormValidation extends BaseClass {
 		 
         /**
          * The form validation status
          * @var boolean
          */
-        protected $_success  = false;
+        protected $_success = false;
 
         /**
          * The list of errors messages
@@ -40,31 +40,31 @@
         protected $_errorsMessages = array();
         
         // Array of rule sets, fieldName => PIPE seperated ruleString
-        protected $_rules             = array();
+        protected $_rules = array();
         
         // Array of errors, niceName => Error Message
-        protected $_errors             = array();
+        protected $_errors = array();
         
         // Array of post Key => Nice name labels
-        protected $_labels          = array();
+        protected $_labels = array();
         
         /**
          * The errors delimiters
          * @var array
          */
-        protected $_allErrorsDelimiter   = array('<div class="error">', '</div>');
+        protected $_allErrorsDelimiter = array('<div class="error">', '</div>');
 
         /**
          * The each error delimiter
          * @var array
          */
-        protected $_eachErrorDelimiter   = array('<p class="error">', '</p>');
+        protected $_eachErrorDelimiter = array('<p class="error">', '</p>');
         
         /**
          * Indicated if need force the validation to be failed
          * @var boolean
          */
-        protected $_forceFail            = false;
+        protected $_forceFail = false;
 
         /**
          * The list of the error messages overrides by the original
@@ -177,7 +177,7 @@
          *
          * @return string the function name
          */
-        protected function _toCallCase($funcName, $prefix='_validate') {
+        protected function _toCallCase($funcName, $prefix = '_validate') {
             $funcName = strtolower($funcName);
             $finalFuncName = $prefix;
             foreach (explode('_', $funcName) as $funcNamePart) {
@@ -221,13 +221,13 @@
          * Validate the CSRF 
          * @return void 
          */
-        protected function validateCSRF(){
-            if(get_instance()->request->method() == 'POST'){
+        protected function validateCSRF() {
+            if (get_instance()->request->method() == 'POST') {
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
-                if (get_config('csrf_enable', false) && ! Security::validateCSRF()){
+                if (get_config('csrf_enable', false) && !Security::validateCSRF()) {
                     show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
-                } else{
+                } else {
                     $this->logger->info('CSRF is not enabled in configuration or not set manully, no need to check it');
                 }
             }
@@ -245,11 +245,11 @@
             $this->_forceFail = false;
 
             foreach ($this->getData() as $inputName => $inputVal) {
-    			if(is_array($this->data[$inputName])){
-    				$this->data[$inputName] = array_map('trim', $this->data[$inputName]);
-    			} else{
-    				$this->data[$inputName] = trim($this->data[$inputName]);
-    			}
+                if(is_array($this->data[$inputName])){
+                    $this->data[$inputName] = array_map('trim', $this->data[$inputName]);
+                } else{
+                    $this->data[$inputName] = trim($this->data[$inputName]);
+                }
 
                 if (array_key_exists($inputName, $this->_rules)) {
                     foreach ($this->_parseRuleString($this->_rules[$inputName]) as $eachRule) {
@@ -460,25 +460,25 @@
             /*
             //////////////// hack for regex rule that can contain "|"
             */
-            if(strpos($ruleString, 'regex') !== false){
+            if (strpos($ruleString, 'regex') !== false) {
                 $regexRule = array();
                 $rule = '#regex\[\/(.*)\/([a-zA-Z0-9]?)\]#';
                 preg_match($rule, $ruleString, $regexRule);
                 $ruleStringTemp = preg_replace($rule, '', $ruleString);
-                    if(!empty($regexRule[0])){
+                    if (!empty($regexRule[0])) {
                         $ruleSets[] = $regexRule[0];
                     }
                     $ruleStringRegex = explode('|', $ruleStringTemp);
                 foreach ($ruleStringRegex as $rule) {
                     $rule = trim($rule);
-                    if($rule){
+                    if ($rule) {
                         $ruleSets[] = $rule;
                     }
                 }
                  
             }
             /***********************************/
-            else{
+            else {
                 if (strpos($ruleString, '|') !== FALSE) {
                     $ruleSets = explode('|', $ruleString);
                 } else {
@@ -613,7 +613,7 @@
                     $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
                 }
             } else if($inputVal == '') {
-				$this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
+                $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
             }
         }
 
@@ -638,7 +638,7 @@
         protected function _validateCallback($inputName, $ruleName, array $ruleArgs) {
             if (function_exists($ruleArgs[1]) && !empty($this->data[$inputName])) {
                 $result = $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
-                if(! $result){
+                if (!$result) {
                     $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
                 }
             }
@@ -671,7 +671,7 @@
                         $this->_setError($inputName, $ruleName . ',post:key', array($this->_getLabel($inputName), $this->_getLabel(str_replace('post:', '', $doNotEqual))));
                         continue;
                     }
-                } else{
+                } else {
                     if ($inputVal == $doNotEqual) {
                         $this->_setError($inputName, $ruleName . ',string', array($this->_getLabel($inputName), $doNotEqual));
                         continue;
@@ -813,9 +813,9 @@
          */
         protected function _validateExists($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if (! is_object($this->databaseInstance)){
+            if (!is_object($this->databaseInstance)) {
                 $obj = & get_instance();
-                if(isset($obj->database)){
+                if (isset($obj->database)) {
                     $this->databaseInstance = $obj->database;
                 } 
             }
@@ -850,7 +850,7 @@
                                                         ->where($column, $inputVal);
             $this->databaseInstance->get();
             if ($this->databaseInstance->numRows() > 0) {
-                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -865,14 +865,14 @@
          */
         protected function _validateIsUniqueUpdate($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if (! is_object($this->databaseInstance)){
+            if (!is_object($this->databaseInstance)) {
                 $obj = & get_instance();
-                if(isset($obj->database)){
+                if (isset($obj->database)) {
                     $this->databaseInstance = $obj->database;
                 } 
             }
             $data = explode(',', $ruleArgs[1]);
-            if(count($data) < 2){
+            if (count($data) < 2) {
                 return;
             }
             list($table, $column) = explode('.', $data[0]);
@@ -882,7 +882,7 @@
                                                         ->where($field, '!=', trim($val));
             $this->databaseInstance->get();
             if ($this->databaseInstance->numRows() > 0) {
-                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -916,8 +916,8 @@
         protected function _validateRegex($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             $regex = $ruleArgs[1];
-            if (! preg_match($regex, $inputVal)) {
-                if (! $this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+            if (!preg_match($regex, $inputVal)) {
+                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
