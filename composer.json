@@ -33,7 +33,12 @@
         "ext-pdo_oci": "For Oracle database",
         "ext-pdo_oci8": "For Oracle version 8 database",
         "ext-pdo_pqsql": "For PostgreSQL database",
-        "ext-pdo_sqlite": "For SQLite database"
+        "ext-pdo_sqlite": "For SQLite database",
+        "ext-openssl": "For using database session handler"
+    },
+    
+    "config": {
+        "sort-packages": true
     },
 	
     "minimum-stability": "dev"

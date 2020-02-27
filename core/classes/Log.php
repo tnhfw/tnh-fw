@@ -64,6 +64,15 @@
         }
 
         /**
+         * get the logger name
+         *
+         * @return string
+         */
+        public  function getLogger() {
+            return $this->logger;
+        }
+
+        /**
          * Save the fatal message in the log
          * @see Log::writeLog for more detail
          * @param  string $message the log message to save

@@ -49,10 +49,15 @@
          *
          * @return object this current instance
          */
-        protected function setDependencyInstanceFromParamOrCreate($name, $instance = null, $loadClassName = null, $loadClassePath = 'classes') {
+        protected function setDependencyInstanceFromParamOrCreate(
+                                                                    $name, 
+                                                                    $instance = null, 
+                                                                    $loadClassName = null, 
+                                                                    $loadClassePath = 'classes'
+                                                            ) {
             if ($instance !== null) {
-            $this->{$name} = $instance;
-            return $this;
+                $this->{$name} = $instance;
+                return $this;
             }
             $this->{$name} = & class_loader($loadClassName, $loadClassePath);
             return $this;
@@ -85,7 +90,7 @@
         protected function setLoggerFromParamOrCreate(Log $logger = null) {
             $this->setDependencyInstanceFromParamOrCreate('logger', $logger, 'Log', 'classes');
             if ($logger === null) {
-            $this->logger->setLogger('Class::' . get_class($this));
+                $this->logger->setLogger('Class::' . get_class($this));
             }
             return $this;
         }

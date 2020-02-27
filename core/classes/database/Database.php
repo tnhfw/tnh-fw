@@ -29,7 +29,7 @@
          * The PDO instance
          * @var object
          */
-    private $pdo = null;
+        private $pdo = null;
     
         /**
          * The database name used for the application
@@ -41,78 +41,77 @@
          * The number of rows returned by the last query
          * @var int
          */
-    private $numRows = 0;
+        private $numRows = 0;
 	
         /**
          * The last insert id for the primary key column that have auto increment or sequence
          * @var mixed
          */
-    private $insertId = null;
+        private $insertId = null;
 	
         /**
          * The full SQL query statment after build for each command
          * @var string
          */
-    private $query = null;
+        private $query = null;
 	
         /**
          * The result returned for the last query
          * @var mixed
          */
-    private $result = array();
+        private $result = array();
+	
+        /**
+         * The number of executed query for the current request
+         * @var int
+         */
+        private $queryCount = 0;
+	
+        /**
+         * The default data to be used in the statments query INSERT, UPDATE
+         * @var array
+         */
+        private $data = array();
+	
+        /**
+         * The database configuration
+         * @var array
+         */
+        private $config = array();
 	
         /**
          * The cache default time to live in second. 0 means no need to use the cache feature
          * @var int
          */
         private $cacheTtl = 0;
-	
+
         /**
          * The cache current time to live. 0 means no need to use the cache feature
          * @var int
          */
-    private $temporaryCacheTtl = 0;
-	
-        /**
-         * The number of executed query for the current request
-         * @var int
-         */
-    private $queryCount = 0;
-	
-        /**
-         * The default data to be used in the statments query INSERT, UPDATE
-         * @var array
-         */
-    private $data = array();
-	
-        /**
-         * The database configuration
-         * @var array
-         */
-    private $config = array();
-	
-    /**
-     * The cache instance
-     * @var object
-     */
-    private $cacheInstance = null;
+        private $temporaryCacheTtl = 0;
 
-    
         /**
          * The DatabaseQueryBuilder instance
          * @var object
          */
-    protected $queryBuilder = null;
+        protected $queryBuilder = null;
     
-    /**
-     * The DatabaseQueryRunner instance
-     * @var object
-     */
-    protected $queryRunner = null;
+        /**
+         * The DatabaseQueryRunner instance
+         * @var object
+         */
+        protected $queryRunner = null;
+
+        /**
+         * The DatabaseCache instance
+         * @var object
+         */
+        protected $cacheInstance = null;
 
 
     /**
-     * Construct new database
+     * Construct new instance
      * @param array $overwriteConfig the config to overwrite with the config set in database.php
      * @param boolean $autoConnect whether to connect to database automatically
      */
@@ -125,11 +124,11 @@
         //Set DatabaseQueryRunner instance to use
         $this->setDependencyInstanceFromParamOrCreate('queryRunner', null, 'DatabaseQueryRunner', 'classes/database');
 
+        //Set DatabaseCache instance to use
+        $this->setDependencyInstanceFromParamOrCreate('cacheInstance', null, 'DatabaseCache', 'classes/database');
+
         //Set database configuration
         $this->setDatabaseConfiguration($overwriteConfig, true, $autoConnect);
-        
-        //cache time to live
-        $this->temporaryCacheTtl = $this->cacheTtl;
     }
 
     /**
@@ -256,7 +255,7 @@
     /**
      * Set database cache time to live
      * @param integer $ttl the cache time to live in second
-     * @return object        the current Database instance
+     * @return object        the current instance
      */
     public function setCache($ttl = 0) {
         $this->cacheTtl = $ttl;
@@ -265,11 +264,11 @@
     }
 	
     /**
-     * Enabled cache temporary for the current query not globally	
+     * Enabled cache temporary for the current query not globally   
      * @param  integer $ttl the cache time to live in second
-     * @return object        the current Database instance
+     * @return object        the current instance
      */
-        public function cached($ttl = 0) {
+    public function cached($ttl = 0) {
         $this->temporaryCacheTtl = $ttl;
         return $this;
     }
@@ -331,29 +330,10 @@
         return $this;
     }
 
-        /**
-         * Return the cache instance
-         * @return CacheInterface
-         */
-    public function getCacheInstance() {
-        return $this->cacheInstance;
-    }
-
     /**
-     * Set the cache instance
-     * @param CacheInterface $cache the cache object
-     * @return object Database
+     * Return the DatabaseQueryBuilder instance
+     * @return object DatabaseQueryBuilder
      */
-    public function setCacheInstance($cache) {
-        $this->cacheInstance = $cache;
-        return $this;
-    }
-	
-	
-        /**
-         * Return the DatabaseQueryBuilder instance
-         * @return object DatabaseQueryBuilder
-         */
     public function getQueryBuilder() {
         return $this->queryBuilder;
     }
@@ -364,6 +344,23 @@
      */
     public function setQueryBuilder(DatabaseQueryBuilder $queryBuilder) {
         $this->queryBuilder = $queryBuilder;
+        return $this;
+    }
+
+    /**
+     * Return the DatabaseCache instance
+     * @return object DatabaseCache
+     */
+    public function getCacheInstance() {
+        return $this->cacheInstance;
+    }
+
+    /**
+     * Set the DatabaseCache instance
+     * @param object DatabaseCache $cacheInstance the DatabaseCache object
+     */
+    public function setCacheInstance(DatabaseCache $cacheInstance) {
+        $this->cacheInstance = $cacheInstance;
         return $this;
     }
     
@@ -410,64 +407,51 @@
         return $this;
     }
 
-        /**
-         * Execute an SQL query
-         * @param  string  $query the query SQL string
-         * @param  boolean $returnAsList  indicate whether to return all record or just one row 
-         * @param  boolean $returnAsArray return the result as array or not
-         * @return mixed         the query result
-         */
+    /**
+     * Execute an SQL query
+     * @param  string  $query the query SQL string
+     * @param  boolean $returnAsList  indicate whether to return all record or just one row 
+     * @param  boolean $returnAsArray return the result as array or not
+     * @return mixed         the query result
+     */
     public function query($query, $returnAsList = true, $returnAsArray = false) {
         $this->reset();
         $this->query = preg_replace('/\s\s+|\t\t+/', ' ', trim($query));
-        //If is the SELECT query
-        $isSqlSELECTQuery = stristr($this->query, 'SELECT');
+        $this->logger->info('Execute SQL query [' . $this->query . ']');
 
-        //cache expire time
         $cacheExpire = $this->temporaryCacheTtl;
-      
+
         //return to the initial cache time
         $this->temporaryCacheTtl = $this->cacheTtl;
-      
-        //config for cache
-        $cacheEnable = get_config('cache_enable');
-      
-        //the database cache content
-        $cacheContent = null;
 
-        //if can use cache feature for this query
-        $dbCacheStatus = $cacheEnable && $cacheExpire > 0;
-    
-        if ($dbCacheStatus && $isSqlSELECTQuery) {
-            $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
-            $cacheContent = $this->getCacheContentForQuery($query, $returnAsList, $returnAsArray);  
-        }
-      
-        if (!$cacheContent) {
-                //count the number of query execution to server
-        $this->queryCount++;
-        
-        $queryResult = $this->queryRunner->setQuery($query)
+        //the database cache content
+        $cacheContent = $this->cacheInstance->setQuery($query)
                                             ->setReturnType($returnAsList)
                                             ->setReturnAsArray($returnAsArray)
-                                            ->execute();
+                                            ->setCacheTtl($cacheExpire)
+                                            ->getCacheContent();
+        if (!$cacheContent) {
+            $this->logger->info('No cache data found for this query or is not a SELECT query, get result from real database');
+            //count the number of query execution to server
+            $this->queryCount++;
+            
+            $queryResult = $this->queryRunner->setQuery($query)
+                                             ->setReturnType($returnAsList)
+                                             ->setReturnAsArray($returnAsArray)
+                                             ->execute();
 
-        if (!is_object($queryResult)) {
-            $this->result = false;
-            $this->numRows = 0;
-            return $this->result;
-        }
-        $this->result  = $queryResult->getResult();
-        $this->numRows = $queryResult->getNumRows();
-        if ($isSqlSELECTQuery && $dbCacheStatus) {
-            $key = $this->getCacheKeyForQuery($this->query, $returnAsList, $returnAsArray);
-            $this->setCacheContentForQuery($this->query, $key, $this->result, $cacheExpire);
-        }
-        } else if ($isSqlSELECTQuery) {
+            if (is_object($queryResult)) {
+                $this->result  = $queryResult->getResult();
+                $this->numRows = $queryResult->getNumRows();
+                //save the result into cache
+                $this->cacheInstance->saveCacheContent($this->result);
+            }
+        } else {
             $this->logger->info('The result for query [' . $this->query . '] already cached use it');
             $this->result = $cacheContent;
             $this->numRows = count($this->result);
         }
+        
         return $this->result;
     }
 
@@ -624,55 +608,6 @@
         }
         return $dsn;
     }
-
-    /**
-     * Get the cache content for this query
-     * @see Database::query
-     *      
-     * @return mixed
-     */
-    protected function getCacheContentForQuery($query, $returnAsList, $returnAsArray) {
-        $cacheKey = $this->getCacheKeyForQuery($query, $returnAsList, $returnAsArray);
-        if (!is_object($this->cacheInstance)) {
-                //can not call method with reference in argument
-                //like $this->setCacheInstance(& get_instance()->cache);
-                //use temporary variable
-                $instance = & get_instance()->cache;
-                $this->cacheInstance = $instance;
-        }
-        return $this->cacheInstance->get($cacheKey);
-    }
-
-    /**
-     * Save the result of query into cache
-     * @param string $query  the SQL query
-     * @param string $key    the cache key
-     * @param mixed $result the query result to save
-     * @param int $expire the cache TTL
-     */
-        protected function setCacheContentForQuery($query, $key, $result, $expire) {
-        $this->logger->info('Save the result for query [' . $query . '] into cache for future use');
-        if (!is_object($this->cacheInstance)) {
-                    //can not call method with reference in argument
-                    //like $this->setCacheInstance(& get_instance()->cache);
-                    //use temporary variable
-                    $instance = & get_instance()->cache;
-                    $this->cacheInstance = $instance;
-                }
-        $this->cacheInstance->set($key, $result, $expire);
-        }
-
-    
-        /**
-         * Return the cache key for the given query
-         * @see Database::query
-         * 
-         *  @return string
-         */
-    protected function getCacheKeyForQuery($query, $returnAsList, $returnAsArray) {
-        return md5($query . $returnAsList . $returnAsArray);
-    }
-
 	
     /**
      * Reset the database class attributs to the initail values before each query.

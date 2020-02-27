@@ -63,7 +63,7 @@
     require_once CORE_CLASSES_PATH . 'BaseClass.php';
 
     /**
-     * Include of the file containing the BaseClass 
+     * Include of the file containing the BaseStaticClass 
      */
     require_once CORE_CLASSES_PATH . 'BaseStaticClass.php';
 

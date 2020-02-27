@@ -332,12 +332,10 @@
         protected static function getModuleInfoForModelLibrary($class) {
             $module = null;
             $obj = & get_instance();
-            if (strpos($class, '/') !== false) {
-                $path = explode('/', $class);
-                if (isset($path[0]) && in_array($path[0], Module::getModuleList())) {
-                    $module = $path[0];
-                    $class = ucfirst($path[1]);
-                }
+            $path = explode('/', $class);
+            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+                $module = $path[0];
+                $class = ucfirst($path[1]);
             } else {
                 $class = ucfirst($class);
             }
@@ -365,13 +363,11 @@
             $file = null;
             $obj = & get_instance();
             //check if the request class contains module name
-            if (strpos($function, '/') !== false) {
-                $path = explode('/', $function);
-                if (isset($path[0]) && in_array($path[0], Module::getModuleList())) {
-                    $module = $path[0];
-                    $function = 'function_' . $path[1];
-                    $file = $path[0] . DS . $function . '.php';
-                }
+            $path = explode('/', $function);
+            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+                $module = $path[0];
+                $function = 'function_' . $path[1];
+                $file = $path[0] . DS . $function . '.php';
             }
             if (!$module && !empty($obj->moduleName)) {
                 $module = $obj->moduleName;
@@ -398,13 +394,11 @@
             $file = null;
             $obj = & get_instance();
             //check if the request class contains module name
-            if (strpos($language, '/') !== false) {
-                $path = explode('/', $language);
-                if (isset($path[0]) && in_array($path[0], Module::getModuleList())) {
-                    $module = $path[0];
-                    $language = 'lang_' . $path[1] . '.php';
-                    $file = $path[0] . DS . $language;
-                }
+            $path = explode('/', $language);
+            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+                $module = $path[0];
+                $language = 'lang_' . $path[1] . '.php';
+                $file = $path[0] . DS . $language;
             }
             if (!$module && !empty($obj->moduleName)) {
                 $module = $obj->moduleName;
@@ -430,12 +424,10 @@
             $module = null;
             $obj = & get_instance();
             //check if the request class contains module name
-            if (strpos($filename, '/') !== false) {
-                $path = explode('/', $filename);
-                if (isset($path[0]) && in_array($path[0], Module::getModuleList())) {
-                    $module = $path[0];
-                    $filename = $path[1] . '.php';
-                }
+            $path = explode('/', $filename);
+            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+                $module = $path[0];
+                $filename = $path[1] . '.php';
             }
             if (!$module && !empty($obj->moduleName)) {
                 $module = $obj->moduleName;
@@ -540,10 +532,22 @@
         }
 
         /**
+         * Load the resources autoload array
+         * @param  string $method    this object method name to call
+         * @param  array  $resources the resource to load
+         * @return void            
+         */
+        protected function loadAutoloadResourcesArray($method, array $resources) {
+            foreach ($resources as $name) {
+                $this->{$method}($name);
+            }
+        }
+
+        /**
          * Get all the autoload using the configuration file
          * @return array
          */
-        private function getResourcesFromAutoloadConfig() {
+        protected function getResourcesFromAutoloadConfig() {
             $autoloads = array();
             $autoloads['config']    = array();
             $autoloads['languages'] = array();
@@ -571,7 +575,7 @@
          * Load the autoload configuration
          * @return void
          */
-        private function loadResourcesFromAutoloadConfig() {
+        protected function loadResourcesFromAutoloadConfig() {
             $autoloads = array();
             $autoloads['config']    = array();
             $autoloads['languages'] = array();
@@ -596,17 +600,5 @@
 			
             //functions autoload
             $this->loadAutoloadResourcesArray('functions', $autoloads['functions']);
-        }
-
-        /**
-         * Load the resources autoload array
-         * @param  string $method    this object method name to call
-         * @param  array  $resources the resource to load
-         * @return void            
-         */
-        private function loadAutoloadResourcesArray($method, array $resources) {
-            foreach ($resources as $name) {
-                $this->{$method}($name);
-            }
         }
     }

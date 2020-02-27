@@ -531,6 +531,9 @@
             $path = get_config('session_cookie_path', '/');
             $domain = get_config('session_cookie_domain', '');
             $secure = get_config('session_cookie_secure', false);
+            if (is_https()) {
+                $secure = true;
+            }
             session_set_cookie_params(
                 $lifetime,
                 $path,

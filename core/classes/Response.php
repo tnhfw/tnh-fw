@@ -57,7 +57,7 @@
         private static $_canCompressOutput = false;
 		
         /**
-         * Construct new response instance
+         * Construct new instance
          */
         public function __construct() {
             $currentUrl = '';
@@ -87,6 +87,7 @@
         public static function sendHeaders($httpCode = 200, array $headers = array()) {
             set_http_status_header($httpCode);
             self::setHeaders($headers);
+            self::setRequiredHeaders();
             if (!headers_sent()) {
                 foreach (self::getHeaders() as $key => $value) {
                     header($key . ': ' . $value);
@@ -213,8 +214,6 @@
             if (empty($content)) {
                 $logger->warning('The view content is empty after dispatch to event listeners.');
             }
-            //remove unsed space in the content
-            $content = preg_replace('~>\s*\n\s*<~', '><', $content);
             //check whether need save the page into cache.
             if ($cachePageStatus) {
                 $this->savePageContentIntoCache($content);
@@ -454,14 +453,12 @@
             $viewFile = null;
             $obj = & get_instance();
             //check if the request class contains module name
-            if (strpos($view, '/') !== false) {
-                $viewPath = explode('/', $view);
-                if (isset($viewPath[0]) && in_array($viewPath[0], Module::getModuleList())) {
-                    $module = $viewPath[0];
-                    array_shift($viewPath);
-                    $view = implode('/', $viewPath);
-                    $viewFile = $view . '.php';
-                }
+            $viewPath = explode('/', $view);
+            if (count($viewPath) >= 2 && isset($viewPath[0]) && in_array($viewPath[0], Module::getModuleList())) {
+                $module = $viewPath[0];
+                array_shift($viewPath);
+                $view = implode('/', $viewPath);
+                $viewFile = $view . '.php';
             }
             if (!$module && !empty($obj->moduleName)) {
                 $module = $obj->moduleName;
@@ -494,8 +491,7 @@
                 require $path;
                 $content = ob_get_clean();
                 if ($return) {
-                    //remove unused html space 
-                    return preg_replace('~>\s*\n\s*<~', '><', $content);
+                    return $content;
                 }
                 $this->_pageRender .= $content;
                 $found = true;
@@ -505,4 +501,18 @@
             }
         }
 
+         /**
+         * Set the mandory headers, like security, etc.
+         */
+        protected static function setRequiredHeaders() {
+            $requiredHeaders = array(
+                                'X-XSS-Protection' => '1; mode=block',
+                                'X-Frame-Options'  => 'SAMEORIGIN'
+                            );
+            foreach ($requiredHeaders as $key => $value) {
+               if (!isset(self::$headers[$key])) {
+                    self::$headers[$key] = $value;
+               } 
+            }
+        }
     }

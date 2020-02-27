@@ -15,6 +15,7 @@
 			'Config' => CORE_CLASSES_PATH . 'Config.php',
 			'Controller' => CORE_CLASSES_PATH . 'Controller.php',
 			'Database' => CORE_CLASSES_DATABASE_PATH . 'Database.php',
+			'DatabaseCache' => CORE_CLASSES_DATABASE_PATH . 'DatabaseCache.php',
 			'DatabaseQueryBuilder' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryBuilder.php',
 			'DatabaseQueryResult' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryResult.php',
 			'DatabaseQueryRunner' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryRunner.php',
