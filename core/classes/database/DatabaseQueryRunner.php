@@ -43,9 +43,8 @@
         private $query = null;
     
         /**
-         * Indicate if we need return result as list (boolean) 
-         * or the data used to replace the placeholder (array)
-         * @var array|boolean
+         * Indicate if we need return result as list
+         * @var boolean
          */
         private $returnAsList = true;
      
@@ -97,7 +96,6 @@
             $this->query         = $query;
             $this->returnAsList  = $returnAsList;
             $this->returnAsArray = $returnAsArray;
-            $this->setLoggerFromParamOrCreateNewInstance(null);
         }
         
         /**
@@ -337,19 +335,6 @@
             $this->logger->error('The database query execution got an error: ' . stringfy_vars($error));
             //show error message
             show_error('Query: "' . $this->query . '" Error: ' . $this->error, 'Database Error');
-        }
-        
-        /**
-         * Set the Log instance using argument or create new instance
-         * @param object $logger the Log instance if not null
-         */
-        protected function setLoggerFromParamOrCreateNewInstance(Log $logger = null) {
-            if ($logger !== null) {
-            $this->logger = $logger;
-            } else {
-                $this->logger = & class_loader('Log', 'classes');
-                $this->logger->setLogger('Library::DatabaseQueryRunner');
-            }
         }
         
         

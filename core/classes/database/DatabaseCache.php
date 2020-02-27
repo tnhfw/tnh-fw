@@ -56,9 +56,8 @@
         private $dbCacheStatus = false;
 
         /**
-         * Indicate if we need return result as list (boolean) 
-         * or the data used to replace the placeholder (array)
-         * @var array|boolean
+         * Indicate if we need return result as list 
+         * @var boolean
          */
         private $returnAsList = true;
      

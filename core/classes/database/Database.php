@@ -584,27 +584,22 @@
         $dsn = '';
         $config = $this->getDatabaseConfiguration();
         if (empty($config)) {
-        return null;
+            return null;
         }
-        switch ($driver) {
-            case 'mysql':
-            case 'pgsql':
-              $port = '';
-                if (!empty($config['port'])) {
-                $port = 'port=' . $config['port'] . ';';
-                }
-                $dsn = $driver . ':host=' . $config['hostname'] . ';' . $port . 'dbname=' . $config['database'];
-                break;
-            case 'sqlite':
-              $dsn = 'sqlite:' . $config['database'];
-                break;
-            case 'oracle':
-          $port = '';
+        if (in_array($driver, array('mysql', 'pgsql'))) {
+            $port = '';
             if (!empty($config['port'])) {
-            $port = ':' . $config['port'];
+                $port = 'port=' . $config['port'] . ';';
+            }
+            $dsn = $driver . ':host=' . $config['hostname'] . ';' . $port . 'dbname=' . $config['database'];
+        } else if ($driver == 'oracle') {
+            $port = '';
+            if (!empty($config['port'])) {
+                $port = ':' . $config['port'];
             }
             $dsn = 'oci:dbname=' . $config['hostname'] . $port . '/' . $config['database'];
-            break;
+        } else if ($driver == 'sqlite') {
+            $dsn = 'sqlite:' . $config['database'];
         }
         return $dsn;
     }
