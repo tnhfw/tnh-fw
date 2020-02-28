@@ -92,11 +92,11 @@
 
             /**
              * Set the value of the pagination query string
-             * @param string $paginationQueryString the new value
+             * @param string $pQueryString the new value
              * @return object
              */
-        public function setPaginationQueryString($paginationQueryString) {
-            $this->paginationQueryString = $paginationQueryString;
+        public function setPaginationQueryString($pQueryString) {
+            $this->paginationQueryString = $pQueryString;
             return $this;
         }
 

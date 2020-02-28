@@ -194,7 +194,7 @@
 	* # chmod -R 700 /path/to/your/logs/directory/
 	* # chown -R www-data:www-data /path/to/your/logs/directory/
 	*/
-	define('LOGS_PATH', ROOT_PATH . 'logs' . DS);
+	define('LOGS_PATH', APPS_PATH . 'logs' . DS);
 
 	/**
 	* The path to the modules directory. 

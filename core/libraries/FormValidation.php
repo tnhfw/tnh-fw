@@ -70,7 +70,7 @@
          * The list of the error messages overrides by the original
          * @var array
          */
-        protected $_errorPhraseOverrides = array();
+        protected $_errorMsgOverrides = array();
 
         /**
          * The data to be validated, the default is to use $_POST
@@ -145,7 +145,7 @@
         protected function _resetValidation() {
             $this->_rules                = array();
             $this->_labels               = array();
-            $this->_errorPhraseOverrides = array();
+            $this->_errorMsgOverrides = array();
             $this->_errors               = array();
             $this->_success              = false;
             $this->_forceFail            = false;
@@ -360,12 +360,12 @@
                 // A global rule error message
                 case 2:
                     foreach ($this->post(null) as $key => $val) {
-                        $this->_errorPhraseOverrides[$key][func_get_arg(0)] = func_get_arg(1);
+                        $this->_errorMsgOverrides[$key][func_get_arg(0)] = func_get_arg(1);
                     }
                     break;
                 // Field specific rule error message
                 case 3:
-                    $this->_errorPhraseOverrides[func_get_arg(1)][func_get_arg(0)] = func_get_arg(2);
+                    $this->_errorMsgOverrides[func_get_arg(1)][func_get_arg(0)] = func_get_arg(2);
                     break;
             }
             return true;
@@ -545,8 +545,8 @@
                 }
             }
             // Any overrides?
-            if (array_key_exists($inputName, $this->_errorPhraseOverrides) && array_key_exists($ruleName, $this->_errorPhraseOverrides[$inputName])) {
-                $rulePhrase = $this->_errorPhraseOverrides[$inputName][$ruleName];
+            if (array_key_exists($inputName, $this->_errorMsgOverrides) && array_key_exists($ruleName, $this->_errorMsgOverrides[$inputName])) {
+                $rulePhrase = $this->_errorMsgOverrides[$inputName][$ruleName];
             }
             // Type cast to array in case it's a string
             $replacements = (array) $replacements;
