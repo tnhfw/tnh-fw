@@ -85,22 +85,32 @@
          */
         public function removeAllListener($eventName = null) {
             $this->logger->debug('Removing of all event listener, the event name [' . $eventName . ']');
-            if ($eventName !== null && isset($this->listeners[$eventName])) {
-                $this->logger->info('The event name is set of exist in the listener just remove all event listener for this event');
-                unset($this->listeners[$eventName]);
+            if ($eventName !== null) {
+                if (isset($this->listeners[$eventName])) {
+                    $this->logger->info('The event name is set and exist in the listener just remove all event listener for this event');
+                    unset($this->listeners[$eventName]);
+                } else {
+                    $this->logger->info('The event name is set and not exist in the listener nothing to do');
+                }
             } else {
-                $this->logger->info('The event name is not set or does not exist in the listener, so remove all event listener');
+                $this->logger->info('The event name is not set, so remove all event listener');
                 $this->listeners = array();
             }
         }
 		
         /**
-         * Get the list of listener for this event
+         * Get the list of listener for this event or all if event is null
          * @param string $eventName the event name
-         * @return array the listeners for this event or empty array if this event does not contain any listener
+         * @return array the listeners for this event or all listeners if this event is null
          */
-        public function getListeners($eventName) {
-            return isset($this->listeners[$eventName]) ? $this->listeners[$eventName] : array();
+        public function getListeners($eventName = null) {
+            if ($eventName === null) {
+                return $this->listeners;
+            }
+            if (isset($this->listeners[$eventName])) {
+                return $this->listeners[$eventName];
+            }
+            return array();
         }
 		
         /**
@@ -144,12 +154,15 @@
             } else {
                 $this->logger->info('Found the registered event listener for the event [' . $event->name . '] the list are: ' . stringfy_vars($list));
             }
+            //if the returnBack is true and some listener not return it back
+            $error = false;
             foreach ($list as $listener) {
                 if ($eBackup->returnBack) {
                     $returnedEvent = call_user_func_array($listener, array($event));
                     if ($returnedEvent instanceof EventInfo) {
                         $event = $returnedEvent;
                     } else {
+                        $error = true;
                         show_error('This event [' . $event->name . '] need you return the event object after processing');
                     }
                 } else {
@@ -161,7 +174,10 @@
             }
             //only test for original event may be during the flow some listeners change this parameter
             if ($eBackup->returnBack) {
-                return $event;
+                if(! $error) {
+                    return $event;
+                }
+                return null;
             }
         }
     }

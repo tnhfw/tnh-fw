@@ -82,8 +82,9 @@
 		static $config;
 		if(empty($config)){
 			$file = CONFIG_PATH . 'config.php';
-			require_once $file;
-		
+            if (file_exists($file)) {
+                require_once $file;
+            }		
 			foreach ($overwrite_values as $key => $value) {
 				$config[$key] = $value;
 			}
@@ -96,9 +97,12 @@
 	*/
 	function get_config($key, $default = null){
 		static $cfg;
-		if(empty($cfg)){
-			$cfg[0] = & load_configurations();
-		}
+		if (empty($cfg)) {
+            $cfg[0] = & load_configurations();
+            if(! is_array($cfg[0])){
+                $cfg[0] = array();
+            }
+        }
 		return array_key_exists($key, $cfg[0]) ? $cfg[0][$key] : $default;
 	}
 
@@ -115,7 +119,8 @@
 	
 	function show_error($msg, $title = 'error', $logging = true){
 		//show only and continue to help track of some error occured
-		echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ")\n";
+		//echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ")\n";
+        return true;
 	}
 
 	function is_https(){

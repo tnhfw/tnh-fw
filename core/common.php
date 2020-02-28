@@ -148,6 +148,9 @@
         static $cfg;
         if (empty($cfg)) {
             $cfg[0] = & load_configurations();
+            if(! is_array($cfg[0])){
+                $cfg[0] = array();
+            }
         }
         return array_key_exists($key, $cfg[0]) ? $cfg[0][$key] : $default;
     }

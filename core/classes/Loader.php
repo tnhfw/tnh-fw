@@ -138,14 +138,14 @@
             } else {
                 $logger->info('This library is not a system library');	
                 //first check if this library is in the module
-                $libraryFilePath = self::getLibraryPathUsingModuleInfo($class);
-                //***************
+                $info = self::getLibraryPathUsingModuleInfo($class);
+                $class = $info['class'];
+                $libraryFilePath = $info['path'];
             }
             if (!$libraryFilePath && file_exists(LIBRARY_PATH . $file)) {
                 $libraryFilePath = LIBRARY_PATH . $file;
             }
             $logger->info('The library file path to be loaded is [' . $libraryFilePath . ']');
-            //*************************
             self::loadLibrary($libraryFilePath, $class, $instance, $params);
         }
 
@@ -458,9 +458,9 @@
         }
 
         /**
-         * Get the library file path using the module information
+         * Get the library file path and class name using the module information
          * @param  string $class the class name
-         * @return string|null        the library file path otherwise null will be returned
+         * @return array        the library file path and class name
          */
         protected static function getLibraryPathUsingModuleInfo($class) {
             $logger = static::getLogger();
@@ -476,7 +476,10 @@
             } else {
                 $logger->info('Cannot find library [' . $class . '] from modules using the default location');
             }
-            return $libraryFilePath;
+            return array(
+                        'path' => $libraryFilePath,
+                        'class' => $class
+                    );
         }
 
         /**

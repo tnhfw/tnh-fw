@@ -34,6 +34,7 @@
 
         /**
          * Initialize the configuration by loading all the configuration from config file
+         * @codeCoverageIgnore
          */
         public static function init() {
             $logger = self::getLogger();
@@ -98,15 +99,23 @@
                 $logger->info('Delete config item [' . $item . ']');
                 unset(self::$config[$item]);
                 return true;
-            } else {
-                $logger->warning('Config item [' . $item . '] to be deleted does not exists');
-                return false;
-            }
+            } 
+            $logger->warning('Config item [' . $item . '] to be deleted does not exists');
+            return false;
+            
+        }
+
+        /**
+         * Delete all the configuration values
+         */
+        public static function deleteAll() {
+            self::$config = array();
         }
 
         /**
          * Load the configuration file. This an alias to Loader::config()
          * @param  string $config the config name to be loaded
+         * @codeCoverageIgnore will test in Loader::config
          */
         public static function load($config) {
             Loader::config($config);
@@ -114,6 +123,7 @@
 
         /**
          * Set the configuration for "base_url" if is not set in the configuration
+         * @codeCoverageIgnore
          */
         private static function setBaseUrlUsingServerVar() {
             $logger = self::getLogger();
@@ -151,7 +161,7 @@
                     $logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
                     $baseUrl = 'http://localhost/';
                 }
-                self::set('base_url', $baseUrl);
+                self::$config['base_url'] = $baseUrl;
             }
             self::$config['base_url'] = rtrim(self::$config['base_url'], '/') . '/';
         }

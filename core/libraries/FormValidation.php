@@ -399,7 +399,7 @@
             $returnValue = null;
             if (is_null($key)) {
                 $returnValue = array();
-                foreach ($this->getData()  as $key => $val) {
+                foreach ($this->data  as $key => $val) {
                     $returnValue[$key] = $this->post($key, $trim);
                 }
             } else {
@@ -465,10 +465,10 @@
                 $rule = '#regex\[\/(.*)\/([a-zA-Z0-9]?)\]#';
                 preg_match($rule, $ruleString, $regexRule);
                 $ruleStringTemp = preg_replace($rule, '', $ruleString);
-                    if (!empty($regexRule[0])) {
-                        $ruleSets[] = $regexRule[0];
-                    }
-                    $ruleStringRegex = explode('|', $ruleStringTemp);
+                if (!empty($regexRule[0])) {
+                    $ruleSets[] = $regexRule[0];
+                }
+                 $ruleStringRegex = explode('|', $ruleStringTemp);
                 foreach ($ruleStringRegex as $rule) {
                     $rule = trim($rule);
                     if ($rule) {
@@ -484,7 +484,7 @@
                 } else {
                     $ruleSets[] = $ruleString;
                 }
-                }
+            }
             return $ruleSets;
         }
 
@@ -562,30 +562,16 @@
 
         /**
          * Used to run a callback for the callback rule, as well as pass in a default
-         * argument of the post value. For example the username field having a rule:
-         * callback[userExists] will eval userExists(data[username]) - Note the use
-         * of eval over call_user_func is in case the function is not user defined.
+         * argument of the data value. For example the username field having a rule:
+         * callback[userExists] will call the function userExists() with parameter data[username].
          *
          * @param type $inputArg
          * @param string $callbackFunc
          *
-         * @return mixed
+         * @return boolean
          */
         protected function _runCallback($inputArg, $callbackFunc) {
-            return eval('return ' . $callbackFunc . '("' . $inputArg . '");');
-        }
-
-        /**
-         * Used for applying a rule only if the empty callback evaluates to true,
-         * for example required[funcName] - This runs funcName without passing any
-         * arguments.
-         *
-         * @param string $callbackFunc
-         *
-         * @return mixed
-         */
-        protected function _runEmptyCallback($callbackFunc) {
-            return eval('return ' . $callbackFunc . '();');
+            return call_user_func($callbackFunc, $inputArg);
         }
 
         /**
@@ -607,12 +593,7 @@
          */
         protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
-            if (array_key_exists(1, $ruleArgs) && function_exists($ruleArgs[1])) {
-                $callbackReturn = $this->_runEmptyCallback($ruleArgs[1]);
-                if ($inputVal == '' && $callbackReturn == true) {
-                    $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
-                }
-            } else if ($inputVal == '') {
+            if ($inputVal == '') {
                 $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
             }
         }
@@ -636,7 +617,7 @@
          * @param  array  $ruleArgs  the rules argument
          */
         protected function _validateCallback($inputName, $ruleName, array $ruleArgs) {
-            if (function_exists($ruleArgs[1]) && !empty($this->data[$inputName])) {
+            if (function_exists($ruleArgs[1]) && array_key_exists($inputName, $this->data)) {
                 $result = $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
                 if (!$result) {
                     $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));

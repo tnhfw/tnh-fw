@@ -4,28 +4,29 @@
 
 	class BaseStaticClassTest extends TestCase
 	{	
-	
-		public static function setUpBeforeClass()
-		{
 		
-		}
-		
-		public static function tearDownAfterClass()
+		public function testGetLoggerDefault()
 		{
-			
+            $logger = BaseStaticClass::getLogger();
+			$this->assertInstanceOf('Log', $logger);
+            $this->assertEquals('Class::BaseStaticClass', $logger->getLogger());
 		}
-		
-		protected function setUp()
+        
+        public function testSetLogger()
 		{
+            $logger = BaseStaticClass::setLogger(new Log());
+			$this->assertInstanceOf('Log', $logger);
+            $this->assertEquals('ROOT_LOGGER', $logger->getLogger());
 		}
-
-		protected function tearDown()
+        
+        public function testSetLoggerUsingLogInstanceWithLoggerNameSet()
 		{
-		}
-		
-		public function testNotYet()
-		{
-			$this->markTestSkipped();
+            $log = new Log();
+            $log->setLogger('FOO');
+            $logger = BaseStaticClass::setLogger($log);
+			$this->assertInstanceOf('Log', $logger);
+            $this->assertEquals('FOO', $logger->getLogger());
+            $this->assertEquals('FOO', $log->getLogger());
 		}
 
 	}

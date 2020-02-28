@@ -136,7 +136,7 @@
          * @return boolean 
          */
         public function open($savePath, $sessionName) {
-            $this->logger->debug('Opening database session handler for [' . $sessionName . ']');
+            $this->logger->debug('Opening database session handler save path [' . $savePath . '], session name [' . $sessionName . ']');
             //try to check if session secret is set before
             $secret = $this->getSessionSecret();
             if (empty($secret)) {
@@ -183,12 +183,7 @@
             $this->logger->debug('Reading database session data for SID: ' . $sid);
             $instance = $this->getModelInstance();
             $columns = $this->sessionTableColumns;
-            $this->loader->functions('user_agent'); 
-            $this->loader->library('Browser'); 
-			
-            $ip = get_ip();
-            $host = @gethostbyaddr($ip) or null;
-            $browser = $this->OBJ->browser->getPlatform() . ', ' . $this->OBJ->browser->getBrowser() . ' ' . $this->OBJ->browser->getVersion();
+            list($ip, $host, $browser) = $this->getSessionDataParams();
 			
             $data = $instance->get_by(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
             if ($data && isset($data->{$columns['sdata']})) {
@@ -215,14 +210,8 @@
             $this->logger->debug('Saving database session data for SID: ' . $sid . ', data: ' . stringfy_vars($data));
             $instance = $this->getModelInstance();
             $columns = $this->sessionTableColumns;
-
-            $this->loader->functions('user_agent'); 
-            $this->loader->library('Browser'); 
-
-            $ip = get_ip();
             $keyValue = $instance->getKeyValue();
-            $host = @gethostbyaddr($ip) or null;
-            $browser = $this->OBJ->browser->getPlatform() . ', ' . $this->OBJ->browser->getBrowser() . ' ' . $this->OBJ->browser->getVersion();
+            list($ip, $host, $browser) = $this->getSessionDataParams();
             $data = $this->encode($data);
             $params = array(
                             $columns['sid'] => $sid,
@@ -348,5 +337,21 @@
 			
             //set model instance
             $this->modelInstance = $this->OBJ->dbsessionhandlerinstance;
+        }
+
+        /**
+         * Get some parameters data need like ip address, hostname, browser info, etc.
+         * @return array
+         */
+        protected function getSessionDataParams(){
+            $this->getLoader()->functions('user_agent'); 
+            $this->getLoader()->library('Browser'); 
+            
+            $ip = get_ip();
+            $host = gethostbyaddr($ip);
+            $browser = $this->OBJ->browser->getPlatform() . ', ' 
+                            . $this->OBJ->browser->getBrowser() 
+                            . ' ' . $this->OBJ->browser->getVersion();
+            return array($ip, $host, $browser);
         }
     }

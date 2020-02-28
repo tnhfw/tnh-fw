@@ -59,6 +59,9 @@
 
             //load the required resources
             $this->loadRequiredResources();
+
+            //set application
+            $this->setLanguages();
 			
             //set the cache using the configuration
             $this->setCacheFromParamOrConfig(null);
@@ -121,6 +124,20 @@
             //dispatch the request instance created event
             $this->eventdispatcher->dispatch('REQUEST_CREATED');
             $this->response = & class_loader('Response', 'classes', 'classes');
+        }
+
+        /**
+         * Set the application supported languages
+         */
+        private function setLanguages() {
+            //add the supported languages ('key', 'display name')
+            $languages = get_config('languages', null);
+            if (!empty($languages)) {
+                foreach ($languages as $key => $displayName) {
+                    $this->lang->addLang($key, $displayName);
+                }
+            }
+            unset($languages);
         }
 
     }

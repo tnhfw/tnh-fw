@@ -59,7 +59,7 @@
 	/**
 	* Custom application path for tests 
 	*/
-	define('APPS_PATH', TESTS_PATH .'hmvc' . DS);
+	define('APPS_PATH', TESTS_PATH .'app' . DS);
 
 	/**
 	* The path to the controller directory of your application.
@@ -92,7 +92,7 @@
 	* That contains most of the configuration files for your 
 	* application (database, class loading file, functions, etc.)
 	*/
-	define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
+	define('CONFIG_PATH', APPS_PATH . 'config' . DS);
 
 	/** 
 	* The core directory
@@ -165,7 +165,7 @@
 	* Note: Do not put your personal functions or helpers in the system functions directory, 
 	* because if you update the system you may lose them.
 	*/
-	define('FUNCTIONS_PATH', ROOT_PATH . 'functions' . DS);
+	define('FUNCTIONS_PATH', APPS_PATH . 'functions' . DS);
 
 	/**
 	* The path to the app directory of personal language. 
@@ -173,7 +173,7 @@
 	* This feature is not yet available. 
 	* You can help us do this if you are nice or wish to see the developed framework.
 	*/
-	define('APP_LANG_PATH', ROOT_PATH . 'lang' . DS);
+	define('APP_LANG_PATH', APPS_PATH . 'lang' . DS);
 
 	/**
 	* The path to the directory of your personal libraries
@@ -182,7 +182,7 @@
 	* Note: you should not put your personal libraries in the system library directory, 
 	* because it is recalled in case of updating the system you might have surprises.
 	*/
-	define('LIBRARY_PATH', ROOT_PATH . 'libraries' . DS);
+	define('LIBRARY_PATH', APPS_PATH . 'libraries' . DS);
 
 	/**
 	* The path to the directory that contains the log files.
@@ -202,7 +202,7 @@
 	* It contains your modules used files (config, controllers, libraries, etc.) that is to say which contains your files of the modules, 
 	* in HMVC architecture (hierichical, controllers, models, views).
 	*/
-	define('MODULE_PATH', dirname(realpath(__FILE__)) . DS .'hmvc' . DS . 'modules' . DS);
+	define('MODULE_PATH', APPS_PATH . 'modules' . DS);
 
 	/**
 	* The path to the directory of sources external to your application.
@@ -261,7 +261,7 @@
 	require_once  'include/common.php';
 	
 	//Some utilities functions, classes, etc.
-	require_once  'include/testsUtil.php';
+	require_once  'include/tests_util.php';
 	
 	/**
 	* Setting of the PHP error message handling function
