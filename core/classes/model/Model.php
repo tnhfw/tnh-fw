@@ -146,18 +146,19 @@
          * try our best to guess the table name.
          */
         public function __construct(Database $db = null) {
+            $instance = null;
             if (is_object($db)) {
-                $this->setDatabaseInstance($db);
-            } else {
-                $obj = & get_instance();
-                if (isset($obj->database) && is_object($obj->database)) {
-                    /**
-                     * NOTE: Need use "clone" because some Model need have the personal instance of the database library
-                     * to prevent duplication
-                     */
-                    $this->setDatabaseInstance(clone $obj->database);
-                }
+                $instance = $db;
+            } else if (isset(get_instance()->database)){
+                /**
+                 * NOTE: Need use "clone" because some Model need have the personal instance of the database library
+                 * to prevent duplication
+                 */
+                $instance = clone get_instance()->database;
             }
+            //Note: don't use the property direct access here as some update is done in the method
+            //$this->setDatabaseInstance
+            $this->setDatabaseInstance($instance);
 
             array_unshift($this->before_create, 'protect_attributes');
             array_unshift($this->before_update, 'protect_attributes');
@@ -176,6 +177,7 @@
             return $this->get_by($this->primary_key, $primary_value);
         }
 
+
         /**
          * Fetch a single record based on an arbitrary WHERE call. Can be
          * any valid value to DatabaseQueryBuilder->where().
@@ -183,15 +185,10 @@
         public function get_by()
         {
             $where = func_get_args();
-
-            if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
-            {
-                $this->getQueryBuilder()->where($this->soft_delete_key, (bool) $this->_temporary_only_deleted);
-            }
+            $this->checkForSoftDelete();
             $this->_set_where($where);
-
             $this->trigger('before_get');
-            $type = $this->_temporary_return_type == 'array' ? 'array' : false;
+            $type = $this->getReturnType();
             $this->getQueryBuilder()->from($this->_table);
             $row = $this->_database->get($type);
             $this->_temporary_return_type = $this->return_type;
@@ -226,17 +223,12 @@
         public function get_all()
         {
             $this->trigger('before_get');
-            if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
-            {
-                $this->getQueryBuilder()->where($this->soft_delete_key, (bool) $this->_temporary_only_deleted);
-            }
-            $type = $this->_temporary_return_type == 'array' ? 'array' : false;
+            $this->checkForSoftDelete();
+            $type = $this->getReturnType();
             $this->getQueryBuilder()->from($this->_table);
             $result = $this->_database->getAll($type);
             $this->_temporary_return_type = $this->return_type;
-
-            foreach ($result as $key => &$row)
-            {
+            foreach ($result as $key => &$row) {
                 $row = $this->trigger('after_get', $row, ($key == count($result) - 1));
             }
             $this->_with = array();
@@ -255,19 +247,21 @@
                 $data = $this->validate($data);
             }
 
-            if ($data !== FALSE)
-            {
+            if ($data !== FALSE) {
                 $data = $this->trigger('before_create', $data);
                 $this->getQueryBuilder()->from($this->_table);
                 $this->_database->insert($data, $escape);
                 $insert_id = $this->_database->insertId();
                 $this->trigger('after_create', $insert_id);
                 //if the table doesn't have the auto increment field or sequence, the value of 0 will be returned 
-                return !$insert_id ? true : $insert_id;
-            } else
-            {
-                return FALSE;
-            }
+                $id = $insert_id;
+                if (!$id) {
+                    $id = true;
+                }
+                return $id;
+            } 
+            return FALSE;
+            
         }
 
         /**
@@ -289,22 +283,18 @@
         public function update($primary_value, $data = array(), $skip_validation = FALSE, $escape = true)
         {
             $data = $this->trigger('before_update', $data);
-            if ($skip_validation === FALSE)
-            {
+            if ($skip_validation === FALSE) {
                 $data = $this->validate($data);
             }
 
-            if ($data !== FALSE)
-            {
+            if ($data !== FALSE) {
                 $this->getQueryBuilder()->where($this->primary_key, $primary_value)
                                         ->from($this->_table);
                 $result = $this->_database->update($data, $escape);
                 $this->trigger('after_update', array($data, $result));
                 return $result;
-            } else
-            {
-                return FALSE;
-            }
+            } 
+            return FALSE;
         }
 
         /**
@@ -313,28 +303,23 @@
         public function update_many($primary_values, $data = array(), $skip_validation = FALSE, $escape = true)
         {
             $data = $this->trigger('before_update', $data);
-            if ($skip_validation === FALSE)
-            {
+            if ($skip_validation === FALSE) {
                 $data = $this->validate($data);
             }
-            if ($data !== FALSE)
-            {
+            if ($data !== FALSE) {
                 $this->getQueryBuilder()->in($this->primary_key, $primary_values)
                                         ->from($this->_table);
                 $result = $this->_database->update($data, $escape);
                 $this->trigger('after_update', array($data, $result));
                 return $result;
-            } else
-            {
-                return FALSE;
             }
+            return FALSE;
         }
 
         /**
          * Updated a record based on an arbitrary WHERE clause.
          */
-        public function update_by()
-        {
+        public function update_by() {
             $args = func_get_args();
             $data = array();
             if (count($args) == 2) {
@@ -347,8 +332,7 @@
                 }
             }
             $data = $this->trigger('before_update', $data);
-            if ($this->validate($data) !== FALSE)
-            {
+            if ($this->validate($data) !== FALSE) {
                 $this->_set_where($args);
                 $this->getQueryBuilder()->from($this->_table);
                 $result = $this->_database->update($data);
@@ -378,16 +362,12 @@
             $this->trigger('before_delete', $id);
             $this->getQueryBuilder()->where($this->primary_key, $id);
             $result = false;
-            if ($this->soft_delete)
-            {
-                $this->getQueryBuilder()->from($this->_table);	
+            $this->getQueryBuilder()->from($this->_table);  
+            if ($this->soft_delete) {
                 $result = $this->_database->update(array($this->soft_delete_key => TRUE));
-            } else
-            {
-                $this->getQueryBuilder()->from($this->_table); 
+            } else {
                 $result = $this->_database->delete();
             }
-
             $this->trigger('after_delete', $result);
             return $result;
         }
@@ -401,13 +381,10 @@
             $where = $this->trigger('before_delete', $where);
             $this->_set_where($where);
             $result = false;
-            if ($this->soft_delete)
-            {
-                $this->getQueryBuilder()->from($this->_table);	
+            $this->getQueryBuilder()->from($this->_table);  
+            if ($this->soft_delete) {
                 $result = $this->_database->update(array($this->soft_delete_key => TRUE));
-            } else
-            {
-                $this->getQueryBuilder()->from($this->_table); 
+            } else {
                 $result = $this->_database->delete();
             }
             $this->trigger('after_delete', $result);
@@ -417,18 +394,14 @@
         /**
          * Delete many rows from the database table by multiple primary values
          */
-        public function delete_many($primary_values)
-        {
+        public function delete_many($primary_values) {
             $primary_values = $this->trigger('before_delete', $primary_values);
             $this->getQueryBuilder()->in($this->primary_key, $primary_values);
             $result = false;
-            if ($this->soft_delete)
-            {
-                $this->getQueryBuilder()->from($this->_table);	
+            $this->getQueryBuilder()->from($this->_table);  
+            if ($this->soft_delete) {
                 $result = $this->_database->update(array($this->soft_delete_key => TRUE));
-            } else
-            {
-                $this->getQueryBuilder()->from($this->_table); 
+            } else {
                 $result = $this->_database->delete();
             }
             $this->trigger('after_delete', $result);
@@ -439,8 +412,7 @@
         /**
          * Truncates the table
          */
-        public function truncate()
-        {
+        public function truncate() {
             $this->getQueryBuilder()->from($this->_table); 
             $result = $this->_database->delete();
             return $result;
@@ -450,11 +422,9 @@
          * RELATIONSHIPS
          * ------------------------------------------------------------ */
 
-        public function with($relationship)
-        {
+        public function with($relationship) {
             $this->_with[] = $relationship;
-            if (!in_array('relate', $this->after_get))
-            {
+            if (!in_array('relate', $this->after_get)) {
                 $this->after_get[] = 'relate';
             }
             return $this;
@@ -463,13 +433,10 @@
         /**
          * Relationship
          */
-        public function relate($row)
-        {
-            if (empty($row))
-            {
+        public function relate($row) {
+            if (empty($row)) {
                 return $row;
             }
-
             $row = $this->relateBelongsTo($row);
             $row = $this->relateHasMany($row);
             return $row;
@@ -482,29 +449,21 @@
         /**
          * Retrieve and generate a form_dropdown friendly array
          */
-        public function dropdown()
-        {
+        public function dropdown() {
             $args = func_get_args();
-            if (count($args) == 2)
-            {
+            if (count($args) == 2) {
                 list($key, $value) = $args;
-            } else
-            {
+            } else {
                 $key = $this->primary_key;
                 $value = $args[0];
             }
             $this->trigger('before_dropdown', array($key, $value));
-            if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
-            {
-                $this->getQueryBuilder()->where($this->soft_delete_key, FALSE);
-            }
-            $this->getQueryBuilder()
-                                        ->select(array($key, $value))
-                                        ->from($this->_table);
+            $this->checkForSoftDelete();
+            $this->getQueryBuilder()->select(array($key, $value))
+                                    ->from($this->_table);
             $result = $this->_database->getAll();
             $options = array();
-            foreach ($result as $row)
-            {
+            foreach ($result as $row) {
                 $options[$row->{$key}] = $row->{$value};
             }
             $options = $this->trigger('after_dropdown', $options);
@@ -514,12 +473,8 @@
         /**
          * Fetch a count of rows based on an arbitrary WHERE call.
          */
-        public function count_by()
-        {
-            if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
-            {
-                $this->getQueryBuilder()->where($this->soft_delete_key, (bool) $this->_temporary_only_deleted);
-            }
+        public function count_by() {
+            $this->checkForSoftDelete();
             $where = func_get_args();
             $this->_set_where($where);
             $this->getQueryBuilder()->from($this->_table);
@@ -532,10 +487,7 @@
          */
         public function count_all()
         {
-            if ($this->soft_delete && $this->_temporary_with_deleted !== TRUE)
-            {
-                $this->getQueryBuilder()->where($this->soft_delete_key, (bool) $this->_temporary_only_deleted);
-            }
+            $this->checkForSoftDelete();
             $this->getQueryBuilder()->from($this->_table);
             $this->_database->getAll();
             return $this->_database->numRows();
@@ -545,17 +497,14 @@
          * Enabled cache temporary
          */
         public function cached($ttl = 0) {
-            if ($ttl > 0) {
             $this->_database = $this->_database->cached($ttl);
-            }
             return $this;
         }
 
         /**
          * Tell the class to skip the insert validation
          */
-        public function skip_validation()
-        {
+        public function skip_validation() {
             $this->skip_validation = TRUE;
             return $this;
         }
@@ -563,16 +512,14 @@
         /**
          * Get the skip validation status
          */
-        public function get_skip_validation()
-        {
+        public function get_skip_validation() {
             return $this->skip_validation;
         }
 
         /**
          * Return the next auto increment of the table. Only tested on MySQL.
          */
-        public function get_next_id()
-        {
+        public function get_next_id() {
             $this->getQueryBuilder()->select('AUTO_INCREMENT')
                                     ->from('information_schema.TABLES')
                                     ->where('TABLE_NAME', $this->_table)
@@ -583,8 +530,7 @@
         /**
          * Getter for the table name
          */
-        public function table()
-        {
+        public function table() {
             return $this->_table;
         }
 
@@ -595,8 +541,7 @@
         /**
          * Return the next call as an array rather than an object
          */
-        public function as_array()
-        {
+        public function as_array() {
             $this->_temporary_return_type = 'array';
             return $this;
         }
@@ -604,8 +549,7 @@
         /**
          * Return the next call as an object rather than an array
          */
-        public function as_object()
-        {
+        public function as_object() {
             $this->_temporary_return_type = 'object';
             return $this;
         }
@@ -613,8 +557,7 @@
         /**
          * Don't care about soft deleted rows on the next call
          */
-        public function with_deleted()
-        {
+        public function with_deleted() {
             $this->_temporary_with_deleted = TRUE;
             return $this;
         }
@@ -622,8 +565,7 @@
         /**
          * Only get deleted rows on the next call
          */
-        public function only_deleted()
-        {
+        public function only_deleted() {
             $this->_temporary_only_deleted = TRUE;
             return $this;
         }
@@ -635,25 +577,19 @@
         /**
          * MySQL DATETIME created_at and updated_at
          */
-        public function created_at($row)
-        {
-            if (is_object($row))
-            {
+        public function created_at($row) {
+            if (is_object($row)) {
                 $row->created_at = date('Y-m-d H:i:s');
-            } else
-            {
+            } else {
                 $row['created_at'] = date('Y-m-d H:i:s');
             }
             return $row;
         }
 
-        public function updated_at($row)
-        {
-            if (is_object($row))
-            {
+        public function updated_at($row) {
+            if (is_object($row)) {
                 $row->updated_at = date('Y-m-d H:i:s');
-            } else
-            {
+            } else {
                 $row['updated_at'] = date('Y-m-d H:i:s');
             }
             return $row;
@@ -663,24 +599,18 @@
          * Serialises data for you automatically, allowing you to pass
          * through objects and let it handle the serialisation in the background
          */
-        public function serialize($row)
-        {
-            foreach ($this->callback_parameters as $column)
-            {
+        public function serialize($row) {
+            foreach ($this->callback_parameters as $column) {
                 $row[$column] = serialize($row[$column]);
             }
             return $row;
         }
 
-        public function unserialize($row)
-        {
-            foreach ($this->callback_parameters as $column)
-            {
-                if (is_array($row))
-                {
+        public function unserialize($row) {
+            foreach ($this->callback_parameters as $column) {
+                if (is_array($row)) {
                     $row[$column] = unserialize($row[$column]);
-                } else
-                {
+                } else {
                     $row->$column = unserialize($row->$column);
                 }
             }
@@ -690,20 +620,12 @@
         /**
          * Protect attributes by removing them from $row array
          */
-        public function protect_attributes($row)
-        {
-            foreach ($this->protected_attributes as $attr)
-            {
-                if (is_object($row))
-                {
-                    if (isset($row->$attr)) {
-                        unset($row->$attr);
-                    }
-                } else
-                {
-                    if (isset($row[$attr])) {
-                        unset($row[$attr]);
-                    }
+        public function protect_attributes($row) {
+            foreach ($this->protected_attributes as $attr) {
+                if (is_object($row) && isset($row->$attr)) {
+                    unset($row->$attr);
+                } else if (isset($row[$attr])) {
+                    unset($row[$attr]);
                 }
             }
             return $row;
@@ -721,7 +643,7 @@
          * set the Database instance for future use
          * @param Database $db the database object
          */
-            public function setDatabaseInstance($db) {
+        public function setDatabaseInstance($db) {
             $this->_database = $db;
             if ($this->dbCacheTime > 0) {
                 $this->_database->setCache($this->dbCacheTime);
@@ -742,7 +664,7 @@
          * @param Loader $loader the loader object
          * @return object
          */
-            public function setLoader($loader) {
+        public function setLoader($loader) {
             $this->loaderInstance = $loader;
             return $this;
         }
@@ -760,12 +682,11 @@
          * @param object $queryBuilder the DatabaseQueryBuilder object
          * @return object
          */
-            public function setQueryBuilder($queryBuilder) {
+        public function setQueryBuilder($queryBuilder) {
             $this->_database->setQueryBuilder($queryBuilder);
             return $this;
         }
 
-		
         /**
          * Return the FormValidation instance
          * @return FormValidation the form validation instance
@@ -779,7 +700,7 @@
          * @param FormValidation $fv the form validation object
          * @return object
          */
-            public function setFormValidation($fv) {
+        public function setFormValidation($fv) {
             $this->formValidationInstance = $fv;
             return $this;
         }
@@ -791,16 +712,12 @@
         /**
          * A wrapper to $this->getQueryBuilder()->orderBy()
          */
-        public function order_by($criteria, $order = 'ASC')
-        {
-            if (is_array($criteria))
-            {
-                foreach ($criteria as $key => $value)
-                {
+        public function order_by($criteria, $order = 'ASC') {
+            if (is_array($criteria)) {
+                foreach ($criteria as $key => $value) {
                     $this->getQueryBuilder()->orderBy($key, $value);
                 }
-            } else
-            {
+            } else {
                 $this->getQueryBuilder()->orderBy($criteria, $order);
             }
             return $this;
@@ -809,8 +726,7 @@
         /**
          * A wrapper to $this->getQueryBuilder()->limit()
          */
-        public function limit($offset = 0, $limit = 10)
-        {
+        public function limit($offset = 0, $limit = 10) {
             $this->getQueryBuilder()->limit($offset, $limit);
             return $this;
         }
@@ -818,39 +734,85 @@
         /* --------------------------------------------------------------
          * INTERNAL METHODS
          * ------------------------------------------------------------ */
+        
+        /**
+         * Return the loader instance or create
+         * @return object
+         */
+        protected function getLoaderInstanceOrCreate() {
+            if (! is_object($this->loaderInstance)) {
+                $this->loaderInstance = & get_instance()->loader;
+            } 
+            return $this->loaderInstance;
+        }
+
+         /**
+         * Get the return type array or object
+         * @return string|boolean
+         */
+        protected function getReturnType(){
+            $type = false;
+            if ($this->_temporary_return_type == 'array') {
+               $type = 'array';
+            }
+            return $type;
+        }
+
+         /**
+         * Check if soft delete is enable setting the condition
+         * @return object the current instance 
+         */
+        protected function checkForSoftDelete(){
+            if ($this->soft_delete && $this->_temporary_with_deleted !== true) {
+                $this->getQueryBuilder()->where($this->soft_delete_key, (bool) $this->_temporary_only_deleted);
+            }
+            return $this;
+        }
+
+         /**
+         * Relate for "belongs_to" and "has_many"
+         * @param  string $relationship the name of relation
+         * @param  string|array $options      the model and primary key values
+         * @param  object|array $row          the row to update
+         * @param  string $type         the type can be "belongs_to", "has_many"
+         * @return mixed               the final row values
+         */
+        protected function relateBelongsToAndHasMany($relationship, $options, $row, $type){
+            if (in_array($relationship, $this->_with)) {
+                $loaderInstance = $this->getLoaderInstanceOrCreate();
+                $loaderInstance->model($options['model'], $relationship . '_model');
+
+                if($type = 'belongs_to'){
+                    if (is_object($row)) {
+                        $row->{$relationship} = $this->{$relationship . '_model'}->get($row->{$options['primary_key']});
+                    } else {
+                        $row[$relationship] = $this->{$relationship . '_model'}->get($row[$options['primary_key']]);
+                    }
+                } else {
+                    if (is_object($row)) {
+                        $row->{$relationship} = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row->{$this->primary_key});
+                    } else {
+                        $row[$relationship] = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row[$this->primary_key]);
+                    }
+                }
+            }
+            return $row;
+        }
 
         /**
          * relate for the relation "belongs_to"
          * @return mixed
          */
         protected function relateBelongsTo($row) {
-            foreach ($this->belongs_to as $key => $value)
-            {
-                if (is_string($value))
-                {
+            foreach ($this->belongs_to as $key => $value) {
+                if (is_string($value)) {
                     $relationship = $value;
                     $options = array('primary_key' => $value . '_id', 'model' => $value . '_model');
-                } else
-                {
+                } else {
                     $relationship = $key;
                     $options = $value;
                 }
-
-                if (in_array($relationship, $this->_with))
-                {
-                    if (is_object($this->loaderInstance)) {
-                        $this->loaderInstance->model($options['model'], $relationship . '_model');
-                    } else {
-                        Loader::model($options['model'], $relationship . '_model');    
-                    }
-                    if (is_object($row))
-                    {
-                        $row->{$relationship} = $this->{$relationship . '_model'}->get($row->{$options['primary_key']});
-                    } else
-                    {
-                        $row[$relationship] = $this->{$relationship . '_model'}->get($row[$options['primary_key']]);
-                    }
-                }
+                $row = $this->relateBelongsToAndHasMany($relationship, $options, $row, 'belongs_to');
             }
             return $row;
         }
@@ -860,33 +822,15 @@
          * @return mixed
          */
         protected function relateHasMany($row) {
-            foreach ($this->has_many as $key => $value)
-            {
-                if (is_string($value))
-                {
+            foreach ($this->has_many as $key => $value) {
+                if (is_string($value)) {
                     $relationship = $value;
                     $options = array('primary_key' => $this->_table . '_id', 'model' => $value . '_model');
-                } else
-                {
+                } else {
                     $relationship = $key;
                     $options = $value;
                 }
-
-                if (in_array($relationship, $this->_with))
-                {
-                    if (is_object($this->loaderInstance)) {
-                        $this->loaderInstance->model($options['model'], $relationship . '_model');
-                    } else {
-                        Loader::model($options['model'], $relationship . '_model');    
-                    }
-                    if (is_object($row))
-                    {
-                        $row->{$relationship} = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row->{$this->primary_key});
-                    } else
-                    {
-                        $row[$relationship] = $this->{$relationship . '_model'}->get_many_by($options['primary_key'], $row[$this->primary_key]);
-                    }
-                }
+                $row = $this->relateBelongsToAndHasMany($relationship, $options, $row, 'belongs_to');
             }
             return $row;
         }
@@ -896,14 +840,10 @@
          * (which looks for an instance variable $this->event_name), an array of
          * parameters to pass through and an optional 'last in interation' boolean
          */
-        protected function trigger($event, $data = FALSE, $last = TRUE)
-        {
-            if (isset($this->$event) && is_array($this->$event))
-            {
-                foreach ($this->$event as $method)
-                {
-                    if (strpos($method, '('))
-                    {
+        protected function trigger($event, $data = FALSE, $last = TRUE) {
+            if (isset($this->$event) && is_array($this->$event)) {
+                foreach ($this->$event as $method) {
+                    if (strpos($method, '(')) {
                         preg_match('/([a-zA-Z0-9\_\-]+)(\(([a-zA-Z0-9\_\-\., ]+)\))?/', $method, $matches);
                         $method = $matches[1];
                         $this->callback_parameters = explode(',', $matches[3]);
@@ -917,23 +857,20 @@
         /**
          * Run validation on the passed data
          */
-        protected function validate(array $data)
-        {
-            if ($this->skip_validation || empty($this->validate))
-            {
+        protected function validate(array $data) {
+            if ($this->skip_validation || empty($this->validate)) {
                 return $data;
             }
             $fv = $this->formValidationInstance;
             if (!is_object($fv)) {
-                    Loader::library('FormValidation');
+                Loader::library('FormValidation');
                 $fv = $this->formvalidation;
                 $this->setFormValidation($fv);  
             }
             $fv->setData($data);
             $fv->setRules($this->validate);
 
-            if ($fv->run())
-            {
+            if ($fv->run()) {
                 return $data;
             }
             return FALSE;
@@ -945,18 +882,13 @@
          * @param array $params
          */
         protected function _set_where_array(array $params) {
-            foreach ($params as $field => $filter)
-            {
-                if (is_array($filter))
-                {
+            foreach ($params as $field => $filter) {
+                if (is_array($filter)) {
                     $this->getQueryBuilder()->in($field, $filter);
-                } else
-                {
-                    if (is_int($field))
-                    {
+                } else {
+                    if (is_int($field)) {
                         $this->getQueryBuilder()->where($filter);
-                    } else
-                    {
+                    } else {
                         $this->getQueryBuilder()->where($field, $filter);
                     }
                 }
@@ -967,33 +899,23 @@
         /**
          * Set WHERE parameters, cleverly
          */
-        protected function _set_where($params)
-        {
-            if (count($params) == 1 && is_array($params[0]))
-            {
+        protected function _set_where($params) {
+            if (count($params) == 1 && is_array($params[0])) {
                 $this->_set_where_array($params[0]);
-            } else if (count($params) == 1)
-            {
+            } else if (count($params) == 1) {
                 $this->getQueryBuilder()->where($params[0]);
-            } else if (count($params) == 2)
-            {
-                if (is_array($params[1]))
-                {
+            } else if (count($params) == 2) {
+                if (is_array($params[1])) {
                     $this->getQueryBuilder()->in($params[0], $params[1]);
-                } else
-                {
+                } else {
                     $this->getQueryBuilder()->where($params[0], $params[1]);
                 }
-            } else if (count($params) == 3)
-            {
+            } else if (count($params) == 3) {
                 $this->getQueryBuilder()->where($params[0], $params[1], $params[2]);
-            } else
-            {
-                if (is_array($params[1]))
-                {
+            } else {
+                if (is_array($params[1])) {
                     $this->getQueryBuilder()->in($params[0], $params[1]);
-                } else
-                {
+                } else {
                     $this->getQueryBuilder()->where($params[0], $params[1]);
                 }
             }

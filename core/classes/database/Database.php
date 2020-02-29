@@ -183,7 +183,7 @@
      */
     public function get($returnSQLQueryOrResultType = false) {
         $this->queryBuilder->limit(1);
-        $query = $this->getAll(true);
+        $query = $this->getAll($returnSql = true);
         if ($returnSQLQueryOrResultType === true) {
         return $query;
         } else {
@@ -220,9 +220,13 @@
         $query = $this->queryBuilder->insert($data, $escape)->getQuery();
         $result = $this->query($query);
         if ($result) {
-        $this->insertId = $this->pdo->lastInsertId();
+            $this->insertId = $this->pdo->lastInsertId();
             //if the table doesn't have the auto increment field or sequence, the value of 0 will be returned 
-        return !($this->insertId) ? true : $this->insertId;
+             $id = $this->insertId;
+            if (!$id) {
+                $id = true;
+            }
+            return $id;
         }
         return false;
     }
@@ -581,25 +585,27 @@
      * @return string|null         the dsn name
      */
     protected function getDsnValueForDriver($driver) {
-        $dsn = '';
         $config = $this->getDatabaseConfiguration();
         if (empty($config)) {
             return null;
         }
-        if (in_array($driver, array('mysql', 'pgsql'))) {
-            $port = '';
-            if (!empty($config['port'])) {
+        $dsn = '';
+        $port = '';
+        $driversDsn = array(
+            'mysql' => $driver . ':host=' . $config['hostname'] . ';%sdbname=' . $config['database'],
+            'pgsql' => $driver . ':host=' . $config['hostname'] . ';%sdbname=' . $config['database'],
+            'oracle' => 'oci:dbname=' . $config['hostname'] . '%s/' . $config['database'],
+            'sqlite' => 'sqlite:' . $config['database']
+        );
+        if (!empty($config['port'])) {
+            if (in_array($driver, array('mysql', 'pgsql'))) {
                 $port = 'port=' . $config['port'] . ';';
-            }
-            $dsn = $driver . ':host=' . $config['hostname'] . ';' . $port . 'dbname=' . $config['database'];
-        } else if ($driver == 'oracle') {
-            $port = '';
-            if (!empty($config['port'])) {
+            } else if ($driver == 'oracle') {
                 $port = ':' . $config['port'];
             }
-            $dsn = 'oci:dbname=' . $config['hostname'] . $port . '/' . $config['database'];
-        } else if ($driver == 'sqlite') {
-            $dsn = 'sqlite:' . $config['database'];
+        }
+        if (isset($driversDsn[$driver])) {
+            $dsn = sprintf($driversDsn[$driver], $port);
         }
         return $dsn;
     }

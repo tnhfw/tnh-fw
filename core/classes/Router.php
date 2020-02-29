@@ -228,7 +228,6 @@
             return $this;
         }
 
-
         /**
          * Set the route URI to use later
          * @param string $uri the route URI, if is empty will determine automatically
@@ -245,26 +244,17 @@
             } else if (isset($_SERVER['REQUEST_URI'])) {
                 $routeUri = $_SERVER['REQUEST_URI'];
             }
-            $this->logger->debug('Check if URL suffix is enabled in the configuration');
-            //remove url suffix from the request URI
-            $suffix = get_config('url_suffix');
-            if ($suffix) {
-                $this->logger->info('URL suffix is enabled in the configuration, the value is [' . $suffix . ']');
-                $routeUri = str_ireplace($suffix, '', $routeUri);
-            } 
-            if (strpos($routeUri, '?') !== false) {
-                $routeUri = substr($routeUri, 0, strpos($routeUri, '?'));
-            }
+            $routeUri = $this->removeSuffixAndQueryStringFromUri($routeUri);
             $this->uri = trim($routeUri, $this->uriTrim);
             return $this;
         }
 
-            /**
-             * Set the route segments informations
-             * @param array $segements the route segments information
-             * 
-             * @return object
-             */
+        /**
+         * Set the route segments informations
+         * @param array $segements the route segments information
+         * 
+         * @return object
+         */
         public function setRouteSegments(array $segments = array()) {
             if (!empty($segments)) {
                 $this->segments = $segments;
@@ -272,18 +262,7 @@
                 $this->segments = explode('/', $this->uri);
             }
             $segment = $this->segments;
-            $baseUrl = get_config('base_url');
-            //check if the app is not in DOCUMENT_ROOT
-            if (isset($segment[0]) && stripos($baseUrl, $segment[0]) !== false) {
-                array_shift($segment);
-                $this->segments = $segment;
-            }
-            $this->logger->debug('Check if the request URI contains the front controller');
-            if (isset($segment[0]) && $segment[0] == SELF) {
-                $this->logger->info('The request URI contains the front controller');
-                array_shift($segment);
-                $this->segments = $segment;
-            }
+            $this->removeDocumentRootFrontControllerFromSegments();
             return $this;
         }
 
@@ -301,7 +280,7 @@
             //the URL like http://domain.com/module/controller/method/arg1/arg2
             if (!$this->controller) {
                 $this->logger->info('Cannot determine the routing information using the predefined routes configuration, will use the request URI parameters');
-                //determine route parameters using the REQUEST_URI param
+                //determine route parameters using the route URI param
                 $this->determineRouteParamsFromRequestUri();
             }
             //Set the controller file path if not yet set
@@ -426,6 +405,45 @@
         }
 
         /**
+         * Remove the DOCUMENT_ROOT and front controller from segments if exists
+         * @return void
+         */
+        protected function removeDocumentRootFrontControllerFromSegments(){
+            $segment = $this->segments;
+            $baseUrl = get_config('base_url');
+            //check if the app is not in DOCUMENT_ROOT
+            if (isset($segment[0]) && stripos($baseUrl, $segment[0]) !== false) {
+                array_shift($segment);
+                $this->segments = $segment;
+            }
+            $this->logger->debug('Check if the request URI contains the front controller');
+            if (isset($segment[0]) && $segment[0] == SELF) {
+                $this->logger->info('The request URI contains the front controller');
+                array_shift($segment);
+                $this->segments = $segment;
+            }
+        }
+
+         /**
+         * Remove the URL suffix and query string values if exists
+         * @param  string $uri the route URI to process
+         * @return string      the final route uri after processed
+         */
+        protected function removeSuffixAndQueryStringFromUri($uri) {
+            $this->logger->debug('Check if URL suffix is enabled in the configuration');
+            //remove url suffix from the request URI
+            $suffix = get_config('url_suffix');
+            if ($suffix) {
+                $this->logger->info('URL suffix is enabled in the configuration, the value is [' . $suffix . ']');
+                $uri = str_ireplace($suffix, '', $uri);
+            } 
+            if (strpos($uri, '?') !== false) {
+                $uri = substr($uri, 0, strpos($uri, '?'));
+            }
+            return $uri;
+        }
+
+        /**
          * Determine the route parameters from route configuration
          * @return void
          */
@@ -441,7 +459,8 @@
                                     'Begin to loop in the predefined routes configuration ' 
                                     . 'to check if the current request match'
                                     );
-
+            $args = array();
+            $findIndex = -1;
             // Cycle through the URIs stored in the array
             foreach ($this->pattern as $index => $uriList) {
                 $uriList = str_ireplace($pattern, $replace, $uriList);
@@ -451,28 +470,31 @@
                                         'Route found for request URI [' . $uri . '] using the predefined configuration '
                                         . ' [' . $this->pattern[$index] . '] --> [' . $this->callback[$index] . ']'
                                     );
-                    array_shift($args);
-                    //check if this contains an module
-                    $moduleControllerMethod = explode('#', $this->callback[$index]);
-                    if (is_array($moduleControllerMethod) && count($moduleControllerMethod) >= 2) {
-                        $this->logger->info('The current request use the module [' . $moduleControllerMethod[0] . ']');
-                        $this->module = $moduleControllerMethod[0];
-                        $moduleControllerMethod = explode('@', $moduleControllerMethod[1]);
-                    } else {
-                        $this->logger->info('The current request does not use the module');
-                        $moduleControllerMethod = explode('@', $this->callback[$index]);
-                    }
-                    if (is_array($moduleControllerMethod)) {
-                        if (isset($moduleControllerMethod[0])) {
-                            $this->controller = $moduleControllerMethod[0];	
-                        }
-                        if (isset($moduleControllerMethod[1])) {
-                            $this->method = $moduleControllerMethod[1];
-                        }
-                        $this->args = $args;
-                    }
+                    $findIndex = $index;
                     // stop here
                     break;
+                }
+            }
+            if($findIndex !== -1){
+                array_shift($args);
+                //check if this contains an module
+                $moduleControllerMethod = explode('#', $this->callback[$findIndex]);
+                if (count($moduleControllerMethod) >= 2) {
+                    $this->logger->info('The current request use the module [' . $moduleControllerMethod[0] . ']');
+                    $this->module = $moduleControllerMethod[0];
+                    $moduleControllerMethod = explode('@', $moduleControllerMethod[1]);
+                } else {
+                    $this->logger->info('The current request does not use the module');
+                    $moduleControllerMethod = explode('@', $this->callback[$findIndex]);
+                }
+                if (is_array($moduleControllerMethod)) {
+                    if (isset($moduleControllerMethod[0])) {
+                        $this->controller = $moduleControllerMethod[0]; 
+                    }
+                    if (isset($moduleControllerMethod[1])) {
+                        $this->method = $moduleControllerMethod[1];
+                    }
+                    $this->args = $args;
                 }
             }
 

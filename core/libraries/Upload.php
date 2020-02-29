@@ -252,6 +252,7 @@
             }
             $this->logger->info('The upload file information are : ' . stringfy_vars($this->file_array));
         }
+
         /**
          *    Set input.
          *    If you have $_FILES["file"], you must use the key "file"
@@ -271,6 +272,15 @@
             }
             return $this;
         }
+
+        /**
+         * Set the file array data generally in constructor this is already set using $_FILES
+         * @param array $fileArray the new value
+         */
+        public function setFileArray($fileArray){
+            $this->file_array = $fileArray;
+        }
+
         /**
          *    Set new filename
          *    Example:
@@ -404,13 +414,14 @@
          */
         public function setMimeHelping($name)
         {
-            if (!empty($name) && is_string($name)) {
-                if (array_key_exists($name, $this->mime_helping)) {
+            if (!empty($name) 
+                && is_string($name) 
+                 && array_key_exists($name, $this->mime_helping)) {
                     return $this->setAllowedMimeTypes($this->mime_helping[$name]);
-                }
             }
             return $this;
         }
+
         /**
          *    Set function to upload file
          *    Examples:
@@ -425,10 +436,8 @@
          */
         public function setUploadFunction($function)
         {
-            if (!empty($function) && (is_array($function) || is_string($function))) {
-                if (is_callable($function)) {
-                    $this->upload_function = $function;
-                }
+            if (is_callable($function)) {
+                $this->upload_function = $function;
             }
             return $this;
         }
@@ -488,10 +497,9 @@
          */
         public function fileExists($file_destination)
         {
-            if ($this->isFilename($file_destination)) {
-                return (file_exists($file_destination) && is_file($file_destination));
-            }
-            return false;
+            return $this->isFilename($file_destination) 
+                                && file_exists($file_destination) 
+                                && is_file($file_destination);
         }
         /**
          *    Check dir exists
@@ -504,10 +512,9 @@
          */
         public function dirExists($path)
         {
-            if ($this->isDirpath($path)) {
-                return (file_exists($path) && is_dir($path));
-            }
-            return false;
+            return $this->isDirpath($path) 
+                                && file_exists($path) 
+                                && is_dir($path);
         }
         /**
          *    Check valid filename
@@ -686,7 +693,11 @@
             if ($size > 0) {
                 $base       = log($size) / log(1024);
                 $suffixes   = array('B', 'K', 'M', 'G', 'T');
-                return round(pow(1024, $base - floor($base)), $precision) . (isset($suffixes[floor($base)]) ? $suffixes[floor($base)] : '');
+                $suf = '';
+                if (isset($suffixes[floor($base)])) {
+                    $suf = $suffixes[floor($base)];
+                }
+                return round(pow(1024, $base - floor($base)), $precision) . $suf;
             }
             return null;
         }

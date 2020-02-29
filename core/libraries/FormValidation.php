@@ -354,21 +354,16 @@
          */
         public function setMessage() {
             $numArgs = func_num_args();
-            switch ($numArgs) {
-                default:
-                    return false;
-                // A global rule error message
-                case 2:
-                    foreach ($this->post(null) as $key => $val) {
-                        $this->_errorMsgOverrides[$key][func_get_arg(0)] = func_get_arg(1);
-                    }
-                    break;
-                // Field specific rule error message
-                case 3:
-                    $this->_errorMsgOverrides[func_get_arg(1)][func_get_arg(0)] = func_get_arg(2);
-                    break;
+            if ($numArgs == 2) {
+               foreach ($this->post(null) as $key => $val) {
+                    $this->_errorMsgOverrides[$key][func_get_arg(0)] = func_get_arg(1);
+                }
+                return true;
+            } else if ($numArgs == 3) {
+                $this->_errorMsgOverrides[func_get_arg(1)][func_get_arg(0)] = func_get_arg(2);
+                 return true;
             }
-            return true;
+            return false;
         }
 
         /**
@@ -402,8 +397,11 @@
                 foreach ($this->data  as $key => $val) {
                     $returnValue[$key] = $this->post($key, $trim);
                 }
-            } else {
-                $returnValue = (array_key_exists($key, $this->getData())) ? (($trim) ? trim($this->data[$key]) : $this->data[$key]) : null;
+            } else if (array_key_exists($key, $this->data)) {
+                $returnValue = $this->data[$key];
+                if ($trim) {
+                    $returnValue = trim($this->data[$key]);
+                }
             }
             return $returnValue;
         }
@@ -415,7 +413,7 @@
          * @param boolean $limit number of error to display or return
          * @param boolean $echo Whether or not the values are to be returned or displayed
          *
-         * @return string Errors formatted for output
+         * @return string|void Errors formatted for output
          */
         public function displayErrors($limit = null, $echo = true) {
             list($errorsStart, $errorsEnd) = $this->_allErrorsDelimiter;
@@ -434,8 +432,10 @@
                 }
             }
             $errorOutput .= $errorsEnd;
-            echo ($echo) ? $errorOutput : '';
-            return (!$echo) ? $errorOutput : null;
+            if (!$echo) {
+                return $errorOutput;
+            }
+            echo $errorOutput;
         }
 
         /**

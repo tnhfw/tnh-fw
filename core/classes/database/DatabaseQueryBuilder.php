@@ -217,9 +217,10 @@
             $on = $field1;
             $table = $this->prefix . $table;
             if (!is_null($op)) {
-                $on = (!in_array($op, $this->operatorList) 
-                                                        ? ($this->prefix . $field1 . ' = ' . $this->prefix . $op) 
-                                                        : ($this->prefix . $field1 . ' ' . $op . ' ' . $this->prefix . $field2));
+                $on = $this->prefix . $field1 . ' ' . $op . ' ' . $this->prefix . $field2;
+                if (!in_array($op, $this->operatorList)) {
+                    $on = $this->prefix . $field1 . ' = ' . $this->prefix . $op;
+                }
             }
             if (empty($this->join)) {
                 $this->join = ' ' . $type . ' JOIN' . ' ' . $table . ' ON ' . $on;
@@ -285,36 +286,18 @@
 
         /**
          * Set the SQL WHERE CLAUSE for IS NULL
-         * @param  string|array $field  the field name or array of field list
-         * @param  string $andOr the separator type used 'AND', 'OR', etc.
-         * @return object        the current DatabaseQueryBuilder instance
+         * @see  DatabaseQueryBuilder::whereIsNullAndNotNull
          */
         public function whereIsNull($field, $andOr = 'AND') {
-            if (is_array($field)) {
-                foreach ($field as $f) {
-                    $this->whereIsNull($f, $andOr);
-                }
-            } else {
-                $this->setWhereStr($field . ' IS NULL ', $andOr);
-            }
-            return $this;
+            return $this->whereIsNullAndNotNull($field, $andOr, 'IS NULL');
         }
 
         /**
          * Set the SQL WHERE CLAUSE for IS NOT NULL
-         * @param  string|array $field  the field name or array of field list
-         * @param  string $andOr the separator type used 'AND', 'OR', etc.
-         * @return object        the current DatabaseQueryBuilder instance
+         * @see  DatabaseQueryBuilder::whereIsNullAndNotNull
          */
         public function whereIsNotNull($field, $andOr = 'AND') {
-            if (is_array($field)) {
-                foreach ($field as $f) {
-                    $this->whereIsNotNull($f, $andOr);
-                }
-            } else {
-                $this->setWhereStr($field . ' IS NOT NULL ', $andOr);
-            }
-            return $this;
+            return $this->whereIsNullAndNotNull($field, $andOr, 'IS NOT NULL');
         }
     
         /**
@@ -437,7 +420,10 @@
             $_keys = array();
             foreach ($keys as $k => $v) {
                 $v = $this->checkForNullValue($v);
-                $_keys[] = (is_numeric($v) ? $v : $this->escape($v, $escape));
+                if (! is_numeric($v)) {
+                    $v = $this->escape($v, $escape);
+                }
+                $_keys[] = $v;
             }
             $keys = implode(', ', $_keys);
             $whereStr = $field . ' ' . $type . ' IN (' . $keys . ')';
@@ -802,6 +788,25 @@
             $this->query    = null;
             return $this;
         }
+
+        /**
+         * Set the SQL WHERE CLAUSE for IS NULL ad IS NOT NULL
+         * @param  string|array $field  the field name or array of field list
+         * @param  string $andOr the separator type used 'AND', 'OR', etc.
+         * @param string $clause the clause type "IS NULL", "IS NOT NULLs"
+         * @return object        the current DatabaseQueryBuilder instance
+         */
+        protected function whereIsNullAndNotNull($field, $andOr = 'AND', $clause = 'IS NULL'){
+            if (is_array($field)) {
+                foreach ($field as $f) {
+                    $this->whereIsNullAndNotNull($f, $andOr, $clause);
+                }
+            } else {
+                $this->setWhereStr($field . ' ' . $clause, $andOr);
+            }
+            return $this;
+        }
+
 
         /**
          * Set the value for SELECT command and update it if already exists

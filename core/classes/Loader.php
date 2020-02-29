@@ -184,15 +184,7 @@
                 $logger->info('Cannot find helper [' . $function . '] from modules using the default location');
             }
             if (!$functionFilePath) {
-                $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
-                foreach ($searchDir as $dir) {
-                    $filePath = $dir . $file;
-                    if (file_exists($filePath)) {
-                        $functionFilePath = $filePath;
-                        //is already found not to continue
-                        break;
-                    }
-                }
+                $functionFilePath = self::getDefaultFilePathForFunctionLanguage($file, 'function');
             }
             $logger->info('The helper file path to be loaded is [' . $functionFilePath . ']');
             if ($functionFilePath) {
@@ -289,15 +281,7 @@
                 $logger->info('Cannot find language [' . $language . '] from modules using the default location');
             }
             if (!$languageFilePath) {
-                $searchDir = array(APP_LANG_PATH, CORE_LANG_PATH);
-                foreach ($searchDir as $dir) {
-                    $filePath = $dir . $appLang . DS . $file;
-                    if (file_exists($filePath)) {
-                        $languageFilePath = $filePath;
-                        //already found no need continue
-                        break;
-                    }
-                }
+                $languageFilePath = self::getDefaultFilePathForFunctionLanguage($file, 'language', $appLang);
             }
             $logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
             self::loadLanguage($languageFilePath, $language);
@@ -320,6 +304,48 @@
             }
             return $appLang;
         }
+
+        /**
+         * Return the default full file path for function, language
+         * @param  string $file    the filename
+         * @param  string $type    the type can be "function", "language"
+         * @param  string $appLang the application language, only if type = "language"
+         * @return string|null          the full file path
+         */
+        protected static function getDefaultFilePathForFunctionLanguage($file, $type, $appLang = null){
+            $searchDir = null;
+            if ($type == 'function') {
+               $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
+            }
+            else if ($type = 'language') {
+                $searchDir = array(APP_LANG_PATH, CORE_LANG_PATH);
+                $file = $appLang . DS . $file;
+            }
+            $fullFilePath = null;
+            foreach ($searchDir as $dir) {
+                $filePath = $dir . $file;
+                if (file_exists($filePath)) {
+                    $fullFilePath = $filePath;
+                    //is already found not to continue
+                    break;
+                }
+            }
+            return $fullFilePath;
+        }
+
+        /**
+         * Get the module using the attribute of super controller "moduleName"
+         * @param  string|null $module the module if is not null will return it
+         * @return string|null
+         */
+        protected static function getModuleFromSuperController($module){
+            $obj = & get_instance();
+            if (!$module && !empty($obj->moduleName)) {
+                $module = $obj->moduleName;
+            }
+            return $module;
+        }
+
         /**
          * Get the module information for the model and library to load
          * @param  string $class the full class name like moduleName/className, className,
@@ -331,7 +357,6 @@
          */
         protected static function getModuleInfoForModelLibrary($class) {
             $module = null;
-            $obj = & get_instance();
             $path = explode('/', $class);
             if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
                 $module = $path[0];
@@ -339,9 +364,7 @@
             } else {
                 $class = ucfirst($class);
             }
-            if (!$module && !empty($obj->moduleName)) {
-                $module = $obj->moduleName;
-            }
+            $module = self::getModuleFromSuperController($module);
             return array(
                         'class' => $class,
                         'module' => $module
@@ -361,7 +384,6 @@
         protected static function getModuleInfoForFunction($function) {
             $module = null;
             $file = null;
-            $obj = & get_instance();
             //check if the request class contains module name
             $path = explode('/', $function);
             if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
@@ -369,9 +391,7 @@
                 $function = 'function_' . $path[1];
                 $file = $path[0] . DS . $function . '.php';
             }
-            if (!$module && !empty($obj->moduleName)) {
-                $module = $obj->moduleName;
-            }
+            $module = self::getModuleFromSuperController($module);
             return array(
                         'function' => $function,
                         'module' => $module,
@@ -392,7 +412,6 @@
         protected static function getModuleInfoForLanguage($language) {
             $module = null;
             $file = null;
-            $obj = & get_instance();
             //check if the request class contains module name
             $path = explode('/', $language);
             if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
@@ -400,9 +419,7 @@
                 $language = 'lang_' . $path[1] . '.php';
                 $file = $path[0] . DS . $language;
             }
-            if (!$module && !empty($obj->moduleName)) {
-                $module = $obj->moduleName;
-            }
+            $module = self::getModuleFromSuperController($module);
             return array(
                         'language' => $language,
                         'module' => $module,
@@ -422,16 +439,13 @@
          */
         protected static function getModuleInfoForConfig($filename) {
             $module = null;
-            $obj = & get_instance();
             //check if the request class contains module name
             $path = explode('/', $filename);
             if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
                 $module = $path[0];
                 $filename = $path[1] . '.php';
             }
-            if (!$module && !empty($obj->moduleName)) {
-                $module = $obj->moduleName;
-            }
+            $module = self::getModuleFromSuperController($module);
             return array(
                         'filename' => $filename,
                         'module' => $module
@@ -446,11 +460,9 @@
         protected static function getModelLibraryInstanceName($class) {
             //for module
             $instance = null;
-            if (strpos($class, '/') !== false) {
-                $path = explode('/', $class);
-                if (isset($path[1])) {
-                    $instance = strtolower($path[1]);
-                }
+            $path = explode('/', $class);
+            if (count($path) >= 2 && isset($path[1])) {
+                $instance = strtolower($path[1]);
             } else {
                 $instance = strtolower($class);
             }

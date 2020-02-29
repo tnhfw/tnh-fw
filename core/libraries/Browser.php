@@ -149,7 +149,7 @@
 
         /**
          * Get the user agent value in use to determine the browser
-         * @return string The user agent
+         * @return string the user agent
          */
         public function getUserAgent() {
             return $this->_agent;
@@ -157,9 +157,9 @@
 
         /**
          * Set the user agent value
-         * @param string $agent_string The value for the User Agent to set
+         * @param string $agentString the value for the User Agent to set
          */
-        public function setUserAgent($agent_string)
+        public function setUserAgent($agentString)
         {
             $this->reset();
             $this->_agent = $agent_string;
