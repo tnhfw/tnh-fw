@@ -2,7 +2,7 @@
 
 	use PHPUnit\Framework\TestCase;
 
-	class LogTest extends TestCase
+	class ModuleTest extends TestCase
 	{	
 	
 		public static function setUpBeforeClass()
