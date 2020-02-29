@@ -162,7 +162,7 @@
         public function setUserAgent($agentString)
         {
             $this->reset();
-            $this->_agent = $agent_string;
+            $this->_agent = $agentString;
             $this->determine();
         }
 
