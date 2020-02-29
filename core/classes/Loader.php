@@ -317,7 +317,7 @@
             if ($type == 'function') {
                $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
             }
-            else if ($type = 'language') {
+            else if ($type == 'language') {
                 $searchDir = array(APP_LANG_PATH, CORE_LANG_PATH);
                 $file = $appLang . DS . $file;
             }
