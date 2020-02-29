@@ -261,7 +261,6 @@
             } else if (!empty($this->uri)) {
                 $this->segments = explode('/', $this->uri);
             }
-            $segment = $this->segments;
             $this->removeDocumentRootFrontControllerFromSegments();
             return $this;
         }
