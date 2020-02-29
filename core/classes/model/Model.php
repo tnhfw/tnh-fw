@@ -782,7 +782,7 @@
                 $loaderInstance = $this->getLoaderInstanceOrCreate();
                 $loaderInstance->model($options['model'], $relationship . '_model');
 
-                if($type = 'belongs_to'){
+                if($type == 'belongs_to'){
                     if (is_object($row)) {
                         $row->{$relationship} = $this->{$relationship . '_model'}->get($row->{$options['primary_key']});
                     } else {
