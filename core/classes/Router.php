@@ -486,7 +486,7 @@
                     $this->logger->info('The current request does not use the module');
                     $moduleControllerMethod = explode('@', $this->callback[$findIndex]);
                 }
-                if (is_array($moduleControllerMethod)) {
+                if (count($moduleControllerMethod) >= 1) {
                     if (isset($moduleControllerMethod[0])) {
                         $this->controller = $moduleControllerMethod[0]; 
                     }
