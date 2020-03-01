@@ -144,7 +144,7 @@
                     if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE) {
                         $baseUrl = '[' . $_SERVER['SERVER_ADDR'] . ']';
                     }
-                    $port = $this->getServerPort();
+                    $port = self::getServerPort();
                     $baseUrl = $protocol . $baseUrl . $port . substr(
                                                                         $_SERVER['SCRIPT_NAME'], 
                                                                         0, 
@@ -164,7 +164,7 @@
         *
         * @return string
         */
-        protected function getServerPort() {
+        protected static function getServerPort() {
             $serverPort = 80;
             if (isset($_SERVER['SERVER_PORT'])) {
                  $serverPort = $_SERVER['SERVER_PORT'];
