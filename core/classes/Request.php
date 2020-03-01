@@ -126,92 +126,50 @@
 
         /**
          * Get the value from $_REQUEST for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+         * @see Request::getVars 
          */
         public function query($key = null, $xss = true) {
-            if (empty($key)) {
-                //return all
-                return $xss ? clean_input($this->query) : $this->query;
-            }
-            $query = array_key_exists($key, $this->query) ? $this->query[$key] : null;
-            if ($xss) {
-                $query = clean_input($query);
-            }
-            return $query;
+            return $this->getVars('query', $key, $xss);
         }
 		
         /**
          * Get the value from $_GET for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+         * @see Request::getVars 
          */
         public function get($key = null, $xss = true) {
-            if (empty($key)) {
-                //return all
-                return $xss ? clean_input($this->get) : $this->get;
-            }
-            $get = array_key_exists($key, $this->get) ? $this->get[$key] : null;
-            if ($xss) {
-                $get = clean_input($get);
-            }
-            return $get;
+            return $this->getVars('get', $key, $xss);
         }
 		
         /**
          * Get the value from $_POST for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+         * @see Request::getVars 
          */
         public function post($key = null, $xss = true) {
-            if (empty($key)) {
-                //return all
-                return $xss ? clean_input($this->post) : $this->post;
-            }
-            $post = array_key_exists($key, $this->post) ? $this->post[$key] : null;
-            if ($xss) {
-                $post = clean_input($post);
-            }
-            return $post;
+            return $this->getVars('post', $key, $xss);
         }
 		
         /**
          * Get the value from $_SERVER for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+         * @see Request::getVars 
          */
         public function server($key = null, $xss = true) {
-            if (empty($key)) {
-                //return all
-                return $xss ? clean_input($this->server) : $this->server;
-            }
-            $server = array_key_exists($key, $this->server) ? $this->server[$key] : null;
-            if ($xss) {
-                $server = clean_input($server);
-            }
-            return $server;
+            return $this->getVars('server', $key, $xss);
         }
 		
         /**
          * Get the value from $_COOKIE for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+         * @see Request::getVars 
          */
         public function cookie($key = null, $xss = true) {
-            if (empty($key)) {
-                //return all
-                return $xss ? clean_input($this->cookie) : $this->cookie;
-            }
-            $cookie = array_key_exists($key, $this->cookie) ? $this->cookie[$key] : null;
-            if ($xss) {
-                $cookie = clean_input($cookie);
-            }
-            return $cookie;
+            return $this->getVars('cookie', $key, $xss);
+        }
+
+        /**
+         * Get the value from header array for given key.
+         * @see Request::getVars 
+         */
+        public function header($key = null, $xss = true) {
+            return $this->getVars('header', $key, $xss);
         }
 		
         /**
@@ -238,18 +196,27 @@
             return $session;
         }
 
-        /**
-         * Get the value from header array for given key.
+         /**
+         * Get the value from $_GET, $_POST, $_SERVER etc. for given key. if the key is empty will return the all values
+         * @param string $type the type can be "post", "get", etc.
          * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return mixed       the item value if the key exists or null if the key does not exists
+         * @param  boolean $xss if need apply some XSS rule on the value
+         * @return array|mixed       the item value if the key exists or all array if the key is null
          */
-        public function header($key, $xss = true) {
-            $header = array_key_exists($key, $this->header) ? $this->header[$key] : null;
-            if ($xss) {
-                $header = clean_input($header);
+        protected function getVars($type, $key = null, $xss = true) {
+            $data = null;
+            if ($key !== null) {
+                //return all
+                $data = $this->{$type};
+            } else if (array_key_exists($key, $this->{$type})) {
+                $data = $this->{$type}[$key];
             }
-            return $header;
+            if ($xss) {
+                $data = clean_input($data);
+            }
+            return $data;
         }
+
+       
 		
     }
