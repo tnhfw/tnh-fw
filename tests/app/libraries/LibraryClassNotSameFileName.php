@@ -1,4 +1,4 @@
 <?php
-    class FooLibrary extends Model{
+    class FooLibrary {
     
     }
