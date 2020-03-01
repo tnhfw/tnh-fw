@@ -16,12 +16,6 @@
            
            //log file name
            $this->logFilename = 'logs-' . date('Y-m-d') . '.log';
-           
-           //some global configuration
-           $this->config = new Config();
-           $this->config->init();
-           $this->config->set('log_save_path', $this->logPath);
-           $this->config->set('log_logger_name', array());
        }
 	
 		public static function setUpBeforeClass()
@@ -36,6 +30,13 @@
 		
 		protected function setUp()
 		{
+            //some global configuration
+           $this->config = new Config();
+           $this->config->init();
+           $this->config->deleteAll();
+           $this->config->set('log_save_path', $this->logPath);
+           $this->config->set('log_logger_name', array());
+           
             if($this->vfsRoot->hasChild($this->logFilename)){
                 $this->vfsRoot->removeChild($this->logFilename);
             }

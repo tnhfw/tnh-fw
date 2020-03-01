@@ -205,7 +205,7 @@
          */
         protected function getVars($type, $key = null, $xss = true) {
             $data = null;
-            if ($key !== null) {
+            if ($key === null) {
                 //return all
                 $data = $this->{$type};
             } else if (array_key_exists($key, $this->{$type})) {

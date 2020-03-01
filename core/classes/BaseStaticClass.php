@@ -33,14 +33,18 @@
 
         /**
          * The signleton of the logger
+         * @param boolean $setLoggerName whether to set logger name
+         * 
          * @return Object the Log instance
          */
-        public static function getLogger() {
+        public static function getLogger($setLoggerName = true) {
             if (self::$logger == null) {
                 $logger = array();
                 $logger[0] = & class_loader('Log', 'classes');
-                $logger[0]->setLogger('Class::' . get_called_class());
                 self::$logger = $logger[0];
+            }
+            if ($setLoggerName) {
+               self::$logger->setLogger('Class::' . get_called_class());
             }
             return self::$logger;			
         }

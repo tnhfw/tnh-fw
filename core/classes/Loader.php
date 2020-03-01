@@ -35,7 +35,7 @@
         public function __construct() {
             //add the resources already loaded during application bootstrap
             //in the list to prevent duplicate or loading the resources again.
-            static::$loaded = class_loaded();
+            self::$loaded = class_loaded();
 			
             //Load resources from autoload configuration
             $this->loadResourcesFromAutoloadConfig();
@@ -51,7 +51,7 @@
          * @return void
          */
         public static function model($class, $instance = null) {
-            $logger = static::getLogger();
+            $logger = self::getLogger();
             $class = str_ireplace('.php', '', $class);
             $class = trim($class, '/\\');
             $file = ucfirst($class) . '.php';
@@ -61,7 +61,7 @@
                 $instance = self::getModelLibraryInstanceName($class);
             }
             //****************
-            if (isset(static::$loaded[$instance])) {
+            if (isset(self::$loaded[$instance])) {
                 $logger->info('Model [' . $class . '] already loaded no need to load it again, cost in performance');
                 return;
             }
@@ -87,7 +87,7 @@
                     $c = new $class();
                     $obj = & get_instance();
                     $obj->{$instance} = $c;
-                    static::$loaded[$instance] = $class;
+                    self::$loaded[$instance] = $class;
                     $logger->info('Model [' . $class . '] --> ' . $classFilePath . ' loaded successfully.');
                 } else {
                     show_error('The file ' . $classFilePath . ' exists but does not contain the class [' . $class . ']');
@@ -108,7 +108,7 @@
          * @return void
          */
         public static function library($class, $instance = null, array $params = array()) {
-            $logger = static::getLogger();
+            $logger = self::getLogger();
             $class = str_ireplace('.php', '', $class);
             $class = trim($class, '/\\');
             $file = ucfirst($class) . '.php';
@@ -116,7 +116,7 @@
             if (!$instance) {
                 $instance = self::getModelLibraryInstanceName($class);
             }
-            if (isset(static::$loaded[$instance])) {
+            if (isset(self::$loaded[$instance])) {
                 $logger->info('Library [' . $class . '] already loaded no need to load it again, cost in performance');
                 return;
             }
@@ -125,7 +125,7 @@
             if (strtolower($class) == 'database') {
                 $logger->info('This is the Database library ...');
                 $obj->{$instance} = & class_loader('Database', 'classes/database', $params);
-                static::$loaded[$instance] = $class;
+                self::$loaded[$instance] = $class;
                 $logger->info('Library Database loaded successfully.');
                 return;
             }
@@ -157,13 +157,13 @@
          * @return void
          */
         public static function functions($function) {
-            $logger = static::getLogger();
+            $logger = self::getLogger();
             $function = str_ireplace('.php', '', $function);
             $function = trim($function, '/\\');
             $function = str_ireplace('function_', '', $function);
             $file = 'function_' . $function . '.php';
             $logger->debug('Loading helper [' . $function . '] ...');
-            if (isset(static::$loaded['function_' . $function])) {
+            if (isset(self::$loaded['function_' . $function])) {
                 $logger->info('Helper [' . $function . '] already loaded no need to load it again, cost in performance');
                 return;
             }
@@ -189,7 +189,7 @@
             $logger->info('The helper file path to be loaded is [' . $functionFilePath . ']');
             if ($functionFilePath) {
                 require_once $functionFilePath;
-                static::$loaded['function_' . $function] = $functionFilePath;
+                self::$loaded['function_' . $function] = $functionFilePath;
                 $logger->info('Helper [' . $function . '] --> ' . $functionFilePath . ' loaded successfully.');
             } else {
                 show_error('Unable to find helper file [' . $file . ']');
@@ -204,13 +204,13 @@
          * @return void
          */
         public static function config($filename) {
-            $logger = static::getLogger();
+            $logger = self::getLogger();
             $filename = str_ireplace('.php', '', $filename);
             $filename = trim($filename, '/\\');
             $filename = str_ireplace('config_', '', $filename);
             $file = 'config_' . $filename . '.php';
             $logger->debug('Loading configuration [' . $filename . '] ...');
-            if (isset(static::$loaded['config_' . $filename])) {
+            if (isset(self::$loaded['config_' . $filename])) {
                 $logger->info('Configuration [' . $file . '] already loaded no need to load it again, cost in performance');
                 return;
             }
@@ -233,7 +233,7 @@
                 require_once $configFilePath;
                 if (!empty($config) && is_array($config)) {
                     Config::setAll($config);
-                    static::$loaded['config_' . $filename] = $configFilePath;
+                    self::$loaded['config_' . $filename] = $configFilePath;
                     $logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
                     $logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
                     unset($config);
@@ -252,13 +252,13 @@
          * @return void
          */
         public static function lang($language) {
-            $logger = static::getLogger();
+            $logger = self::getLogger();
             $language = str_ireplace('.php', '', $language);
             $language = trim($language, '/\\');
             $language = str_ireplace('lang_', '', $language);
             $file = 'lang_' . $language . '.php';
             $logger->debug('Loading language [' . $language . '] ...');
-            if (isset(static::$loaded['lang_' . $language])) {
+            if (isset(self::$loaded['lang_' . $language])) {
                 $logger->info('Language [' . $language . '] already loaded no need to load it again, cost in performance');
                 return;
             }
@@ -475,7 +475,7 @@
          * @return array        the library file path and class name
          */
         protected static function getLibraryPathUsingModuleInfo($class) {
-            $logger = static::getLogger();
+            $logger = self::getLogger();
             $libraryFilePath = null;
             $logger->debug('Checking library [' . $class . '] from module list ...');
             $moduleInfo = self::getModuleInfoForModelLibrary($class);
@@ -504,13 +504,13 @@
          */
         protected static function loadLibrary($libraryFilePath, $class, $instance, $params = array()) {
             if ($libraryFilePath) {
-                $logger = static::getLogger();
+                $logger = self::getLogger();
                 require_once $libraryFilePath;
                 if (class_exists($class)) {
                     $c = $params ? new $class($params) : new $class();
                     $obj = & get_instance();
                     $obj->{$instance} = $c;
-                    static::$loaded[$instance] = $class;
+                    self::$loaded[$instance] = $class;
                     $logger->info('Library [' . $class . '] --> ' . $libraryFilePath . ' loaded successfully.');
                 } else {
                     show_error('The file ' . $libraryFilePath . ' exists but does not contain the class ' . $class);
@@ -528,7 +528,7 @@
          */
         protected static function loadLanguage($languageFilePath, $language) {
             if ($languageFilePath) {
-                $logger = static::getLogger();
+                $logger = self::getLogger();
                 $lang = array();
                 require_once $languageFilePath;
                 if (!empty($lang) && is_array($lang)) {
@@ -539,7 +539,7 @@
                     //free the memory
                     unset($lang);
                 }
-                static::$loaded['lang_' . $language] = $languageFilePath;
+                self::$loaded['lang_' . $language] = $languageFilePath;
                 $logger->info('Language [' . $language . '] --> ' . $languageFilePath . ' loaded successfully.');
             } else {
                 show_error('Unable to find language [' . $language . ']');
