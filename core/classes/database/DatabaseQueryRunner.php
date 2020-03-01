@@ -93,6 +93,14 @@
             if (is_object($pdo)) {
                 $this->pdo = $pdo;
             }
+
+            //Set DatabaseQueryResult instance to use
+            $this->setDependencyInstanceFromParamOrCreate('queryResult', null, 'DatabaseQueryResult', 'classes/database');
+             
+            //Set Benchmark instance to use
+            $this->setDependencyInstanceFromParamOrCreate('benchmarkInstance', null, 'Benchmark', 'libraries');
+       
+
             $this->query         = $query;
             $this->returnAsList  = $returnAsList;
             $this->returnAsArray = $returnAsArray;
@@ -110,9 +118,6 @@
            
             //for database query execution time
             $benchmarkMarkerKey = $this->getBenchmarkKey();
-            if (!is_object($this->benchmarkInstance)) {
-                $this->benchmarkInstance = & class_loader('Benchmark');
-            }
             
             $this->benchmarkInstance->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');                
             //Now execute the query
@@ -166,9 +171,6 @@
             } else {
             $numRows = $this->pdoStatment->rowCount(); 
             }
-            if (!is_object($this->queryResult)) {
-                $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
-            }
             $this->queryResult->setResult($result);
             $this->queryResult->setNumRows($numRows);
         }
@@ -188,9 +190,6 @@
                 //to test the result for the query like UPDATE, INSERT, DELETE
                 $result  = $this->pdoStatment->rowCount() >= 0; 
                 $numRows = $this->pdoStatment->rowCount(); 
-            }
-            if (!is_object($this->queryResult)) {
-                $this->queryResult = & class_loader('DatabaseQueryResult', 'classes/database');
             }
             $this->queryResult->setResult($result);
             $this->queryResult->setNumRows($numRows);
