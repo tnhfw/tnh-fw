@@ -207,7 +207,6 @@
          * @return boolean
          */
         protected function canSaveLogDataForLogger() {
-            if (!empty($this->logger)) {
                 $configLoggersName = get_config('log_logger_name', array());
                 if (!empty($configLoggersName)) {
                     //for best comparaison put all string to lowercase
@@ -216,7 +215,6 @@
                         return false;
                     }
                 }
-            }
             return true;
         }
 
