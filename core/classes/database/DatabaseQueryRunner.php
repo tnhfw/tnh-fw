@@ -28,13 +28,13 @@
          * The last query result
          * @var object
          */
-        private $queryResult = null;
+        protected $queryResult = null;
   	
         /**
          * The benchmark instance
          * @var object
          */
-        private $benchmarkInstance = null;
+        protected $benchmarkInstance = null;
         
         /**
          * The SQL query statment to execute
