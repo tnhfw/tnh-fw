@@ -22,7 +22,6 @@
 
 		
 		public function getKeyValue(){
-			$user_id = 0;
-			return $user_id;
+			return 'foobarbaz';
 		}
 	}
