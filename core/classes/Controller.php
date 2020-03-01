@@ -60,10 +60,10 @@
             //load the required resources
             $this->loadRequiredResources();
 
-            //set application
-            $this->setLanguages();
+            //set application supported languages
+            $this->setAppSupportedLanguages();
 			
-            //set the cache using the configuration
+            //set the cache instance using the configuration
             $this->setCacheFromParamOrConfig(null);
 			
             //set application session configuration
@@ -129,13 +129,11 @@
         /**
          * Set the application supported languages
          */
-        private function setLanguages() {
+        private function setAppSupportedLanguages() {
             //add the supported languages ('key', 'display name')
-            $languages = get_config('languages', null);
-            if (!empty($languages)) {
-                foreach ($languages as $key => $displayName) {
-                    $this->lang->addLang($key, $displayName);
-                }
+            $languages = get_config('languages', array());
+            foreach ($languages as $key => $displayName) {
+                $this->lang->addLang($key, $displayName);
             }
             unset($languages);
         }
