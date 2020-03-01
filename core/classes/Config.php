@@ -144,14 +144,7 @@
                     if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE) {
                         $baseUrl = '[' . $_SERVER['SERVER_ADDR'] . ']';
                     }
-                    $serverPort = 80;
-                    if (isset($_SERVER['SERVER_PORT'])) {
-                        $serverPort = $_SERVER['SERVER_PORT'];
-                    }
-                    $port = '';
-                    if ($serverPort && ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80))) {
-                        $port = ':' . $serverPort;
-                    }
+                    $port = $this->getServerPort();
                     $baseUrl = $protocol . $baseUrl . $port . substr(
                                                                         $_SERVER['SCRIPT_NAME'], 
                                                                         0, 
@@ -164,5 +157,22 @@
                 self::$config['base_url'] = $baseUrl;
             }
             self::$config['base_url'] = rtrim(self::$config['base_url'], '/') . '/';
+        }
+         
+        /**
+        * Return the server port using variable
+        *
+        * @return string
+        */
+        protected function getServerPort() {
+            $serverPort = 80;
+            if (isset($_SERVER['SERVER_PORT'])) {
+                 $serverPort = $_SERVER['SERVER_PORT'];
+            }
+            $port = '';
+            if ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80)) {
+                $port = ':' . $serverPort;
+            }
+            return $port;
         }
     }
