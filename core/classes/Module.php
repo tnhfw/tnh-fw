@@ -64,6 +64,10 @@
          * @return object the current instance
          */
         public function add($name) {
+            if (in_array($name, self::$list)) {
+               $logger->info('The module [' .$name. '] already added skipping.');
+               return $this;
+            }
             self::$list[] = $name;
             return $this;
         }

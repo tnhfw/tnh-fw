@@ -277,9 +277,13 @@
             if (!file_exists($path)) {
                 show_error('The file [' . $path . '] does not exists.');
             }
-            $filename = empty($filename) ? basename($path) : $filename;
+            if (empty($filename)) {
+                $filename = basename($path);
+            }
             $filename = $this->encodeUtf8($this->filterOther((string) $filename));
-            $data = empty($data) ? $this->getAttachmentData($path) : $data;
+            if (empty($data)) {
+               $data = $this->getAttachmentData($path);
+            }
             $this->_attachments[] = array(
                 'path' => $path,
                 'file' => $filename,
@@ -341,7 +345,9 @@
             }
             $addresses = array();
             foreach ($pairs as $name => $email) {
-                $name = is_numeric($name) ? null : $name;
+                if (is_numeric($name)) {
+                   $name = null;
+                }
                 $addresses[] = $this->formatHeader($email, $name);
             }
             $this->addGenericHeader($header, implode(',', $addresses));

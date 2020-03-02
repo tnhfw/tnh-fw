@@ -60,6 +60,8 @@
 			
             run_private_protected_method($c, 'setCacheFromParamOrConfig', array(null));
             $this->assertInstanceOf('ApcCache', $c->cache);
+            $this->assertObjectHasAttribute('cache', $c);
+            $this->assertAttributeInstanceOf('ApcCache', 'cache', $c);
 		}
         
         

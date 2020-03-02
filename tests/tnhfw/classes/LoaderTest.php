@@ -20,6 +20,8 @@
 			$l->model('DBSessionModel', 'fooInstance');
             $this->assertInstanceOf('DBSessionModel', $obj->dbsessionmodel);
             $this->assertInstanceOf('DBSessionModel', $obj->fooInstance);
+            $this->assertObjectHasAttribute('dbsessionmodel', $obj);
+            $this->assertAttributeInstanceOf('DBSessionModel', 'dbsessionmodel', $obj);
 		}
         
         public function testLoadModelInMobule()

@@ -508,6 +508,79 @@
             }
         }
 
+
+        /**
+         * Determine the route information if application does not have modules,
+         * or the current request does not use module
+         * @return void
+         */
+        protected function determineRouteParamsIfNoModuleOrNotFound(){
+            $segment = $this->segments;
+            //controller
+            if (isset($segment[0])) {
+                $this->controller = $segment[0];
+                array_shift($segment);
+            }
+            //method
+            if (isset($segment[0])) {
+                $this->method = $segment[0];
+                array_shift($segment);
+            }
+            //args
+            $this->args = $segment;
+        }
+
+        /**
+         * Find file path of the current controller using the current module
+         * @return boolean true if the file path is found otherwise false.
+         */
+        protected function findModuleControllerFullPath(){
+            $path = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
+            if (!$path) {
+                $this->logger->info('The controller [' . $this->controller . '] not found in the module, may be will use the module [' . $this->module . '] as controller');
+                $this->controller = $this->module;
+                return false;
+            }
+            $this->controllerPath = $path;
+            return true;
+        }
+
+        /**
+         * Determine the route information if application have modules,
+         * or the current request use module
+         * @return void
+         */
+        protected function determineRouteParamsIfAppHaveModuleOrFound(){
+            //get the module list
+            $modules = Module::getModuleList();
+            $segment = $this->segments;
+
+            if (in_array($segment[0], $modules)) {
+                $this->logger->info('Found, the current request use the module [' . $segment[0] . ']');
+                $this->module = $segment[0];
+                array_shift($segment);
+                //check if the second arg is the controller from module
+                if (isset($segment[0])) {
+                    $this->controller = $segment[0];
+
+                    //check if the request use the same module name and controller
+                    if($this->findModuleControllerFullPath()){
+                        array_shift($segment);
+                    }
+                }
+                //check for method
+                if (isset($segment[0])) {
+                    $this->method = $segment[0];
+                    array_shift($segment);
+                }
+                //the remaining is for args
+                $this->args = $segment;
+            } else {
+                $this->logger->info('The current request information is not found in the module list');
+                $this->determineRouteParamsIfNoModuleOrNotFound();
+            }
+        }
+
         /**
          * Determine the route parameters using the server variable "REQUEST_URI"
          * @return void
@@ -519,63 +592,14 @@
             if ($nbSegment > 0) {
                 //get the module list
                 $modules = Module::getModuleList();
+
                 //first check if no module
                 if (empty($modules)) {
                     $this->logger->info('No module was loaded will skip the module checking');
-                    //the application don't use module
-                    //controller
-                    if (isset($segment[0])) {
-                        $this->controller = $segment[0];
-                        array_shift($segment);
-                    }
-                    //method
-                    if (isset($segment[0])) {
-                        $this->method = $segment[0];
-                        array_shift($segment);
-                    }
-                    //args
-                    $this->args = $segment;
+                    $this->determineRouteParamsIfNoModuleOrNotFound();
                 } else {
                     $this->logger->info('The application contains a loaded module will check if the current request is found in the module list');
-                    if (in_array($segment[0], $modules)) {
-                        $this->logger->info('Found, the current request use the module [' . $segment[0] . ']');
-                        $this->module = $segment[0];
-                        array_shift($segment);
-                        //check if the second arg is the controller from module
-                        if (isset($segment[0])) {
-                            $this->controller = $segment[0];
-                            //check if the request use the same module name and controller
-                            $path = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
-                            if (!$path) {
-                                $this->logger->info('The controller [' . $this->controller . '] not found in the module, may be will use the module [' . $this->module . '] as controller');
-                                $this->controller = $this->module;
-                            } else {
-                                $this->controllerPath = $path;
-                                array_shift($segment);
-                            }
-                        }
-                        //check for method
-                        if (isset($segment[0])) {
-                            $this->method = $segment[0];
-                            array_shift($segment);
-                        }
-                        //the remaining is for args
-                        $this->args = $segment;
-                    } else {
-                        $this->logger->info('The current request information is not found in the module list');
-                        //controller
-                        if (isset($segment[0])) {
-                            $this->controller = $segment[0];
-                            array_shift($segment);
-                        }
-                        //method
-                        if (isset($segment[0])) {
-                            $this->method = $segment[0];
-                            array_shift($segment);
-                        }
-                        //args
-                        $this->args = $segment;
-                    }
+                    $this->determineRouteParamsIfAppHaveModuleOrFound();
                 }
                 if (!$this->controller && $this->module) {
                     $this->logger->info('After using the request URI the module name is set but the controller is not set so we will use module as the controller');
