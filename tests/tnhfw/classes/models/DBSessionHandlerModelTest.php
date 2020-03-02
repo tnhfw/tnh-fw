@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class DBSessionHandlerModelTest extends TestCase
+	
+	class DBSessionHandlerModelTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class RouterTest extends TestCase
+	
+	class RouterTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

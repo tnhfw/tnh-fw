@@ -166,7 +166,7 @@
             $view = str_ireplace('.php', '', $view);
             $view = trim($view, '/\\');
             $viewFile = $view . '.php';
-            $path = APPS_VIEWS_PATH . $viewFile;
+            $path = null;
 			
             //check in module first
             $logger->debug('Checking the view [' . $view . '] from module list ...');
@@ -181,10 +181,11 @@
             } else {
                 $logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
             }
-			
+			if (!$path) {
+                $path = $this->getDefaultFilePathForView($viewFile);
+            }
             $logger->info('The view file path to be loaded is [' . $path . ']');
 			
-            /////////
             if ($return) {
                 return $this->loadView($path, $data, true);
             }
@@ -269,37 +270,45 @@
          * Send the HTTP 404 error if can not found the 
          * routing information for the current request
          */
-        public static function send404() {
-            /********* for logs **************/
-            //can't use $obj = & get_instance()  here because the global super object will be available until
-            //the main controller is loaded even for Loader::library('xxxx');
+        public function send404() {
             $logger = self::getLogger();
-            $request = & class_loader('Request', 'classes');
-            $userAgent = & class_loader('Browser');
-            $browser = $userAgent->getPlatform() . ', ' . $userAgent->getBrowser() . ' ' . $userAgent->getVersion();
-			
-            //here can't use Loader::functions just include the helper manually
-            require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
-
-            $str = '[404 page not found] : ';
-            $str .= ' Unable to find the request page [' . $request->requestUri() . ']. The visitor IP address [' . get_ip() . '], browser [' . $browser . ']';
-            $logger->error($str);
-            /***********************************/
-            $path = CORE_VIEWS_PATH . '404.php';
-            if (file_exists($path)) {
-                //compress the output if is available
-                $type = null;
-                if (self::$_canCompressOutput) {
-                    $type = 'ob_gzhandler';
-                }
-                ob_start($type);
-                require_once $path;
-                $output = ob_get_clean();
-                self::sendHeaders(404);
-                echo $output;
-            } else {
-                show_error('The 404 view [' . $path . '] does not exist');
+            $obj = & get_instance();
+            $cachePageStatus = get_config('cache_enable', false) && !empty($obj->view_cache_enable);
+            $dispatcher = $obj->eventdispatcher;
+            $content = $this->_pageRender;
+            if (!$content) {
+                $logger->warning('The final view content is empty.');
+                return;
             }
+            //dispatch
+            $dispatcher->dispatch(new EventInfo('PAGE_NOT_FOUND'));
+            //check whether need save the page into cache.
+            if ($cachePageStatus) {
+                $this->savePageContentIntoCache($content);
+            }
+            $content = $this->replaceElapseTimeAndMemoryUsage($content);
+
+            /**************************************** save the content into logs **************/
+            $bwsr = & class_loader('Browser');
+            $browser = $bwsr->getPlatform() . ', ' . $bwsr->getBrowser() . ' ' . $bwsr->getVersion();
+            $obj->loader->functions('user_agent');
+            $str = '[404 page not found] : ';
+            $str .= ' Unable to find the request page [' . $obj->request->requestUri() . ']. The visitor IP address [' . get_ip() . '], browser [' . $browser . ']';
+            
+            //Todo fix the issue the logger name change after load new class
+            $logger = self::getLogger();
+            $logger->error($str);
+            /**********************************************************************/
+
+            //compress the output if is available
+            $type = null;
+            if (self::$_canCompressOutput) {
+                $type = 'ob_gzhandler';
+            }
+            ob_start($type);
+            self::sendHeaders(404);
+            echo $content;
+            ob_end_flush();
         }
 
         /**
@@ -325,6 +334,26 @@
                 set_http_status_header(503);
                 echo 'The error view [' . $path . '] does not exist';
             }
+        }
+
+         /**
+         * Return the default full file path for view
+         * @param  string $file    the filename
+         * 
+         * @return string|null          the full file path
+         */
+        protected static function getDefaultFilePathForView($file){
+            $searchDir = array(APPS_VIEWS_PATH, CORE_VIEWS_PATH);
+            $fullFilePath = null;
+            foreach ($searchDir as $dir) {
+                $filePath = $dir . $file;
+                if (file_exists($filePath)) {
+                    $fullFilePath = $filePath;
+                    //is already found not to continue
+                    break;
+                }
+            }
+            return $fullFilePath;
         }
 
         /**

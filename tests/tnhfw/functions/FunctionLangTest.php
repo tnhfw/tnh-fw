@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class FunctionLangTest extends TestCase
+	
+	class FunctionLangTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

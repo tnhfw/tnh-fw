@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class DatabaseTest extends TestCase
+	
+	class DatabaseTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()
@@ -25,7 +24,7 @@
 		
 		public function testConnectToDatabaseSuccessfully()
 		{
-            $cfg = get_db_config();
+            $cfg = $this->getDbConfig();
             $db = new Database($cfg, false);
             $isConnected = $db->connect();
             $this->assertTrue($isConnected);

@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class PDFTest extends TestCase
+	
+	class PDFTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

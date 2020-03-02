@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class DatabaseQueryBuilderTest extends TestCase
+	
+	class DatabaseQueryBuilderTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

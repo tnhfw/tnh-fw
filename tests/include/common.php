@@ -33,13 +33,13 @@
 			return $classes[$class];
 		}
 		$found = false;
-		foreach (array(ROOT_PATH, CORE_PATH) as $path) {
-			$file = $path . $dir . '/' . $class . '.php';
+		foreach (array(APPS_PATH, CORE_PATH) as $path) {
+			$file = $path . $dir . DS . $class . '.php';
 			if(file_exists($file)){
 				if(class_exists($class, false) === false){
 					require_once $file;
 				}
-				//already found
+                //already found
 				$found = true;
 				break;
 			}

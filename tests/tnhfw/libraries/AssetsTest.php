@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class AssetsTest extends TestCase
+	
+	class AssetsTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

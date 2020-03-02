@@ -161,7 +161,7 @@
         /**
          * Save the log data into file
          * @param  string $path    the path of the log file
-         * @param  integer|string $level   the log level in integer or string format, if is string will convert into integer
+         * @param  integer $level   the log level in integer format.
          * @param  string $message the log message to save
          * @return void
          */
@@ -176,11 +176,6 @@
             $logDate = $dateTime->format('Y-m-d H:i:s.u'); 
             //ip
             $ip = get_ip();
-			
-            //if $level is not an integer
-            if (!is_numeric($level)) {
-                $level = self::getLevelValue($level);
-            }
 
             //level name
             $levelName = self::getLevelName($level);
@@ -191,8 +186,19 @@
             if ($dtrace[0]['file'] == __FILE__ || $dtrace[1]['file'] == __FILE__) {
                 $fileInfo = $dtrace[2];
             }
+
+            $line = -1;
+            $file = -1;
+
+            if (isset($fileInfo['file'])) {
+                $file = $fileInfo['file'];
+            }
+
+            if (isset($fileInfo['line'])) {
+                $line = $fileInfo['line'];
+            }
 			
-            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ' : ' . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
+            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' . $message . ' ' . '[' . $file . '::' . $line . ']' . "\n";
             $fp = fopen($path, 'a+');
             if (is_resource($fp)) {
                 flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed

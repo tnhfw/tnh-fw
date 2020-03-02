@@ -1,14 +1,21 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class BaseStaticClassTest extends TestCase
+	
+	class BaseStaticClassTest extends TnhTestCase
 	{	
 		
 		public function testGetLoggerDefault()
 		{
             $logger = BaseStaticClass::getLogger();
 			$this->assertInstanceOf('Log', $logger);
+            $this->assertEquals('Class::BaseStaticClass', $logger->getLogger());
+		}
+        
+        public function testGetLoggerWhenIsNull()
+		{
+            BaseStaticClass::setLogger(null);
+            $logger = BaseStaticClass::getLogger();
+            $this->assertInstanceOf('Log', $logger);
             $this->assertEquals('Class::BaseStaticClass', $logger->getLogger());
 		}
         

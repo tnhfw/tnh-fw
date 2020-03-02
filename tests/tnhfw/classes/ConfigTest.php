@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class ConfigTest extends TestCase
+	
+	class ConfigTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

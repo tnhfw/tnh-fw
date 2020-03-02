@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class DatabaseCacheTest extends TestCase
+	
+	class DatabaseCacheTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

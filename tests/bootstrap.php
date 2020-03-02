@@ -36,8 +36,8 @@
 	*
 	* you can place this directory outside of your web directory, for example "/home/your_app", etc.
 	*/
-	define('ROOT_PATH', dirname(realpath(__FILE__)) . DS . '..' . DS);
-	
+	define('ROOT_PATH', dirname(dirname(realpath(__FILE__))) . DS);
+    
 	//tests dir path
 	define('TESTS_PATH', dirname(realpath(__FILE__)) . DS);
 
@@ -260,8 +260,8 @@
 	//grap from core/common.php functions and mock some functions for tests
 	require_once  'include/common.php';
 	
-	//Some utilities functions, classes, etc.
-	require_once  'include/tests_util.php';
+	//Global testcase class
+	require_once  'include/TnhTestCase.php';
 	
 	/**
 	* Setting of the PHP error message handling function

@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class CookieTest extends TestCase
+	
+	class CookieTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class CommonTest extends TestCase
+	
+	class CommonTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()
@@ -40,11 +39,9 @@
 		public function testFunctionGetConfigAfterSet(){
 			$key = 'foo';
 			$expected = 'bar';
-			$c = new Config();
-			$c->init();
-			$c->set($key, $expected);
+			$this->config->set($key, $expected);
 			$cfg = get_config($key);
-			$this->assertEquals($cfg, $expected);
+            $this->assertEquals($cfg, $expected);
 		}
 		
 	}

@@ -64,12 +64,53 @@
          * @return object the current instance
          */
         public function add($name) {
+            $logger = self::getLogger();
             if (in_array($name, self::$list)) {
                $logger->info('The module [' .$name. '] already added skipping.');
                return $this;
             }
             self::$list[] = $name;
             return $this;
+        }
+
+        /**
+         * Remove the module from list
+         * @param  string   $name the module name
+         */
+        public static function remove($name) {
+            $logger = self::getLogger();
+            $logger->debug('Removing of the module [' . $name . '] ...');
+            if (false !== $index = array_search($name, self::$list, true)) {
+                $logger->info('Found the module at index [' . $index . '] remove it');
+                unset(self::$list[$index]);
+            } else {
+                $logger->info('Cannot found this module in the list');
+            }
+        }
+        
+        /**
+         * Remove all the module. 
+         */
+        public static function removeAll() {
+            $logger = self::getLogger();
+            $logger->debug('Removing of all module ...');
+            self::$list = array();
+        }
+
+         /**
+         * Get the list of module loaded
+         * @return array the module list
+         */
+        public static function getModuleList() {
+            return self::$list;
+        }
+
+        /**
+         * Check if the application has an module
+         * @return boolean
+         */
+        public static function hasModule() {
+            return !empty(self::$list);
         }
 		
         /**
@@ -191,22 +232,6 @@
          */
         public static function findLanguageFullPath($language, $appLang, $module = null) {
             return self::findNonClassInModuleFullFilePath($language, $module, 'lang', $appLang);
-        }
-
-        /**
-         * Get the list of module loaded
-         * @return array the module list
-         */
-        public static function getModuleList() {
-            return self::$list;
-        }
-
-        /**
-         * Check if the application has an module
-         * @return boolean
-         */
-        public static function hasModule() {
-            return !empty(self::$list);
         }
 
         /**

@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class LangTest extends TestCase
+	
+	class LangTest extends TnhTestCase
 	{	
 		
 		public function testGetAll()
@@ -75,9 +74,9 @@
         public function testAppLangUsingCookieValue()
 		{
             $_COOKIE['clang'] = 'en';
-            Config::init();
-            Config::set('language_cookie_name', 'clang');
-            Config::set('default_language', 'fr');
+            
+            $this->config->set('language_cookie_name', 'clang');
+            $this->config->set('default_language', 'fr');
             $l = new Lang();
             $this->assertSame('en', $l->getCurrent());
 		}

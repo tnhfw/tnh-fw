@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class BaseClassTest extends TestCase
+	
+	class BaseClassTest extends TnhTestCase
 	{	
 		
 		public function testSetLoggerSimple()
@@ -15,21 +14,21 @@
         public function testSetLoggerFromParamOrCreate()
 		{
             $o = new BaseClass();
-            $o = run_private_protected_method($o, 'setLoggerFromParamOrCreate', array(null));
+            $o = $this->runPrivateProtectedMethod($o, 'setLoggerFromParamOrCreate', array(null));
             $this->assertInstanceOf('Log', $o->getLogger());
 		}
         
         public function testSetDependenciesInstanceIsNull()
 		{
             $o = new BaseClass();
-            $o = run_private_protected_method($o, 'setDependencyInstanceFromParamOrCreate', array('foo', null, 'Request'));
+            $o = $this->runPrivateProtectedMethod($o, 'setDependencyInstanceFromParamOrCreate', array('foo', null, 'Request'));
             $this->assertInstanceOf('Request', $o->foo);
 		}
         
         public function testSetDependenciesInstanceIsNotNull()
 		{
             $o = new BaseClass();//here logger already set to Class::BaseClass
-            $o = run_private_protected_method($o, 'setDependencyInstanceFromParamOrCreate', array('fooLogger', new Log()));
+            $o = $this->runPrivateProtectedMethod($o, 'setDependencyInstanceFromParamOrCreate', array('fooLogger', new Log()));
             $this->assertInstanceOf('Log', $o->fooLogger);
             $this->assertEquals('Class::BaseClass', $o->getLogger()->getLogger());
 		}

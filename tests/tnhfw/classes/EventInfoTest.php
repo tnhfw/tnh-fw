@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class EventInfoTest extends TestCase
+	
+	class EventInfoTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

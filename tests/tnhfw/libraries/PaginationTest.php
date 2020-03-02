@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class PaginationTest extends TestCase
+	
+	class PaginationTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

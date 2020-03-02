@@ -1,8 +1,6 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class DBSessionHandlerTest extends TestCase
+	class DBSessionHandlerTest extends TnhTestCase
 	{	
 	
 		private $db = null;
@@ -11,10 +9,10 @@
 		
 		private $secret = 'bXlzZWNyZXQ';
 		
-		private static $config = null;
-		
 		public function __construct(){
-            $cfg = get_db_config();
+            parent::__construct();
+            
+            $cfg = $this->getDbConfig();
 			$this->db = new Database($cfg);
             $qr = new DatabaseQueryRunner($this->db->getPdo());
             $qr->setBenchmark(new Benchmark());
@@ -25,8 +23,6 @@
 		public static function setUpBeforeClass()
 		{
 			require APPS_MODEL_PATH . 'DBSessionModel.php';
-			self::$config = new Config();
-			self::$config->init();
 		}
 		
 		
@@ -50,8 +46,8 @@
 		
 		public function testUsingSessionConfiguration(){
 			//using value in the configuration
-			self::$config->set('session_save_path', 'DBSessionModel');
-			self::$config->set('session_secret', $this->secret);
+			$this->config->set('session_save_path', 'DBSessionModel');
+			$this->config->set('session_secret', $this->secret);
 			$dbsh = new DBSessionHandler();
 			//assign Database instance manually
 			$o = &get_instance();

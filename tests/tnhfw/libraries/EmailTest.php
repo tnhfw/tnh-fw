@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class EmailTest extends TestCase
+	
+	class EmailTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class LoaderTest extends TestCase
+	
+	class LoaderTest extends TnhTestCase
 	{	
 		
 		public function testLoadModel()
@@ -13,7 +12,7 @@
             //already exists nothing will be done
             //change some attribute
             $obj->dbsessionmodel->foo = 'bar';
-            $this->assertSame('bar',$obj->dbsessionmodel->foo);
+            $this->assertSame('bar', $obj->dbsessionmodel->foo);
 			$l->model('DBSessionModel');
             //the value will not overwrite
             $this->assertSame('bar',$obj->dbsessionmodel->foo);
@@ -191,10 +190,10 @@
 		{
             $l = new Loader();
             $l->config('test');
-            $this->assertSame('bar', Config::get('cfg_test'));
+            $this->assertSame('bar', $this->config->get('cfg_test'));
             //already exists nothing will be done
             $l->config('test');
-            $this->assertSame('bar', Config::get('cfg_test'));
+            $this->assertSame('bar', $this->config->get('cfg_test'));
 		}
         
         public function testLoadConfigInModule()
@@ -203,10 +202,10 @@
             $m->init();
             $l = new Loader();
             $l->config('testmodule/config');
-            $this->assertSame('foo', Config::get('cfg_module'));
+            $this->assertSame('foo', $this->config->get('cfg_module'));
             //already exists nothing will be done
             $l->config('testmodule/config');
-            $this->assertSame('foo', Config::get('cfg_module'));
+            $this->assertSame('foo', $this->config->get('cfg_module'));
 		}
         
         public function testLoadConfigInModuleUsingModuleNameInController()
@@ -217,10 +216,10 @@
             $m->init();
             $l = new Loader();
             $l->config('config');
-            $this->assertSame('foo', Config::get('cfg_module'));
+            $this->assertSame('foo', $this->config->get('cfg_module'));
             //already exists nothing will be done
             $l->config('config');
-            $this->assertSame('foo', Config::get('cfg_module'));
+            $this->assertSame('foo', $this->config->get('cfg_module'));
 		}
         
         public function testLoadConfigNotExists()
@@ -232,8 +231,8 @@
         
         public function testLoadLang()
 		{
-            Config::init();
-            Config::set('default_language', 'en');
+            
+            $this->config->set('default_language', 'en');
             $obj = & get_instance();
             $lg = $obj->lang;
             
@@ -250,8 +249,8 @@
         
         public function testLoadLangInModule()
 		{
-            Config::init();
-            Config::set('default_language', 'en');
+            
+            $this->config->set('default_language', 'en');
             $obj = & get_instance();
             $lg = $obj->lang;
             $m = new Module();
@@ -266,8 +265,7 @@
         
         public function testLoadLangInModuleUsingModuleNameInController()
 		{
-            Config::init();
-            Config::set('default_language', 'en');
+            $this->config->set('default_language', 'en');
             
             $obj = & get_instance();
             $lg = $obj->lang;
@@ -287,9 +285,9 @@
         public function testLoadLangUsingAppLangFromCookie()
 		{
             $_COOKIE['clang'] = 'en';
-            Config::init();
-            Config::set('language_cookie_name', 'clang');
-            Config::set('default_language', 'fr');
+            
+            $this->config->set('language_cookie_name', 'clang');
+            $this->config->set('default_language', 'fr');
             $obj = & get_instance();
             $lg = $obj->lang;
             

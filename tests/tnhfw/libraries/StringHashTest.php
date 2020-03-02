@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class StringHashTest extends TestCase
+	
+	class StringHashTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()

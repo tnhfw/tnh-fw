@@ -1,8 +1,7 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class EventDispatcherTest extends TestCase
+	
+	class EventDispatcherTest extends TnhTestCase
 	{	
 	
 		public static function setUpBeforeClass()
