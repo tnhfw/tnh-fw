@@ -44,19 +44,12 @@
     define('ASSETS_PATH', 'assets/');
 
     /**
-     * The path to the directory of your cache files.
-     *
-     * This feature is available currently for database and views.
-     */
-    define('CACHE_PATH', ROOT_PATH . 'cache' . DS);
-
-    /**
      * The path to the application directory. 
      *
      * It contains your most often used files that is to say which contains your files of the application, 
-     * in MVC architecture (controllers, models, views).
+     * in MVC architecture (controllers, models, views, modules, config, lang, etc.).
      */
-    define('APPS_PATH', ROOT_PATH . 'classes' . DS);
+    define('APPS_PATH', ROOT_PATH . 'app' . DS);
 
     /**
      * The path to the controller directory of your application.
@@ -89,7 +82,42 @@
      * That contains most of the configuration files for your 
      * application (database, class loading file, functions, etc.)
      */
-    define('CONFIG_PATH', ROOT_PATH . 'config' . DS);
+    define('CONFIG_PATH', APPS_PATH . 'config' . DS);
+    
+    /**
+     * The path to the directory of your PHP personal functions or helper.
+     *
+     * It contains your PHP functions that perform a particular task: utilities, etc.
+     * Note: Do not put your personal functions or helpers in the system functions directory, 
+     * because if you update the system you may lose them.
+     */
+    define('FUNCTIONS_PATH', APPS_PATH . 'functions' . DS);
+
+    /**
+     * The path to the app directory of personal language. 
+     *
+     * This feature is not yet available. 
+     * You can help us do this if you are nice or wish to see the developed framework.
+     */
+    define('APP_LANG_PATH', APPS_PATH . 'lang' . DS);
+
+    /**
+     * The path to the directory of your personal libraries
+     *
+     * It contains your PHP classes, package, etc.
+     * Note: you should not put your personal libraries in the system library directory, 
+     * because it is recalled in case of updating the system you might have surprises.
+     */
+    define('LIBRARY_PATH', APPS_PATH . 'libraries' . DS);
+    
+    /**
+     * The path to the modules directory. 
+     *
+     * It contains your modules used files (config, controllers, libraries, etc.) that is to say which contains your files of the modules, 
+     * in HMVC architecture (hierichical, controllers, models, views).
+     */
+    define('MODULE_PATH', APPS_PATH . 'modules' . DS);
+
 
     /** 
      * The core directory
@@ -156,31 +184,18 @@
     define('CORE_VIEWS_PATH', CORE_PATH . 'views' . DS);
 	
     /**
-     * The path to the directory of your PHP personal functions or helper.
+     * The path to the directory of your var files (logs, cache, etc.).
      *
-     * It contains your PHP functions that perform a particular task: utilities, etc.
-     * Note: Do not put your personal functions or helpers in the system functions directory, 
-     * because if you update the system you may lose them.
      */
-    define('FUNCTIONS_PATH', ROOT_PATH . 'functions' . DS);
-
-    /**
-     * The path to the app directory of personal language. 
+    define('VAR_PATH', ROOT_PATH . 'var' . DS);
+    
+     /**
+     * The path to the directory of your cache files.
      *
-     * This feature is not yet available. 
-     * You can help us do this if you are nice or wish to see the developed framework.
+     * This feature is available currently for database and views.
      */
-    define('APP_LANG_PATH', ROOT_PATH . 'lang' . DS);
-
-    /**
-     * The path to the directory of your personal libraries
-     *
-     * It contains your PHP classes, package, etc.
-     * Note: you should not put your personal libraries in the system library directory, 
-     * because it is recalled in case of updating the system you might have surprises.
-     */
-    define('LIBRARY_PATH', ROOT_PATH . 'libraries' . DS);
-
+    define('CACHE_PATH', VAR_PATH . 'cache' . DS);
+    
     /**
      * The path to the directory that contains the log files.
      *
@@ -191,15 +206,7 @@
      * # chmod -R 700 /path/to/your/logs/directory/
      * # chown -R www-data:www-data /path/to/your/logs/directory/
      */
-    define('LOGS_PATH', ROOT_PATH . 'logs' . DS);
-
-    /**
-     * The path to the modules directory. 
-     *
-     * It contains your modules used files (config, controllers, libraries, etc.) that is to say which contains your files of the modules, 
-     * in HMVC architecture (hierichical, controllers, models, views).
-     */
-    define('MODULE_PATH', ROOT_PATH . 'modules' . DS);
+    define('LOGS_PATH', VAR_PATH . 'logs' . DS);
 
     /**
      * The path to the directory of sources external to your application.

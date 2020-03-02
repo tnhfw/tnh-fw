@@ -162,6 +162,7 @@
         /**
         * Return the server port using variable
         *
+        * @codeCoverageIgnore
         * @return string
         */
         protected static function getServerPort() {
