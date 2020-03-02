@@ -1,3 +1,3 @@
 git.sh
-./app/logs/*.log
-./app/cache/*.cache
+./var/logs/*.log
+./var/cache/*.cache
