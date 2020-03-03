@@ -112,7 +112,6 @@
 
 	
 	function set_http_status_header($code = 200, $text = null){
-		echo 'header(' . $code . ', ' . $text . ')';
 		return true;
 	}
 
@@ -136,13 +135,15 @@
 		
 	function php_exception_handler($ex){
 		//show only and continue to help track of some error occured
-		echo 'php_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
+		//echo 'php_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
+        return true;
 	}
 	
 	
 	function php_error_handler($errno , $errstr, $errfile , $errline){
 		//show only and continue to help track of some error occured
-		echo 'php_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
+		//echo 'php_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
+         return true;
 	}
 
 	function php_shudown_handler(){

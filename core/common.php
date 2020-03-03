@@ -259,7 +259,8 @@
             save_to_log('error', '[' . $title . '] ' . strip_tags($msg), 'GLOBAL::ERROR');
         }
         $response = & class_loader('Response', 'classes');
-        $response->sendError($data);
+        $response->render('errors', $data);
+        $response->sendError();
         die();
     }
 

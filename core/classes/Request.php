@@ -101,11 +101,13 @@
             $this->method = $this->server('REQUEST_METHOD');
             $this->requestUri = $this->server('REQUEST_URI');
             $this->header = array();
+            //@codeCoverageIgnoreStart
             if (function_exists('apache_request_headers')) {
                 $this->header = apache_request_headers();
             } else if (function_exists('getallheaders')) {
                 $this->header = getallheaders();
             }
+            //@codeCoverageIgnoreEnd
         }
 
         /**

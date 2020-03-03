@@ -88,11 +88,14 @@
             set_http_status_header($httpCode);
             self::setHeaders($headers);
             self::setRequiredHeaders();
+            //@codeCoverageIgnoreStart
+            //not available when running in CLI mode
             if (!headers_sent()) {
                 foreach (self::getHeaders() as $key => $value) {
                     header($key . ': ' . $value);
                 }
             }
+            //@codeCoverageIgnoreEnd
         }
 
         /**
@@ -137,6 +140,7 @@
         /**
          * Redirect user to the specified page
          * @param  string $path the URL or URI to be redirect to
+         * @codeCoverageIgnore
          */
         public static function redirect($path = '') {
             $logger = self::getLogger();
@@ -219,6 +223,9 @@
             if ($cachePageStatus) {
                 $this->savePageContentIntoCache($content);
             }
+            //update content
+            $this->_pageRender = $content;
+
             $content = $this->replaceElapseTimeAndMemoryUsage($content);
 
             //compress the output if is available
@@ -313,27 +320,24 @@
 
         /**
          * Display the error to user
-         * @param  array  $data the error information
          */
-        public static function sendError(array $data = array()) {
-            $path = CORE_VIEWS_PATH . 'errors.php';
-            if (file_exists($path)) {
-                //compress the output if is available
-                $type = null;
-                if (self::$_canCompressOutput) {
-                    $type = 'ob_gzhandler';
-                }
-                ob_start($type);
-                extract($data);
-                require_once $path;
-                $output = ob_get_clean();
-                self::sendHeaders(503);
-                echo $output;
-            } else {
-                //can't use show_error() at this time because some dependencies not yet loaded and to prevent loop
-                set_http_status_header(503);
-                echo 'The error view [' . $path . '] does not exist';
+        public function sendError() {
+            $logger = self::getLogger();
+            $content = $this->_pageRender;
+            if (!$content) {
+                $logger->warning('The final view content is empty.');
+                return;
             }
+            $content = $this->replaceElapseTimeAndMemoryUsage($content);
+            //compress the output if is available
+            $type = null;
+            if (self::$_canCompressOutput) {
+                $type = 'ob_gzhandler';
+            }
+            ob_start($type);
+            self::sendHeaders(503);
+            echo $content;
+            ob_end_flush();
         }
 
          /**
@@ -378,23 +382,6 @@
                 }
             }
             return false;
-        }
-
-        /**
-         * Set the value of '{elapsed_time}' and '{memory_usage}'
-         * @param  string $content the page content
-         * @return string          the page content after replace 
-         * '{elapsed_time}', '{memory_usage}'
-         */
-        protected function replaceElapseTimeAndMemoryUsage($content) {
-            //load benchmark class
-            $benchmark = & class_loader('Benchmark');
-			
-            // Parse out the elapsed time and memory usage,
-            // then swap the pseudo-variables with the data
-            $elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-            $memoryUsage	= round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
-            return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content);	
         }
 
         /**
@@ -464,6 +451,24 @@
                 self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');	
             }
         }
+
+        /**
+         * Set the value of '{elapsed_time}' and '{memory_usage}'
+         * @param  string $content the page content
+         * @return string          the page content after replace 
+         * '{elapsed_time}', '{memory_usage}'
+         */
+        protected function replaceElapseTimeAndMemoryUsage($content) {
+            //load benchmark class
+            $benchmark = & class_loader('Benchmark');
+            
+            // Parse out the elapsed time and memory usage,
+            // then swap the pseudo-variables with the data
+            $elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+            $memoryUsage    = round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
+            return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content); 
+        }
+
 		
 
         /**

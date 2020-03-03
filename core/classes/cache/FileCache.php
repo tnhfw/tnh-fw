@@ -90,9 +90,9 @@
             }
             if (time() > $data['expire']) {
                 $this->logger->info('The cache data for the key [' . $key . '] already expired delete the cache file [' . $filePath . ']');
-            // Unlinking when the file was expired
-            unlink($filePath);
-            return false;
+                // Unlinking when the file was expired
+                unlink($filePath);
+                return false;
             } 
             $this->logger->info('The cache not yet expire, now return the cache data for key [' . $key . '], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
             return $data['data'];
@@ -175,14 +175,17 @@
                 return false;
             }
             $this->logger->info('Found cache file [' . $filePath . '] check the validity');
-                $data = file_get_contents($filePath);
-            $data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
+            $data = file_get_contents($filePath);
+            if ($this->compressCacheData) {
+                $data = gzinflate($data);
+            }
+            $data = @unserialize($data);
             if (!$data) {
                 $this->logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
                 return false;
             }
             $this->logger->info('This cache data is OK check for expire');
-            if (isset($data['expire']) && $data['expire'] > time()) {
+            if ($data['expire'] > time()) {
                 $this->logger->info('This cache not yet expired return cache informations');
                 $info = array(
                     'mtime' => $data['mtime'],
@@ -204,20 +207,23 @@
             $list = glob($this->cacheFilePath . '*.cache');
             if (!$list) {
                 $this->logger->info('No cache files were found skipping');
-            } else {
-                $this->logger->info('Found [' . count($list) . '] cache files to remove if expired');
-                foreach ($list as $file) {
-                    $this->logger->debug('Processing the cache file [' . $file . ']');
-                    $data = file_get_contents($file);
-                        $data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
-                        if (!$data) {
-                            $this->logger->warning('Can not unserialize the cache data for file [' . $file . ']');
-                        } else if (time() > $data['expire']) {
-                            $this->logger->info('The cache data for file [' . $file . '] already expired remove it');
-                            unlink($file);
-                        } else {
-                            $this->logger->info('The cache data for file [' . $file . '] not yet expired skip it');
-                        }
+                return;
+            }
+            $this->logger->info('Found [' . count($list) . '] cache files to remove if expired');
+            foreach ($list as $file) {
+                $this->logger->debug('Processing the cache file [' . $file . ']');
+                $data = file_get_contents($file);
+                if ($this->compressCacheData) {
+                    $data = gzinflate($data);
+                }
+                $data = @unserialize($data);
+                if (!$data) {
+                    $this->logger->warning('Can not unserialize the cache data for file [' . $file . ']');
+                } else if (time() > $data['expire']) {
+                    $this->logger->info('The cache data for file [' . $file . '] already expired remove it');
+                    unlink($file);
+                } else {
+                    $this->logger->info('The cache data for file [' . $file . '] not yet expired skip it');
                 }
             }
         }	
@@ -230,12 +236,12 @@
             $list = glob($this->cacheFilePath . '*.cache');
             if (!$list) {
                 $this->logger->info('No cache files were found skipping');
-            } else {
-                $this->logger->info('Found [' . count($list) . '] cache files to remove');
-                foreach ($list as $file) {
-                    $this->logger->debug('Processing the cache file [' . $file . ']');
-                    unlink($file);
-                }
+                return;
+            }
+            $this->logger->info('Found [' . count($list) . '] cache files to remove');
+            foreach ($list as $file) {
+                $this->logger->debug('Processing the cache file [' . $file . ']');
+                unlink($file);
             }
         }
 	
@@ -254,7 +260,6 @@
         public function setCompressCacheData($status = true) {
             //if Zlib extension is not loaded set compressCacheData to false
             if ($status === true && !extension_loaded('zlib')) {
-				
                 $this->logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
                 $this->compressCacheData = false;
             } else {
