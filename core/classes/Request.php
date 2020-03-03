@@ -30,49 +30,49 @@
          * The value for the super global $_GET
          * @var array
          */
-        public $get = null;
+        private $get = null;
 
         /**
          * The value for the super global $_POST
          * @var array
          */
-        public $post = null;
+        private $post = null;
 
         /**
          * The value for the super global $_SERVER
          * @var array
          */
-        public $server = null;
+        private $server = null;
 
         /**
          * The value for the super global $_COOKIE
          * @var array
          */
-        public $cookie = null;
+        private $cookie = null;
 
         /**
          * The value for the super global $_FILES
          * @var array
          */
-        public $file = null;
+        private $file = null;
 
         /**
          * The value for the super global $_REQUEST
          * @var array
          */
-        public $query = null;
+        private $query = null;
 		
         /**
          * The session instance
          * @var Session
          */
-        public $session = null;
+        private $session = null;
 		
         /**
          * The request headers
          * @var array
          */
-        public $header = null;
+        private $header = null;
 
         /**
          * The current request method 'GET', 'POST', 'PUT', etc.
@@ -196,7 +196,101 @@
             return $session;
         }
 
+        /**
+         * Set the value for $_REQUEST for the given key.
+         * @see Request::setVars 
+         */
+        public function setQuery($key, $value = null) {
+            return $this->setVars('query', $key, $value);
+        }
+
+        /**
+         * Set the value for $_GET for the given key.
+         * @see Request::setVars 
+         */
+        public function setGet($key, $value = null) {
+            return $this->setVars('get', $key, $value);
+        }
+
+        /**
+         * Set the value for $_POST for the given key.
+         * @see Request::setVars 
+         */
+        public function setPost($key, $value = null) {
+            return $this->setVars('post', $key, $value);
+        }
+
+        /**
+         * Set the value for $_SERVER for the given key.
+         * @see Request::setVars 
+         */
+        public function setServer($key, $value = null) {
+            return $this->setVars('server', $key, $value);
+        }
+
+        /**
+         * Set the value for $_COOKIE for the given key.
+         * @see Request::setVars 
+         */
+        public function setCookie($key, $value = null) {
+            return $this->setVars('cookie', $key, $value);
+        }
+
+        /**
+         * Set the value for header for the given key.
+         * @see Request::setVars 
+         */
+        public function setHeader($key, $value = null) {
+            return $this->setVars('header', $key, $value);
+        }
+
+        /**
+         * Set the value for $_FILES for the given key.
+         * @see Request::setVars 
+         */
+        public function setFile($key, $value = null) {
+            return $this->setVars('file', $key, $value);
+        }
+
+        /**
+         * Set the instance for session.
+         * @param object|null $session the object of Session to be set
+         * @return object the current instance
+         */
+        public function setSession(Session $session = null) {
+            $this->session = $session;
+            return $this;
+        }
+
          /**
+         * Return the instance of session.
+         * @return object the session instance
+         */
+        public function getSession() {
+            return $this->session;
+        }
+
+         /**
+         * Set the value for $_GET, $_POST, $_SERVER etc. if the key is an array will
+         * set the current super variable value by this.
+         * @param string $type the type can be "post", "get", etc.
+         * @param  string|array  $key the item key to be set or array if need set the current global variable 
+         * by this value
+         * @param mixed $value the value to set if $key is not an array
+         *
+         * @return object       the current instance
+         */
+        protected function setVars($type, $key, $value = null) {
+            if (is_array($key)) {
+                //set all
+                $this->{$type} = $key;
+            } else {
+                $this->{$type}[$key] = $value;
+            }
+            return $this;
+        }
+
+        /**
          * Get the value from $_GET, $_POST, $_SERVER etc. for given key. if the key is empty will return the all values
          * @param string $type the type can be "post", "get", etc.
          * @param  string  $key the item key to be fetched

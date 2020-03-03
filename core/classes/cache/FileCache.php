@@ -33,10 +33,18 @@
         private $compressCacheData = true;
 
         /**
-         * Class constructor
+         * The path to file cache data
+         * @var string
          */
-        public function __construct() {
+        private $cacheFilePath = null;
+
+        /**
+         * Class constructor
+         * @param string|null $cacheFilePath the path to save cache data
+         */
+        public function __construct($cacheFilePath = null) {
             parent::__construct();
+            $this->setCacheFilePath($cacheFilePath);
             if (!$this->isSupported()) {
                 show_error('The cache for file system is not available. Check the cache directory if is exists or is writable.');
             }
@@ -69,23 +77,25 @@
             // Getting a shared lock 
             flock($handle, LOCK_SH);
             $data = file_get_contents($filePath);
-                fclose($handle);
-                $data = @unserialize($this->compressCacheData ? gzinflate($data) : $data);
-                if (!$data) {
-                    $this->logger->error('Can not unserialize the cache data for the key [' . $key . '], return false');
-                    // If unserializing somehow didn't work out, we'll delete the file
-                    unlink($filePath);
-                    return false;
-                }
-                if (time() > $data['expire']) {
-                    $this->logger->info('The cache data for the key [' . $key . '] already expired delete the cache file [' . $filePath . ']');
-                // Unlinking when the file was expired
+            fclose($handle);
+            if ($this->compressCacheData) {
+                $data = gzinflate($data);
+            }   
+            $data = @unserialize($data);
+            if (!$data) {
+                $this->logger->error('Can not unserialize the cache data for the key [' . $key . '], return false');
+                // If unserializing somehow didn't work out, we'll delete the file
                 unlink($filePath);
                 return false;
-                } else {
-                    $this->logger->info('The cache not yet expire, now return the cache data for key [' . $key . '], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
-                    return $data['data'];
-                }
+            }
+            if (time() > $data['expire']) {
+                $this->logger->info('The cache data for the key [' . $key . '] already expired delete the cache file [' . $filePath . ']');
+            // Unlinking when the file was expired
+            unlink($filePath);
+            return false;
+            } 
+            $this->logger->info('The cache not yet expire, now return the cache data for key [' . $key . '], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
+            return $data['data'];
         }
 
 
@@ -113,18 +123,20 @@
                                     'data' => $data,
                                     'ttl' => $ttl
                                     )
-                                );		   
-            $result = fwrite($handle, $this->compressCacheData ? gzdeflate($cacheData, 9) : $cacheData);
+                                );	
+            if ($this->compressCacheData) {
+                $cacheData = gzdeflate($cacheData, 9);
+            }	   
+            $result = fwrite($handle, $cacheData);
             if (!$result) {
                 $this->logger->error('Can not write cache data into file [' . $filePath . '] for the key [' . $key . '], return false');
                 fclose($handle);
                 return false;
-            } else {
-                $this->logger->info('Cache data saved into file [' . $filePath . '] for the key [' . $key . ']');
-                fclose($handle);
-                chmod($filePath, 0640);
-                return true;
-            }
+            } 
+            $this->logger->info('Cache data saved into file [' . $filePath . '] for the key [' . $key . ']');
+            fclose($handle);
+            chmod($filePath, 0640);
+            return true;
         }	
 
 
@@ -141,11 +153,9 @@
             if (!file_exists($filePath)) {
                 $this->logger->info('This cache file does not exists skipping');
                 return false;
-            } else {
-                $this->logger->info('Found cache file [' . $filePath . '] remove it');
-                    unlink($filePath);
-                return true;
-            }
+            } 
+            $this->logger->info('Found cache file [' . $filePath . '] remove it');
+            return unlink($filePath);
         }
 		
         /**
@@ -191,7 +201,7 @@
          */
         public function deleteExpiredCache() {
             $this->logger->debug('Deleting of expired cache files');
-            $list = glob(CACHE_PATH . '*.cache');
+            $list = glob($this->cacheFilePath . '*.cache');
             if (!$list) {
                 $this->logger->info('No cache files were found skipping');
             } else {
@@ -217,7 +227,7 @@
          */
         public function clean() {
             $this->logger->debug('Deleting of all cache files');
-            $list = glob(CACHE_PATH . '*.cache');
+            $list = glob($this->cacheFilePath . '*.cache');
             if (!$list) {
                 $this->logger->info('No cache files were found skipping');
             } else {
@@ -259,7 +269,27 @@
          * @return bool
          */
         public function isSupported() {
-            return CACHE_PATH && is_dir(CACHE_PATH) && is_writable(CACHE_PATH);
+            return $this->cacheFilePath 
+                    && is_dir($this->cacheFilePath) 
+                    && is_writable($this->cacheFilePath);
+        }
+
+        /**
+         * Set the cache file path used to save the cache data
+         * @param string|null $path the file path if null will use the constant CACHE_PATH
+         *
+         * @return object the current instance
+         */
+        public function setCacheFilePath($path = null) {
+            if ($path !== null) {
+                if (substr($path, -1) != DS) {
+                    $path .= DS;
+                }
+                $this->cacheFilePath = $path;
+                return $this;
+            }
+            $this->cacheFilePath = CACHE_PATH;
+            return $this;
         }
 
 	
@@ -270,6 +300,6 @@
          * @return string the full cache file path for this key
          */
         private function getFilePath($key) {
-            return CACHE_PATH . md5($key) . '.cache';
+            return $this->cacheFilePath . md5($key) . '.cache';
         }
     }

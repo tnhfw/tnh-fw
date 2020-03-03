@@ -149,12 +149,15 @@
             $instance = null;
             if (is_object($db)) {
                 $instance = $db;
-            } else if (isset(get_instance()->database)){
-                /**
-                 * NOTE: Need use "clone" because some Model need have the personal instance of the database library
-                 * to prevent duplication
-                 */
-                $instance = clone get_instance()->database;
+            } else {
+                $obj = & get_instance();
+                if (isset($obj->database)){
+                    /**
+                     * NOTE: Need use "clone" because some Model need have the personal instance of the database library
+                     * to prevent duplication
+                     */
+                    $instance = clone $obj->database;
+                }
             }
             //Note: don't use the property direct access here as some update is done in the method
             //$this->setDatabaseInstance
@@ -172,8 +175,7 @@
         /**
          * Fetch a single record based on the primary key. Returns an object.
          */
-        public function get($primary_value)
-        {
+        public function get($primary_value) {
             return $this->get_by($this->primary_key, $primary_value);
         }
 
@@ -182,8 +184,7 @@
          * Fetch a single record based on an arbitrary WHERE call. Can be
          * any valid value to DatabaseQueryBuilder->where().
          */
-        public function get_by()
-        {
+        public function get_by() {
             $where = func_get_args();
             $this->checkForSoftDelete();
             $this->_set_where($where);
@@ -200,8 +201,7 @@
         /**
          * Fetch an array of records based on an array of primary values.
          */
-        public function get_many($values)
-        {
+        public function get_many($values) {
             $this->getQueryBuilder()->in($this->primary_key, $values);
             return $this->get_all();
         }
@@ -209,8 +209,7 @@
         /**
          * Fetch an array of records based on an arbitrary WHERE call.
          */
-        public function get_many_by()
-        {
+        public function get_many_by() {
             $where = func_get_args();
             $this->_set_where($where);
             return $this->get_all();
@@ -220,8 +219,7 @@
          * Fetch all the records in the table. Can be used as a generic call
          * to $this->_database->get() with scoped methods.
          */
-        public function get_all()
-        {
+        public function get_all() {
             $this->trigger('before_get');
             $this->checkForSoftDelete();
             $type = $this->getReturnType();
@@ -240,14 +238,8 @@
          * of data to be inserted. Returns newly created ID.
          * @see Database::insert
          */
-        public function insert($data = array(), $skip_validation = FALSE, $escape = true)
-        {
-            if ($skip_validation === FALSE)
-            {
-                $data = $this->validate($data);
-            }
-
-            if ($data !== FALSE) {
+        public function insert($data = array(), $skip_validation = FALSE, $escape = true) {
+            if ($this->validateData($data, $skip_validation) !== FALSE) {
                 $data = $this->trigger('before_create', $data);
                 $this->getQueryBuilder()->from($this->_table);
                 $this->_database->insert($data, $escape);
@@ -267,11 +259,9 @@
         /**
          * Insert multiple rows into the table. Returns an array of multiple IDs.
          */
-        public function insert_many($data = array(), $skip_validation = FALSE, $escape = true)
-        {
+        public function insert_many($data = array(), $skip_validation = FALSE, $escape = true) {
             $ids = array();
-            foreach ($data as $key => $row)
-            {
+            foreach ($data as $key => $row) {
                 $ids[] = $this->insert($row, $skip_validation, $escape);
             }
             return $ids;
@@ -280,14 +270,9 @@
         /**
          * Updated a record based on the primary value.
          */
-        public function update($primary_value, $data = array(), $skip_validation = FALSE, $escape = true)
-        {
+        public function update($primary_value, $data = array(), $skip_validation = FALSE, $escape = true) {
             $data = $this->trigger('before_update', $data);
-            if ($skip_validation === FALSE) {
-                $data = $this->validate($data);
-            }
-
-            if ($data !== FALSE) {
+            if ($this->validateData($data, $skip_validation) !== FALSE) {
                 $this->getQueryBuilder()->where($this->primary_key, $primary_value)
                                         ->from($this->_table);
                 $result = $this->_database->update($data, $escape);
@@ -300,13 +285,9 @@
         /**
          * Update many records, based on an array of primary values.
          */
-        public function update_many($primary_values, $data = array(), $skip_validation = FALSE, $escape = true)
-        {
+        public function update_many($primary_values, $data = array(), $skip_validation = FALSE, $escape = true) {
             $data = $this->trigger('before_update', $data);
-            if ($skip_validation === FALSE) {
-                $data = $this->validate($data);
-            }
-            if ($data !== FALSE) {
+            if ($this->validateData($data, $skip_validation) !== FALSE) {
                 $this->getQueryBuilder()->in($this->primary_key, $primary_values)
                                         ->from($this->_table);
                 $result = $this->_database->update($data, $escape);
@@ -345,8 +326,7 @@
         /**
          * Update all records
          */
-        public function update_all($data = array(), $escape = true)
-        {
+        public function update_all($data = array(), $escape = true) {
             $data = $this->trigger('before_update', $data);
             $this->getQueryBuilder()->from($this->_table);
             $result = $this->_database->update($data, $escape);
@@ -357,8 +337,7 @@
         /**
          * Delete a row from the table by the primary value
          */
-        public function delete($id)
-        {
+        public function delete($id) {
             $this->trigger('before_delete', $id);
             $this->getQueryBuilder()->where($this->primary_key, $id);
             $result = false;
@@ -375,8 +354,7 @@
         /**
          * Delete a row from the database table by an arbitrary WHERE clause
          */
-        public function delete_by()
-        {
+        public function delete_by() {
             $where = func_get_args();
             $where = $this->trigger('before_delete', $where);
             $this->_set_where($where);
@@ -485,8 +463,7 @@
         /**
          * Fetch a total count of rows, disregarding any previous conditions
          */
-        public function count_all()
-        {
+        public function count_all() {
             $this->checkForSoftDelete();
             $this->getQueryBuilder()->from($this->_table);
             $this->_database->getAll();
@@ -734,6 +711,19 @@
         /* --------------------------------------------------------------
          * INTERNAL METHODS
          * ------------------------------------------------------------ */
+        
+        /**
+         * Validate the data using the validation rules
+         * @param  mixed $data the data to validate before insert, update, etc.
+         * @param boolean $skipValidation whether to skip validation or not
+         * @return mixed
+         */
+        protected function validateData($data, $skipValidation) {
+            if ($skipValidation === FALSE) {
+                $data = $this->validate($data);
+            }
+            return $data;
+        }
         
         /**
          * Return the loader instance or create

@@ -54,17 +54,7 @@
             if ($frontController) {
                 $url .= $frontController . '/';
             }
-            if (($suffix = get_config('url_suffix')) && $path) {
-                if (strpos($path, '?') !== false) {
-                    $query = explode('?', $path);
-                    $query[0] = str_ireplace($suffix, '', $query[0]);
-                    $query[0] = rtrim($query[0], '/');
-                    $query[0] .= $suffix;
-                    $path = implode('?', $query);
-                } else {
-                    $path .= $suffix;
-                }
-            }
+            $path = self::addSuffixInPath($path);
             return $url . $path;
         }
 
@@ -144,4 +134,28 @@
         public static function queryString() {
             return get_instance()->request->server('QUERY_STRING');
         }
+
+        /**
+         * Add configured suffixe in the path
+         * @param string $path the path
+         *
+         * @return string the final path after add suffix if configured
+         * otherwise the same value will be returned
+         */
+        protected static function addSuffixInPath($path){
+            $suffix = get_config('url_suffix');
+            if ($suffix && $path) {
+                if (strpos($path, '?') !== false) {
+                    $query = explode('?', $path);
+                    $query[0] = str_ireplace($suffix, '', $query[0]);
+                    $query[0] = rtrim($query[0], '/');
+                    $query[0] .= $suffix;
+                    $path = implode('?', $query);
+                } else {
+                    $path .= $suffix;
+                }
+            }
+            return $path;
+        }
+
     }

@@ -341,8 +341,8 @@
                 } else {
                     //create the instance of Controller
                     $c404 = new Controller();
-                    get_instance()->response->render('404');
-                    get_instance()->response->send404();
+                    $c404->response->render('404');
+                    $c404->response->send404();
                 }
             }
         }
