@@ -68,9 +68,9 @@
         public static function getFlash($item, $default = null) {
             $logger = self::getLogger();
             $key = self::SESSION_FLASH_KEY . '_' . $item;
-            $return = array_key_exists($key, $_SESSION) ?
-            ($_SESSION[$key]) : $default;
+            $return = $default;
             if (array_key_exists($key, $_SESSION)) {
+                $return = $_SESSION[$key];
                 unset($_SESSION[$key]);
             } else {
                 $logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . $default . ']');
