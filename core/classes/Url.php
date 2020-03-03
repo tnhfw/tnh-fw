@@ -49,9 +49,8 @@
                 return $path;
             }
             $path = rtrim($path, '/');
-            $baseUrl = get_config('base_url');
+            $url = get_config('base_url');
             $frontController = get_config('front_controller');
-            $url = $baseUrl;
             if ($frontController) {
                 $url .= $frontController . '/';
             }
