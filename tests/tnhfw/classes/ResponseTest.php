@@ -117,6 +117,17 @@
             $this->assertSame('foo', $r->getFinalPageRendered());
      	}
         
+        public function testSetFinalPageContent()
+		{
+            $r = new Response();
+            $r->render('testview');
+            $this->assertNotEmpty($r->getFinalPageRendered());
+            $r->setFinalPageContent(null);
+            $this->assertNull($r->getFinalPageRendered());
+            $r->setFinalPageContent('bar');
+            $this->assertSame('bar', $r->getFinalPageRendered());
+     	}
+        
         public function testRenderFinalPageWhenContentIsempty()
 		{
             $r = new Response();

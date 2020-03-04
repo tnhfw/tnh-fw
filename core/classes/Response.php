@@ -273,6 +273,17 @@
             return $this->_pageRender;
         }
 
+         /**
+         * Set the final page to be rendered
+         * @param string $finalPage the content of the final page
+         * 
+         * @return object
+         */
+        public function setFinalPageContent($finalPage) {
+            $this->_pageRender = $finalPage;
+            return $this;
+        }
+
         /**
          * Send the HTTP 404 error if can not found the 
          * routing information for the current request
@@ -514,9 +525,11 @@
             if (file_exists($path)) {
                 //super instance
                 $obj = & get_instance();
-                foreach (get_object_vars($obj) as $key => $value) {
-                    if (!isset($this->{$key})) {
-                        $this->{$key} = & $obj->{$key};
+                if ($obj instanceof Controller) {
+                    foreach (get_object_vars($obj) as $key => $value) {
+                        if (!isset($this->{$key})) {
+                            $this->{$key} = & $obj->{$key};
+                        }
                     }
                 }
                 ob_start();

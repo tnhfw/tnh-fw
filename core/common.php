@@ -259,6 +259,8 @@
             save_to_log('error', '[' . $title . '] ' . strip_tags($msg), 'GLOBAL::ERROR');
         }
         $response = & class_loader('Response', 'classes');
+        //remove other content set to prevent duplicate view
+        $response->setFinalPageContent(null);
         $response->render('errors', $data);
         $response->sendError();
         die();

@@ -31,6 +31,30 @@
             $log->setLogger('MY_LOGGER_NAME');
             $this->assertSame('MY_LOGGER_NAME', $log->getLogger());
 		}
+        
+        public function testCheckAndSetLogFileDirectoryConfigLogPathIsEmpty()
+		{
+            $this->config->set('log_save_path', '');
+            $log = new Log();
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', 'DEBUG');
+            $log = new Log();
+            $log->debug('Debug message');
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+		}
+        
+        public function testCheckAndSetLogFileDirectoryConfigLogPathIsSetButNotExist()
+		{
+            $this->config->set('log_save_path', 'path/foo/bar/');
+            $log = new Log();
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', 'DEBUG');
+            $log = new Log();
+            $log->debug('Debug message');
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+		}
 		
 		public function testLogLevelNone()
 		{

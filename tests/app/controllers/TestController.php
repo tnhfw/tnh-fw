@@ -1,2 +1,5 @@
 <?php
-    class TestController extends Controller{}
+    class TestController extends Controller{
+        
+        public function foo(){}
+    }

@@ -186,6 +186,7 @@
             $this->assertTrue(true);   
 		}
         
+        
         public function testLoadConfig()
 		{
             $l = new Loader();
@@ -195,6 +196,8 @@
             $l->config('test');
             $this->assertSame('bar', $this->config->get('cfg_test'));
 		}
+        
+        
         
         public function testLoadConfigInModule()
 		{
@@ -208,10 +211,12 @@
             $this->assertSame('foo', $this->config->get('cfg_module'));
 		}
         
+        
         public function testLoadConfigInModuleUsingModuleNameInController()
 		{
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
+            
             $m = new Module();
             $m->init();
             $l = new Loader();
@@ -222,12 +227,14 @@
             $this->assertSame('foo', $this->config->get('cfg_module'));
 		}
         
+        
         public function testLoadConfigNotExists()
 		{
             $l = new Loader();
             $l->config('unkown_config');
             $this->assertTrue(true);   
 		}
+        
         
         public function testLoadLang()
 		{

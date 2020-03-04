@@ -25,8 +25,6 @@
            //some global configuration
            $this->config = new Config();
            $this->config->init();
-           //delete all configuration each test will set the custom config to use
-           $this->config->deleteAll();
            
            $this->vfsRoot = vfsStream::setup();
            $this->vfsLogPath = vfsStream::newDirectory('logs')->at($this->vfsRoot);
@@ -35,6 +33,12 @@
            //log file name
            $this->logFilename = 'logs-' . date('Y-m-d') . '.log';
         }
+        
+        protected function setUp()
+		{
+           //delete all configuration each test will set the custom config to use
+           $this->config->deleteAll();
+		}
         
         /**
         * Method to test private & protected method

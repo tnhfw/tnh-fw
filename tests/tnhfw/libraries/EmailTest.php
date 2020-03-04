@@ -15,8 +15,9 @@
 		}
 		
 		protected function setUp()
-		{
-		}
+        {
+            parent::setUp();
+        }
 
 		protected function tearDown()
 		{

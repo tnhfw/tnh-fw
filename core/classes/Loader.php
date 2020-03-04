@@ -210,10 +210,6 @@
             $filename = str_ireplace('config_', '', $filename);
             $file = 'config_' . $filename . '.php';
             $logger->debug('Loading configuration [' . $filename . '] ...');
-            if (isset(self::$loaded['config_' . $filename])) {
-                $logger->info('Configuration [' . $file . '] already loaded no need to load it again, cost in performance');
-                return;
-            }
             $configFilePath = CONFIG_PATH . $file;
             //first check if this config is in the module
             $logger->debug('Checking config [' . $filename . '] from module list ...');
@@ -230,10 +226,10 @@
             $logger->info('The config file path to be loaded is [' . $configFilePath . ']');
             $config = array();
             if (file_exists($configFilePath)) {
-                require_once $configFilePath;
+                //note need use require instead of require_once
+                require $configFilePath;
                 if (!empty($config) && is_array($config)) {
                     Config::setAll($config);
-                    self::$loaded['config_' . $filename] = $configFilePath;
                     $logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
                     $logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
                     unset($config);

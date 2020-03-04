@@ -4,25 +4,12 @@
 
 	class ModuleTest extends TnhTestCase
 	{	
-	
-		public static function setUpBeforeClass()
-		{
-		
-		}
-		
-		public static function tearDownAfterClass()
-		{
-			
-		}
 		
 		protected function setUp()
 		{
+            parent::setUp();
             //ensure all module is removed from list
             Module::removeAll();
-		}
-
-		protected function tearDown()
-		{
 		}
 		
 		public function testInit()

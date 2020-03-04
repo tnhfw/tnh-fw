@@ -174,10 +174,7 @@
             }
             //only test for original event may be during the flow some listeners change this parameter
             if ($eBackup->returnBack) {
-                if(! $error) {
-                    return $event;
-                }
-                return null;
+                return !$error ? $event : null;
             }
         }
     }

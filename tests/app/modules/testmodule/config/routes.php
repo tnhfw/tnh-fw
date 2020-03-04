@@ -1,2 +1,2 @@
 <?php
-    $route['foo/bar'] = 'testmodule';
+    $route['/module/foo/bar'] = 'testmodule#TestModuleController';
