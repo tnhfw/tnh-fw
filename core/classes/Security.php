@@ -69,10 +69,9 @@
                 return false;
             }
             //perform form data
-            //need use request->query() for best retrieve
             //super instance
             $obj = & get_instance();
-            $token = $obj->request->query($key);
+            $token = $obj->request->post($key);
             if (!$token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime) {
                 $logger->warning('The CSRF data [' . $token . '] is not valide may be attacker do his job');
                 return false;
@@ -85,51 +84,54 @@
         }
 		
         /**
-         * This method is used to check the whitelist IP address access
-         */
-            public static function checkWhiteListIpAccess() {
+        * This method is used to check the whitelist IP address access
+        *
+        * @return boolean
+        */
+        public static function checkWhiteListIpAccess() {
             $logger = self::getLogger();
             $logger->debug('Validation of the IP address access ...');
             $logger->debug('Check if whitelist IP access is enabled in the configuration ...');
             $isEnable = get_config('white_list_ip_enable', false);
-            if ($isEnable) {
-                $logger->info('Whitelist IP access is enabled in the configuration');
-                $list = get_config('white_list_ip_addresses', array());
-                if (!empty($list)) {
-                    //Can't use Loader::functions() at this time because teh "Loader" library is loader after the security prossessing
-                    require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
-                    $ip = get_ip();
-                    if ((count($list) == 1 && $list[0] == '*') || in_array($ip, $list)) {
-                        $logger->info('IP address ' . $ip . ' allowed using the wildcard "*" or the full IP');
-                        //wildcard to access all ip address
-                        return;
-                    } else {
-                        // go through all whitelisted ips
-                        foreach ($list as $ipaddr) {
-                            // find the wild card * in whitelisted ip (f.e. find position in "127.0.*" or "127*")
-                            $wildcardPosition = strpos($ipaddr, '*');
-                            if ($wildcardPosition === false) {
-                                // no wild card in whitelisted ip --continue searching
-                                continue;
-                            }
-                            // cut ip at the position where we got the wild card on the whitelisted ip
-                            // and add the wold card to get the same pattern
-                            if (substr($ip, 0, $wildcardPosition) . '*' === $ipaddr) {
-                                // f.e. we got
-                                //  ip "127.0.0.1"
-                                //  whitelisted ip "127.0.*"
-                                // then we compared "127.0.*" with "127.0.*"
-                                // return success
-                                $logger->info('IP address ' . $ip . ' allowed using the wildcard like "x.x.x.*"');
-                                return;
-                            }
-                        }
-                        $logger->warning('IP address ' . $ip . ' is not allowed to access to this application');
-                        show_error('Access to this application is not allowed');
-                    }
-                }
-            } else {
+            if (!$isEnable) {
                 $logger->info('Whitelist IP access is not enabled in the configuration, ignore checking');
+                return true;
             }
+            $logger->info('Whitelist IP access is enabled in the configuration');
+            $list = get_config('white_list_ip_addresses', array());
+            if (empty($list)) {
+                $logger->info('The list of whitelist IP is empty, ignore checking');
+                return true;
             }
+            //Can't use Loader::functions() at this time because teh "Loader" library is loader after the security prossessing
+            require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
+            $ip = get_ip();
+            if ((count($list) == 1 && $list[0] == '*') || in_array($ip, $list)) {
+                $logger->info('IP address ' . $ip . ' is allowed using the wildcard "*" or the full IP address');
+                //wildcard to access all ip address
+                return true;
+            }
+            // go through all whitelisted ips
+            foreach ($list as $ipaddr) {
+                // find the wild card * in whitelisted ip (f.e. find position in "127.0.*" or "127*")
+                $wildcardPosition = strpos($ipaddr, '*');
+                if ($wildcardPosition === false) {
+                    // no wild card in whitelisted ip --continue searching
+                    continue;
+                }
+                // cut ip at the position where we got the wild card on the whitelisted ip
+                // and add the wold card to get the same pattern
+                if (substr($ip, 0, $wildcardPosition) . '*' === $ipaddr) {
+                    // f.e. we got
+                    //  ip "127.0.0.1"
+                    //  whitelisted ip "127.0.*"
+                    // then we compared "127.0.*" with "127.0.*"
+                    // return success
+                    $logger->info('IP address ' . $ip . ' is allowed using the wildcard address like "x.x.x.*"');
+                    return true;
+                }
+            }
+            $logger->warning('IP address ' . $ip . ' is not allowed to access to this application');
+            return false;
+        }
     }

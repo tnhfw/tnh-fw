@@ -123,7 +123,20 @@
 	}
 
 	function is_https(){
-		return false;
+		 /*
+		* some servers pass the "HTTPS" parameter in the server variable,
+		* if is the case, check if the value is "on", "true", "1".
+		*/
+        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+            return true;
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            return true;
+        }
+        if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
+            return true;
+        }
+        return false;
 	}
 	
 	/**

@@ -101,30 +101,36 @@
         /**
          * Clear the session item in the list
          * @param  string $item the session item name to be deleted
+         *
+         * @return boolean
          */
         public static function clear($item) {
             $logger = self::getLogger();
             if (array_key_exists($item, $_SESSION)) {
                 $logger->info('Deleting of session for item [' . $item . ' ]');
                 unset($_SESSION[$item]);
-            } else {
-                $logger->warning('Session item [' . $item . '] to be deleted does not exists');
-            }
+                return true;
+            } 
+            $logger->warning('Session item [' . $item . '] to be deleted does not exists');
+            return false;
         }
 		
         /**
          * Clear the session flash item in the list
          * @param  string $item the session flash item name to be deleted
+         *
+         * @return boolean
          */
         public static function clearFlash($item) {
             $logger = self::getLogger();
             $key = self::SESSION_FLASH_KEY . '_' . $item;
             if (array_key_exists($key, $_SESSION)) {
-                $logger->info('Delete session flash for item [' . $item . ']');
-                unset($_SESSION[$item]);
-            } else {
-                $logger->warning('Dession flash item [' . $item . '] to be deleted does not exists');
-            }
+                $logger->info('Delete session flash for item [' . $key . ']');
+                unset($_SESSION[$key]);
+                return true;
+            } 
+            $logger->warning('Dession flash item [' . $key . '] to be deleted does not exists');
+            return false;
         }
 
         /**

@@ -3,27 +3,7 @@
 	
 	class CommonTest extends TnhTestCase
 	{	
-	
-		public static function setUpBeforeClass()
-		{
-			
-		}
-		
-		public static function tearDownAfterClass()
-		{
-			
-		}
-	
-		protected function setUp()
-        {
-            parent::setUp();
-        }
 
-		protected function tearDown()
-		{
-		}
-
-		
 		public function testFunctionGetConfigKeyNotExist(){
 			$key = 'foo';
 			$cfg = get_config($key);
