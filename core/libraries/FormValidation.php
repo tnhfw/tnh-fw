@@ -119,7 +119,9 @@
                         'callback'         => $obj->lang->get('fv_callback'),
                     );
             $this->_resetValidation();
-            $this->setData($obj->request->post(null));
+            if (is_array($obj->request->post(null))) {
+                $this->setData($obj->request->post(null));
+            }
         }
 
         /**
