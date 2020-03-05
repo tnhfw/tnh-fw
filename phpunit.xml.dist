@@ -19,10 +19,9 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<!--<directory suffix=".php">./core/classes</directory>
+			<directory suffix=".php">./core/classes</directory>
 			<directory suffix=".php">./core/functions</directory>
-			<directory suffix=".php">./core/libraries</directory>-->
-			<file>./core/libraries/Email.php</file>
+			<directory suffix=".php">./core/libraries</directory>
 		</whitelist>
 	</filter>
 </phpunit>
