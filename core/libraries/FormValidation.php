@@ -219,7 +219,7 @@
 
         /**
          * Validate the CSRF 
-         * @return void 
+         * @return boolean
          */
         protected function validateCSRF() {
             if (get_instance()->request->method() == 'POST') {
@@ -227,10 +227,12 @@
                 //first check for CSRF
                 if (get_config('csrf_enable', false) && !Security::validateCSRF()) {
                     show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
+                    return false;
                 } else {
                     $this->logger->info('CSRF is not enabled in configuration or not set manully, no need to check it');
                 }
             }
+            return true;
         }
         
         /**
@@ -240,7 +242,9 @@
          */
         protected function _run() {
             //validate CSRF
-            $this->validateCSRF();
+            if (!$this->validateCSRF()) {
+                return;
+            }
             /////////////////////////////////////////////
             $this->_forceFail = false;
 
@@ -400,7 +404,11 @@
             } else if (array_key_exists($key, $this->data)) {
                 $returnValue = $this->data[$key];
                 if ($trim) {
-                    $returnValue = trim($this->data[$key]);
+                    if (is_array($this->data[$key])) {
+                       $returnValue = array_map('trim', $this->data[$key]);
+                    } else {
+                        $returnValue = trim($this->data[$key]);
+                    }
                 }
             }
             return $returnValue;
@@ -510,6 +518,12 @@
          * @return void
          */
         protected function _validateRule($inputName, $inputVal, $ruleName) {
+            if (is_array($inputVal)) {
+                foreach ($inputVal as $value) {
+                    $this->_validateRule($inputName, $value, $ruleName);
+                }
+                return;
+            }
             $this->logger->debug('Rule validation of field [' . $inputName . '], value [' . $inputVal . '], rule [' . $ruleName . ']');
             // Array to store args
             $ruleArgs = array();
@@ -683,7 +697,7 @@
         protected function _validateValidEmail($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (!preg_match("/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i", $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
@@ -699,7 +713,7 @@
         protected function _validateExactLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) != $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
@@ -715,9 +729,6 @@
         protected function _validateMaxLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) > $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
@@ -731,9 +742,6 @@
         protected function _validateMinLength($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (strlen($inputVal) < $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
@@ -747,9 +755,6 @@
         protected function _validateLessThan($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if ($inputVal >= $ruleArgs[1]) { 
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
@@ -763,9 +768,6 @@
         protected function _validateGreaterThan($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if ($inputVal <= $ruleArgs[1]) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
@@ -779,7 +781,42 @@
         protected function _validateNumeric($inputName, $ruleName, array $ruleArgs) {
             $inputVal = $this->post($inputName);
             if (!is_numeric($inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
+                    return;
+                }
+                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+            }
+        }
+
+        /**
+         * Peform validation for the rule "in_list"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("in_list")
+         * @param  array  $ruleArgs  the rules argument
+         */
+        protected function _validateInList($inputName, $ruleName, array $ruleArgs) {
+            $inputVal = $this->post($inputName);
+            $list = explode(',', $ruleArgs[1]);
+            $list = array_map('trim', $list);
+            if (!in_array($inputVal, $list)) {
+                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
+                    return;
+                }
+                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
+            }
+        }
+
+        /**
+         * Peform validation for the rule "regex"
+         * @param  string $inputName the form field or data key name used
+         * @param  string $ruleName  the rule name for this validation ("regex")
+         * @param  array  $ruleArgs  the rules argument
+         */
+        protected function _validateRegex($inputName, $ruleName, array $ruleArgs) {
+            $inputVal = $this->post($inputName);
+            $regex = $ruleArgs[1];
+            if (!preg_match($regex, $inputVal)) {
+                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -805,7 +842,7 @@
                                                         ->where($column, $inputVal);
             $this->databaseInstance->get();
             if ($this->databaseInstance->numRows() <= 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
+                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
                     return;
                 }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
@@ -831,9 +868,6 @@
                                                         ->where($column, $inputVal);
             $this->databaseInstance->get();
             if ($this->databaseInstance->numRows() > 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
@@ -863,44 +897,6 @@
                                                         ->where($field, '!=', trim($val));
             $this->databaseInstance->get();
             if ($this->databaseInstance->numRows() > 0) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "in_list"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("in_list")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateInList($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            $list = explode(',', $ruleArgs[1]);
-            $list = array_map('trim', $list);
-            if (!in_array($inputVal, $list)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "regex"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("regex")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateRegex($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            $regex = $ruleArgs[1];
-            if (!preg_match($regex, $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && empty($this->data[$inputName])) {
-                    return;
-                }
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }

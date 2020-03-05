@@ -158,7 +158,7 @@
             $numRows = 0;
             $fetchMode = PDO::FETCH_OBJ;
             if ($this->returnAsArray) {
-            $fetchMode = PDO::FETCH_ASSOC;
+                $fetchMode = PDO::FETCH_ASSOC;
             }
             if ($this->returnAsList) {
                 $result = $this->pdoStatment->fetchAll($fetchMode);
@@ -167,9 +167,13 @@
             }
             //Sqlite and pgsql always return 0 when using rowCount()
             if (in_array($this->driver, array('sqlite', 'pgsql'))) {
-            $numRows = count($result);  
+                //by default count() return 1 if the parameter is not an array
+                //object or object implements Countable.
+                if (is_array($result) || is_object($result) || $result instanceof Countable) {
+                     $numRows = count($result);  
+                }
             } else {
-            $numRows = $this->pdoStatment->rowCount(); 
+                $numRows = $this->pdoStatment->rowCount(); 
             }
             $this->queryResult->setResult($result);
             $this->queryResult->setNumRows($numRows);

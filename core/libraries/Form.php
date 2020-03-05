@@ -41,11 +41,11 @@
             $method = strtoupper($method);
             $str = null;
             $str .= '<form action = "' . $path . '" method = "' . $method . '"';
-            if (!empty($enctype)) {
-                $str .= ' enctype = "' . $enctype . '" ';
-            }
             if (!isset($attributes['accept-charset'])) {
-                $attributes['accept-charset'] = get_config('charset', 'utf-8');
+                $attributes['accept-charset'] = get_config('charset', 'UTF-8');
+            }
+            if (!empty($enctype)) {
+                 $attributes['enctype'] = $enctype;
             }
             $str .= attributes_to_string($attributes);
             $str .= '>';
@@ -141,7 +141,7 @@
         public static function label($label, $for = '', array $attributes = array()) {
             $str = '<label';
             if ($for) {
-                $str .= ' for = "' . $for . '"';
+                $attributes['for'] = $for;
             }
             $str .= attributes_to_string($attributes);
             $str .= '>';
@@ -159,7 +159,10 @@
          */
         public static function input($name, $value = null, array $attributes = array(), $type = 'text') {
             $str = null;
-            $str .= '<input name = "' . $name . '" value = "' . $value . '" type = "' . $type . '"';
+            $str .= '<input';
+            $attributes['type'] = $type;
+            $attributes['name'] = $name;
+            $attributes['value'] = $value;
             $str .= attributes_to_string($attributes);
             $str .= '/>';
             return $str;
@@ -310,9 +313,9 @@
             foreach ($values as $key => $val) {
                 $select = '';
                 if ($key == $selected) {
-                    $select = 'selected';
+                    $select = ' selected';
                 }
-                $str .= '<option value = "' . $key . '" ' . $select . '>' . $val . '</option>';
+                $str .= '<option value = "' . $key . '"' . $select . '>' . $val . '</option>';
             }
             $str .= '</select>';
             return $str;
