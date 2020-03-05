@@ -41,14 +41,12 @@
 	//tests dir path
 	define('TESTS_PATH', dirname(realpath(__FILE__)) . DS);
 
-	/**
-	* The path to the directory.
-	*
-	* That contains your static files (javascript, css, images, etc.)
-	* Note: the path must be relative to the file index.php (the front-end controller).
+	/*
+    * NOTE: As the tests is running in cli mode the assets path need to be set to absolute path
+    * due to file_exists() will not work with relative path
 	*/
-	define('ASSETS_PATH', 'assets/');
-
+	define('ASSETS_PATH', TESTS_PATH . 'assets/');
+    
 	/**
 	* The path to the directory of your cache files.
 	*

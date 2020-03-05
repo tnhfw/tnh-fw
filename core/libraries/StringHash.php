@@ -26,23 +26,29 @@
 
     class StringHash {
 		 
-            //blowfish
-        private static $algo = '$2a';
-		
-        //cost parameter
-        private static $cost = '$10';
-
         /**
-         * Get the unique salt for the string hash
-         * @return string the unique generated salt
+         * Using blowfish method
+         * CRYPT_BLOWFISH = 1
+         * Recommended algo since PHP 5.3.7 is "$2y$"
+         * Before PHP 5.3.7 can use "$2a$" but this have some security issue
+         * @see  http://www.php.net/security/crypt_blowfish.php 
+         * @var string
          */
-        private static function uniqueSalt() {
-            return substr(sha1(mt_rand()), 0, 22);
-        }
+        private static $algo = '$2y$';
+		
+        /**
+         * Cost parameter value
+         * For CRYPT_BLOWFISH possible value are: "04", "05", "06", "07", "08", "09", "10", etc. until 
+         * "30", "31"
+         * 
+         * @var string
+         */
+        private static $cost = '10';
 
         /**
          * Hash the given string
          * @param  string $value the plain string text to be hashed
+         * 
          * @return string           the hashed string
          */
         public static function hash($value) {
@@ -55,11 +61,36 @@
          * Check if the hash and plain string is valid
          * @param  string $hash     the hashed string
          * @param  string $plain the plain text
+         * 
          * @return boolean  true if is valid or false if not
          */
         public static function check($hash, $plain) {
-            $full_salt = substr($hash, 0, 29);
-            $new_hash = crypt($plain, $full_salt);
-            return ($hash === $new_hash);
+            $fullSalt = substr($hash, 0, 29);
+            $newHash = crypt($plain, $fullSalt);
+            return $hash === $newHash;
         }	
+
+        /**
+         * Get the unique salt for the string hash
+         * Note: extension openssl need to be available for this to work
+         * 
+         * @return string the unique generated salt
+         */
+        private static function uniqueSalt() {
+            /* To generate the salt, first generate enough random bytes. Because
+             * base64 returns one character for each 6 bits, so we should generate
+             * at least 22*6/8 = 16.5 bytes, so we generate 17 bytes. Then we get the first
+             * 22 base64 characters
+             */
+
+            /* As blowfish takes a salt with the alphabet ./A-Za-z0-9 we have to
+             * replace any '+', '=' in the base64 string with '..'.
+             */
+            $random = base64_encode(openssl_random_pseudo_bytes(17));
+            //take only the first 22 caracters
+            $random = substr($random, 0, 22);
+
+            //replace +,= by .
+            return strtr($random, '+=', '..');
+        }
     }

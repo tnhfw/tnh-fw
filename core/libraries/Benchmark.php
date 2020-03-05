@@ -66,7 +66,12 @@
             if (!isset($this->markersTime[$endMarkerName])) {
                 $this->markersTime[$endMarkerName] = microtime(true);
             }
-            return number_format($this->markersTime[$endMarkerName] - $this->markersTime[$startMarkerName], $decimalCount);
+            return number_format(
+                                    $this->markersTime[$endMarkerName] - $this->markersTime[$startMarkerName], 
+                                    $decimalCount, 
+                                    '.',
+                                    ''
+                                );
         }
 		
         /**
@@ -84,6 +89,11 @@
             if (!isset($this->markersMemory[$endMarkerName])) {
                 $this->markersMemory[$endMarkerName] = microtime(true);
             }
-            return number_format($this->markersMemory[$endMarkerName] - $this->markersMemory[$startMarkerName], $decimalCount);
+            return number_format(
+                                    $this->markersMemory[$endMarkerName] - $this->markersMemory[$startMarkerName], 
+                                    $decimalCount,
+                                    '.',
+                                    ''
+                                );
         }
     }

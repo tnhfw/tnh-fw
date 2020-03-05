@@ -1,15 +1,6 @@
 <?php 
-
-	
 	class UrlTest extends TnhTestCase
 	{	
-	
-		public static function setUpBeforeClass()
-		{
-		
-		}
-	
-		
 		public function testBaseUrl()
 		{
             $url = new Url();
@@ -74,7 +65,7 @@
 		{
             $url = new Url();
             //as Url::current() use internally Url::domain() and domain method have http://localhost as 
-            //default value and current method have "/" as default value of request uri
+            //default value and Url::current() method have "/" as default value of request uri
             $expected = 'http://localhost/';
 			$this->assertSame($expected, $url->current());
 		}
@@ -191,7 +182,9 @@
             $obj->request = new Request();
             
             $url = new Url();
-            $expected = 'a=b&b=c';
+            //Note Url::queryString() use internally Request::server that apply 
+            //XSS filter by default so char '&'will be '&amp;' 
+            $expected = 'a=b&amp;b=c';
 			$this->assertSame($expected, $url->queryString());
 		}
 

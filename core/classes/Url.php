@@ -132,7 +132,7 @@
          * @return string
          */
         public static function queryString() {
-            return get_instance()->request->server('QUERY_STRING', false);
+            return get_instance()->request->server('QUERY_STRING');
         }
 
         /**

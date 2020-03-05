@@ -24,9 +24,9 @@
     },
 	
 	"require-dev": {
-		"mikey179/vfsstream": "~1.3",
-		"phpunit/phpunit": ">=4.0 <6"
-	},
+        "mikey179/vfsstream": "~1.3",
+        "phpunit/phpunit": ">=4.0 <6"
+    },
 
     "suggest": {
         "ext-pdo_mysql": "For MySQL or MariaDB database",
@@ -34,7 +34,7 @@
         "ext-pdo_oci8": "For Oracle version 8 database",
         "ext-pdo_pqsql": "For PostgreSQL database",
         "ext-pdo_sqlite": "For SQLite database",
-        "ext-openssl": "For using database session handler"
+        "ext-openssl": "For using database session handler and StringHash library"
     },
     
     "config": {

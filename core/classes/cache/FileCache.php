@@ -260,7 +260,7 @@
         public function setCompressCacheData($status = true) {
             //if Zlib extension is not loaded set compressCacheData to false
             if ($status === true && !extension_loaded('zlib')) {
-                $this->logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
+                $this->logger->warning('The zlib extension is not loaded set cache compress data to false');
                 $this->compressCacheData = false;
             } else {
                 $this->compressCacheData = $status;

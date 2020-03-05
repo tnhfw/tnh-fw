@@ -1,26 +1,29 @@
 <?php
 	defined('ROOT_PATH') || exit('Access denied');
     /**
-     * File: Browser.php
-     * Author: Chris Schuld (http://chrisschuld.com/)
-     * Last Modified: July 22nd, 2016
-     * @version 2.0
-     * @package PegasusPHP
+     * TNH Framework
      *
-     * Copyright (C) 2008-2010 Chris Schuld  (chris@chrisschuld.com)
+     * A simple PHP framework using HMVC architecture
+     *
+     * This content is released under the GNU GPL License (GPL)
+     *
+     * Copyright (C) 2017 Tony NGUEREZA
      *
      * This program is free software; you can redistribute it and/or
-     * modify it under the terms of the GNU General Public License as
-     * published by the Free Software Foundation; either version 2 of
-     * the License, or (at your option) any later version.
+     * modify it under the terms of the GNU General Public License
+     * as published by the Free Software Foundation; either version 3
+     * of the License, or (at your option) any later version.
      *
      * This program is distributed in the hope that it will be useful,
      * but WITHOUT ANY WARRANTY; without even the implied warranty of
      * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     * GNU General Public License for more details at:
-     * http://www.gnu.org/copyleft/gpl.html
+     * GNU General Public License for more details.
      *
+     * You should have received a copy of the GNU General Public License
+     * along with this program; if not, write to the Free Software
+     * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
      */
+    
 	class Browser {
 
 		/**
@@ -44,11 +47,11 @@
 									'/win98/i'              =>  'Windows 98',
 									'/win95/i'              =>  'Windows 95',
 									'/win16/i'              =>  'Windows 3.11',
-									'/macintosh|mac os x/i' =>  'Mac OS X',
-									'/mac_powerpc/i'        =>  'Mac OS 9',
-									'/iphone/i'             =>  'iPhone',
-									'/ipod/i'               =>  'iPod',
 									'/ipad/i'               =>  'iPad',
+                                    '/ipod/i'               =>  'iPod',
+                                    '/iphone/i'             =>  'iPhone',
+                                    '/macintosh|mac os x/i' =>  'Mac OS X',
+									'/mac_powerpc/i'        =>  'Mac OS 9',
 									'/android/i'            =>  'Android',
 									'/ubuntu/i'             =>  'Ubuntu',
 									'/linux/i'              =>  'Linux',
@@ -250,6 +253,8 @@
 
          /**
          * Returns a formatted string with a summary of the details of the browser.
+         * @codeCoverageIgnore
+         * 
          * @return string formatted string with a summary of the browser
          */
         public function __toString() {
@@ -334,7 +339,7 @@
          * Determine if the browser is Mobile or not
          */
 		protected function checkMobile() {
-			if (preg_match('/mobile|phone|ipod/i', $this->_agent) ) {
+			if (preg_match('/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i', $this->_agent) ) {
 				$this->setMobile(true);
 			}
 		}
@@ -353,7 +358,7 @@
          */
 		protected function checkBot() {
 			if (preg_match('/bot/i', $this->_agent) ) {
-				$this->setTablet(true);
+				$this->setRobot(true);
 			}
 		}
 
