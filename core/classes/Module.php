@@ -38,7 +38,10 @@
         public function init() {
             $logger = self::getLogger();
             $logger->debug('Check if the application contains the modules ...');
-            self::$list = array_map('basename', glob(MODULE_PATH . '*', GLOB_ONLYDIR));
+            $dirList = glob(MODULE_PATH . '*', GLOB_ONLYDIR);
+            if ($dirList !== false) {
+               self::$list = array_map('basename', $dirList);
+            }
             if (!empty(self::$list)) {
                 $logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
             }
