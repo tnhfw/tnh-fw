@@ -318,7 +318,7 @@
          *
          *    @since     1.0
          *    @version   1.0
-         *    @param     double|string     $file_size
+         *    @param     double     $file_size
          *    @return    object
          *    @method    boolean     setMaxFileSize
          */
