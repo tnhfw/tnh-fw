@@ -164,13 +164,6 @@
             $this->assertTrue($fv->run());
         }
         
-        public function testValidateDataValueIsAnArray()
-        {
-            $fv = new FormValidation();
-            $fv->setRule('name', 'name', 'required');
-            $fv->setData(array('name' => array('foo', 'bar')));
-            $this->assertTrue($fv->run());
-        }
         
         public function testSetRules()
         {
@@ -204,10 +197,7 @@
             $fv->displayErrors();
             
             //Return the errors string
-            $this->assertNotEmpty($fv->displayErrors(null, false));
-            
-            //Using limit parameter
-            $this->assertNotEmpty($fv->displayErrors(1, false));
+            $this->assertNotEmpty($fv->displayErrors(false));
         }
         
         //////Each rule tests //////////////////////
