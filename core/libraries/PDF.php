@@ -60,12 +60,13 @@
             $this->dompdf->load_html($html);
             $this->dompdf->set_paper($paper, $orientation);
             $this->dompdf->render();
-            if ($stream) {
-                $this->dompdf->stream($filename);
-            } else {
+            if (!$stream) {
                 return $this->dompdf->output();
             }
+            //@codeCoverageIgnoreStart
+            $this->dompdf->stream($filename);
         }
+        //@codeCoverageIgnoreEnd
 		
         /**
          * Return the instance of Dompdf

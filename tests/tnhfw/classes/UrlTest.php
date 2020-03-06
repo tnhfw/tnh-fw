@@ -5,6 +5,7 @@
      *
      * @group core
      * @group core_classes
+     * @group http
      */
 	class UrlTest extends TnhTestCase {	
 		public function testBaseUrl() {

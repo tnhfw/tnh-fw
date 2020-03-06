@@ -137,7 +137,7 @@
          *    @version    1.0
          *    @var        array
          */
-        private $callbacks = array('before' => null, 'after' => null);
+        private $callbacks = array();
 
         /**
          *    File object
@@ -265,8 +265,7 @@
          *    @return    object
          *    @method    boolean     setInput
          */
-        public function setInput($input)
-        {
+        public function setInput($input) {
             if (!empty($input) && (is_string($input) || is_numeric($input))) {
                 $this->input = $input;
             }
@@ -294,8 +293,7 @@
          *    @return    object
          *    @method    boolean     setFilename
          */
-        public function setFilename($filename)
-        {
+        public function setFilename($filename) {
             if ($this->isFilename($filename)) {
                 $this->filename = $filename;
             }
@@ -310,8 +308,7 @@
          *    @return    object
          *    @method    boolean     setAutoFilename
          */
-        public function setAutoFilename()
-        {
+        public function setAutoFilename() {
             $this->filename = sha1(mt_rand(1, 9999) . uniqid());
             $this->filename .= time();
             return $this;
@@ -321,12 +318,11 @@
          *
          *    @since     1.0
          *    @version   1.0
-         *    @param     double     $file_size
+         *    @param     double|string     $file_size
          *    @return    object
          *    @method    boolean     setMaxFileSize
          */
-        public function setMaxFileSize($file_size)
-        {
+        public function setMaxFileSize($file_size) {
             $file_size = $this->sizeInBytes($file_size);
             if (is_numeric($file_size) && $file_size > -1) {
                 // Get php config
@@ -348,8 +344,7 @@
          *    @return    object
          *    @method    boolean     setAllowedMimeTypes
          */
-        public function setAllowedMimeTypes(array $mimes)
-        {
+        public function setAllowedMimeTypes(array $mimes) {
             if (count($mimes) > 0) {
                 array_map(array($this, 'setAllowMimeType'), $mimes);
             }
@@ -364,8 +359,7 @@
          *    @return    object
          *    @method    boolean     setCallbackInput
          */
-        public function setCallbackInput($callback)
-        {
+        public function setCallbackInput($callback) {
             if (is_callable($callback, false)) {
                 $this->callbacks['input'] = $callback;
             }
@@ -380,8 +374,7 @@
          *    @return    object
          *    @method    boolean     setCallbackOutput
          */
-        public function setCallbackOutput($callback)
-        {
+        public function setCallbackOutput($callback) {
             if (is_callable($callback, false)) {
                 $this->callbacks['output'] = $callback;
             }
@@ -396,8 +389,7 @@
          *    @return    object
          *    @method    boolean     setAllowMimeType
          */
-        public function setAllowMimeType($mime)
-        {
+        public function setAllowMimeType($mime) {
             if (!empty($mime) && is_string($mime)) {
                 $this->allowed_mime_types[] = strtolower($mime);
                 $this->file['allowed_mime_types'][] = strtolower($mime);
@@ -412,8 +404,7 @@
          *    @return    object
          *    @method    boolean    setMimeHelping
          */
-        public function setMimeHelping($name)
-        {
+        public function setMimeHelping($name) {
             if (!empty($name) 
                 && is_string($name) 
                  && array_key_exists($name, $this->mime_helping)) {
@@ -434,8 +425,7 @@
          *    @return    object
          *    @method    boolean     setUploadFunction
          */
-        public function setUploadFunction($function)
-        {
+        public function setUploadFunction($function) {
             if (is_callable($function)) {
                 $this->upload_function = $function;
             }
@@ -449,8 +439,7 @@
          *    @return    object
          *    @method    boolean    clearAllowedMimeTypes
          */
-        public function clearAllowedMimeTypes()
-        {
+        public function clearAllowedMimeTypes() {
             $this->allowed_mime_types = array();
             $this->file['allowed_mime_types'] = array();
             return $this;
@@ -495,8 +484,7 @@
          *    @return     boolean
          *    @method     boolean    fileExists
          */
-        public function fileExists($file_destination)
-        {
+        public function fileExists($file_destination) {
             return $this->isFilename($file_destination) 
                                 && file_exists($file_destination) 
                                 && is_file($file_destination);
@@ -510,8 +498,7 @@
          *    @return     boolean
          *    @method     boolean    dirExists
          */
-        public function dirExists($path)
-        {
+        public function dirExists($path) {
             return $this->isDirpath($path) 
                                 && file_exists($path) 
                                 && is_dir($path);
@@ -525,8 +512,7 @@
          *    @return    boolean
          *    @method    boolean     isFilename
          */
-        public function isFilename($filename)
-        {
+        public function isFilename($filename) {
             $filename = basename($filename);
             return (!empty($filename) && (is_string($filename) || is_numeric($filename)));
         }
@@ -540,13 +526,85 @@
          *    @return    boolean
          *    @method    boolean     checkMimeType
          */
-        public function checkMimeType($mime)
-        {
+        public function checkMimeType($mime) {
             if (count($this->allowed_mime_types) == 0) {
                 return true;
             }
             return in_array(strtolower($mime), $this->allowed_mime_types);
         }
+
+        /**
+         *    Get the file input name
+         *    @return    string
+         */
+        public function getInput() {
+            return $this->input;
+        }
+
+        /**
+         *    Get the file array
+         *    @return    array
+         */
+        public function getFileArray() {
+            return $this->file_array;
+        }
+
+        /**
+         *    Get the filename
+         *    @return    string
+         */
+        public function getFilename() {
+            return $this->filename;
+        }
+
+        /**
+         *    Get the max file size
+         *    @return    double|int
+         */
+        public function getMaxFileSize() {
+            return $this->max_file_size;
+        }
+
+        /**
+         *    Get the list of mimes type allowed
+         *    @return    array
+         */
+        public function getAllowMimeType() {
+            return $this->allowed_mime_types;
+        }
+
+        /**
+         *    Get the list of callbacks for "input" and "output"
+         *    @return    array
+         */
+        public function getCallbacks() {
+            return $this->callbacks;
+        }
+
+        /**
+         *    Get the upload function name like "copy", "move_uploaded_file"
+         *    @return    string
+         */
+        public function getUploadFunction() {
+            return $this->upload_function;
+        }
+
+        /**
+         *    Get the destination directory
+         *    @return    string
+         */
+        public function getDestinationDirectory() {
+            return $this->destination_directory ;
+        }
+
+        /**
+         *    Get the allow overwriting
+         *    @return    boolean
+         */
+        public function isAllowOverwriting() {
+            return $this->overwrite_file ;
+        }
+
         /**
          *    Retrive status of upload
          *
@@ -555,10 +613,11 @@
          *    @return    boolean
          *    @method    boolean    getStatus
          */
-        public function getStatus()
-        {
+        public function getStatus() {
             return $this->file['status'];
         }
+
+
         /**
          *    Check valid path
          *
@@ -568,8 +627,7 @@
          *    @return     boolean
          *    @method     boolean    isDirpath
          */
-        public function isDirpath($path)
-        {
+        public function isDirpath($path) {
             if (!empty($path) && (is_string($path) || is_numeric($path))) {
                 if (DIRECTORY_SEPARATOR == '/') {
                     return (preg_match('/^[^*?"<>|:]*$/', $path) == 1);
@@ -579,6 +637,7 @@
             }
             return false;
         }
+
         /**
          *    Allow overwriting files
          *
@@ -587,11 +646,11 @@
          *    @return     object
          *    @method     boolean    allowOverwriting
          */
-        public function allowOverwriting()
-        {
+        public function allowOverwriting() {
             $this->overwrite_file = true;
             return $this;
         }
+
         /**
          *    File info
          *
@@ -600,8 +659,7 @@
          *    @return     object
          *    @method     object    getInfo
          */
-        public function getInfo()
-        {
+        public function getInfo() {
             return (object) $this->file;
         }
 
@@ -688,8 +746,7 @@
          *    @return     string
          *    @method     string     sizeFormat
          */
-        public function sizeFormat($size, $precision = 2)
-        {
+        public function sizeFormat($size, $precision = 2) {
             if ($size > 0) {
                 $base       = log($size) / log(1024);
                 $suffixes   = array('B', 'K', 'M', 'G', 'T');
@@ -712,8 +769,7 @@
          *    @return     integer|double
          *    @method     string     sizeInBytes
          */
-        public function sizeInBytes($size)
-        {
+        public function sizeInBytes($size) {
             $unit = 'B';
             $units = array('B' => 0, 'K' => 1, 'M' => 2, 'G' => 3, 'T' => 4);
             $matches = array();

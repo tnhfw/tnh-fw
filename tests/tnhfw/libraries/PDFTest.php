@@ -8,24 +8,19 @@
      */
 	class PDFTest extends TnhTestCase {	
 	
-		public static function setUpBeforeClass() {
-		
+		public function testConstructor() {
+            $p = new PDF();
+			$this->assertInstanceOf('Dompdf', $p->getDompdf());
 		}
-		
-		public static function tearDownAfterClass() {
-			
-		}
-		
-		protected function setUp()
-        {
-            parent::setUp();
+        
+        public function testGenerate() {
+            //Default
+            $p = new PDF();
+            $content = '<p>Foo</p>';
+            $filename = 'test.pdf';
+            
+            $pdf = $p->generate($content, $filename, $stream = false, $paper = 'A4', $orientation = 'portrait');
+            $this->assertNotEmpty($pdf);
         }
-
-		protected function tearDown() {
-		}
-		
-		public function testNotYet() {
-			$this->markTestSkipped();
-		}
 
 	}

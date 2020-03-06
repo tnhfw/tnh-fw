@@ -5,6 +5,7 @@
      *
      * @group core
      * @group libraries
+     * @group html
      */
 	class HtmlTest extends TnhTestCase {	
 		

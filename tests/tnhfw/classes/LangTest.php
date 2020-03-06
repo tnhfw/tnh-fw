@@ -78,6 +78,4 @@
             $this->assertSame('en', $l->getCurrent());
 		}
         
-        
-
 	}
