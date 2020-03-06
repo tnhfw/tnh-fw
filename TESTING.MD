@@ -1,6 +1,6 @@
 # Testing TNH FRAMEWORK
 
-TNH FRAMEWORK uses [PHPUnit](http://phpunit.de/) for it's Unit Testing needs. It must be installed for the tests to run.
+**TNH FRAMEWORK** uses [PHPUnit](http://phpunit.de/) for it's Unit Testing needs. It must be installed for the tests to run.
 
 **NOTE: No code will be accepted without tests written.**
 
@@ -22,13 +22,13 @@ That's it! You can also tell it specific groups (which we will get into in minut
 
 All tests are to go in the **tests** folders inside their respective parent folder.  For instance:
 
-* core classes tests go in *tnhfw/classes/*
-* core functions tests go in *tnhfw/functions/*
-* core libraries tests go in *tnhfw/libraries/*
+- core classes tests go in **tnhfw/classes/**
+- core functions tests go in **tnhfw/functions/**
+- core libraries tests go in **tnhfw/libraries/**
 
 ### File/Class/Method Naming
 
-The Test class names should be in the form of **RealClassNameTest**.
+The Test class names should be in the form of **RealClassNameTest**. 
 The Test method names should be in the form of **testMethodNameWithHumanReadableDescription**.
 
 ### Test Grouping

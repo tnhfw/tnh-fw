@@ -113,7 +113,7 @@
           public function testGetLink() {
              $p = new Pagination();
              //Default behavior is to return null
-             $this->assertNull($p->getLink());
+             $this->assertNull($p->getLink(0, 0));
              //totalRows is less than or equal to number of pagination_per_page
              $this->assertNull($p->getLink(1, 1)); 
              $this->assertNull($p->getLink(9, 1));
