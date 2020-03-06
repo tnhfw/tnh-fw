@@ -1,7 +1,7 @@
 <?php
-    class ListenersEventDispatcherTest{
+    class ListenersEventDispatcherTest {
         
-        public function stopEventListener($e){
+        function stopEventListener($e){
             //never call by dispatcher
         } 
         
@@ -20,6 +20,18 @@
         public function returnBackEventListenerButNotReturnIt($e){
             //normally need return it
             //but we not return will got an error
+        }
+        
+        public function emptyListener($e){}
+        
+        public function fooListener($e){}
+        
+        /**
+        * Used in Response::test
+        */
+        public function responseTestListener($e){
+            $e->payload = null;
+            return $e;
         }
 
     }

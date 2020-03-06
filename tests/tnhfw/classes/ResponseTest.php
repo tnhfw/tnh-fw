@@ -1,8 +1,14 @@
 <?php 
 
-	
-	class ResponseTest extends TnhTestCase
-	{	
+	/**
+     * Response class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group http
+     */
+	class ResponseTest extends TnhTestCase {	
+    
         protected $currentUrl = null;
         protected $currentUrlCacheKey = null;
         protected $canCompressOutput = null;
@@ -20,9 +26,13 @@
             $this->canCompressOutput = new ReflectionProperty('Response', '_canCompressOutput');
             $this->canCompressOutput->setAccessible(true);
         }
+        
+        public static function setUpBeforeClass() {
+            //Used in ResponseTest::testRenderFinalPageWhenEventListenerReturnEmptyContent()
+            require_once TESTS_PATH . 'include/listeners_event_dispatcher_test.php';
+		}
 		
-		public function testConstructor()
-		{
+		public function testConstructor() {
             
         
             $_SERVER['REQUEST_URI'] = '/foo/bar';
@@ -33,45 +43,39 @@
 			$this->assertFalse($this->canCompressOutput->getValue($r));
 		}
         
-        public function testSendHeaders()
-		{
+        public function testSendHeaders() {
             $r = new Response();
             $r->setHeader('foo', 'bar');
             $r->sendHeaders();
 			$this->assertSame('bar', $r->getHeader('foo'));
 		}
         
-        public function testGetHeaders()
-		{
+        public function testGetHeaders() {
             $r = new Response();
             $r->setHeader('foo', 'bar');
             $this->assertSame('bar', $r->getHeader('foo'));
             $this->assertNotEmpty($r->getHeaders());
 		}
         
-        public function testGetHeaderKeyNotExists()
-		{
+        public function testGetHeaderKeyNotExists() {
             $r = new Response();
             $this->assertNull($r->getHeader('unknow'));
      	}
         
-        public function testGetHeaderKeyExists()
-		{
+        public function testGetHeaderKeyExists() {
             $r = new Response();
             $r->setHeader('foo', 'bar');
             $this->assertSame('bar', $r->getHeader('foo'));
      	}
         
-        public function testRender()
-		{
+        public function testRender() {
             $r = new Response();
             $r->render('testview');
             $this->assertNotEmpty($r->getFinalPageRendered());
             $this->assertSame('foo', $r->getFinalPageRendered());
      	}
         
-        public function testRenderModule()
-		{
+        public function testRenderModule() {
             $m = new Module();
             $m->init();
             $r = new Response();
@@ -80,8 +84,7 @@
             $this->assertSame('foo_module', $r->getFinalPageRendered());
      	}
         
-        public function testRenderUsingCurrentControllerModule()
-		{
+        public function testRenderUsingCurrentControllerModule() {
             $obj = & get_instance();
             $obj->moduleName= 'testmodule';
             $m = new Module();
@@ -92,23 +95,20 @@
             $this->assertSame('foo_module', $r->getFinalPageRendered());
      	}
         
-        public function testRenderReturnedContent()
-		{
+        public function testRenderReturnedContent() {
             $r = new Response();
             $content = $r->render('testview', array(), true);
             $this->assertEmpty($r->getFinalPageRendered());
             $this->assertSame('foo', $content);
      	}
         
-        public function testRenderViewNotFound()
-		{
+        public function testRenderViewNotFound() {
             $r = new Response();
             $r->render('unkownview');
             $this->assertEmpty($r->getFinalPageRendered());
      	}
         
-        public function testRenderFinalPage()
-		{
+        public function testRenderFinalPage() {
             $r = new Response();
             $r->render('testview');
             $this->assertNotEmpty($r->getFinalPageRendered());
@@ -117,8 +117,7 @@
             $this->assertSame('foo', $r->getFinalPageRendered());
      	}
         
-        public function testSetFinalPageContent()
-		{
+        public function testSetFinalPageContent() {
             $r = new Response();
             $r->render('testview');
             $this->assertNotEmpty($r->getFinalPageRendered());
@@ -128,8 +127,7 @@
             $this->assertSame('bar', $r->getFinalPageRendered());
      	}
         
-        public function testRenderFinalPageWhenContentIsempty()
-		{
+        public function testRenderFinalPageWhenContentIsempty() {
             $r = new Response();
             $this->assertEmpty($r->getFinalPageRendered());
             $r->renderFinalPage();
@@ -137,26 +135,21 @@
      	}
         
         
-        public function testRenderFinalPageWhenEventListenerReturnEmptyContent()
-		{
-            $listener = function($e){
-                $e->payload = null;
-                return null;
-            };
+        public function testRenderFinalPageWhenEventListenerReturnEmptyContent() {
+            $listener = new ListenersEventDispatcherTest();
             $obj = &get_instance();
-            $obj->eventdispatcher->addListener('FINAL_VIEW_READY', $listener);
+            $obj->eventdispatcher->addListener('FINAL_VIEW_READY', array($listener, 'responseTestListener'));
             $r = new Response();
             $r->render('testview');
             $this->assertNotEmpty($r->getFinalPageRendered());
             $this->assertSame('foo', $r->getFinalPageRendered());
             $r->renderFinalPage();
             $this->assertEmpty($r->getFinalPageRendered());
-            $obj->eventdispatcher->removeListener('FINAL_VIEW_READY', $listener);
+            $obj->eventdispatcher->removeListener('FINAL_VIEW_READY', array($listener, 'responseTestListener'));
      	}
         
         
-        public function testRenderFinalPageWhenCacheStatusIsEnabled()
-		{
+        public function testRenderFinalPageWhenCacheStatusIsEnabled() {
             $cache = $this->getMockBuilder('FileCache')->getMock();
             $this->config->set('cache_enable', true);
             $this->config->set('cache_handler', 'FileCache');
@@ -174,8 +167,7 @@
             $this->assertNotEmpty($r->getFinalPageRendered());
      	}
         
-        public function testRenderFinalPageWhenCompressionIsAvailable()
-		{
+        public function testRenderFinalPageWhenCompressionIsAvailable() {
             $this->config->set('compress_output', true);
             $_SERVER['HTTP_ACCEPT_ENCODING'] = 'gzip';
             
@@ -187,8 +179,7 @@
            $this->assertNotEmpty($r->getFinalPageRendered());
      	}
         
-        public function testRenderFinalPageFromCache()
-		{
+        public function testRenderFinalPageFromCache() {
             $this->vfsRoot = vfsStream::setup();
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
@@ -204,8 +195,7 @@
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
         
-        public function testRenderFinalPageFromCacheIsExpired()
-		{
+        public function testRenderFinalPageFromCacheIsExpired() {
             $this->vfsRoot = vfsStream::setup();
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
@@ -221,8 +211,7 @@
             $this->assertFalse($r->renderFinalPageFromCache($cache));
      	}
         
-        public function testRenderFinalPageFromCacheIsNotExpired()
-		{
+        public function testRenderFinalPageFromCacheIsNotExpired() {
             $this->vfsRoot = vfsStream::setup();
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
@@ -238,8 +227,7 @@
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
         
-        public function testRenderFinalPageFromCacheIsNotExpiredAndCompressionIsAvailable()
-		{
+        public function testRenderFinalPageFromCacheIsNotExpiredAndCompressionIsAvailable() {
             $this->config->set('compress_output', true);
             $_SERVER['HTTP_ACCEPT_ENCODING'] = 'gzip';
             
@@ -258,8 +246,7 @@
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
         
-        public function testRenderFinalPageFromCacheDataIsNotValidOrExpired()
-		{
+        public function testRenderFinalPageFromCacheDataIsNotValidOrExpired() {
             $this->vfsRoot = vfsStream::setup();
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
@@ -299,6 +286,25 @@
             $r->send404();
             $this->assertNotEmpty($r->getFinalPageRendered());
         }
+        
+        public function testSend404WhenCacheIsEnabled(){
+            $cache = $this->getMockBuilder('FileCache')->getMock();
+            $this->config->set('cache_enable', true);
+            $this->config->set('cache_handler', 'FileCache');
+            
+            $obj = &get_instance();
+            $this->runPrivateProtectedMethod($obj, 'setCacheFromParamOrConfig', array($cache));
+			
+            $obj->view_cache_enable = true;
+            
+            $r = new Response();
+            $r->render('404');
+            $this->assertNotEmpty($r->getFinalPageRendered());
+            $r->send404();
+            $this->assertNotEmpty($r->getFinalPageRendered());
+        }
+        
+           
         
         public function testSendError(){
             $data['title'] = 'error title';

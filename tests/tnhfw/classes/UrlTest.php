@@ -1,8 +1,13 @@
 <?php 
-	class UrlTest extends TnhTestCase
-	{	
-		public function testBaseUrl()
-		{
+
+    /**
+     * Url class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class UrlTest extends TnhTestCase {	
+		public function testBaseUrl() {
             $url = new Url();
 			$this->assertEmpty($url->base_url());
             
@@ -14,22 +19,19 @@
             $this->assertSame($base_url . 'foo', $url->base_url('foo'));
 		}
         
-        public function testBaseUrlWhenParamIsAbsoluteUrl()
-		{
+        public function testBaseUrlWhenParamIsAbsoluteUrl() {
             $url = new Url();
 			$link = 'http://www.example.com';
             $this->assertSame($link, $url->base_url($link));
 		}
         
-        public function testSiteUrlWhenParamIsAbsoluteUrl()
-		{
+        public function testSiteUrlWhenParamIsAbsoluteUrl() {
             $url = new Url();
 			$link = 'http://www.example.com';
             $this->assertSame($link, $url->site_url($link));
 		}
         
-        public function testSiteUrlWhenFrontControllerConfigIsNotEmpty()
-		{
+        public function testSiteUrlWhenFrontControllerConfigIsNotEmpty() {
             $url = new Url();
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
@@ -39,8 +41,7 @@
 			$this->assertSame($expected, $url->site_url('controller'));
 		}
         
-        public function testSiteUrlWhenUrlSuffixIsSetInConfig()
-		{
+        public function testSiteUrlWhenUrlSuffixIsSetInConfig() {
             $url = new Url();
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
@@ -50,8 +51,7 @@
 			$this->assertSame($expected, $url->site_url('controller'));
 		}
         
-        public function testSiteUrlWhenUrlSuffixIsSetInConfigAndRequestHasQueryStringValue()
-		{
+        public function testSiteUrlWhenUrlSuffixIsSetInConfigAndRequestHasQueryStringValue() {
             $url = new Url();
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
@@ -61,8 +61,7 @@
 			$this->assertSame($expected, $url->site_url('controller?a=b&b=c'));
 		}
         
-        public function testGetCurrentUrl()
-		{
+        public function testGetCurrentUrl() {
             $url = new Url();
             //as Url::current() use internally Url::domain() and domain method have http://localhost as 
             //default value and Url::current() method have "/" as default value of request uri
@@ -70,8 +69,7 @@
 			$this->assertSame($expected, $url->current());
 		}
         
-        public function testGetCurrentUrlWhenHaveRequestUri()
-		{
+        public function testGetCurrentUrlWhenHaveRequestUri() {
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $obj = & get_instance();
             $obj->request = new Request();
@@ -81,8 +79,7 @@
 			$this->assertSame($expected, $url->current());
 		}
         
-        public function testGetUrlTitle()
-		{
+        public function testGetUrlTitle() {
             $url = new Url();
             
             $link = 'foo bar';
@@ -110,15 +107,13 @@
 			$this->assertSame($expected, $url->title($link));
 		}
         
-        public function testGetDomainUsingDefaultValue()
-		{
+        public function testGetDomainUsingDefaultValue() {
             $url = new Url();
             $expected = 'http://localhost';
 			$this->assertSame($expected, $url->domain());
 		}
         
-        public function testGetDomainUsingServerVarHttpHost()
-		{
+        public function testGetDomainUsingServerVarHttpHost() {
             $_SERVER['HTTP_HOST'] = 'foo.fr';
             $obj = & get_instance();
             $obj->request = new Request();
@@ -128,8 +123,7 @@
 			$this->assertSame($expected, $url->domain());
 		}
         
-        public function testGetDomainUsingServerVarServerName()
-		{
+        public function testGetDomainUsingServerVarServerName() {
             $_SERVER['SERVER_NAME'] = 'bar.cf';
             $obj = & get_instance();
             $obj->request = new Request();
@@ -139,8 +133,7 @@
 			$this->assertSame($expected, $url->domain());
 		}
         
-        public function testGetDomainUsingServerVarServerAddr()
-		{
+        public function testGetDomainUsingServerVarServerAddr() {
             $_SERVER['SERVER_ADDR'] = 'example.com';
             $obj = & get_instance();
             $obj->request = new Request();
@@ -150,8 +143,7 @@
 			$this->assertSame($expected, $url->domain());
 		}
         
-        public function testGetDomainHttps()
-		{
+        public function testGetDomainHttps() {
             $_SERVER['HTTPS'] = 'on';
             $_SERVER['SERVER_ADDR'] = 'example.com';
             $obj = & get_instance();
@@ -162,8 +154,7 @@
 			$this->assertSame($expected, $url->domain());
 		}
         
-        public function testGetDomainHttpsWhenNotDefaultPort()
-		{
+        public function testGetDomainHttpsWhenNotDefaultPort() {
             $_SERVER['HTTPS'] = 'on';
             $_SERVER['SERVER_ADDR'] = 'example.com';
             $_SERVER['SERVER_PORT'] = 1234;
@@ -175,8 +166,7 @@
 			$this->assertSame($expected, $url->domain());
 		}
         
-        public function testGetQueryString()
-		{
+        public function testGetQueryString() {
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $obj = & get_instance();
             $obj->request = new Request();

@@ -1,8 +1,12 @@
 <?php 
 
-	
-	class BenchmarkTest extends TnhTestCase
-	{	
+	/**
+     * Benchmark library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class BenchmarkTest extends TnhTestCase {	
         protected $markersTime = null;
         protected $markersMemory = null;
         
@@ -17,8 +21,7 @@
         }
         
 		
-		public function testMark()
-		{
+		public function testMark() {
             $key = 'foo';
             $b = new Benchmark();
             
@@ -34,15 +37,13 @@
 			$this->assertArrayHasKey($key, $this->markersMemory->getValue($b));
 		}
         
-        public function testElapsedTimeMarkerNotExistsOrNull()
-		{
+        public function testElapsedTimeMarkerNotExistsOrNull() {
             $b = new Benchmark();
             $this->assertSame(0, $b->elapsedTime('unknow_marker'));
             $this->assertSame(0, $b->elapsedTime(null));
 		}
         
-        public function testElapsedTimeEndMarkerNotSetBefore()
-		{
+        public function testElapsedTimeEndMarkerNotSetBefore() {
             $key1 = 'foo';
             $key2 = 'bar';
             $b = new Benchmark();
@@ -55,8 +56,7 @@
 		}
         
         
-        public function testElapsedTimeUsingDecimalParam()
-		{
+        public function testElapsedTimeUsingDecimalParam() {
             $key1 = 'foo';
             $key2 = 'bar';
             $b = new Benchmark();
@@ -107,8 +107,7 @@
 		}
         
         
-        public function testElapsedTimeManyMarkers()
-		{
+        public function testElapsedTimeManyMarkers() {
             $key1 = 'foo';
             $key2 = 'bar';
             $key3 = 'baz';
@@ -147,15 +146,13 @@
 		}
         
         
-        public function testMemoryUsageMarkerNotExistsOrNull()
-		{
+        public function testMemoryUsageMarkerNotExistsOrNull() {
             $b = new Benchmark();
             $this->assertSame(0, $b->memoryUsage('unknow_marker'));
             $this->assertSame(0, $b->memoryUsage(null));
 		}
         
-        public function testMemoryUsageEndMarkerNotSetBefore()
-		{
+        public function testMemoryUsageEndMarkerNotSetBefore() {
             $key1 = 'foo';
             $key2 = 'bar';
             $b = new Benchmark();
@@ -168,8 +165,7 @@
 		}
         
         
-        public function testMemoryUsageUsingDecimalParam()
-		{
+        public function testMemoryUsageUsingDecimalParam() {
             $key1 = 'foo';
             $key2 = 'bar';
             $b = new Benchmark();
@@ -220,8 +216,7 @@
 		}
         
         
-        public function testMemoryUsageManyMarkers()
-		{
+        public function testMemoryUsageManyMarkers() {
             $key1 = 'foo';
             $key2 = 'bar';
             $key3 = 'baz';

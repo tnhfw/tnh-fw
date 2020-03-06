@@ -1,39 +1,38 @@
 <?php 
 
-	
-	class ConfigTest extends TnhTestCase
-	{	
+	/**
+     * Config class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class ConfigTest extends TnhTestCase {	
 	
 		
-		protected function setUp()
-		{
+		protected function setUp() {
             parent::setUp();
             //prevent duplicate or old value
             Config::deleteAll();
 		}
 
 		
-		public function testGetValueWhenKeyNotExist()
-		{
+		public function testGetValueWhenKeyNotExist() {
 			$value = Config::get('foo');
             $this->assertNull($value);
 		}
         
-        public function testGetValueWhenKeyNotExistUsingDefaultValue()
-		{
+        public function testGetValueWhenKeyNotExistUsingDefaultValue() {
 			$value = Config::get('foo', 'bar');
             $this->assertSame($value, 'bar');
 		}
         
-        public function testGetValueWhenKeyExist()
-		{
+        public function testGetValueWhenKeyExist() {
 			$value = 1234567890;
 			Config::set('foo', $value);
             $this->assertSame($value, Config::get('foo'));
 		}
         
-        public function testSetValue()
-		{
+        public function testSetValue() {
             //string
 			$value = 'bar';
 			Config::set('foo', $value);
@@ -93,16 +92,14 @@
             $this->assertInstanceOf('stdClass', Config::get('foo'));
 		}
         
-        public function testGetAll()
-		{
+        public function testGetAll() {
              $this->assertEmpty(Config::getAll());
              Config::set('foo', 'bar');
              $this->assertNotEmpty(Config::getAll());
              
         }
         
-        public function testSetAll()
-		{
+        public function testSetAll() {
              $this->assertEmpty(Config::getAll());
              Config::set('foo', 'bar');
              Config::setAll(array('bar' => 'foo'));
@@ -110,8 +107,7 @@
              $this->assertSame(2, count(Config::getAll()));  
         }
         
-        public function testSetAllArgumentIsEmpty()
-		{
+        public function testSetAllArgumentIsEmpty() {
              $this->assertEmpty(Config::getAll());
              Config::set('foo', 'bar');
              Config::setAll(array());
@@ -119,14 +115,12 @@
              $this->assertSame(1, count(Config::getAll()));
         }
         
-        public function testDeleteWhenKeyNotExist()
-		{
+        public function testDeleteWhenKeyNotExist() {
              $result = Config::delete('foo');
              $this->assertFalse($result); 
         }
         
-         public function testDeleteWhenKeyExist()
-		{
+         public function testDeleteWhenKeyExist() {
              Config::set('foo', 'bar');
              $this->assertSame(1, count(Config::getAll()));
              $result = Config::delete('foo');
@@ -136,8 +130,7 @@
              $this->assertSame(0, count(Config::getAll()));
         }
         
-        public function testDeleteAll()
-		{
+        public function testDeleteAll() {
              Config::set('foo', 'bar');
              Config::set('bar', 'foo');
              $this->assertSame(2, count(Config::getAll()));

@@ -192,7 +192,7 @@
             $str = null;
             $tableAttributes = '';
             if (!empty($attributes['table'])) {
-                $tableAttributes = ' ' . attributes_to_string($attributes['table']);
+                $tableAttributes = attributes_to_string($attributes['table']);
             }
             $str .= '<table' . $tableAttributes . '>';
             $str .= self::buildTableHeader($headers, $attributes);
@@ -217,15 +217,15 @@
             $str = null;
             $theadAttributes = '';
             if (!empty($attributes['thead'])) {
-                $theadAttributes = ' ' . attributes_to_string($attributes['thead']);
+                $theadAttributes = attributes_to_string($attributes['thead']);
             }
             $theadtrAttributes = '';
             if (!empty($attributes['thead_tr'])) {
-                $theadtrAttributes = ' ' . attributes_to_string($attributes['thead_tr']);
+                $theadtrAttributes = attributes_to_string($attributes['thead_tr']);
             }
             $thAttributes = '';
             if (!empty($attributes['thead_th'])) {
-                $thAttributes = ' ' . attributes_to_string($attributes['thead_th']);
+                $thAttributes = attributes_to_string($attributes['thead_th']);
             }
             $str .= '<thead' . $theadAttributes . '>';
             $str .= '<tr' . $theadtrAttributes . '>';
@@ -246,15 +246,15 @@
             $str = null;
             $tbodyAttributes = '';
             if (!empty($attributes['tbody'])) {
-                $tbodyAttributes = ' ' . attributes_to_string($attributes['tbody']);
+                $tbodyAttributes = attributes_to_string($attributes['tbody']);
             }
             $tbodytrAttributes = '';
             if (!empty($attributes['tbody_tr'])) {
-                $tbodytrAttributes = ' ' . attributes_to_string($attributes['tbody_tr']);
+                $tbodytrAttributes = attributes_to_string($attributes['tbody_tr']);
             }
             $tbodytdAttributes = '';
             if (!empty($attributes['tbody_td'])) {
-                $tbodytdAttributes = ' ' . attributes_to_string($attributes['tbody_td']);
+                $tbodytdAttributes = attributes_to_string($attributes['tbody_td']);
             }
             $str .= '<tbody' . $tbodyAttributes . '>';
             $str .= self::buildTableBodyContent($body, $tbodytrAttributes, $tbodytdAttributes);
@@ -292,15 +292,15 @@
             $str = null;
             $tfootAttributes = '';
             if (!empty($attributes['tfoot'])) {
-                $tfootAttributes = ' ' . attributes_to_string($attributes['tfoot']);
+                $tfootAttributes = attributes_to_string($attributes['tfoot']);
             }
             $tfoottrAttributes = '';
             if (!empty($attributes['tfoot_tr'])) {
-                $tfoottrAttributes = ' ' . attributes_to_string($attributes['tfoot_tr']);
+                $tfoottrAttributes = attributes_to_string($attributes['tfoot_tr']);
             }
             $thAttributes = '';
             if (!empty($attributes['tfoot_th'])) {
-                $thAttributes = ' ' . attributes_to_string($attributes['tfoot_th']);
+                $thAttributes = attributes_to_string($attributes['tfoot_th']);
             }
             $str .= '<tfoot' . $tfootAttributes . '>';
                 $str .= '<tr' . $tfoottrAttributes . '>';
@@ -324,11 +324,11 @@
             $str = null;
             $olulAttributes = '';
             if (!empty($attributes[$olul])) {
-                $olulAttributes = ' ' . attributes_to_string($attributes[$olul]);
+                $olulAttributes = attributes_to_string($attributes[$olul]);
             }
             $liAttributes = '';
             if (!empty($attributes['li'])) {
-                $liAttributes = ' ' . attributes_to_string($attributes['li']);
+                $liAttributes = attributes_to_string($attributes['li']);
             }
             $str .= '<' . $olul . $olulAttributes . '>';
             foreach ($data as $row) {

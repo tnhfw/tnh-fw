@@ -1,7 +1,13 @@
 <?php 
 	
-	class SessionTest extends TnhTestCase
-	{
+    /**
+     * Session class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group session
+     */
+	class SessionTest extends TnhTestCase {
         
         protected function setUp()
         {
@@ -9,30 +15,26 @@
             $_SESSION = array();
         }
 		
-		public function testGetValueWhenKeyNotExist()
-		{
+		public function testGetValueWhenKeyNotExist() {
             $session = new Session();
 			$value = $session->get('foo');
             $this->assertNull($value);
 		}
         
-        public function testGetValueWhenKeyNotExistUsingDefaultValue()
-		{
+        public function testGetValueWhenKeyNotExistUsingDefaultValue() {
             $session = new Session();
 			$value = $session->get('foo', 'bar');
             $this->assertSame($value, 'bar');
 		}
         
-        public function testGetValueWhenKeyExist()
-		{
+        public function testGetValueWhenKeyExist() {
             $session = new Session();
 			$value = 1234567890;
 			$session->set('foo', $value);
             $this->assertSame($value, $session->get('foo'));
 		}
         
-        public function testSetValue()
-		{
+        public function testSetValue() {
             $session = new Session();
             //string
 			$value = 'bar';
@@ -93,22 +95,19 @@
             $this->assertInstanceOf('stdClass', $session->get('foo'));
 		}
  
-        public function testGetFlashValueWhenKeyNotExist()
-		{
+        public function testGetFlashValueWhenKeyNotExist() {
             $session = new Session();
 			$value = $session->getFlash('foo');
             $this->assertNull($value);
 		}
         
-        public function testGetFlashValueWhenKeyNotExistUsingDefaultValue()
-		{
+        public function testGetFlashValueWhenKeyNotExistUsingDefaultValue() {
             $session = new Session();
 			$value = $session->getFlash('foo', 'bar');
             $this->assertSame($value, 'bar');
 		}
         
-        public function testGetFlashValueWhenKeyExist()
-		{
+        public function testGetFlashValueWhenKeyExist() {
             $session = new Session();
 			$value = 1234567890;
 			$session->setFlash('foo', $value);
@@ -117,8 +116,7 @@
             $this->assertNull($session->getFlash('foo'));
 		}
         
-        public function testSetFlashValue()
-		{
+        public function testSetFlashValue() {
             $session = new Session();
             //string
 			$value = 'bar';
@@ -176,8 +174,7 @@
             $this->assertNull($session->getFlash('foo'));
 		}
         
-        public function testHasFlashValue()
-		{
+        public function testHasFlashValue() {
             $session = new Session();
             $value = 'bar';
 			$session->setFlash('foo', $value);
@@ -186,15 +183,13 @@
             $this->assertNull($session->getFlash('foobar'));
         }
         
-        public function testClearKeyDoesNotExist()
-		{
+        public function testClearKeyDoesNotExist() {
             $session = new Session();
             $this->assertNull($session->get('foo'));
             $this->assertFalse($session->clear('foo'));  
         }
         
-        public function testClearKeyExist()
-		{
+        public function testClearKeyExist() {
             $session = new Session();
            
 			$value = 'bar';
@@ -205,15 +200,13 @@
         }
         
         
-        public function testClearFlashKeyDoesNotExist()
-		{
+        public function testClearFlashKeyDoesNotExist() {
             $session = new Session();
             $this->assertNull($session->getFlash('foo'));
             $this->assertFalse($session->clearFlash('foo'));  
         }
         
-        public function testClearFlashKeyExist()
-		{
+        public function testClearFlashKeyExist() {
             $session = new Session();
            
 			$value = 'bar';
@@ -224,15 +217,13 @@
             $this->assertFalse($session->hasFlash('foo'));
         }
         
-        public function testExistsKeyDoesNotExist()
-		{
+        public function testExistsKeyDoesNotExist() {
             $session = new Session();
             $this->assertNull($session->get('foo'));
             $this->assertFalse($session->exists('foo'));  
         }
         
-        public function testExistsKeyExist()
-		{
+        public function testExistsKeyExist() {
             $session = new Session();
            
 			$value = 'bar';
@@ -241,8 +232,7 @@
             $this->assertTrue($session->exists('foo'));
         }
         
-        public function testClearAll()
-		{
+        public function testClearAll() {
             $session = new Session();
             //Can not test because function "session_unset" and "session_destroy" are not availble in CLI
             $session->clearAll();

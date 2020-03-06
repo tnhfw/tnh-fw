@@ -26,7 +26,7 @@
 
 
         class FormValidation extends BaseClass {
-		 
+         
         /**
          * The form validation status
          * @var boolean
@@ -581,7 +581,7 @@
         protected function _getLabel($inputName) {
             return (array_key_exists($inputName, $this->_labels)) ? $this->_labels[$inputName] : $inputName;
         }
-		
+        
         /**
          * Peform validation for the rule "required"
          * @param  string $inputName the form field or data key name used
@@ -728,7 +728,7 @@
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
-    	
+        
         /**
          * Peform validation for the rule "less_than"
          * @param  string $inputName the form field or data key name used
@@ -741,7 +741,7 @@
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
-    	
+        
         /**
          * Peform validation for the rule "greater_than"
          * @param  string $inputName the form field or data key name used
@@ -754,7 +754,7 @@
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
             }
         }
-    	
+        
         /**
          * Peform validation for the rule "numeric"
          * @param  string $inputName the form field or data key name used
@@ -805,7 +805,7 @@
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
-		
+        
         /**
          * Peform validation for the rule "exists"
          * @param  string $inputName the form field or data key name used
@@ -854,7 +854,7 @@
                 $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
             }
         }
-    	
+        
         /**
          * Peform validation for the rule "is_unique_update"
          * @param  string $inputName the form field or data key name used

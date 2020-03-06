@@ -1,19 +1,21 @@
 <?php 
 
-	
-	class ControllerTest extends TnhTestCase
-	{	
+	/**
+     * Controller class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class ControllerTest extends TnhTestCase {	
 		
-		public function testGetInstance()
-		{
+		public function testGetInstance() {
 			$c = new Controller();
             $this->assertInstanceOf('Controller', $c);
             $this->assertNotNull(Controller::get_instance());
             $this->assertInstanceOf('Controller', Controller::get_instance());
 		}
         
-        public function testSetAppSupportedLanguages()
-		{
+        public function testSetAppSupportedLanguages() {
             $this->config->set('default_language', 'en');
             $this->config->set('languages', array('en'=>'english'));
             
@@ -26,8 +28,7 @@
             
 		}
         
-        public function testSetModuleNameUsingRouter()
-		{
+        public function testSetModuleNameUsingRouter() {
             $router = $this->getMockBuilder('Router')->getMock();
 			$router->expects($this->any())
                     ->method('getModule')
@@ -41,8 +42,7 @@
             $this->assertNotNull($c->moduleName);
 		}
         
-        public function testSetCacheFromParamOrConfigParamIsNotNull()
-		{
+        public function testSetCacheFromParamOrConfigParamIsNotNull() {
             $cache = $this->getMockBuilder('FileCache')->getMock();
             $cache->expects($this->any())
                     ->method('isSupported')
@@ -55,8 +55,7 @@
             $this->assertInstanceOf('FileCache', $c->cache);
 		}
         
-        public function testSetCacheFromParamOrConfigParamIsNull()
-		{
+        public function testSetCacheFromParamOrConfigParamIsNull() {
             $cache = $this->getMockBuilder('ApcCache')->getMock();
             $cache->expects($this->any())
                     ->method('isSupported')

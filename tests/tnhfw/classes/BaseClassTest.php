@@ -1,32 +1,33 @@
 <?php 
 
-	
-	class BaseClassTest extends TnhTestCase
-	{	
+	/**
+     * BaseClass class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group base
+     */
+	class BaseClassTest extends TnhTestCase {	
 		
-		public function testSetLoggerSimple()
-		{
+		public function testSetLoggerSimple() {
             $o = new BaseClass();
             $o->setLogger(null);
 			$this->assertNull($o->getLogger());
 		}
         
-        public function testSetLoggerFromParamOrCreate()
-		{
+        public function testSetLoggerFromParamOrCreate() {
             $o = new BaseClass();
             $o = $this->runPrivateProtectedMethod($o, 'setLoggerFromParamOrCreate', array(null));
             $this->assertInstanceOf('Log', $o->getLogger());
 		}
         
-        public function testSetDependenciesInstanceIsNull()
-		{
+        public function testSetDependenciesInstanceIsNull() {
             $o = new BaseClass();
             $o = $this->runPrivateProtectedMethod($o, 'setDependencyInstanceFromParamOrCreate', array('foo', null, 'Request'));
             $this->assertInstanceOf('Request', $o->foo);
 		}
         
-        public function testSetDependenciesInstanceIsNotNull()
-		{
+        public function testSetDependenciesInstanceIsNotNull() {
             $o = new BaseClass();//here logger already set to Class::BaseClass
             $o = $this->runPrivateProtectedMethod($o, 'setDependencyInstanceFromParamOrCreate', array('fooLogger', new Log()));
             $this->assertInstanceOf('Log', $o->fooLogger);

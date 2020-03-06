@@ -1,59 +1,63 @@
 <?php 
 
+	/**
+     * EventDispatcher class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group event
+     */
+	class EventDispatcherTest extends TnhTestCase {	
 	
-	class EventDispatcherTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
+		public static function setUpBeforeClass() {
             //some listeners using for test
             require_once TESTS_PATH . 'include/listeners_event_dispatcher_test.php';
 		}
 		
-		public function testAddListenerFirstTime()
-		{
+		public function testAddListenerFirstTime() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners('fooEvent'));
-            $d->addListener('fooEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
 			$this->assertNotEmpty($d->getListeners('fooEvent'));
 			$this->assertSame(1, count($d->getListeners('fooEvent')));
 		}
         
-        public function testAddListenerMoreTime()
-		{
+        public function testAddListenerMoreTime() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners('fooEvent'));
-            $d->addListener('fooEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
 			$this->assertSame(1, count($d->getListeners('fooEvent')));
-            $d->addListener('fooEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
             $this->assertNotEmpty($d->getListeners('fooEvent'));
             $this->assertSame(2, count($d->getListeners('fooEvent')));
 		}
         
-        public function testRemoveListenerEventNotExist()
-		{
+        public function testRemoveListenerEventNotExist() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners('fooEvent'));
-            $d->addListener('fooEvent', function($e){});
-            $d->removeListener('unknowEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->removeListener('unknowEvent', array($listener, 'emptyListener'));
 			$this->assertNotEmpty($d->getListeners('fooEvent'));
 			$this->assertSame(1, count($d->getListeners('fooEvent')));
 		}
         
-        public function testRemoveListenerEventExistListenerNotExist()
-		{
-            $correctListener = function($e){};
+        public function testRemoveListenerEventExistListenerNotExist() {
+            $listener = new ListenersEventDispatcherTest();
+            $correctListener = array($listener, 'emptyListener');
             $d = new EventDispatcher();
             $this->assertEmpty($d->getListeners('fooEvent'));
             $d->addListener('fooEvent', $correctListener);
-            $d->removeListener('fooEvent', function($e){});
+            $d->removeListener('fooEvent', array($listener, 'fooListener'));
 			$this->assertNotEmpty($d->getListeners('fooEvent'));
 			$this->assertSame(1, count($d->getListeners('fooEvent')));
 		}
         
-        public function testRemoveListenerEventAndListenerExist()
-		{
-            $correctListener = function($e){};
+        public function testRemoveListenerEventAndListenerExist() {
+            $listener = new ListenersEventDispatcherTest();
+            $correctListener = array($listener, 'emptyListener');
             $d = new EventDispatcher();
             $this->assertEmpty($d->getListeners('fooEvent'));
             $d->addListener('fooEvent', $correctListener);
@@ -63,12 +67,12 @@
 			$this->assertSame(0, count($d->getListeners('fooEvent')));
 		}
         
-        public function testRemoveAllListenerEventParamIsNull()
-		{
+        public function testRemoveAllListenerEventParamIsNull() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners());
-            $d->addListener('fooEvent', function($e){});
-            $d->addListener('barEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->addListener('barEvent', array($listener, 'emptyListener'));
             $this->assertNotEmpty($d->getListeners('fooEvent'));
             $this->assertNotEmpty($d->getListeners('barEvent'));
 			$this->assertSame(2, count($d->getListeners()));
@@ -78,12 +82,12 @@
             $this->assertSame(0, count($d->getListeners()));
 		}
         
-        public function testRemoveAllListenerEventParamIsNotNullAndExist()
-		{
+        public function testRemoveAllListenerEventParamIsNotNullAndExist() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners());
-            $d->addListener('fooEvent', function($e){});
-            $d->addListener('barEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->addListener('barEvent', array($listener, 'emptyListener'));
             $this->assertNotEmpty($d->getListeners('fooEvent'));
             $this->assertNotEmpty($d->getListeners('barEvent'));
 			$this->assertSame(2, count($d->getListeners()));
@@ -93,12 +97,12 @@
             $this->assertSame(1, count($d->getListeners()));
 		}
         
-        public function testRemoveAllListenerEventParamIsNotNullAndNotExist()
-		{
+        public function testRemoveAllListenerEventParamIsNotNullAndNotExist() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners());
-            $d->addListener('fooEvent', function($e){});
-            $d->addListener('barEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->addListener('barEvent', array($listener, 'emptyListener'));
             $this->assertNotEmpty($d->getListeners('fooEvent'));
             $this->assertNotEmpty($d->getListeners('barEvent'));
 			$this->assertSame(2, count($d->getListeners()));
@@ -109,46 +113,44 @@
 		}
   
         
-        public function testGetListenersEventParamIsNull()
-		{
+        public function testGetListenersEventParamIsNull() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners());
-            $d->addListener('fooEvent', function($e){});
-            $d->addListener('barEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->addListener('barEvent', array($listener, 'emptyListener'));
             $this->assertSame(2, count($d->getListeners(null)));
 		}
         
-        public function testGetListenersEventParamIsNotNullAndExist()
-		{
+        public function testGetListenersEventParamIsNotNullAndExist() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners());
-            $d->addListener('fooEvent', function($e){});
-            $d->addListener('barEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->addListener('barEvent', array($listener, 'emptyListener'));
             $this->assertSame(1, count($d->getListeners('barEvent')));
 		}
         
-        public function testGetListenersEventParamIsNotNullAndNotExist()
-		{
+        public function testGetListenersEventParamIsNotNullAndNotExist() {
             $d = new EventDispatcher();
+            $listener = new ListenersEventDispatcherTest();
             $this->assertEmpty($d->getListeners());
-            $d->addListener('fooEvent', function($e){});
-            $d->addListener('barEvent', function($e){});
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
+            $d->addListener('barEvent', array($listener, 'emptyListener'));
             $this->assertSame(2, count($d->getListeners()));
             $this->assertSame(0, count($d->getListeners('unknowEvent')));
 		}
         
-        public function testDispatchParamEventIsNullOrNotInstanceOfEventInfo()
-		{
-            $listener = function($e){
-                $this->assertInstanceOf('EventInfo', $e);
-            };
+        public function testDispatchParamEventIsNullOrNotInstanceOfEventInfo() {
+            $listener = new ListenersEventDispatcherTest();
             $d = new EventDispatcher();
-            $d->addListener('fooEvent', $listener);
+            $d->addListener('fooEvent', array($listener, 'emptyListener'));
             $d->dispatch('fooEvent');
+            //fuck
+            $this->assertTrue(true);
         }
         
-        public function testDispatchParamEventIsStopped()
-		{
+        public function testDispatchParamEventIsStopped() {
             $listener = $this->getMockBuilder('ListenersEventDispatcherTest')->getMock();
             $listener->expects($this->never())
                      ->method('stopEventListener');
@@ -160,8 +162,7 @@
             $d->dispatch($event);
         }
         
-        public function testDispatchParamEventIsStoppedDuringListenerCall()
-		{
+        public function testDispatchParamEventIsStoppedDuringListenerCall() {
             $listener = new ListenersEventDispatcherTest();
                     
             $d = new EventDispatcher();
@@ -172,8 +173,7 @@
             $this->assertSame('bar', $result->payload);
         }
         
-        public function testDispatchParamEventNeedReturnBack()
-		{
+        public function testDispatchParamEventNeedReturnBack() {
             $listener = new ListenersEventDispatcherTest();
                     
             $d = new EventDispatcher();
@@ -184,8 +184,7 @@
             $this->assertSame('foo', $result->payload);
         }
         
-        public function testDispatchParamEventNeedReturnBackButNoReturn()
-		{
+        public function testDispatchParamEventNeedReturnBackButNoReturn() {
             $listener = new ListenersEventDispatcherTest();
                     
             $d = new EventDispatcher();
@@ -196,16 +195,14 @@
             $this->assertNull($result);
         }
         
-        public function testDispatchNoListenerForEvent()
-		{
+        public function testDispatchNoListenerForEvent() {
             $event = new EventInfo('fooEvent');
             $d = new EventDispatcher();
             $d->dispatch($event);
             $this->assertSame($event->payload, $event->payload);
         }
         
-        public function testDispatchNoListenerForEventAndNeedReturnBack()
-		{
+        public function testDispatchNoListenerForEventAndNeedReturnBack() {
             $event = new EventInfo('fooEvent', null, true);
             $d = new EventDispatcher();
             $result = $d->dispatch($event);

@@ -1,11 +1,14 @@
 <?php 
 
-	
-	class AssetsTest extends TnhTestCase
-	{	
+	/**
+     * Assets library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class AssetsTest extends TnhTestCase {	
 		
-		public function testPathFileExists()
-		{
+		public function testPathFileExists() {
             $a = new Assets();
             
             $expected = ASSETS_PATH . 'examplepath/example.css';
@@ -19,14 +22,12 @@
             $this->assertSame($expected, $a->path('examplepath/example.css'));
 		}
         
-        public function testPathFileNotExist()
-		{
+        public function testPathFileNotExist() {
             $a = new Assets();
             $this->assertNull($a->path('foopath/foofile.ext'));
 		}
         
-        public function testCssFileExists()
-		{
+        public function testCssFileExists() {
             $a = new Assets();
             
             $expected = ASSETS_PATH . 'css/test.css';
@@ -43,15 +44,13 @@
             $this->assertSame($expected, $a->css('test.css'));
 		}
         
-        public function testCssFileNotExist()
-		{
+        public function testCssFileNotExist() {
             $a = new Assets();
             $this->assertNull($a->css('foofile.css'));
             $this->assertNull($a->css('foofile'));
 		}
         
-        public function testJsFileExists()
-		{
+        public function testJsFileExists() {
             $a = new Assets();
             
             $expected = ASSETS_PATH . 'js/test.js';
@@ -68,15 +67,13 @@
             $this->assertSame($expected, $a->js('test.js'));
 		}
         
-        public function testJsFileNotExist()
-		{
+        public function testJsFileNotExist() {
             $a = new Assets();
             $this->assertNull($a->js('foofile.js'));
             $this->assertNull($a->js('foofile'));
 		}
         
-        public function testImageFileExists()
-		{
+        public function testImageFileExists() {
             $a = new Assets();
             
             $expected = ASSETS_PATH . 'images/logo.png';
@@ -90,8 +87,7 @@
             $this->assertSame($expected, $a->img('logo.png'));
 		}
         
-        public function testImageFileNotExist()
-		{
+        public function testImageFileNotExist() {
             $a = new Assets();
             $this->assertNull($a->img('foofile.jpg'));
 		}

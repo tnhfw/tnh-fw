@@ -1,8 +1,13 @@
 <?php 
 
-	
-	class SecurityTest extends TnhTestCase
-	{	
+	/**
+     * Security class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group security
+     */
+	class SecurityTest extends TnhTestCase {	
 	
 		
 		protected function setUp()
@@ -14,15 +19,13 @@
 			$this->config->set('csrf_expire', 100);
         }
         
-		public function testGenerateCSRF()
-		{
+		public function testGenerateCsrf() {
             $csrf = Security::generateCSRF();
             $this->assertNotEmpty($csrf);
 		}
         
         
-        public function testGenerateCSRFWhenValueAlreadyExists()
-		{
+        public function testGenerateCsrfWhenValueAlreadyExists() {
             $exists = uniqid();
             $_SESSION['kcsrf'] =  $exists;
             $_SESSION['csrf_expire'] = time() + 600;
@@ -32,13 +35,12 @@
             $this->assertSame($csrf, $exists);
 		}
         
-        public function testValidateCSRFSessionValuesNotExists()
-		{
+        public function testValidateCsrfSessionValuesNotExists() {
             $_SESSION = array();
             $this->assertFalse(Security::validateCSRF());
 		}
         
-        public function testValidateCSRFInvalidCsrfValue()
+        public function testValidateCsrfInvalidCsrfValue()
         {
             $correct = uniqid();
             $_SESSION['kcsrf'] =  $correct;
@@ -51,8 +53,7 @@
             $this->assertFalse(Security::validateCSRF());
         }
         
-        public function testValidateCSRF()
-		{
+        public function testValidateCsrf() {
             $correct = uniqid();
             $_POST['kcsrf'] = $correct;
             

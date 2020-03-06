@@ -1,10 +1,14 @@
 <?php 
-		
-	class FormTest extends TnhTestCase
-	{
+	
+    /**
+     * Form library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class FormTest extends TnhTestCase {
 
-		public function testOpen()
-		{
+		public function testOpen() {
             $f = new Form();
             $expected = '<form action = "" method = "POST" accept-charset = "UTF-8">';
 			$this->assertSame($expected, $f->open());
@@ -19,7 +23,7 @@
             $expected = '<form action = "'.$base_url.'controller/method" method = "POST" accept-charset = "UTF-8">';
 			$this->assertSame($expected, $f->open('controller/method'));
             
-            //generate CSRF
+            //When CSRF is enabled
             $this->config->set('csrf_enable', true);
 			$this->config->set('csrf_key', 'kcsrf');
 			$this->config->set('csrf_expire', 100);
@@ -30,24 +34,28 @@
             
             $expected = '<form action = "" method = "POST" accept-charset = "UTF-8"><input type = "hidden" name = "kcsrf" value = "'.$csrfValue.'"/>';
 			$this->assertSame($expected, $f->open());
+            
+            //using charset in config
+            $this->config->set('charset', 'foo');
+            $this->config->set('csrf_enable', false);
+            $expected = '<form action = "" method = "POST" accept-charset = "foo">';
+			$this->assertSame($expected, $f->open());
+            
 		}
         
-        public function testOpenMultipart()
-		{
+        public function testOpenMultipart() {
             $f = new Form();
             $expected = '<form action = "" method = "POST" accept-charset = "UTF-8" enctype = "multipart/form-data">';
 			$this->assertSame($expected, $f->openMultipart());
 		}
         
-        public function testClose()
-		{
+        public function testClose() {
             $f = new Form();
             $expected = '</form>';
 			$this->assertSame($expected, $f->close());
 		}
         
-        public function testFieldset()
-		{
+        public function testFieldset() {
             $f = new Form();
             $expected = '<fieldset>';
 			$this->assertSame($expected, $f->fieldset());
@@ -65,15 +73,13 @@
 			$this->assertSame($expected, $f->fieldset('foo', array('class' => 'baz'), array('id' => 'bar')));
 		}
         
-        public function testFieldsetClose()
-		{
+        public function testFieldsetClose() {
             $f = new Form();
             $expected = '</fieldset>';
 			$this->assertSame($expected, $f->fieldsetClose());
 		}
         
-        public function testError()
-		{
+        public function testError() {
             $fieldName = 'fooname';
             
             $fv = $this->getMockBuilder('FormValidation')->getMock();
@@ -92,8 +98,7 @@
 			$this->assertSame($expected, $f->error($fieldName));
 		}
         
-        public function testValue()
-		{
+        public function testValue() {
             $fieldName = 'fooname';
             $fieldValue = 'foovalue';
             $_POST[$fieldName] = $fieldValue;
@@ -112,8 +117,7 @@
             $this->assertSame($fieldValue, $f->value($fieldName));
 		}
         
-        public function testValueNotExist()
-		{
+        public function testValueNotExist() {
            
             $request = $this->getMockBuilder('Request')->getMock();
 			$request->expects($this->any())
@@ -127,8 +131,7 @@
             $this->assertNull($f->value('foobarbaz'));
 		}
         
-        public function testLabel()
-		{
+        public function testLabel() {
             $f = new Form();
             $expected = '<label>foo</label>';
 			$this->assertSame($expected, $f->label('foo'));
@@ -143,8 +146,7 @@
 		}
         
         
-        public function testInput()
-		{
+        public function testInput() {
             $f = new Form();
             //default value
             $expected = '<input type = "text" name = "foo" value = ""/>';
@@ -155,8 +157,7 @@
 			$this->assertSame($expected, $f->input('foo', '', array('class' => 'barbar')));
 		}
         
-        public function testText()
-		{
+        public function testText() {
             $f = new Form();
             //default value
             $expected = '<input type = "text" name = "foo" value = ""/>';
@@ -167,8 +168,7 @@
 			$this->assertSame($expected, $f->text('foo', '', array('class' => 'barbar')));
 		}
         
-        public function testPassword()
-		{
+        public function testPassword() {
             $f = new Form();
             //default value
             $expected = '<input type = "password" name = "foo" value = ""/>';
@@ -179,8 +179,7 @@
 			$this->assertSame($expected, $f->password('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testRadio()
-		{
+        public function testRadio() {
             $f = new Form();
             //default value
             $expected = '<input type = "radio" name = "foo" value = ""/>';
@@ -195,8 +194,7 @@
 			$this->assertSame($expected, $f->radio('foo', '', true));
 		}
         
-        public function testCheckbox()
-		{
+        public function testCheckbox() {
             $f = new Form();
             //default value
             $expected = '<input type = "checkbox" name = "foo" value = ""/>';
@@ -211,8 +209,7 @@
 			$this->assertSame($expected, $f->checkbox('foo', '', true));
 		}
         
-        public function testNumber()
-		{
+        public function testNumber() {
             $f = new Form();
             //default value
             $expected = '<input type = "number" name = "foo" value = ""/>';
@@ -223,8 +220,7 @@
 			$this->assertSame($expected, $f->number('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testPhone()
-		{
+        public function testPhone() {
             $f = new Form();
             //default value
             $expected = '<input type = "phone" name = "foo" value = ""/>';
@@ -235,8 +231,7 @@
 			$this->assertSame($expected, $f->phone('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testEmail()
-		{
+        public function testEmail() {
             $f = new Form();
             //default value
             $expected = '<input type = "email" name = "foo" value = ""/>';
@@ -247,8 +242,7 @@
 			$this->assertSame($expected, $f->email('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testSearch()
-		{
+        public function testSearch() {
             $f = new Form();
             //default value
             $expected = '<input type = "search" name = "foo" value = ""/>';
@@ -259,8 +253,7 @@
 			$this->assertSame($expected, $f->search('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testHidden()
-		{
+        public function testHidden() {
             $f = new Form();
             //default value
             $expected = '<input type = "hidden" name = "foo" value = ""/>';
@@ -271,8 +264,7 @@
 			$this->assertSame($expected, $f->hidden('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testFile()
-		{
+        public function testFile() {
             $f = new Form();
             //default value
             $expected = '<input type = "file" name = "foo" value = ""/>';
@@ -283,8 +275,7 @@
 			$this->assertSame($expected, $f->file('foo', array('accept' => 'images/*', 'id' => 'baz')));
 		}
         
-        public function testButton()
-		{
+        public function testButton() {
             $f = new Form();
             //default value
             $expected = '<input type = "button" name = "foo" value = ""/>';
@@ -295,8 +286,7 @@
 			$this->assertSame($expected, $f->button('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testReset()
-		{
+        public function testReset() {
             $f = new Form();
             //default value
             $expected = '<input type = "reset" name = "foo" value = ""/>';
@@ -307,8 +297,7 @@
 			$this->assertSame($expected, $f->reset('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testSubmit()
-		{
+        public function testSubmit() {
             $f = new Form();
             //default value
             $expected = '<input type = "submit" name = "foo" value = ""/>';
@@ -319,8 +308,7 @@
 			$this->assertSame($expected, $f->submit('foo', '', array('class' => 'barbar', 'id' => 'baz')));
 		}
         
-        public function testTextarea()
-		{
+        public function testTextarea() {
             $f = new Form();
             $expected = '<textarea name = "foo"></textarea>';
 			$this->assertSame($expected, $f->textarea('foo'));
@@ -330,8 +318,7 @@
 			$this->assertSame($expected, $f->textarea('foo', 'bar', array('class' => 'baz')));
 		}
         
-        public function testSelect()
-		{
+        public function testSelect() {
             $f = new Form();
             //Default
             $expected = '<select name = "foo"><option value = "" selected></option></select>';

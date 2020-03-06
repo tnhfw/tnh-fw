@@ -280,6 +280,5 @@
 	* Register the tests autoload
 	*/
 	spl_autoload_register('tests_autoload');
-	
-	
-	
+    
+    

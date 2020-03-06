@@ -1,9 +1,12 @@
 <?php 
 
-	use PHPUnit\Framework\TestCase;
-
-	class ModuleTest extends TnhTestCase
-	{	
+	 /**
+     * Module class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class ModuleTest extends TnhTestCase {	
 		
 		protected function setUp()
 		{

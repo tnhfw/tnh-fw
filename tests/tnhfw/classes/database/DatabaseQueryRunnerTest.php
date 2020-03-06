@@ -1,16 +1,18 @@
 <?php 
 
+	/**
+     * DatabaseQueryRunner class tests
+     *
+     * @group core
+     * @group database
+     */
+	class DatabaseQueryRunnerTest extends TnhTestCase {	
 	
-	class DatabaseQueryRunnerTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
+		public static function setUpBeforeClass() {
 		
 		}
 		
-		public static function tearDownAfterClass()
-		{
+		public static function tearDownAfterClass() {
 			
 		}
 		
@@ -19,12 +21,10 @@
             parent::setUp();
         }
 
-		protected function tearDown()
-		{
+		protected function tearDown() {
 		}
 		
-		public function testNotYet()
-		{
+		public function testNotYet() {
 			$this->markTestSkipped();
 		}
 

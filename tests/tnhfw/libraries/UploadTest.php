@@ -1,30 +1,14 @@
 <?php 
 
+	/**
+     * Upload library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class UploadTest extends TnhTestCase {	
 	
-	class UploadTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
-		
-		}
-		
-		public static function tearDownAfterClass()
-		{
-			
-		}
-		
-		protected function setUp()
-        {
-            parent::setUp();
-        }
-
-		protected function tearDown()
-		{
-		}
-		
-		public function testNotYet()
-		{
+		public function testNotYet() {
 			$this->markTestSkipped();
 		}
 

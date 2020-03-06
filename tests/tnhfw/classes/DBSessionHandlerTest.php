@@ -1,7 +1,13 @@
 <?php 
 
-	class DBSessionHandlerTest extends TnhTestCase
-	{	
+    /**
+     * DBSessionHandler class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group session
+     */
+	class DBSessionHandlerTest extends TnhTestCase {	
 	
 		private $db = null;
 		
@@ -20,26 +26,22 @@
             $this->db->setQueryRunner($qr);
 		}
 		
-		public static function setUpBeforeClass()
-		{
+		public static function setUpBeforeClass() {
 			require APPS_MODEL_PATH . 'DBSessionModel.php';
 		}
 		
 		
-		public static function tearDownAfterClass()
-		{
+		public static function tearDownAfterClass() {
 			
 		}
 		
-		protected function setUp()
-		{
+		protected function setUp() {
 			$this->model = new DBSessionModel($this->db);
             //to prevent old data conflict
 			$this->model->truncate();
 		}
 
-		protected function tearDown()
-		{
+		protected function tearDown() {
 		}
 
 		

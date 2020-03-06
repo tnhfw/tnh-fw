@@ -1,8 +1,12 @@
 <?php 
 
-	
-	class CommonTest extends TnhTestCase
-	{	
+	/**
+     * Common functions tests
+     *
+     * @group core
+     * @group commons
+     */
+	class CommonTest extends TnhTestCase {	
 
 		public function testFunctionGetConfigKeyNotExist(){
 			$key = 'foo';

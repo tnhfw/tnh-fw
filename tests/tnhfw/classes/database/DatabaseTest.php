@@ -1,38 +1,21 @@
 <?php 
 
-	
-	class DatabaseTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
+	/**
+     * Database class tests
+     *
+     * @group core
+     * @group database
+     */
+	class DatabaseTest extends TnhTestCase {	
 		
-		}
-		
-		public static function tearDownAfterClass()
-		{
-			
-		}
-		
-		protected function setUp()
-        {
-            parent::setUp();
-        }
-
-		protected function tearDown()
-		{
-		}
-		
-		public function testConnectToDatabaseSuccessfully()
-		{
+		public function testConnectToDatabaseSuccessfully() {
             $cfg = $this->getDbConfig();
             $db = new Database($cfg, false);
             $isConnected = $db->connect();
             $this->assertTrue($isConnected);
 		}
         
-        public function testCannotConnectToDatabase()
-		{
+        public function testCannotConnectToDatabase() {
              $db = new Database(array(
                                   'driver' => '',
                                   'username' => '',

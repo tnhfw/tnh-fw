@@ -1,12 +1,14 @@
 <?php 
 
-	
-	class BrowserTest extends TnhTestCase
-	{	
-	
+	/**
+     * Browser library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class BrowserTest extends TnhTestCase {	
 		
-		public function testConstructorWithAutoDetectUserAgent()
-		{
+		public function testConstructorWithAutoDetectUserAgent() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36';
             $_SERVER['HTTP_USER_AGENT'] = $userAgentString;
             
@@ -14,8 +16,7 @@
             $this->assertSame($userAgentString, $b->getUserAgent());
 		}
         
-        public function testConstructorWithUserAgentInParam()
-		{
+        public function testConstructorWithUserAgentInParam() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1; rv:40.0) Gecko/20100101 Firefox/40.0';
             $_SERVER['HTTP_USER_AGENT'] = $userAgentString;
             
@@ -23,8 +24,7 @@
             $this->assertSame($userAgentString, $b->getUserAgent());
 		}
         
-        public function testGetPlatform()
-		{
+        public function testGetPlatform() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko';
             $expected = 'Windows 7';
             $b = new Browser($userAgentString);
@@ -41,8 +41,7 @@
             $this->assertSame($expected, $b->getPlatform());
 		}
         
-        public function testGetVersion()
-		{
+        public function testGetVersion() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36';
             $expected = '40.0.2214.115';
             $b = new Browser($userAgentString);
@@ -59,8 +58,7 @@
             $this->assertSame($expected, $b->getVersion());
 		}
         
-        public function testIsMobile()
-		{
+        public function testIsMobile() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36';
             $b = new Browser($userAgentString);
             $this->assertFalse($b->isMobile());
@@ -76,8 +74,7 @@
             $this->assertTrue($b->isMobile());
 		}
         
-        public function testIsRobot()
-		{
+        public function testIsRobot() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36';
             $b = new Browser($userAgentString);
             $this->assertFalse($b->isRobot());
@@ -92,8 +89,7 @@
             $this->assertTrue($b->isRobot());
 		}
         
-        public function testIsFacebook()
-		{
+        public function testIsFacebook() {
             $userAgentString = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36';
             $b = new Browser($userAgentString);
             $this->assertFalse($b->isFacebook());

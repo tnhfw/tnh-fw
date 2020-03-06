@@ -1,16 +1,19 @@
 <?php 
 
-	
-	class LogTest extends TnhTestCase
-	{	
+	/**
+     * Log class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class LogTest extends TnhTestCase {	
         
         public function __construct(){
             parent::__construct();
             $this->config->set('log_logger_name', array());
         }
 		
-		protected function setUp()
-		{
+		protected function setUp() {
             //need setup for each test
             $this->vfsRoot = vfsStream::setup();
             $this->vfsLogPath = vfsStream::newDirectory('logs')->at($this->vfsRoot);
@@ -20,20 +23,17 @@
             }
 		}
 
-		protected function tearDown()
-		{
+		protected function tearDown() {
 		}
         
-        public function testSetLoggerName()
-		{
+        public function testSetLoggerName() {
             $log = new Log();
             $this->assertSame('ROOT_LOGGER', $log->getLogger());
             $log->setLogger('MY_LOGGER_NAME');
             $this->assertSame('MY_LOGGER_NAME', $log->getLogger());
 		}
         
-        public function testCheckAndSetLogFileDirectoryConfigLogPathIsEmpty()
-		{
+        public function testCheckAndSetLogFileDirectoryConfigLogPathIsEmpty() {
             $this->config->set('log_save_path', '');
             $log = new Log();
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
@@ -44,8 +44,7 @@
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
 		}
         
-        public function testCheckAndSetLogFileDirectoryConfigLogPathIsSetButNotExist()
-		{
+        public function testCheckAndSetLogFileDirectoryConfigLogPathIsSetButNotExist() {
             $this->config->set('log_save_path', 'path/foo/bar/');
             $log = new Log();
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
@@ -56,8 +55,7 @@
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
 		}
 		
-		public function testLogLevelNone()
-		{
+		public function testLogLevelNone() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
@@ -69,8 +67,7 @@
 		}
         
         
-        public function testLogLevelDebug()
-		{
+        public function testLogLevelDebug() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
@@ -84,8 +81,7 @@
         
         
         
-        public function testLogLevelInfo()
-		{
+        public function testLogLevelInfo() {
             
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
@@ -100,8 +96,7 @@
         
         
         
-        public function testLogLevelWarning()
-		{
+        public function testLogLevelWarning() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
@@ -113,8 +108,7 @@
             $this->assertContains('Warning message', $content);
 		}
         
-        public function testLogLevelError()
-		{
+        public function testLogLevelError() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
@@ -126,8 +120,7 @@
             $this->assertContains('Error message', $content);
 		}
         
-        public function testLogLevelFatal()
-		{
+        public function testLogLevelFatal() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             

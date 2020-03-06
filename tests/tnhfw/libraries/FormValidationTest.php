@@ -2,12 +2,18 @@
 
     /**
     * Function used in callback validation
+    * @see above for method FormValidationTest::testRuleCallback
     */
     function callback_validation($value){
          return strlen($value) >= 3;
     }
     
-    
+    /**
+     * FormValidation library class tests
+     *
+     * @group core
+     * @group libraries
+     */
     class FormValidationTest extends TnhTestCase
     {   
         
@@ -126,7 +132,7 @@
         }
         
         
-        public function testValidateCSRF()
+        public function testValidateCsrf()
         {
              //generate CSRF
             $this->config->set('csrf_enable', true);

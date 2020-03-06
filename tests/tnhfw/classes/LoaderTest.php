@@ -1,11 +1,14 @@
 <?php 
 
-	
-	class LoaderTest extends TnhTestCase
-	{	
+	/**
+     * Loader class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class LoaderTest extends TnhTestCase {	
 		
-		public function testLoadModel()
-		{
+		public function testLoadModel() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->model('DBSessionModel');
@@ -23,8 +26,7 @@
             $this->assertAttributeInstanceOf('DBSessionModel', 'dbsessionmodel', $obj);
 		}
         
-        public function testLoadModelInMobule()
-		{
+        public function testLoadModelInMobule() {
             $l = new Loader();
             $obj = & get_instance();
             $m = new Module();
@@ -36,16 +38,14 @@
             $this->assertInstanceOf('ModuleModelTest', $obj->mod);
 		}
         
-        public function testLoadModelClassNameNotSameFileName()
-		{
+        public function testLoadModelClassNameNotSameFileName() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->model('ModelClassNotSameFileName');
             $this->assertFalse(isset($obj->modelclassnotsamefilename));
 		}
         
-        public function testLoadModelInModuleUsingModuleNameInController()
-		{
+        public function testLoadModelInModuleUsingModuleNameInController() {
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
             $l = new Loader();
@@ -58,16 +58,14 @@
             $this->assertInstanceOf('ModuleModelTest', $obj->mod);
 		}
         
-         public function testLoadModelNotExists()
-		{
+         public function testLoadModelNotExists() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->model('UnkownModel');
             $this->assertFalse(isset($obj->unkownmodel));   
 		}
         
-        public function testLoadLibrary()
-		{
+        public function testLoadLibrary() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->library('LibraryTest');
@@ -83,32 +81,28 @@
             $this->assertInstanceOf('LibraryTest', $obj->fooInstance);
 		}
         
-        public function testLoadDatabase()
-		{
+        public function testLoadDatabase() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->library('Database');
             $this->assertInstanceOf('Database', $obj->database);
 		}
         
-        public function testLoadSystemLibrary()
-		{
+        public function testLoadSystemLibrary() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->library('Form');
             $this->assertInstanceOf('Form', $obj->form);
 		}
         
-        public function testLoadLibraryClassNameNotSameFileName()
-		{
+        public function testLoadLibraryClassNameNotSameFileName() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->library('LibraryClassNotSameFileName');
             $this->assertFalse(isset($obj->libraryclassnotsamefilename));
 		}
         
-         public function testLoadLibraryInMobule()
-		{
+         public function testLoadLibraryInMobule() {
             $l = new Loader();
             $obj = & get_instance();
             $m = new Module();
@@ -120,8 +114,7 @@
             $this->assertInstanceOf('ModuleLibraryTest', $obj->mod);
 		}
         
-        public function testLoadLibraryInModuleUsingModuleNameInController()
-		{
+        public function testLoadLibraryInModuleUsingModuleNameInController() {
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
             $m = new Module();
@@ -135,16 +128,14 @@
 		}
         
         
-        public function testLoadLibraryNotExists()
-		{
+        public function testLoadLibraryNotExists() {
             $l = new Loader();
             $obj = & get_instance();
 			$l->library('UnkownLibrary');
             $this->assertFalse(isset($obj->unkownlibrary));   
 		}
         
-        public function testLoadFunction()
-		{
+        public function testLoadFunction() {
             $l = new Loader();
             $l->functions('test');
             $this->assertTrue(is_callable('foo_test'));
@@ -153,8 +144,7 @@
             $this->assertTrue(is_callable('foo_test'));
 		}
         
-        public function testLoadFunctionInModule()
-		{
+        public function testLoadFunctionInModule() {
             $m = new Module();
             $m->init();
             $l = new Loader();
@@ -165,8 +155,7 @@
             $this->assertTrue(is_callable('foo_module_test'));
 		}
         
-        public function testLoadFunctionInModuleUsingModuleNameInController()
-		{
+        public function testLoadFunctionInModuleUsingModuleNameInController() {
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
             $m = new Module();
@@ -179,16 +168,14 @@
             $this->assertTrue(is_callable('foo_module_test'));
 		}
         
-        public function testLoadFunctionNotExists()
-		{
+        public function testLoadFunctionNotExists() {
             $l = new Loader();
             $l->functions('unkown_function');
             $this->assertTrue(true);   
 		}
         
         
-        public function testLoadConfig()
-		{
+        public function testLoadConfig() {
             $l = new Loader();
             $l->config('test');
             $this->assertSame('bar', $this->config->get('cfg_test'));
@@ -199,8 +186,7 @@
         
         
         
-        public function testLoadConfigInModule()
-		{
+        public function testLoadConfigInModule() {
             $m = new Module();
             $m->init();
             $l = new Loader();
@@ -212,8 +198,7 @@
 		}
         
         
-        public function testLoadConfigInModuleUsingModuleNameInController()
-		{
+        public function testLoadConfigInModuleUsingModuleNameInController() {
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
             
@@ -228,16 +213,14 @@
 		}
         
         
-        public function testLoadConfigNotExists()
-		{
+        public function testLoadConfigNotExists() {
             $l = new Loader();
             $l->config('unkown_config');
             $this->assertTrue(true);   
 		}
         
         
-        public function testLoadLang()
-		{
+        public function testLoadLang() {
             
             $this->config->set('default_language', 'en');
             $obj = & get_instance();
@@ -254,8 +237,7 @@
             $this->assertSame('foo lang', $lg->get('l_test'));
 		}
         
-        public function testLoadLangInModule()
-		{
+        public function testLoadLangInModule() {
             
             $this->config->set('default_language', 'en');
             $obj = & get_instance();
@@ -270,8 +252,7 @@
             $this->assertSame('foo module lang', $lg->get('l_module'));
 		}
         
-        public function testLoadLangInModuleUsingModuleNameInController()
-		{
+        public function testLoadLangInModuleUsingModuleNameInController() {
             $this->config->set('default_language', 'en');
             
             $obj = & get_instance();
@@ -289,8 +270,7 @@
             $this->assertSame('foo module lang', $lg->get('l_module'));
 		}
         
-        public function testLoadLangUsingAppLangFromCookie()
-		{
+        public function testLoadLangUsingAppLangFromCookie() {
             $_COOKIE['clang'] = 'en';
             
             $this->config->set('language_cookie_name', 'clang');
@@ -310,8 +290,7 @@
 		}
         
         
-        public function testLoadLangNotExists()
-		{
+        public function testLoadLangNotExists() {
             $l = new Loader();
             $l->lang('unkown_config');
             $this->assertTrue(true);   

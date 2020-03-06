@@ -1,33 +1,34 @@
 <?php 
 
-	
-	class BaseStaticClassTest extends TnhTestCase
-	{	
+	/**
+     * BaseStaticClass class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group base
+     */
+	class BaseStaticClassTest extends TnhTestCase {	
 		
-		public function testGetLoggerDefault()
-		{
+		public function testGetLoggerDefault() {
             $logger = BaseStaticClass::getLogger();
 			$this->assertInstanceOf('Log', $logger);
             $this->assertEquals('Class::BaseStaticClass', $logger->getLogger());
 		}
         
-        public function testGetLoggerWhenIsNull()
-		{
+        public function testGetLoggerWhenIsNull() {
             BaseStaticClass::setLogger(null);
             $logger = BaseStaticClass::getLogger();
             $this->assertInstanceOf('Log', $logger);
             $this->assertEquals('Class::BaseStaticClass', $logger->getLogger());
 		}
         
-        public function testSetLogger()
-		{
+        public function testSetLogger() {
             $logger = BaseStaticClass::setLogger(new Log());
 			$this->assertInstanceOf('Log', $logger);
             $this->assertEquals('ROOT_LOGGER', $logger->getLogger());
 		}
         
-        public function testSetLoggerUsingLogInstanceWithLoggerNameSet()
-		{
+        public function testSetLoggerUsingLogInstanceWithLoggerNameSet() {
             $log = new Log();
             $log->setLogger('FOO');
             $logger = BaseStaticClass::setLogger($log);

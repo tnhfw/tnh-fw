@@ -1,11 +1,14 @@
 <?php 
 
-	
-	class LangTest extends TnhTestCase
-	{	
+	/**
+     * Lang class tests
+     *
+     * @group core
+     * @group core_classes
+     */
+	class LangTest extends TnhTestCase {	
 		
-		public function testGetAll()
-		{
+		public function testGetAll() {
             $l = new Lang();
 			$this->assertEmpty($l->getAll());
             $l->set('name', 'Your name');
@@ -13,8 +16,7 @@
             $this->assertSame(1, count($l->getAll()));
 		}
         
-        public function testSet()
-		{
+        public function testSet() {
             $l = new Lang();
 			$this->assertEmpty($l->getAll());
             $l->set('name', 'Your name');
@@ -23,8 +25,7 @@
             $this->assertSame(1, count($l->getAll()));
 		}
         
-        public function testGet()
-		{
+        public function testGet() {
             $l = new Lang();
 			$this->assertSame('LANGUAGE_ERROR', $l->get('unknowKey'));
             $this->assertSame('default', $l->get('unknowKey', 'default'));
@@ -32,15 +33,13 @@
             $this->assertSame('bar', $l->get('foo'));
 		}
         
-        public function testIsValid()
-		{
+        public function testIsValid() {
             $l = new Lang();
 			$this->assertFalse($l->isValid('unknow'));
 			$this->assertTrue($l->isValid('en'));
 		}
         
-        public function testAddLang()
-		{
+        public function testAddLang() {
             $l = new Lang();
             $l->addLang('foo', 'Foo lang');
             $this->assertEmpty($l->getSupported());
@@ -55,8 +54,7 @@
             $this->assertContains('Foo lang', $l->getSupported());
 		}
         
-        public function testAddLangMessages()
-		{
+        public function testAddLangMessages() {
             $l = new Lang();
             $this->assertEmpty($l->getAll());
             $l->addLangMessages(array(
@@ -71,8 +69,7 @@
             $this->assertSame(3, count($l->getAll()));
 		}
         
-        public function testAppLangUsingCookieValue()
-		{
+        public function testAppLangUsingCookieValue() {
             $_COOKIE['clang'] = 'en';
             
             $this->config->set('language_cookie_name', 'clang');

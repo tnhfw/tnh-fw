@@ -1,18 +1,19 @@
 <?php 
 
-	
-	class EmailTest extends TnhTestCase
-	{	
-	
+	/**
+     * Email library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class EmailTest extends TnhTestCase {	
 		
-		public function testConstructor()
-		{
+		public function testConstructor() {
             $e = new Email(); 
 			$this->assertInstanceOf('Email', $e);
 		}
         
-        public function testSetFrom()
-		{
+        public function testSetFrom() {
             $email = 'foo@bar.com';
             $name = null;
             
@@ -29,8 +30,7 @@
             $this->assertSame(2, count($e->getHeaders()));
 		}
         
-        public function testSetTo()
-		{
+        public function testSetTo() {
             $email = 'foo@bar.com';
             $name = null;
             
@@ -46,8 +46,7 @@
 			$this->assertSame(2, count($e->getTo()));
 		}
 
-        public function testSetTos()
-		{
+        public function testSetTos() {
             $emails = array('foo@bar.com', 'baz' => 'baz@foo.com');
             
             $e = new Email(); 
@@ -58,8 +57,7 @@
 			$this->assertSame(2, count($e->getTo()));
 		}
         
-        public function testSetCc()
-		{
+        public function testSetCc() {
             $emails = array('foo'=> 'foo@bar.com', 'baz' => 'baz@foo.com');
             
             $e = new Email(); 
@@ -70,8 +68,7 @@
 			$this->assertSame(1, count($e->getHeaders()));
 		}
         
-        public function testSetBcc()
-		{
+        public function testSetBcc() {
             $emails = array('foo@bar.com', 'baz' => 'baz@foo.com');
             
             $e = new Email(); 
@@ -87,8 +84,7 @@
             
 		}
         
-        public function testSetReplyTo()
-		{
+        public function testSetReplyTo() {
             $email = 'foo@bar.com';
             $name = null;
             
@@ -104,8 +100,7 @@
 			$this->assertSame(2, count($e->getHeaders()));
 		}
         
-        public function testSetHtml()
-		{
+        public function testSetHtml() {
             $e = new Email(); 
             $this->assertEmpty($e->getHeaders());
             
@@ -114,8 +109,7 @@
 			$this->assertSame(1, count($e->getHeaders()));
 		}
         
-        public function testSubject()
-		{
+        public function testSubject() {
             $e = new Email(); 
             $this->assertEmpty($e->getSubject());
             
@@ -123,8 +117,7 @@
 			$this->assertNotEmpty($e->getSubject());
 		}
         
-        public function testMessage()
-		{
+        public function testMessage() {
             $e = new Email(); 
             $this->assertEmpty($e->getMessage());
             
@@ -132,8 +125,7 @@
 			$this->assertNotEmpty($e->getMessage());
 		}
         
-        public function testAddAttachmentFileNotExist()
-		{
+        public function testAddAttachmentFileNotExist() {
             $e = new Email(); 
             $this->assertFalse($e->hasAttachments());
             
@@ -142,8 +134,7 @@
 		}
         
         
-        public function testAddAttachmentFileExists()
-		{
+        public function testAddAttachmentFileExists() {
             $e = new Email(); 
             $this->assertFalse($e->hasAttachments());
             
@@ -151,22 +142,19 @@
 			$this->assertTrue($e->hasAttachments());
 		}
         
-        public function testGetAttachmentDataFileNotExist()
-		{
+        public function testGetAttachmentDataFileNotExist() {
             $e = new Email(); 
             $this->assertFalse($e->getAttachmentData('attachment.ext'));
 		}
         
-        public function testGetAttachmentDataFileExists()
-		{
+        public function testGetAttachmentDataFileExists() {
             $e = new Email(); 
             $expected_content = 'attachment';
             $data = $e->getAttachmentData(TESTS_PATH . 'assets/attachment.txt');
             $this->assertSame($expected_content, $data);
 		}
         
-        public function testParameters()
-		{
+        public function testParameters() {
             $e = new Email(); 
             $this->assertEmpty($e->getParameters());
             $param = '-f foo@bar.com';
@@ -174,8 +162,7 @@
 			$this->assertSame($param, $e->getParameters());
 		}
         
-        public function testWrap()
-		{
+        public function testWrap() {
             $e = new Email(); 
             //default value is 78
             $this->assertSame(78, $e->getWrap());
@@ -191,8 +178,7 @@
 			$this->assertSame(100, $e->getWrap());
 		}
         
-        public function testSend()
-		{
+        public function testSend() {
             //make test to fail
             ini_set('SMTP', 'fooooooooobarrrrr');
             ini_set('smtp_port', '23456765');

@@ -43,21 +43,15 @@
          * @param array $overwriteConfig the list of configuration to overwrite the defined configuration in config_pagination.php
          */
         public function __construct(array $overwriteConfig = array()) {
+            $config = array();
             if (file_exists(CONFIG_PATH . 'config_pagination.php')) {
-                $config = array();
-                require_once CONFIG_PATH . 'config_pagination.php';
-                if (empty($config) || !is_array($config)) {
-                    show_error('No configuration found in ' . CONFIG_PATH . 'config_pagination.php');
-                } else {
-                    $config = array_merge($config, $overwriteConfig);
-                    $this->config = $config;
-                    //put it gobally
-                    Config::setAll($config);
-                    unset($config);
-                }
-            } else {
-                show_error('Unable to find the pagination configuration file');
-            }
+                require CONFIG_PATH . 'config_pagination.php';
+            } 
+            $config = array_merge($config, $overwriteConfig);
+            $this->config = $config;
+            //put it gobally
+            Config::setAll($config);
+            unset($config);
         }
 
 
@@ -111,7 +105,7 @@
             $queryString = Url::queryString();
             $currentUrl = Url::current();
             $query = '';
-                if ($queryString == '') {
+            if ($queryString == '') {
                 $query = '?' . $pageQueryName . '=';
             } else {
                 $tab = explode($pageQueryName . '=', $queryString);
@@ -137,7 +131,7 @@
          * @param  int $totalRows the total number of data
          * @param  int $currentPageNumber the current page number
          * 
-         * @return string the pagination link
+         * @return null|string the pagination link
          */
         public function getLink($totalRows, $currentPageNumber) {
             $numberOfLink = $this->config['nb_link'];
@@ -147,7 +141,7 @@
                 $this->determinePaginationQueryStringValue();
             }
             //************************************
-            $navbar = '';
+            $navbar = null;
             $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
             $currentPageNumber = (int) $currentPageNumber;
             $numberOfLink = (int) $numberOfLink;
@@ -237,7 +231,7 @@
                     $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
                 } else {
                     $navbar .= $this->config['digit_open'] 
-                            . '<a href="' . $query . $i . '" ' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
+                            . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
                             . $this->config['digit_close'];
                 }
             }
@@ -269,7 +263,7 @@
                                     . $this->config['digit_close'];
                 }
             }
-            $navbar .= $this->config['next_open'] . "<a href='$query" . ($currentPageNumber + 1) . "'>" . $this->config['next_text'] . "</a>" . $this->config['next_close'];
+            $navbar .= $this->config['next_open'] . '<a href="' . $query . ($currentPageNumber + 1) . '">' . $this->config['next_text'] . '</a>' . $this->config['next_close'];
             return $navbar;
         }
 

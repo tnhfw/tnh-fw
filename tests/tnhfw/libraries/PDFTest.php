@@ -1,16 +1,18 @@
 <?php 
 
+	/**
+     * PDF library class tests
+     *
+     * @group core
+     * @group libraries
+     */
+	class PDFTest extends TnhTestCase {	
 	
-	class PDFTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
+		public static function setUpBeforeClass() {
 		
 		}
 		
-		public static function tearDownAfterClass()
-		{
+		public static function tearDownAfterClass() {
 			
 		}
 		
@@ -19,12 +21,10 @@
             parent::setUp();
         }
 
-		protected function tearDown()
-		{
+		protected function tearDown() {
 		}
 		
-		public function testNotYet()
-		{
+		public function testNotYet() {
 			$this->markTestSkipped();
 		}
 

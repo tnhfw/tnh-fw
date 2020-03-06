@@ -1,16 +1,19 @@
 <?php 
 
+	/**
+     * EventInfo class tests
+     *
+     * @group core
+     * @group core_classes
+     * @group event
+     */
+	class EventInfoTest extends TnhTestCase {	
 	
-	class EventInfoTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
+		public static function setUpBeforeClass() {
 		
 		}
 		
-		public static function tearDownAfterClass()
-		{
+		public static function tearDownAfterClass() {
 			
 		}
 		
@@ -19,8 +22,7 @@
             parent::setUp();
         }
 
-		protected function tearDown()
-		{
+		protected function tearDown() {
 		}
 
 		

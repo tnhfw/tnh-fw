@@ -1,16 +1,18 @@
 <?php 
 
+	/**
+     * FileCache class tests
+     *
+     * @group core
+     * @group cache
+     */
+	class FileCacheTest extends TnhTestCase {	
 	
-	class FileCacheTest extends TnhTestCase
-	{	
-	
-		public static function setUpBeforeClass()
-		{
+		public static function setUpBeforeClass() {
 		
 		}
 		
-		public static function tearDownAfterClass()
-		{
+		public static function tearDownAfterClass() {
 			
 		}
 		
@@ -21,19 +23,16 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
         }
 
-		protected function tearDown()
-		{
+		protected function tearDown() {
 		}
 		
-		public function testConstructor()
-		{
+		public function testConstructor() {
             $fc = new FileCache($this->vfsFileCachePath->url() . DS);
 			$this->assertTrue($fc->isSupported());
 			$this->assertFalse((new FileCache())->isSupported());
 		}
         
-        public function testSet()
-		{
+        public function testSet() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -42,14 +41,12 @@
             $this->assertTrue($this->vfsFileCachePath->hasChild($filename));
 		}
         
-        public function testGetKeyNotExist()
-		{
+        public function testGetKeyNotExist() {
             $fc = new FileCache($this->vfsFileCachePath->url() . DS);
 			$this->assertFalse($fc->get('foo'));
 		}
         
-        public function testGetKeyExist()
-		{
+        public function testGetKeyExist() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -62,8 +59,7 @@
             $this->assertSame($value, $fc->get($key));
 		}
         
-        public function testGetKeyExistButExpired()
-		{
+        public function testGetKeyExistButExpired() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -77,8 +73,7 @@
             $this->assertFalse($fc->get($key));
 		}
         
-        public function testGetKeyExistButDataCorrupted()
-		{
+        public function testGetKeyExistButDataCorrupted() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -94,8 +89,7 @@
             $this->assertFalse($fc->get($key));
 		}
         
-        public function testDeleteKeyExists()
-		{
+        public function testDeleteKeyExists() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -111,8 +105,7 @@
             $this->assertFalse($this->vfsFileCachePath->hasChild($filename));
 		}
         
-        public function testDeleteKeyNotExist()
-		{
+        public function testDeleteKeyNotExist() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -129,8 +122,7 @@
             $this->assertTrue($this->vfsFileCachePath->hasChild($filename));
 		}
         
-        public function testGetInfoKeyExists()
-		{
+        public function testGetInfoKeyExists() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -148,8 +140,7 @@
             $this->assertSame(200, $info['ttl']); 
 		}
         
-        public function testGetInfoKeyExistsButDataCorrupted()
-		{
+        public function testGetInfoKeyExistsButDataCorrupted() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -166,8 +157,7 @@
             $this->assertFalse($fc->getInfo($key));
 		}
         
-        public function testGetInfoKeyExistsButExpired()
-		{
+        public function testGetInfoKeyExistsButExpired() {
             $key = __FUNCTION__;
             $value = 'bar';
             $filename = md5($key) . '.cache';
@@ -182,31 +172,26 @@
             $this->assertFalse($fc->getInfo($key));
 		}
         
-        public function testGetInfoKeyNotExist()
-		{
+        public function testGetInfoKeyNotExist() {
             $fc = new FileCache($this->vfsFileCachePath->url() . DS);
             $this->assertFalse($fc->getInfo('foobar'));
 		}
         
-        public function testDeleteExpiredCacheNoCacheData()
-		{
+        public function testDeleteExpiredCacheNoCacheData() {
             $fc = new FileCache($this->vfsFileCachePath->url() . DS);
             $fc->deleteExpiredCache();
             $this->assertTrue(true);
 		}
         
-        public function testDeleteExpiredCacheDataFound()
-		{
+        public function testDeleteExpiredCacheDataFound() {
             $this->markTestSkipped('vfsStream not support for function glob');
 		}
         
-        public function testClean()
-		{
+        public function testClean() {
             $this->markTestSkipped('vfsStream not support for function glob');
 		}
         
-        public function testSetCompressCacheData()
-		{
+        public function testSetCompressCacheData() {
             $fc = new FileCache();
             $fc->setCompressCacheData(false);
             $this->assertFalse($fc->isCompressCacheData());
@@ -220,8 +205,7 @@
             }   
 		}
         
-        public function testSetCacheFilePathWhenParamIsNotNull()
-		{
+        public function testSetCacheFilePathWhenParamIsNotNull() {
             $fc = new FileCache();
             //will append DIRECTORY_SEPARATOR
             $fc->setCacheFilePath('foo');
