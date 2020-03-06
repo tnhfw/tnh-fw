@@ -147,7 +147,7 @@
         protected function _resetValidation() {
             $this->_rules                = array();
             $this->_labels               = array();
-            $this->_errorMsgOverrides = array();
+            $this->_errorMsgOverrides    = array();
             $this->_errors               = array();
             $this->_success              = false;
             $this->_forceFail            = false;
@@ -251,11 +251,7 @@
             $this->_forceFail = false;
 
             foreach ($this->getData() as $inputName => $inputVal) {
-                if (is_array($this->data[$inputName])) {
-                    $this->data[$inputName] = array_map('trim', $this->data[$inputName]);
-                } else {
-                    $this->data[$inputName] = trim($this->data[$inputName]);
-                }
+                $this->data[$inputName] = trim($this->data[$inputName]);
 
                 if (array_key_exists($inputName, $this->_rules)) {
                     foreach ($this->_parseRuleString($this->_rules[$inputName]) as $eachRule) {
@@ -406,11 +402,7 @@
             } else if (array_key_exists($key, $this->data)) {
                 $returnValue = $this->data[$key];
                 if ($trim) {
-                    if (is_array($this->data[$key])) {
-                       $returnValue = array_map('trim', $this->data[$key]);
-                    } else {
-                        $returnValue = trim($this->data[$key]);
-                    }
+                    $returnValue = trim($this->data[$key]);
                 }
             }
             return $returnValue;
@@ -420,21 +412,17 @@
          * Gets all errors from errorSet and displays them, can be echo out from the
          * function or just returned.
          *
-         * @param boolean $limit number of error to display or return
          * @param boolean $echo Whether or not the values are to be returned or displayed
          *
          * @return string|void Errors formatted for output
          */
-        public function displayErrors($limit = null, $echo = true) {
+        public function displayErrors($echo = true) {
             list($errorsStart, $errorsEnd) = $this->_allErrorsDelimiter;
             list($errorStart, $errorEnd) = $this->_eachErrorDelimiter;
             $errorOutput = $errorsStart;
             $i = 0;
             if (!empty($this->_errors)) {
                 foreach ($this->_errors as $fieldName => $error) {
-                    if ($i === $limit) { 
-                        break; 
-                    }
                     $errorOutput .= $errorStart;
                     $errorOutput .= $error;
                     $errorOutput .= $errorEnd;
@@ -520,12 +508,6 @@
          * @return void
          */
         protected function _validateRule($inputName, $inputVal, $ruleName) {
-            if (is_array($inputVal)) {
-                foreach ($inputVal as $value) {
-                    $this->_validateRule($inputName, $value, $ruleName);
-                }
-                return;
-            }
             $this->logger->debug('Rule validation of field [' . $inputName . '], value [' . $inputVal . '], rule [' . $ruleName . ']');
             // Array to store args
             $ruleArgs = array();
@@ -540,7 +522,6 @@
                 $methodToCall = $this->_toCallCase($ruleName);
                 call_user_func(array($this, $methodToCall), $inputName, $ruleName, $ruleArgs);
             }
-            return;
         }
 
         /**
