@@ -37,7 +37,7 @@
         public function testMailto() {
             $h = new Html();
             $expected = '<a href = "mailto:"></a>';
-			$this->assertSame($expected, $h->mailto());
+			$this->assertSame($expected, $h->mailto(''));
             
             //using attributes
             $expected = '<a href = "mailto:foo@bar.com" class = "foo" id = "bar">foo</a>';
