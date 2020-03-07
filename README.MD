@@ -26,6 +26,8 @@ composer create-project tnhfw/tnh-fw --stability dev
 ### Tests
 See [TESTING.MD](TESTING.MD)
 
-Now launch your browser with your url like **http://localhost/tnh-fw** or **http://localhost/my-apps** change localhost with your real IP address or domain name if your are not in local.
+### Launch it
+Open your browser with the url like **http://localhost/tnh-fw** or **http://localhost/my-apps** change localhost with your real IP address or domain name.
 
-And next Go ! read the doc.
+### Documentation 
+Read the doc
