@@ -24,11 +24,8 @@ composer create-project tnhfw/tnh-fw --stability dev
  - Download the framework using the following link [https://github.com/tnhfw/tnh-fw/releases](https://github.com/tnhfw/tnh-fw/releases)
  - Extract the downloaded file in your web directory (**www, htdocs, web, etc.)** for example **/www/tnh-fw** or with your application name **/www/my-apps**
 ### Tests
-You can make tests by running the command below in the root of project.
-This need install composer dependencies using Dev. 
-```bash
-vendor/bin/phpunit -c tests
-```
+See [TESTING.MD](TESTING.MD)
+
 Now launch your browser with your url like **http://localhost/tnh-fw** or **http://localhost/my-apps** change localhost with your real IP address or domain name if your are not in local.
 
 And next Go ! read the doc.

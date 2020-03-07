@@ -151,7 +151,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function distinct($field) {
-            return $this->setSelectStr(' DISTINCT ' . $field);
+            return $this->setSelectStr('DISTINCT ' . $field);
         }
 
         /**
@@ -223,9 +223,9 @@
                 }
             }
             if (empty($this->join)) {
-                $this->join = ' ' . $type . ' JOIN' . ' ' . $table . ' ON ' . $on;
+                $this->join = $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
             } else {
-                $this->join = $this->join . ' ' . $type . ' JOIN' . ' ' . $table . ' ON ' . $on;
+                $this->join = $this->join . ' ' . $type . 'JOIN' . ' ' . $table . ' ON ' . $on;
             }
             return $this;
         }
@@ -360,12 +360,12 @@
          */
         public function groupStart($type = '', $andOr = ' AND') {
             if (empty($this->where)) {
-                $this->where = $type . ' (';
+                $this->where = $type . '(';
             } else {
                 if (substr(trim($this->where), -1) == '(') {
-                    $this->where .= $type . ' (';
+                    $this->where .= $type . '(';
                 } else {
-                    $this->where .= $andOr . ' ' . $type . ' (';
+                    $this->where .= $andOr . $type . ' (';
                 }
             }
             return $this;
@@ -377,7 +377,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function notGroupStart() {
-            return $this->groupStart('NOT');
+            return $this->groupStart(' NOT');
         }
 
         /**
@@ -426,7 +426,7 @@
                 $_keys[] = $v;
             }
             $keys = implode(', ', $_keys);
-            $whereStr = $field . ' ' . $type . ' IN (' . $keys . ')';
+            $whereStr = $field . $type . ' IN (' . $keys . ')';
             $this->setWhereStr($whereStr, $andOr);
             return $this;
         }
@@ -437,7 +437,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function notIn($field, array $keys, $escape = true) {
-            return $this->in($field, $keys, 'NOT ', 'AND', $escape);
+            return $this->in($field, $keys, ' NOT', 'AND', $escape);
         }
 
         /**
@@ -455,7 +455,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function orNotIn($field, array $keys, $escape = true) {
-            return $this->in($field, $keys, 'NOT ', 'OR', $escape);
+            return $this->in($field, $keys, ' NOT', 'OR', $escape);
         }
 
         /**
@@ -471,7 +471,7 @@
         public function between($field, $value1, $value2, $type = '', $andOr = 'AND', $escape = true) {
             $value1 = $this->checkForNullValue($value1);
             $value2 = $this->checkForNullValue($value2);
-            $whereStr = $field . ' ' . $type . ' BETWEEN ' . $this->escape($value1, $escape) . ' AND ' . $this->escape($value2, $escape);
+            $whereStr = $field . $type . ' BETWEEN ' . $this->escape($value1, $escape) . ' AND ' . $this->escape($value2, $escape);
             $this->setWhereStr($whereStr, $andOr);
             return $this;
         }
@@ -482,7 +482,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function notBetween($field, $value1, $value2, $escape = true) {
-            return $this->between($field, $value1, $value2, 'NOT ', 'AND', $escape);
+            return $this->between($field, $value1, $value2, ' NOT', 'AND', $escape);
         }
 
         /**
@@ -500,7 +500,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function orNotBetween($field, $value1, $value2, $escape = true) {
-            return $this->between($field, $value1, $value2, 'NOT ', 'OR', $escape);
+            return $this->between($field, $value1, $value2, ' NOT', 'OR', $escape);
         }
 
         /**
@@ -514,7 +514,7 @@
          */
         public function like($field, $data, $type = '', $andOr = 'AND', $escape = true) {
             $data = $this->checkForNullValue($data);
-            $this->setWhereStr($field . ' ' . $type . ' LIKE ' . ($this->escape($data, $escape)), $andOr);
+            $this->setWhereStr($field . $type . ' LIKE ' . ($this->escape($data, $escape)), $andOr);
             return $this;
         }
 
@@ -533,7 +533,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function notLike($field, $data, $escape = true) {
-            return $this->like($field, $data, 'NOT ', 'AND', $escape);
+            return $this->like($field, $data, ' NOT', 'AND', $escape);
         }
 
         /**
@@ -542,7 +542,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function orNotLike($field, $data, $escape = true) {
-            return $this->like($field, $data, 'NOT ', 'OR', $escape);
+            return $this->like($field, $data, ' NOT', 'OR', $escape);
         }
 
         /**
@@ -570,7 +570,7 @@
          * @param  string $orderDir the order direction (ASC or DESC)
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function orderBy($orderBy, $orderDir = ' ASC') {
+        public function orderBy($orderBy, $orderDir = 'ASC') {
             if (stristr($orderBy, ' ') || $orderBy == 'rand()') {
                 $this->orderBy = empty($this->orderBy) ? $orderBy : $this->orderBy . ', ' . $orderBy;
             } else {
@@ -627,7 +627,7 @@
             $column = implode(', ', $columns);
             $values = implode(', ', ($escape ? array_map(array($this, 'escape'), $data) : $data));
 
-            $this->query = 'INSERT INTO ' . $this->from . ' (' . $column . ') VALUES (' . $values . ')';
+            $this->query = 'INSERT INTO ' . $this->from . '(' . $column . ') VALUES (' . $values . ')';
             return $this;
         }
 
@@ -692,31 +692,16 @@
             //INSERT, UPDATE, DELETE already set it, if is SELECT we need set it now
             if (empty($this->query)) {
                 $query = 'SELECT ' . $this->select . ' FROM ' . $this->from;
-                $query .= $this->buildQueryPart('join', '');
+                $query .= $this->buildQueryPart('join', ' ');
                 $query .= $this->buildQueryPart('where', ' WHERE ');
                 $query .= $this->buildQueryPart('groupBy', ' GROUP BY ');
                 $query .= $this->buildQueryPart('having', ' HAVING ');
                 $query .= $this->buildQueryPart('orderBy', ' ORDER BY ');
                 $query .= $this->buildQueryPart('limit', ' LIMIT ');
-                $this->query = $query;
+                $this->query = trim($query);
             }
             return $this->query;
         }
-
-        /**
-         * Build the part of SQL query
-         * @param  string $property the name of this class attribute, use after $this->
-         * @param  string $command  the SQL command like WHERE, HAVING, etc.
-         * 
-         * @return string|null
-         */
-         protected function buildQueryPart($property, $command = ''){
-            if (!empty($this->{$property})) {
-                return $command . ' ' . $this->{$property};
-            }
-            return null;
-         }
-
 	
         /**
          * Return the PDO instance
@@ -788,6 +773,21 @@
             $this->query    = null;
             return $this;
         }
+
+        /**
+         * Build the part of SQL query
+         * @param  string $property the name of this class attribute, use after $this->
+         * @param  string $command  the SQL command like WHERE, HAVING, etc.
+         * 
+         * @return string|null
+         */
+         protected function buildQueryPart($property, $command = ''){
+            if (!empty($this->{$property})) {
+                return $command . $this->{$property};
+            }
+            return null;
+         }
+
 
         /**
          * Set the SQL WHERE CLAUSE for IS NULL ad IS NOT NULL
@@ -924,7 +924,7 @@
                 $this->where = $whereStr;
             } else {
                 if (substr(trim($this->where), -1) == '(') {
-                    $this->where = $this->where . ' ' . $whereStr;
+                    $this->where = $this->where . $whereStr;
                 } else {
                     $this->where = $this->where . ' ' . $andOr . ' ' . $whereStr;
                 }

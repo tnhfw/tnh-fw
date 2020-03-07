@@ -58,5 +58,5 @@ Here is an example of a core class test with proper DocBlocks:
 
 ### What class do I extend?
 
-All tests should extend the **tests\include\TnhTestCase** class.
+All tests should extend the **tests/include/TnhTestCase** class.
 

@@ -155,7 +155,7 @@
 	
 	function php_error_handler($errno , $errstr, $errfile , $errline){
 		//show only and continue to help track of some error occured
-		//echo 'php_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
+        //echo 'php_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
         return true;
 	}
 
