@@ -2,7 +2,7 @@
     "name": "tnhfw/tnh-fw",
     "description": "A simple PHP framework using HMVC architecture",
     "type": "project",
-    "license": "GPL-3.0-or-later",
+    "license": "MIT",
 	"keywords": ["application", "website", "development", "framework", "PHP"],
     "authors": [
         {
