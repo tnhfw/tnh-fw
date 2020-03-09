@@ -437,7 +437,7 @@
                 $this->config['hostname'] = $part[0];
                 $this->config['port'] = $part[1];
                 $this->hostname = $part[0];
-                $this->port = $part[1];
+                $this->port = (int) $part[1];
             }
             return $this;
         }
