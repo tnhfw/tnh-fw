@@ -29,6 +29,13 @@
      */
     
     class DatabaseQueryRunner extends BaseClass {
+
+         /**
+         * The DatabaseConnection instance
+         * @var object
+         */
+        private $connection = null;
+
         /**
          * The last query result
          * @var object
@@ -73,30 +80,16 @@
         private $error = null;
 	
         /**
-         * The PDO instance
-         * @var object
-         */
-        private $pdo = null;
-      
-        /**
-         * The database driver name used
-         * @var string
-         */
-        private $driver = null;
-
-
-	
-        /**
          * Construct new DatabaseQueryRunner
-         * @param object $pdo the PDO object
+         * @param object $connection the DatabaseConnection object
          * @param string $query the SQL query to be executed
          * @param boolean $returnAsList if need return as list or just one row
          * @param boolean $returnAsArray whether to return the result as array or not
          */
-        public function __construct(PDO $pdo = null, $query = null, $returnAsList = true, $returnAsArray = false) {
+        public function __construct(DatabaseConnection $connection = null, $query = null, $returnAsList = true, $returnAsArray = false) {
             parent::__construct();
-            if (is_object($pdo)) {
-                $this->pdo = $pdo;
+            if ($connection !== null) {
+                $this->connection = $connection;
             }
 
             //Set DatabaseQueryResult instance to use
@@ -105,10 +98,28 @@
             //Set Benchmark instance to use
             $this->setDependencyInstanceFromParamOrCreate('benchmarkInstance', null, 'Benchmark', 'libraries');
        
-
             $this->query         = $query;
             $this->returnAsList  = $returnAsList;
             $this->returnAsArray = $returnAsArray;
+        }
+
+        /**
+         * Return the DatabaseConnection instance
+         * @return object DatabaseConnection
+         */
+        public function getConnection() {
+            return $this->connection;
+        }
+
+        /**
+         * Set the DatabaseConnection instance
+         * @param object DatabaseConnection $connection the DatabaseConnection object
+         *
+         * @return object the current instance
+         */
+        public function setConnection(DatabaseConnection $connection) {
+            $this->connection = $connection;
+            return $this;
         }
         
         /**
@@ -126,7 +137,7 @@
             
             $this->benchmarkInstance->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');                
             //Now execute the query
-            $this->pdoStatment = $this->pdo->query($this->query);
+            $this->pdoStatment = $this->connection->getPdo()->query($this->query);
             
             //get response time for this query
             $responseTime = $this->benchmarkInstance->elapsedTime(
@@ -142,8 +153,8 @@
             }
     		
             if ($this->pdoStatment !== false) {
-                $isSqlSELECTQuery = stristr($this->query, 'SELECT') !== false;
-                if ($isSqlSELECTQuery) {
+                $isSelectQuery = stristr($this->query, 'SELECT') !== false;
+                if ($isSelectQuery) {
                     $this->setResultForSelect();              
                 } else {
                     $this->setResultForNonSelect();
@@ -171,7 +182,7 @@
                 $result = $this->pdoStatment->fetch($fetchMode);
             }
             //Sqlite and pgsql always return 0 when using rowCount()
-            if (in_array($this->driver, array('sqlite', 'pgsql'))) {
+            if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
                 //by default count() return 1 if the parameter is not an array
                 //object or object implements Countable.
                 if (is_array($result) || is_object($result) || $result instanceof Countable) {
@@ -192,9 +203,9 @@
             //Sqlite and pgsql always return 0 when using rowCount()
             $result = false;
             $numRows = 0;
-            if (in_array($this->driver, array('sqlite', 'pgsql'))) {
-            $result = true; //to test the result for the query like UPDATE, INSERT, DELETE
-            $numRows = 1; //TODO use the correct method to get the exact affected row
+            if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
+                $result = true; //to test the result for the query like UPDATE, INSERT, DELETE
+                $numRows = 1; //TODO use the correct method to get the exact affected row
             } else {
                 //to test the result for the query like UPDATE, INSERT, DELETE
                 $result  = $this->pdoStatment->rowCount() >= 0; 
@@ -288,42 +299,6 @@
         public function getQueryError() {
             return $this->error;
         }
-
-        /**
-         * Return the PDO instance
-         * @return object
-         */
-        public function getPdo() {
-            return $this->pdo;
-        }
-
-        /**
-         * Set the PDO instance
-         * @param PDO $pdo the pdo object
-         * @return object DatabaseQueryRunner
-         */
-        public function setPdo(PDO $pdo = null) {
-            $this->pdo = $pdo;
-            return $this;
-        }
-      
-            /**
-             * Return the database driver
-             * @return string
-             */
-        public function getDriver() {
-            return $this->driver;
-        }
-
-        /**
-         * Set the database driver
-         * @param string $driver the new driver
-         * @return object DatabaseQueryRunner
-         */
-        public function setDriver($driver) {
-            $this->driver = $driver;
-            return $this;
-        }
         
         /**
          * Return the benchmark key for the current query
@@ -338,7 +313,7 @@
          * Set error for database query execution
          */
         protected function setQueryRunnerError() {
-            $error = $this->pdo->errorInfo();
+            $error = $this->connection->getPdo()->errorInfo();
             $this->error = isset($error[2]) ? $error[2] : '';
             $this->logger->error('The database query execution got an error: ' . stringfy_vars($error));
             //show error message

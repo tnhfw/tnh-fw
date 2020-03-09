@@ -29,6 +29,13 @@
      */
     
     class DatabaseQueryBuilder {
+
+         /**
+         * The DatabaseConnection instance
+         * @var object
+         */
+        private $connection = null;
+
         /**
          * The SQL SELECT statment
          * @var string
@@ -90,32 +97,12 @@
         private $operatorList = array('=', '!=', '<', '>', '<=', '>=', '<>');
   	
         /**
-         * The prefix used in each database table
-         * @var string
-         */
-        private $prefix = null;
-        
-
-        /**
-         * The PDO instance
-         * @var object
-         */
-        private $pdo = null;
-	
-        /**
-         * The database driver name used
-         * @var string
-         */
-        private $driver = null;
-  	
-	
-        /**
          * Construct new DatabaseQueryBuilder
-         * @param object $pdo the PDO object
+         * @param object $connection the DatabaseConnection object
          */
-        public function __construct(PDO $pdo = null) {
-            if (is_object($pdo)) {
-                $this->setPdo($pdo);
+        public function __construct(DatabaseConnection $connection = null) {
+            if ($connection !== null) {
+                $this->connection = $connection;
             }
         }
 
@@ -125,14 +112,15 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function from($table) {
+            $prefix = $this->connection->getPrefix();
             if (is_array($table)) {
                 $froms = '';
                 foreach ($table as $key) {
-                    $froms .= $this->prefix . $key . ', ';
+                    $froms .= $prefix . $key . ', ';
                 }
                 $this->from = rtrim($froms, ', ');
             } else {
-                $this->from = $this->prefix . $table;
+                $this->from = $prefix . $table;
             }
             return $this;
         }
@@ -220,11 +208,12 @@
          */
         public function join($table, $field1 = null, $op = null, $field2 = null, $type = '') {
             $on = $field1;
-            $table = $this->prefix . $table;
+            $prefix = $this->connection->getPrefix();
+            $table = $prefix . $table;
             if (!is_null($op)) {
-                $on = $this->prefix . $field1 . ' ' . $op . ' ' . $this->prefix . $field2;
+                $on = $prefix . $field1 . ' ' . $op . ' ' . $prefix . $field2;
                 if (!in_array($op, $this->operatorList)) {
-                    $on = $this->prefix . $field1 . ' = ' . $this->prefix . $op;
+                    $on = $prefix . $field1 . ' = ' . $prefix . $op;
                 }
             }
             if (empty($this->join)) {
@@ -426,7 +415,7 @@
             foreach ($keys as $k => $v) {
                 $v = $this->checkForNullValue($v);
                 if (! is_numeric($v)) {
-                    $v = $this->escape($v, $escape);
+                    $v = $this->connection->escape($v, $escape);
                 }
                 $_keys[] = $v;
             }
@@ -476,7 +465,7 @@
         public function between($field, $value1, $value2, $type = '', $andOr = 'AND', $escape = true) {
             $value1 = $this->checkForNullValue($value1);
             $value2 = $this->checkForNullValue($value2);
-            $whereStr = $field . $type . ' BETWEEN ' . $this->escape($value1, $escape) . ' AND ' . $this->escape($value2, $escape);
+            $whereStr = $field . $type . ' BETWEEN ' . $this->connection->escape($value1, $escape) . ' AND ' . $this->connection->escape($value2, $escape);
             $this->setWhereStr($whereStr, $andOr);
             return $this;
         }
@@ -519,7 +508,7 @@
          */
         public function like($field, $data, $type = '', $andOr = 'AND', $escape = true) {
             $data = $this->checkForNullValue($data);
-            $this->setWhereStr($field . $type . ' LIKE ' . ($this->escape($data, $escape)), $andOr);
+            $this->setWhereStr($field . $type . ' LIKE ' . ($this->connection->escape($data, $escape)), $andOr);
             return $this;
         }
 
@@ -613,10 +602,10 @@
                 $this->having = $this->getHavingStrIfOperatorIsArray($field, $op, $escape);
             } else if (!in_array($op, $this->operatorList)) {
                 $op = $this->checkForNullValue($op);
-                $this->having = $field . ' > ' . ($this->escape($op, $escape));
+                $this->having = $field . ' > ' . ($this->connection->escape($op, $escape));
             } else {
                 $val = $this->checkForNullValue($val);
-                $this->having = $field . ' ' . $op . ' ' . ($this->escape($val, $escape));
+                $this->having = $field . ' ' . $op . ' ' . ($this->connection->escape($val, $escape));
             }
             return $this;
         }
@@ -630,7 +619,7 @@
         public function insert($data = array(), $escape = true) {
             $columns = array_keys($data);
             $column = implode(', ', $columns);
-            $values = implode(', ', ($escape ? array_map(array($this, 'escape'), $data) : $data));
+            $values = implode(', ', ($escape ? array_map(array($this->connection, 'escape'), $data) : $data));
 
             $this->query = 'INSERT INTO ' . $this->from . '(' . $column . ') VALUES (' . $values . ')';
             return $this;
@@ -646,7 +635,7 @@
             $query = 'UPDATE ' . $this->from . ' SET ';
             $values = array();
             foreach ($data as $column => $val) {
-                $values[] = $column . ' = ' . ($this->escape($val, $escape));
+                $values[] = $column . ' = ' . ($this->connection->escape($val, $escape));
             }
             $query .= implode(', ', $values);
             $query .= $this->buildQueryPart('where', ' WHERE ');
@@ -668,25 +657,11 @@
             $query .= $this->buildQueryPart('orderBy', ' ORDER BY ');
             $query .= $this->buildQueryPart('limit', ' LIMIT ');
 
-            if ($isTruncate == $query && $this->driver != 'sqlite') {  
+            if ($isTruncate == $query && $this->connection->getDriver() != 'sqlite') {  
                 $query = 'TRUNCATE TABLE ' . $this->from;
             }
             $this->query = $query;
             return $this;
-        }
-
-        /**
-         * Escape the data before execute query useful for security.
-         * @param  mixed $data the data to be escaped
-         * @param boolean $escaped whether we can do escape of not 
-         * @return mixed       the data after escaped or the same data if not
-         */
-        public function escape($data, $escaped = true) {
-            $data = trim($data);
-            if ($escaped) {
-                return $this->pdo->quote($data);
-            }
-            return $data;  
         }
 
         /**
@@ -709,60 +684,6 @@
         }
 	
         /**
-         * Return the PDO instance
-         * @return object
-         */
-        public function getPdo() {
-            return $this->pdo;
-        }
-
-        /**
-         * Set the PDO instance
-         * @param PDO $pdo the pdo object
-         * @return object DatabaseQueryBuilder
-         */
-        public function setPdo(PDO $pdo = null) {
-            $this->pdo = $pdo;
-            return $this;
-        }
-    	
-        /**
-         * Return the database table prefix
-         * @return string
-         */
-        public function getPrefix() {
-            return $this->prefix;
-        }
-
-        /**
-         * Set the database table prefix
-         * @param string $prefix the new prefix
-         * @return object DatabaseQueryBuilder
-         */
-        public function setPrefix($prefix) {
-            $this->prefix = $prefix;
-            return $this;
-        }
-    	
-        /**
-         * Return the database driver
-         * @return string
-         */
-        public function getDriver() {
-            return $this->driver;
-        }
-
-        /**
-         * Set the database driver
-         * @param string $driver the new driver
-         * @return object DatabaseQueryBuilder
-         */
-        public function setDriver($driver) {
-            $this->driver = $driver;
-            return $this;
-        }
-	
-        /**
          * Reset the DatabaseQueryBuilder class attributs to the initial values before each query.
          * @return object  the current DatabaseQueryBuilder instance 
          */
@@ -778,6 +699,26 @@
             $this->query    = null;
             return $this;
         }
+
+        /**
+         * Return the DatabaseConnection instance
+         * @return object DatabaseConnection
+         */
+        public function getConnection() {
+            return $this->connection;
+        }
+
+        /**
+         * Set the DatabaseConnection instance
+         * @param object DatabaseConnection $connection the DatabaseConnection object
+         *
+         * @return object the current instance
+         */
+        public function setConnection(DatabaseConnection $connection) {
+            $this->connection = $connection;
+            return $this;
+        }
+
 
         /**
          * Build the part of SQL query
@@ -856,7 +797,7 @@
                     }
                     $value = '';
                     if (isset($op[$k])) {
-                        $value = $this->escape($op[$k], $escape);
+                        $value = $this->connection->escape($op[$k], $escape);
                     }
                     $w .= $v . $value;
                 }
@@ -874,7 +815,7 @@
             $_where = array();
             foreach ($where as $column => $data) {
                 $data = $this->checkForNullValue($data);
-                $_where[] = $type . $column . ' = ' . ($this->escape($data, $escape));
+                $_where[] = $type . $column . ' = ' . ($this->connection->escape($data, $escape));
             }
             $where = implode(' ' . $andOr . ' ', $_where);
             return $where;
@@ -893,7 +834,7 @@
                 if (!empty($v)) {
                     $value = '';
                     if (isset($op[$k])) {
-                        $value = $this->escape($op[$k], $escape);
+                        $value = $this->connection->escape($op[$k], $escape);
                     }
                     $w .= $type . $v . $value;
                 }
@@ -911,10 +852,10 @@
             $w = '';
             if (!in_array((string) $op, $this->operatorList)) {
                 $op = $this->checkForNullValue($op);
-                $w = $type . $where . ' = ' . ($this->escape($op, $escape));
+                $w = $type . $where . ' = ' . ($this->connection->escape($op, $escape));
             } else {
                 $val = $this->checkForNullValue($val);
-                $w = $type . $where . ' ' . $op . ' ' . ($this->escape($val, $escape));
+                $w = $type . $where . ' ' . $op . ' ' . ($this->connection->escape($val, $escape));
             }
             return $w;
         }

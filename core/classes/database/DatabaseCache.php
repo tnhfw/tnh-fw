@@ -52,7 +52,7 @@
          * If the current query is the SELECT query
          * @var boolean
          */
-        private $isSqlSELECTQuery = false;
+        private $isSelectQuery = false;
 
         /**
          * The status of the database cache
@@ -158,7 +158,7 @@
         public function getCacheContent() {
             //set some attributes values
             $this->setPropertiesValues();
-            if(! $this->isSqlSELECTQuery || ! $this->dbCacheStatus){
+            if(! $this->isSelectQuery || ! $this->dbCacheStatus){
                 $this->logger->info('The cache is not enabled for this query or is not a SELECT query'); 
                 return null;
             }
@@ -185,7 +185,7 @@
         public function saveCacheContent($result) {
             //set some attributes values
             $this->setPropertiesValues();
-            if(! $this->isSqlSELECTQuery || ! $this->dbCacheStatus){
+            if(! $this->isSelectQuery || ! $this->dbCacheStatus){
                 //just return true
                 return true;
             }
@@ -206,7 +206,7 @@
          */
         protected function setPropertiesValues() {
             //If is the SELECT query
-            $this->isSqlSELECTQuery = stristr($this->query, 'SELECT') !== false;
+            $this->isSelectQuery = stristr($this->query, 'SELECT') !== false;
 
              //if can use cache feature for this query
             $this->dbCacheStatus = get_config('cache_enable', false) && $this->cacheTtl > 0;

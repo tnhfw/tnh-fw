@@ -19,10 +19,10 @@
             parent::__construct();
             
             $cfg = $this->getDbConfig();
-			$this->db = new Database($cfg);
-            $qr = new DatabaseQueryRunner($this->db->getPdo());
+            $connection = new DatabaseConnection($cfg, true);
+			$this->db = new Database($connection);
+            $qr = new DatabaseQueryRunner($connection);
             $qr->setBenchmark(new Benchmark());
-            $qr->setDriver('sqlite');
             $this->db->setQueryRunner($qr);
 		}
 		
@@ -30,24 +30,17 @@
 			require APPS_MODEL_PATH . 'DBSessionModel.php';
 		}
 		
-		
-		public static function tearDownAfterClass() {
-			
-		}
-		
 		protected function setUp() {
+            parent::setUp();
 			$this->model = new DBSessionModel($this->db);
+            
             //to prevent old data conflict
 			$this->model->truncate();
 		}
 
-		protected function tearDown() {
-		}
-
-		
 		
 		public function testUsingSessionConfiguration(){
-			//using value in the configuration
+            //using value in the configuration
 			$this->config->set('session_save_path', 'DBSessionModel');
 			$this->config->set('session_secret', $this->secret);
 			$dbsh = new DBSessionHandler();

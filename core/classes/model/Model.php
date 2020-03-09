@@ -504,7 +504,7 @@
             $this->getQueryBuilder()->select('AUTO_INCREMENT')
                                     ->from('information_schema.TABLES')
                                     ->where('TABLE_NAME', $this->_table)
-                                    ->where('TABLE_SCHEMA', $this->_database->getDatabaseName());
+                                    ->where('TABLE_SCHEMA', $this->_database->getConnection()->getDatabase());
             return (int) $this->_database->get()->AUTO_INCREMENT;
         }
 

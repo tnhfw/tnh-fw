@@ -6,20 +6,25 @@
 			'ApcCache' => CORE_CLASSES_CACHE_PATH . 'ApcCache.php',
 			'CacheInterface' => CORE_CLASSES_CACHE_PATH . 'CacheInterface.php',
 			'FileCache' => CORE_CLASSES_CACHE_PATH . 'FileCache.php',
+            
+            //Database
+			'Database' => CORE_CLASSES_DATABASE_PATH . 'Database.php',
+			'DatabaseCache' => CORE_CLASSES_DATABASE_PATH . 'DatabaseCache.php',
+			'DatabaseConnection' => CORE_CLASSES_DATABASE_PATH . 'DatabaseConnection.php',
+			'DatabaseQueryBuilder' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryBuilder.php',
+			'DatabaseQueryResult' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryResult.php',
+			'DatabaseQueryRunner' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryRunner.php',
+			
 			//models
 			'DBSessionHandlerModel' => CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php',
 			'Model' => CORE_CLASSES_MODEL_PATH . 'Model.php',
-			//Core classes
+			
+            //Core classes
 			'BaseClass' => CORE_CLASSES_PATH . 'BaseClass.php',
 			'BaseStaticClass' => CORE_CLASSES_PATH . 'BaseStaticClass.php',
 			'Config' => CORE_CLASSES_PATH . 'Config.php',
 			'Controller' => CORE_CLASSES_PATH . 'Controller.php',
-			'Database' => CORE_CLASSES_DATABASE_PATH . 'Database.php',
-			'DatabaseCache' => CORE_CLASSES_DATABASE_PATH . 'DatabaseCache.php',
-			'DatabaseQueryBuilder' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryBuilder.php',
-			'DatabaseQueryResult' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryResult.php',
-			'DatabaseQueryRunner' => CORE_CLASSES_DATABASE_PATH . 'DatabaseQueryRunner.php',
-			'DBSessionHandler' => CORE_CLASSES_PATH . 'DBSessionHandler.php',
+            'DBSessionHandler' => CORE_CLASSES_PATH . 'DBSessionHandler.php',
 			'EventInfo' => CORE_CLASSES_PATH . 'EventInfo.php',
 			'EventDispatcher' => CORE_CLASSES_PATH . 'EventDispatcher.php',
 			'Lang' => CORE_CLASSES_PATH . 'Lang.php',

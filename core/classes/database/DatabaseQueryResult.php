@@ -29,70 +29,69 @@
      */
   
     class DatabaseQueryResult {
-  	
+    	
         /**
          * The database query result
          * @var mixed
          */
         private $result = null;
-  	
-    
+    	
+
         /**
          * The number of rows returned by the last query
          * @var int
          */
         private $numRows = 0;
-  	
-	
-    /**
-     * Construct new DatabaseQueryResult
-     * @param mixed $result the query result
-     * @param int $numRows the number of rows returned by the query
-     */
-    public function __construct($result = null, $numRows = 0) {
-        $this->result = $result;
-        $this->numRows = $numRows;
-    }
+    	
 
-    
+        /**
+         * Construct new DatabaseQueryResult
+         * @param mixed $result the query result
+         * @param int $numRows the number of rows returned by the query
+         */
+        public function __construct($result = null, $numRows = 0) {
+            $this->result = $result;
+            $this->numRows = $numRows;
+        }
+
+
         /**
          * Return the query result
          *
          * @return mixed
          */
-    public function getResult() {
-        return $this->result;
-    }
+        public function getResult() {
+            return $this->result;
+        }
 
-    /**
-     * Set the query result
-     * @param mixed $result the query result
-     *
-     * @return object DatabaseQueryResult
-     */
-    public function setResult($result) {
-        $this->result = $result;
-        return $this;
-    }
-    
-    /**
-     * Return the number of rows returned by the query
-     *
-     * @return int
-     */
-    public function getNumRows() {
-        return $this->numRows;
-    }
+        /**
+         * Set the query result
+         * @param mixed $result the query result
+         *
+         * @return object DatabaseQueryResult
+         */
+        public function setResult($result) {
+            $this->result = $result;
+            return $this;
+        }
 
-    /**
-     * Set the number of rows returned by the query
-     * @param int $numRows the number of rows returned
-     *
-     * @return object DatabaseQueryResult
-     */
-    public function setNumRows($numRows) {
-        $this->numRows = $numRows;
-        return $this;
+        /**
+         * Return the number of rows returned by the query
+         *
+         * @return int
+         */
+        public function getNumRows() {
+            return $this->numRows;
+        }
+
+        /**
+         * Set the number of rows returned by the query
+         * @param int $numRows the number of rows returned
+         *
+         * @return object DatabaseQueryResult
+         */
+        public function setNumRows($numRows) {
+            $this->numRows = $numRows;
+            return $this;
+        }
     }
-   
-}

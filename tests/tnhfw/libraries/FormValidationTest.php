@@ -669,9 +669,10 @@
         public function testRuleExists()
         {
             $cfg = $this->getDbConfig();
-            $db = new Database($cfg, false);
-            $isConnected = $db->connect();
+            $connection = new DatabaseConnection($cfg, false);
+            $isConnected = $connection->connect();
             $this->assertTrue($isConnected);
+            $db = new Database($connection);
             
             //Validation failed
             $fv = new FormValidation();
@@ -707,9 +708,11 @@
         public function testRuleIsUnique()
         {
             $cfg = $this->getDbConfig();
-            $db = new Database($cfg, false);
-            $isConnected = $db->connect();
+            $connection = new DatabaseConnection($cfg, false);
+            $isConnected = $connection->connect();
             $this->assertTrue($isConnected);
+            $db = new Database($connection);
+            
             
             //Validation failed
             $fv = new FormValidation();
@@ -744,9 +747,11 @@
         public function testRuleIsUniqueUpdate()
         {
             $cfg = $this->getDbConfig();
-            $db = new Database($cfg, false);
-            $isConnected = $db->connect();
+            $connection = new DatabaseConnection($cfg, false);
+            $isConnected = $connection->connect();
             $this->assertTrue($isConnected);
+            $db = new Database($connection);
+            
             
             //Validation failed
             $fv = new FormValidation();

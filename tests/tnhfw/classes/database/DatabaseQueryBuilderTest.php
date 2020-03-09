@@ -6,334 +6,322 @@
      * @group core
      * @group database
      */
-	class DatabaseQueryBuilderTest extends TnhTestCase {
-
+	class DatabaseQueryBuilderTest extends TnhTestCase{ 
         /**
-        * Mock object of PDO
+        * Mock object of DatabaseConnection
         */
-        private $pdo = null;
+        private $connection = null;
+        
+        //The DatabaseQueryBuilder instance
+        private $obj = null;
         
         public function __construct(){
             parent::__construct();
             
-            $pdo = $this->getMockBuilder('PDO')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-                        
-            $pdo->expects($this->any())
-                    ->method('quote')
-                    ->will($this->returnCallback(array($this, 'mockPdoMethodQuoteReturnCallback')));
-                    
-            $this->pdo = $pdo;
+            $cfg = $this->getDbConfig();
+            $this->connection = new DatabaseConnection($cfg, true);
         }
         
-		public function testConstructor() {
-            //Default param PDO not set
-            $r = new DatabaseQueryBuilder();
-            $this->assertNull($r->getPdo());
-            
-            
-            $r = new DatabaseQueryBuilder($this->pdo);
-            $this->assertNotNull($r->getPdo());
-            $this->assertInstanceOf('PDO', $r->getPdo());
+        protected function setUp(){ parent::setUp();
+            $this->obj = new DatabaseQueryBuilder($this->connection);
 		}
         
-        public function testFrom() {
+		public function testConstructor(){ //Default param DatabaseConnection not set
             $r = new DatabaseQueryBuilder();
-            $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertNull($r->getConnection());
+            
+            
+            $r = new DatabaseQueryBuilder($this->connection);
+            $this->assertNotNull($r->getConnection());
+            $this->assertInstanceOf('DatabaseConnection', $r->getConnection());
+		}
+        
+        public function testFrom(){ $expected = 'SELECT * FROM';
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT * FROM foo';
-            $r->from($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //using multiple values with comma
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo, bar';
             $expected = 'SELECT * FROM foo, bar';
-            $r->from($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //using multiple values with array
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo', 'bar');
             $expected = 'SELECT * FROM foo, bar';
-            $r->from($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //overwrite existing one
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT * FROM bar';
-            $r->from($value);
-            $r->from('bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($value);
+            $this->obj->from('bar');
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //When prefix is set 
-            $r->reset();
-            $this->assertNull($r->getPrefix());
-            $r->setPrefix('pf_');
-            $this->assertSame('pf_', $r->getPrefix());
+            $this->obj->reset();
+            $this->assertNull($this->obj->getConnection()->getPrefix());
+            $this->obj->getConnection()->setPrefix('pf_');
+            $this->assertSame('pf_', $this->obj->getConnection()->getPrefix());
             
             $value = 'foo';
             $expected = 'SELECT * FROM pf_foo';
-            $r->from($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testSelect() {
-            $r = new DatabaseQueryBuilder();
+        public function testSelect(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT foo FROM';
-            $r->select($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //using multiple values with comma
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo, bar';
             $expected = 'SELECT foo, bar FROM';
-            $r->select($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //using multiple values with array
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo', 'bar');
             $expected = 'SELECT foo, bar FROM';
-            $r->select($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //update existing one
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT foo, bar FROM';
-            $r->select($value);
-            $r->select('bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select($value);
+            $this->obj->select('bar');
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testDistinct() {
-            $r = new DatabaseQueryBuilder();
+        public function testDistinct(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT DISTINCT foo FROM';
-            $r->distinct($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->distinct($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //using existing select
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT DISTINCT foo, bar FROM';
-            $r->distinct($value);
-            $r->select('bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->distinct($value);
+            $this->obj->select('bar');
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
 
-        public function testCount() {
-            $r = new DatabaseQueryBuilder();
+        public function testCount(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             //default behavior
             $expected = 'SELECT COUNT(*) FROM';
-            $r->count();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->count();
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT COUNT(foo) FROM';
-            $r->count($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->count($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using alias
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT COUNT(foo) AS bar FROM';
-            $r->count($value, 'bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->count($value, 'bar');
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //using existing select
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT bar, COUNT(foo) FROM';
-            $r->select('bar');
-            $r->count($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select('bar');
+            $this->obj->count($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testMin() {
-            $r = new DatabaseQueryBuilder();
+        public function testMin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT MIN(foo) FROM';
-            $r->min($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->min($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using alias
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT MIN(foo) AS bar FROM';
-            $r->min($value, 'bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->min($value, 'bar');
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //using existing select
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT bar, MIN(foo) FROM';
-            $r->select('bar');
-            $r->min($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select('bar');
+            $this->obj->min($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testMax() {
-            $r = new DatabaseQueryBuilder();
+        public function testMax(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT MAX(foo) FROM';
-            $r->max($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->max($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using alias
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT MAX(foo) AS bar FROM';
-            $r->max($value, 'bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->max($value, 'bar');
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //using existing select
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT bar, MAX(foo) FROM';
-            $r->select('bar');
-            $r->max($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select('bar');
+            $this->obj->max($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testSum() {
-            $r = new DatabaseQueryBuilder();
+        public function testSum(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT SUM(foo) FROM';
-            $r->sum($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->sum($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using alias
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT SUM(foo) AS bar FROM';
-            $r->sum($value, 'bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->sum($value, 'bar');
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //using existing select
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT bar, SUM(foo) FROM';
-            $r->select('bar');
-            $r->sum($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select('bar');
+            $this->obj->sum($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testAvg() {
-            $r = new DatabaseQueryBuilder();
+        public function testAvg(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT AVG(foo) FROM';
-            $r->avg($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->avg($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using alias
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT AVG(foo) AS bar FROM';
-            $r->avg($value, 'bar');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->avg($value, 'bar');
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //using existing select
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT bar, AVG(foo) FROM';
-            $r->select('bar');
-            $r->avg($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->select('bar');
+            $this->obj->avg($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testJoin() {
-            $r = new DatabaseQueryBuilder();
+        public function testJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y';
-            $r->join($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->join($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->join($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y';
-            $r->join($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y';
-            $r->join($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -342,53 +330,52 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->join($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->join($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
     
-        public function testInnerJoin() {
-            $r = new DatabaseQueryBuilder();
+        public function testInnerJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  INNER JOIN foo ON bar.x = foo.y';
-            $r->innerJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->innerJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz INNER JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->innerJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->innerJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  INNER JOIN foo ON bar.x = foo.y';
-            $r->innerJoin($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->innerJoin($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  INNER JOIN foo ON bar.x = foo.y';
-            $r->innerJoin($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->innerJoin($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -397,11 +384,11 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  INNER JOIN foo ON bar.x = foo.y INNER JOIN barbaz ON baz.a = foobar.b';
-            $r->innerJoin($value1, $field1, $field2);
-            $r->innerJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->innerJoin($value1, $field1, $field2);
+            $this->obj->innerJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing JOIN
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -410,53 +397,52 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y INNER JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->innerJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->innerJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
 
-        public function testLeftJoin() {
-            $r = new DatabaseQueryBuilder();
+        public function testLeftJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  LEFT JOIN foo ON bar.x = foo.y';
-            $r->leftJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz LEFT JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->leftJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->leftJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  LEFT JOIN foo ON bar.x = foo.y';
-            $r->leftJoin($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftJoin($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  LEFT JOIN foo ON bar.x = foo.y';
-            $r->leftJoin($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftJoin($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -465,11 +451,11 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  LEFT JOIN foo ON bar.x = foo.y LEFT JOIN barbaz ON baz.a = foobar.b';
-            $r->leftJoin($value1, $field1, $field2);
-            $r->leftJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftJoin($value1, $field1, $field2);
+            $this->obj->leftJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing JOIN
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -478,53 +464,52 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y LEFT JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->leftJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->leftJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testRightJoin() {
-            $r = new DatabaseQueryBuilder();
+        public function testRightJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  RIGHT JOIN foo ON bar.x = foo.y';
-            $r->rightJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz RIGHT JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->rightJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->rightJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  RIGHT JOIN foo ON bar.x = foo.y';
-            $r->rightJoin($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightJoin($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  RIGHT JOIN foo ON bar.x = foo.y';
-            $r->rightJoin($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightJoin($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -533,11 +518,11 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  RIGHT JOIN foo ON bar.x = foo.y RIGHT JOIN barbaz ON baz.a = foobar.b';
-            $r->rightJoin($value1, $field1, $field2);
-            $r->rightJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightJoin($value1, $field1, $field2);
+            $this->obj->rightJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing JOIN
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -546,53 +531,52 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y RIGHT JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->rightJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->rightJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testFullOuterJoin() {
-            $r = new DatabaseQueryBuilder();
+        public function testFullOuterJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  FULL OUTER JOIN foo ON bar.x = foo.y';
-            $r->fullOuterJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->fullOuterJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz FULL OUTER JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->fullOuterJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->fullOuterJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  FULL OUTER JOIN foo ON bar.x = foo.y';
-            $r->fullOuterJoin($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->fullOuterJoin($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  FULL OUTER JOIN foo ON bar.x = foo.y';
-            $r->fullOuterJoin($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->fullOuterJoin($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -601,11 +585,11 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  FULL OUTER JOIN foo ON bar.x = foo.y FULL OUTER JOIN barbaz ON baz.a = foobar.b';
-            $r->fullOuterJoin($value1, $field1, $field2);
-            $r->fullOuterJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->fullOuterJoin($value1, $field1, $field2);
+            $this->obj->fullOuterJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing JOIN
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -614,53 +598,52 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y FULL OUTER JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->fullOuterJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->fullOuterJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testLeftOuterJoin() {
-            $r = new DatabaseQueryBuilder();
+        public function testLeftOuterJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  LEFT OUTER JOIN foo ON bar.x = foo.y';
-            $r->leftOuterJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftOuterJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz LEFT OUTER JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->leftOuterJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->leftOuterJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  LEFT OUTER JOIN foo ON bar.x = foo.y';
-            $r->leftOuterJoin($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftOuterJoin($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  LEFT OUTER JOIN foo ON bar.x = foo.y';
-            $r->leftOuterJoin($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftOuterJoin($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -669,11 +652,11 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  LEFT OUTER JOIN foo ON bar.x = foo.y LEFT OUTER JOIN barbaz ON baz.a = foobar.b';
-            $r->leftOuterJoin($value1, $field1, $field2);
-            $r->leftOuterJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->leftOuterJoin($value1, $field1, $field2);
+            $this->obj->leftOuterJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing JOIN
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -682,53 +665,52 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y LEFT OUTER JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->leftOuterJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->leftOuterJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-         public function testRightOuterJoin() {
-            $r = new DatabaseQueryBuilder();
+         public function testRightOuterJoin(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM  RIGHT OUTER JOIN foo ON bar.x = foo.y';
-            $r->rightOuterJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightOuterJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //Using from
             $value = 'foo';
             $on = 'bar.x = foo.y';
             $expected = 'SELECT * FROM baz RIGHT OUTER JOIN foo ON bar.x = foo.y';
-            $r->from('baz');
-            $r->rightOuterJoin($value, $on);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from('baz');
+            $this->obj->rightOuterJoin($value, $on);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
-            $r->reset();
+            $this->obj->reset();
             //field 1 and 2 are set
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  RIGHT OUTER JOIN foo ON bar.x = foo.y';
-            $r->rightOuterJoin($value, $field1, '=', $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightOuterJoin($value, $field1, '=', $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //operator is an shortcut to field2, so default to "="
             $value = 'foo';
             $field1 = 'bar.x';
             $field2 = 'foo.y';
             $expected = 'SELECT * FROM  RIGHT OUTER JOIN foo ON bar.x = foo.y';
-            $r->rightOuterJoin($value, $field1, $field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightOuterJoin($value, $field1, $field2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing one
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -737,11 +719,11 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  RIGHT OUTER JOIN foo ON bar.x = foo.y RIGHT OUTER JOIN barbaz ON baz.a = foobar.b';
-            $r->rightOuterJoin($value1, $field1, $field2);
-            $r->rightOuterJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->rightOuterJoin($value1, $field1, $field2);
+            $this->obj->rightOuterJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             //using existing JOIN
             $value1 = 'foo';
             $value2 = 'barbaz';
@@ -750,258 +732,251 @@
             $field3 = 'baz.a';
             $field4 = 'foobar.b';
             $expected = 'SELECT * FROM  JOIN foo ON bar.x = foo.y RIGHT OUTER JOIN barbaz ON baz.a = foobar.b';
-            $r->join($value1, $field1, $field2);
-            $r->rightOuterJoin($value2, $field3, $field4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->join($value1, $field1, $field2);
+            $this->obj->rightOuterJoin($value2, $field3, $field4);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testWhereIsNull() {
-            $r = new DatabaseQueryBuilder();
+        public function testWhereIsNull(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT * FROM  WHERE foo IS NULL';
-            $r->whereIsNull($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNull($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing one
-            $r->reset();
+            $this->obj->reset();
             $value1 = 'foo';
             $value2 = 'bar';
             $expected = 'SELECT * FROM  WHERE foo IS NULL AND bar IS NULL';
-            $r->whereIsNull($value1);
-            $r->whereIsNull($value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNull($value1);
+            $this->obj->whereIsNull($value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array default param (AND)
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo', 'bar');
             $expected = 'SELECT * FROM  WHERE foo IS NULL AND bar IS NULL';
-            $r->whereIsNull($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNull($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array default with param)
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo', 'bar');
             $expected = 'SELECT * FROM  WHERE foo IS NULL OR bar IS NULL';
-            $r->whereIsNull($value, 'OR');
-            $this->assertSame($expected, $r->getQuery());  
+            $this->obj->whereIsNull($value, 'OR');
+            $this->assertSame($expected, $this->obj->getQuery());  
 		}
         
-        public function testWhereIsNotNull() {
-            $r = new DatabaseQueryBuilder();
+        public function testWhereIsNotNull(){ 
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $value = 'foo';
             $expected = 'SELECT * FROM  WHERE foo IS NOT NULL';
-            $r->whereIsNotNull($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNotNull($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //Using existing one
-            $r->reset();
+            $this->obj->reset();
             $value1 = 'foo';
             $value2 = 'bar';
             $expected = 'SELECT * FROM  WHERE foo IS NOT NULL AND bar IS NOT NULL';
-            $r->whereIsNotNull($value1);
-            $r->whereIsNotNull($value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNotNull($value1);
+            $this->obj->whereIsNotNull($value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array default param (AND)
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo', 'bar');
             $expected = 'SELECT * FROM  WHERE foo IS NOT NULL AND bar IS NOT NULL';
-            $r->whereIsNotNull($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNotNull($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array default with param)
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo', 'bar');
             $expected = 'SELECT * FROM  WHERE foo IS NOT NULL OR bar IS NOT NULL';
-            $r->whereIsNotNull($value, 'OR');
-            $this->assertSame($expected, $r->getQuery()); 
+            $this->obj->whereIsNotNull($value, 'OR');
+            $this->assertSame($expected, $this->obj->getQuery()); 
 
 
             //Combinaison of whereIsNotNull and whereIsNull (Default value for 2nd param)
-            $r->reset();
+            $this->obj->reset();
             $value1 = 'foo';
             $value2 = 'bar';
             $expected = 'SELECT * FROM  WHERE foo IS NOT NULL AND bar IS NULL';
-            $r->whereIsNotNull($value1);
-            $r->whereIsNull($value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNotNull($value1);
+            $this->obj->whereIsNull($value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Combinaison of whereIsNotNull and whereIsNull (set value for 2nd param)
-            $r->reset();
+            $this->obj->reset();
             $value1 = 'foo';
             $value2 = 'bar';
             $expected = 'SELECT * FROM  WHERE foo IS NOT NULL OR bar IS NULL';
-            $r->whereIsNotNull($value1);
-            $r->whereIsNull($value2, 'OR');
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->whereIsNotNull($value1);
+            $this->obj->whereIsNull($value2, 'OR');
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testWhere() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = 'bar';
             $expected = "SELECT * FROM  WHERE foo = 'bar'";
-            $r->where($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using null value
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = null;
             $expected = "SELECT * FROM  WHERE foo = ''";
-            $r->where($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array 
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo' => 'bar', 'bar' => 'foo');
             $expected = "SELECT * FROM  WHERE foo = 'bar' AND bar = 'foo'";
-            $r->where($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Dont escape the value
-            $r->reset();
+            $this->obj->reset();
             $field = 'date';
             $value = 'CURRENT_TIMESTAMP()';
             $expected = "SELECT * FROM  WHERE date >= CURRENT_TIMESTAMP()";
-            $r->where($field, '>=', $value, '', 'AND', false);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field, '>=', $value, '', 'AND', false);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using "?" in place of value
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo = ? AND bar = ?';
             $value = array('12', 'abc');
             $expected = "SELECT * FROM  WHERE foo = '12' AND bar = 'abc'";
-            $r->where($field, $value);
-            $this->assertSame($expected, $r->getQuery());    
+            $this->obj->where($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());    
 		}
         
-        public function testOrWhere() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = 'bar';
             $expected = "SELECT * FROM  WHERE foo = 'bar'";
-            $r->orWhere($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orWhere($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array 
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo' => 'bar', 'bar' => 'foo');
             $expected = "SELECT * FROM  WHERE foo = 'bar' OR bar = 'foo'";
-            $r->orWhere($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orWhere($value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
 		}
         
-        public function testNotWhere() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = 'bar';
             $expected = "SELECT * FROM  WHERE NOT foo = 'bar'";
-            $r->notWhere($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->notWhere($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array 
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo' => 'bar', 'bar' => 'foo');
             $expected = "SELECT * FROM  WHERE NOT foo = 'bar' AND NOT bar = 'foo'";
-            $r->notWhere($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->notWhere($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrNotWhere() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrNotWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = 'bar';
             $expected = "SELECT * FROM  WHERE NOT foo = 'bar'";
-            $r->orNotWhere($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orNotWhere($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array 
-            $r->reset();
+            $this->obj->reset();
             $value = array('foo' => 'bar', 'bar' => 'foo');
             $expected = "SELECT * FROM  WHERE NOT foo = 'bar' OR NOT bar = 'foo'";
-            $r->orNotWhere($value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orNotWhere($value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testGroupStartAndEnd() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testGroupStartAndEnd(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = 'bar';
             $expected = "SELECT * FROM  WHERE foo = 'bar'";
-            $r->where($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using with existing WHERE
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'baz';
             $value1 = '134';
             $value2 = 'abc';
             $expected = "SELECT * FROM  WHERE foo = '134' AND (baz = 'abc')";
-            $r->where($field1, $value1);
-            $r->groupStart();
-            $r->where($field2, $value2);
-            $r->groupEnd();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field1, $value1);
+            $this->obj->groupStart();
+            $this->obj->where($field2, $value2);
+            $this->obj->groupEnd();
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //When existing WHERE does not set before
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'baz';
             $value1 = '134';
             $value2 = 'abc';
             $expected = "SELECT * FROM  WHERE (foo = '134' AND baz = 'abc')";
-            $r->groupStart();
-            $r->where($field1, $value1);
-            $r->where($field2, $value2);
-            $r->groupEnd();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->groupStart();
+            $this->obj->where($field1, $value1);
+            $this->obj->where($field2, $value2);
+            $this->obj->groupEnd();
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //Using consecutive groupe
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'baz';
             $field3 = 'foobar';
@@ -1011,493 +986,476 @@
             $value3 = 'xy';
             $value4 = '987';
             $expected = "SELECT * FROM  WHERE (NOT(foo = '134' OR baz = 'abc') AND foobar = 'xy') AND NOT name = '987'";
-            $r->groupStart();
-            $r->orNotGroupStart();
-            $r->where($field1, $value1);
-            $r->orWhere($field2, $value2);
-            $r->groupEnd();
-            $r->where($field3, $value3);
-            $r->groupEnd();
-            $r->notWhere($field4, $value4);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->groupStart();
+            $this->obj->orNotGroupStart();
+            $this->obj->where($field1, $value1);
+            $this->obj->orWhere($field2, $value2);
+            $this->obj->groupEnd();
+            $this->obj->where($field3, $value3);
+            $this->obj->groupEnd();
+            $this->obj->notWhere($field4, $value4);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
             //Using type param
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'baz';
             $value1 = '134';
             $value2 = 'abc';
             $expected = "SELECT * FROM  WHERE foo = '134' AND NOT (baz = 'abc')";
-            $r->where($field1, $value1);
-            $r->notGroupStart();
-            $r->where($field2, $value2);
-            $r->groupEnd();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field1, $value1);
+            $this->obj->notGroupStart();
+            $this->obj->where($field2, $value2);
+            $this->obj->groupEnd();
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using 2nd param
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'baz';
             $value1 = '134';
             $value2 = 'abc';
             $expected = "SELECT * FROM  WHERE foo = '134' OR (baz = 'abc')";
-            $r->where($field1, $value1);
-            $r->orGroupStart();
-            $r->where($field2, $value2);
-            $r->groupEnd();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field1, $value1);
+            $this->obj->orGroupStart();
+            $this->obj->where($field2, $value2);
+            $this->obj->groupEnd();
+            $this->assertSame($expected, $this->obj->getQuery());
             
             
 		}
         
-        public function testIn() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testIn(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Numeric value
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array(3, 4, 89);
             $expected = "SELECT * FROM  WHERE foo IN (3, 4, 89)";
-            $r->in($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->in($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //String value
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array('a', 'bc', 'baz');
             $expected = "SELECT * FROM  WHERE foo IN ('a', 'bc', 'baz')";
-            $r->in($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->in($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testNotIn() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotIn(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Numeric value
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array(3, 4, 89);
             $expected = "SELECT * FROM  WHERE foo NOT IN (3, 4, 89)";
-            $r->notIn($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->notIn($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //String value
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array('a', 'bc', 'baz');
             $expected = "SELECT * FROM  WHERE foo NOT IN ('a', 'bc', 'baz')";
-            $r->notIn($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->notIn($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrIn() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrIn(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array(3, 4, 89);
             $field1 = 'foo';
             $value1 = '134';
             $expected = "SELECT * FROM  WHERE foo = '134' OR foo IN (3, 4, 89)";
-            $r->where($field1, $value1);
-            $r->orIn($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field1, $value1);
+            $this->obj->orIn($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array('a', 'bc', 'baz');
             $expected = "SELECT * FROM  WHERE foo IN ('a', 'bc', 'baz')";
-            $r->orIn($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orIn($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-         public function testOrNotIn() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+         public function testOrNotIn(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array(3, 4, 89);
             $field1 = 'foo';
             $value1 = '134';
             $expected = "SELECT * FROM  WHERE foo = '134' OR foo NOT IN (3, 4, 89)";
-            $r->where($field1, $value1);
-            $r->orNotIn($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($field1, $value1);
+            $this->obj->orNotIn($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value = array('a', 'bc', 'baz');
             $expected = "SELECT * FROM  WHERE foo NOT IN ('a', 'bc', 'baz')";
-            $r->orNotIn($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orNotIn($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
         
-        public function testBetween() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE bar = '45' AND foo BETWEEN '12' AND '134'";
-            $r->where($fieldw, $value);
-            $r->between($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->between($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE foo BETWEEN '12' AND '134'";
-            $r->between($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->between($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrBetween() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE bar = '45' OR foo BETWEEN '12' AND '134'";
-            $r->where($fieldw, $value);
-            $r->orBetween($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->orBetween($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE foo BETWEEN '12' AND '134'";
-            $r->orBetween($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orBetween($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testNotBetween() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE bar = '45' AND foo NOT BETWEEN '12' AND '134'";
-            $r->where($fieldw, $value);
-            $r->notBetween($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->notBetween($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE foo NOT BETWEEN '12' AND '134'";
-            $r->notBetween($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->notBetween($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrNotBetween() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrNotBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE bar = '45' OR foo NOT BETWEEN '12' AND '134'";
-            $r->where($fieldw, $value);
-            $r->orNotBetween($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->orNotBetween($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '12';
             $value2 = '134';
             $expected = "SELECT * FROM  WHERE foo NOT BETWEEN '12' AND '134'";
-            $r->orNotBetween($field, $value1, $value2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orNotBetween($field, $value1, $value2);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testLike() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testLike(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '%baz';
             $expected = "SELECT * FROM  WHERE bar = '45' AND foo LIKE '%baz'";
-            $r->where($fieldw, $value);
-            $r->like($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->like($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '%abc%';
             $expected = "SELECT * FROM  WHERE foo LIKE '%abc%'";
-            $r->like($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->like($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrLike() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrLike(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '%baz';
             $expected = "SELECT * FROM  WHERE bar = '45' OR foo LIKE '%baz'";
-            $r->where($fieldw, $value);
-            $r->orLike($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->orLike($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '%abc%';
             $expected = "SELECT * FROM  WHERE foo LIKE '%abc%'";
-            $r->orLike($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orLike($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testNotLike() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotLike(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '%baz';
             $expected = "SELECT * FROM  WHERE bar = '45' AND foo NOT LIKE '%baz'";
-            $r->where($fieldw, $value);
-            $r->notLike($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->notLike($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '%abc%';
             $expected = "SELECT * FROM  WHERE foo NOT LIKE '%abc%'";
-            $r->notLike($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->notLike($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrNotLike() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrNotLike(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing where
-            $r->reset();
+            $this->obj->reset();
             $fieldw = 'bar';
             $value = 45;
             $field = 'foo';
             $value1 = '%baz';
             $expected = "SELECT * FROM  WHERE bar = '45' OR foo NOT LIKE '%baz'";
-            $r->where($fieldw, $value);
-            $r->orNotLike($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->where($fieldw, $value);
+            $this->obj->orNotLike($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //WHERE is not set before
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $value1 = '%abc%';
             $expected = "SELECT * FROM  WHERE foo NOT LIKE '%abc%'";
-            $r->orNotLike($field, $value1);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orNotLike($field, $value1);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testLimit() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testLimit(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
            //Using only the first param
-            $r->reset();
+            $this->obj->reset();
             $expected = "SELECT * FROM  LIMIT 10";
-            $r->limit(10);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->limit(10);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //param is null or empty
-            $r->reset();
+            $this->obj->reset();
             $expected = "SELECT * FROM";
-            $r->limit(null);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->limit(null);
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             $expected = "SELECT * FROM  LIMIT 7, 10";
-            $r->limit(7, 10);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->limit(7, 10);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrderBy() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrderBy(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
            //Using only the first param
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $dir = 'ASC';
             $expected = "SELECT * FROM  ORDER BY foo ASC";
-            $r->orderBy($field);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orderBy($field);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using existing one
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'bar';
             $dir1 = 'ASC';
             $dir2 = 'DESC';
             $expected = "SELECT * FROM  ORDER BY foo ASC, bar DESC";
-            $r->orderBy($field1, $dir1);
-            $r->orderBy($field2, $dir2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orderBy($field1, $dir1);
+            $this->obj->orderBy($field2, $dir2);
+            $this->assertSame($expected, $this->obj->getQuery());
             
              //Using rand()
-            $r->reset();
+            $this->obj->reset();
             $field = 'rand()';
             $dir = 'ASC';
             $expected = "SELECT * FROM  ORDER BY rand()";
-            $r->orderBy($field);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->orderBy($field);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testGroupBy() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testGroupBy(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
-            $r->reset();
+            $this->obj->reset();
             $field = 'foo';
             $expected = "SELECT * FROM  GROUP BY foo";
-            $r->groupBy($field);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->groupBy($field);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using array
-            $r->reset();
+            $this->obj->reset();
             $fields = array('bar', 'foo');
             $expected = "SELECT * FROM  GROUP BY bar, foo";
-            $r->groupBy($fields);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->groupBy($fields);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Overwrite existing one
-            $r->reset();
+            $this->obj->reset();
             $field1 = 'foo';
             $field2 = 'bar';
             $expected = "SELECT * FROM  GROUP BY bar";
-            $r->groupBy($field1);
-            $r->groupBy($field2);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->groupBy($field1);
+            $this->obj->groupBy($field2);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
         
-         public function testHaving() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+         public function testHaving(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //After each call to getQuery() need reset to default values
-            $r->reset();
+            $this->obj->reset();
             $field = 'COUNT(bar)';
             $value = '34';
             $expected = "SELECT * FROM  HAVING COUNT(bar) > '34'";
-            $r->having($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->having($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using null value
-            $r->reset();
+            $this->obj->reset();
             $field = 'COUNT(foo)';
             $value = null;
             $expected = "SELECT * FROM  HAVING COUNT(foo) > ''";
-            $r->having($field, $value);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->having($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Dont escape the value
-            $r->reset();
+            $this->obj->reset();
             $field = 'MIN(date)';
             $value = 'CURRENT_TIMESTAMP()';
             $expected = "SELECT * FROM  HAVING MIN(date) >= CURRENT_TIMESTAMP()";
-            $r->having($field, '>=', $value, false);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->having($field, '>=', $value, false);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using "?" in place of value
-            $r->reset();
+            $this->obj->reset();
             $field = 'COUNT(foo) = ? AND SUM(bar) > ? OR AVG(baz) <= ?';
             $value = array(10, 367);
             $expected = "SELECT * FROM  HAVING COUNT(foo) = '10' AND SUM(bar) > '367' OR AVG(baz) <= ''";
-            $r->having($field, $value);
-            $this->assertSame($expected, $r->getQuery());    
+            $this->obj->having($field, $value);
+            $this->assertSame($expected, $this->obj->getQuery());    
 		}
         
-        public function testInsert() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testInsert(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             $data = array(
                 'foo' => 'bar',
@@ -1506,9 +1464,9 @@
             $table = 'footable';
             
             $expected = "INSERT INTO footable(foo, bar) VALUES ('bar', '3766')";
-            $r->from($table);
-            $r->insert($data);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->insert($data);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Dont escape
             $data = array(
@@ -1516,16 +1474,15 @@
                 'bar' => 'CURRENT_TIMESTAMP()'
             );
             $expected = "INSERT INTO footable(foo, bar) VALUES (NOW(), CURRENT_TIMESTAMP())";
-            $r->from($table);
-            $r->insert($data, false);
-            $this->assertSame($expected, $r->getQuery()); 
+            $this->obj->from($table);
+            $this->obj->insert($data, false);
+            $this->assertSame($expected, $this->obj->getQuery()); 
 		}
         
-        public function testUpdate() {
-            $r = new DatabaseQueryBuilder($this->pdo);
+        public function testUpdate(){ $r = new DatabaseQueryBuilder($this->pdo);
             
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             $data = array(
                 'foo' => 'bar',
@@ -1534,9 +1491,9 @@
             $table = 'footable';
             
             $expected = "UPDATE footable SET foo = 'bar', bar = '3766'";
-            $r->from($table);
-            $r->update($data);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->update($data);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Dont escape
             $data = array(
@@ -1544,9 +1501,9 @@
                 'bar' => 'CURRENT_TIMESTAMP()'
             );
             $expected = "UPDATE footable SET foo = NOW(), bar = CURRENT_TIMESTAMP()";
-            $r->from($table);
-            $r->update($data, false);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->update($data, false);
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //Using LIMIT, ORDER BY, WHERE
             $data = array(
@@ -1557,41 +1514,43 @@
             $fieldob = 'obfoo';
             $valuew = '12';
             $expected = "UPDATE footable SET foo = 'bar', bar = '3766' WHERE baz = '12' ORDER BY obfoo ASC LIMIT 3, 14";
-            $r->from($table);
-            $r->where($fieldw, $valuew);
-            $r->orderBy($fieldob);
-            $r->limit(3, 14);
-            $r->update($data);
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->where($fieldw, $valuew);
+            $this->obj->orderBy($fieldob);
+            $this->obj->limit(3, 14);
+            $this->obj->update($data);
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
         
-        public function testDelete() {
-            $r = new DatabaseQueryBuilder($this->pdo);
-            
+        public function testDelete(){
             $expected = 'SELECT * FROM';
-            $this->assertSame($expected, $r->getQuery());
+            $this->assertSame($expected, $this->obj->getQuery());
             
             $table = 'footable';
             
             //Default behavior is to truncate if no where
+            //Note currently the value of driver is "sqlite" need change it first
+            $this->obj->getConnection()->setDriver(null);
+            $this->assertNull($this->obj->getConnection()->getDriver());
+            
             $expected = "TRUNCATE TABLE footable";
-            $r->from($table);
-            $r->delete();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->delete();
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //When driver is "sqlite"
-            $this->assertNull($r->getDriver());
-            $r->setDriver('sqlite');
-            $this->assertSame('sqlite', $r->getDriver());
+            $this->assertNull($this->obj->getConnection()->getDriver());
+            $this->obj->getConnection()->setDriver('sqlite');
+            $this->assertSame('sqlite', $this->obj->getConnection()->getDriver());
             $expected = "DELETE FROM footable";
-            $r->from($table);
-            $r->delete();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->delete();
+            $this->assertSame($expected, $this->obj->getQuery());
             
             //restore driver to null value
-            $r->setDriver(null);
-            $this->assertNull($r->getDriver());
+            $this->obj->getConnection()->setDriver(null);
+            $this->assertNull($this->obj->getConnection()->getDriver());
             
      
             //Using LIMIT, ORDER BY, WHERE
@@ -1599,23 +1558,13 @@
             $fieldob = 'obfoo';
             $valuew = '12';
             $expected = "DELETE FROM footable WHERE baz = '12' ORDER BY obfoo ASC LIMIT 3, 14";
-            $r->from($table);
-            $r->where($fieldw, $valuew);
-            $r->orderBy($fieldob);
-            $r->limit(3, 14);
-            $r->delete();
-            $this->assertSame($expected, $r->getQuery());
+            $this->obj->from($table);
+            $this->obj->where($fieldw, $valuew);
+            $this->obj->orderBy($fieldob);
+            $this->obj->limit(3, 14);
+            $this->obj->delete();
+            $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        /**
-        * Mock method callback for PDO method quote()
-        */
-        public function mockPdoMethodQuoteReturnCallback() {
-            $args = func_get_args();
-            if($args[0] == null) {
-                return "''";
-            }
-            return "'".$args[0]."'";
-        }
-
+       
 	}

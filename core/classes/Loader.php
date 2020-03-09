@@ -128,7 +128,7 @@
             //Check and load Database library
             if (strtolower($class) == 'database') {
                 $logger->info('This is the Database library ...');
-                $obj->{$instance} = & class_loader('Database', 'classes/database', $params);
+                $obj->{$instance} = & class_loader('Database', 'classes/database');
                 self::$loaded[$instance] = $class;
                 $logger->info('Library Database loaded successfully.');
                 return;
