@@ -47,8 +47,7 @@
 		}
         
         public function testSetPdo() {
-            $pdo = $this->getMockBuilder('PDO')
-                        ->disableOriginalConstructor()
+            $pdo = $this->getMockBuilder('PDOMock')
                         ->getMock();
                         
             $cnx = new DatabaseConnection(array(), false);

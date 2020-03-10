@@ -5,15 +5,9 @@
      *
      * @group core
      * @group database
-     *
-     * Fix for error: You cannot serialize or unserialize PDO instances
-     * @backupGlobals disabled
-     * @backupStaticAttributes disabled
      */
 	class DatabaseQueryRunnerTest extends TnhTestCase {	
 	
-		
-                        
 		public function testConstructor() {
             //connection is null;
             $qr = new DatabaseQueryRunner();
@@ -116,8 +110,7 @@
                          ->method('fetch')
                          ->will($this->returnValue($dataResult));            
              
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -172,8 +165,7 @@
                          ->method('fetchAll')
                          ->will($this->returnValue($dataResult));            
              
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -228,8 +220,8 @@
                          ->method('fetchAll')
                          ->will($this->returnValue($dataResult));            
              
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
+
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -280,8 +272,7 @@
                          ->method('rowCount')
                          ->will($this->returnValue(1));
                          
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -332,8 +323,7 @@
              $pdoStatment->expects($this->never())
                          ->method('rowCount');
                          
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -388,8 +378,7 @@
                          ->method('fetchAll')
                          ->will($this->returnValue($dataResult));            
              
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -448,8 +437,7 @@
                          ->method('fetchAll')
                          ->will($this->returnValue($dataResult));            
              
-             $pdo = $this->getMockBuilder('PDO')
-                         ->disableOriginalConstructor()
+             $pdo = $this->getMockBuilder('PDOMock')
                          ->getMock();
                         
              $pdo->expects($this->any())
@@ -494,8 +482,4 @@
             $this->assertNull($result);
             $this->assertNotEmpty($qr->getQueryError());
 		}
-        
-        
-       
-
 	}

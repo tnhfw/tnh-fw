@@ -29,8 +29,7 @@
     
 	use PHPUnit\Framework\TestCase;
 
-	class TnhTestCase extends TestCase
-	{	
+	class TnhTestCase extends TestCase {	
         //vfsStream root
         protected $vfsRoot = null;
         
@@ -50,6 +49,7 @@
        
 	
 		public function __construct() {
+            parent::__construct();
            //some global configuration
            $this->config = new Config();
            $this->config->init();

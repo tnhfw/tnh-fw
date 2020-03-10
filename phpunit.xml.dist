@@ -8,8 +8,7 @@
 	stopOnError="false"
 	stopOnFailure="false"
 	stopOnIncomplete="false"
-	stopOnSkipped="false"
-    processIsolation="false">
+	stopOnSkipped="false">
 	<testsuites>
 		<testsuite name="TNH Framework Core Test Suite">
 			<directory suffix="Test.php">./tests/tnhfw/classes</directory>

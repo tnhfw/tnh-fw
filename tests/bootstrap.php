@@ -256,14 +256,15 @@
 
 	//require autoloader for test
 	require_once  'include/autoloader.php';
-	
-	
 
 	//grap from core/common.php functions and mock some functions for tests
 	require_once  'include/common.php';
 	
 	//Global testcase class
 	require_once  'include/TnhTestCase.php';
+    
+    //mock of PDO testcase class
+	require_once  'include/PDOMock.php';
 	
 	/**
 	* Setting of the PHP error message handling function
