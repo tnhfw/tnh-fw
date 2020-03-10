@@ -5,6 +5,10 @@
      *
      * @group core
      * @group database
+     *
+     * Fix for error: You cannot serialize or unserialize PDO instances
+     * @backupGlobals disabled
+     * @backupStaticAttributes disabled
      */
 	class DatabaseQueryRunnerTest extends TnhTestCase {	
 	
