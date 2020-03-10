@@ -193,7 +193,7 @@
          *
          * @return object DatabaseQueryRunner
          */
-        public function setQueryResult(DatabaseQueryResult $queryResult) {
+        public function setQueryResult(DatabaseQueryResult $queryResult = null) {
             $this->queryResult = $queryResult;
             return $this;
         }
