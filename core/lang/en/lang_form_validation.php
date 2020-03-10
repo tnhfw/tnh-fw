@@ -31,22 +31,33 @@
     /**
      * Form validation language message (English) 
      */
-    $lang['fv_required'] = 'Field %1 is required.';
-    $lang['fv_min_length']   		= 'Field %1 must contain at least %2 characters.';
-    $lang['fv_max_length']   		= 'Field %1 must contain at most %2 characters.';
-    $lang['fv_exact_length'] 		= 'Field %1 must contain exactly %2 characters.';
-    $lang['fv_less_than'] = 'Field %1 must less than %2.';
-    $lang['fv_greater_than'] 		= 'Field %1 must greater than %2.';
-    $lang['fv_matches']      		= 'Field %1 must be identical to field %2.';
-    $lang['fv_valid_email']  		= 'Field %1 must contain a valid E-mail address.';
-    $lang['fv_not_equal_post_key']  = 'Field %1 must not be the same as field %2.';
-    $lang['fv_not_equal_string']    = 'Field %1 must not contain the value %2.';
-    $lang['fv_depends']      		= 'Field %1 depends on field %2 which is not valid.';
-    $lang['fv_is_unique']	   		= 'The value of field %1 already exists.';
-    $lang['fv_is_unique_update'] = 'The value of field %1 already exists for another record.';
-    $lang['fv_exists'] = 'The value of the field %1 does not exist.';
-    $lang['fv_regex'] = 'The value of the field %1 does not use the correct format.';
-    $lang['fv_in_list']	   			= 'The value of field %1 must be one of the list (%2).';
-    $lang['fv_numeric']	   			= 'The value of field %1 must be a number.';
-    $lang['fv_callback']	   		= 'The value of field %1 is not valid.';
- 	
+    $lang['fv_required']         = 'Field {label} is required';
+    $lang['fv_min_length']       = 'Field {label} must contain at least {paramValue} characters';
+    $lang['fv_max_length']       = 'Field {label} must contain at most {paramValue} characters';
+    $lang['fv_exact_length']     = 'Field {label} must contain exactly {paramValue} characters';
+    $lang['fv_matches']          = 'Field {label} must be identical to field {label2}';
+    $lang['fv_not_equal']        = 'Field {label} must not be the same as field {label2}';
+    $lang['fv_min']              = 'Field {label} must be greather or equal to {paramValue}';
+    $lang['fv_max']              = 'Field {label} must be less or equal to {paramValue}';
+    $lang['fv_between']          = 'Field {label} must be between [{paramValue}]';
+    $lang['fv_in_list']          = 'The value of field {label} must be one of the following ({paramValue})';
+    $lang['fv_numeric']          = 'The value of field {label} must be a number';
+    $lang['fv_integer']          = 'The value of field {label} must be an integer';
+    $lang['fv_integer_natural']  = 'The value of field {label} must be a natural number (0, 1, 2, etc.)';
+    $lang['fv_alpha']            = 'Field {label} must contain alphabetic characters';
+    $lang['fv_alpha_dash']       = 'Field {label} must contain alphabetic characters and -, _';
+    $lang['fv_alnum']            = 'Field {label} must contain alphanumeric characters';
+    $lang['fv_alnum_dash']       = 'Field {label} must contain alphanumeric characters and -, _';
+    $lang['fv_email']            = 'Field {label} must contain a valid e-mail address';
+    $lang['fv_date']             = 'Field {label} must contain a correct date format {paramValue}';
+    $lang['fv_date_before']      = 'Field {label} must be before the date {paramValue}';
+    $lang['fv_date_after']       = 'Field {label} must be after the date {paramValue}';
+    $lang['fv_url']              = 'Field {label} must be a valid URL';
+    $lang['fv_ip']               = 'Field {label} must be a valid ip address';
+    $lang['fv_ipv4']             = 'Field {label} must be a valid ipv4 address';
+    $lang['fv_ipv6']             = 'Field {label} must be a valid ipv6 address';
+    $lang['fv_is_unique']        = 'The value of field {label} already exists';
+    $lang['fv_is_unique_update'] = 'The value of field {label} already exists for another record';
+    $lang['fv_exists']           = 'The value of the field {label} does not exist';
+    $lang['fv_regex']            = 'The value of the field {label} does not use the correct format';
+    $lang['fv_callback']         = 'The value of field {label} is not valid';

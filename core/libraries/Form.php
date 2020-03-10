@@ -112,10 +112,9 @@
             $return = null;
             $obj = & get_instance();
             if (isset($obj->formvalidation)) {
-                $errors = $obj->formvalidation->returnErrors();
+                $errors = $obj->formvalidation->getErrors();
                 if (isset($errors[$name])) {
-                    list($errorStart, $errorEnd) = $obj->formvalidation->getErrorDelimiter();
-                    $return = $errorStart . $errors[$name] . $errorEnd;
+                    $return = $errors[$name];
                 }
             }
             return $return;
@@ -171,7 +170,7 @@
             $str .= '/>';
             return $str;
         }
-		
+        
         /**
          * Generate the form field for "text"
          * @see Form::input() for more details
@@ -233,7 +232,7 @@
         public static function email($name, $value = null, array $attributes = array()) {
             return self::input($name, $value, $attributes, 'email');
         }
-		
+        
         /**
          * Generate the form field for "search"
          * @see Form::input() for more details
@@ -241,7 +240,7 @@
         public static function search($name, $value = null, array $attributes = array()) {
             return self::input($name, $value, $attributes, 'search');
         }
-		
+        
         /**
          * Generate the form field for "hidden"
          * @see Form::input() for more details
@@ -249,7 +248,7 @@
         public static function hidden($name, $value = null, array $attributes = array()) {
             return self::input($name, $value, $attributes, 'hidden');
         }
-		
+        
         /**
          * Generate the form field for "file"
          * @see Form::input() for more details
@@ -257,7 +256,7 @@
         public static function file($name, array $attributes = array()) {
             return self::input($name, null, $attributes, 'file');
         }
-		
+        
         /**
          * Generate the form field for "button"
          * @see Form::input() for more details
@@ -265,7 +264,7 @@
         public static function button($name, $value = null, array $attributes = array()) {
             return self::input($name, $value, $attributes, 'button');
         }
-		
+        
         /**
          * Generate the form field for "reset"
          * @see Form::input() for more details
@@ -273,7 +272,7 @@
         public static function reset($name, $value = null, array $attributes = array()) {
             return self::input($name, $value, $attributes, 'reset');
         }
-		
+        
         /**
          * Generate the form field for "submit"
          * @see Form::input() for more details
@@ -297,7 +296,7 @@
             $str .= $value . '</textarea>';
             return $str;
         }
-		
+        
         /**
          * Generate the form field for select
          * @param  string $name       the name of the form field

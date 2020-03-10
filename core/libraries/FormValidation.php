@@ -27,112 +27,303 @@
      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
      * SOFTWARE.
      */
-
+    
     class FormValidation extends BaseClass {
-         
+
         /**
-         * The form validation status
-         * @var boolean
+         * The list of validation rules
+         *
+         * Format:
+         * [field1] => array(rule1, rule2)
+         * [field2] => array(rule3, rule3)
+         *
+         * @var array
          */
-        protected $_success = false;
+        private $rules = array();
+
+        /**
+         * The list of field labels
+         *
+         * Format:
+         * [field1] => 'label 1'
+         * [field2] => 'label 2'
+         *
+         * @var array
+         */
+        private $labels = array();
 
         /**
          * The list of errors messages
+         * Format:
+         * [field1] => 'error message 1';
+         * [field2] => 'error message 2';
+         * 
          * @var array
          */
-        protected $_errorsMessages = array();
-        
-        // Array of rule sets, fieldName => PIPE seperated ruleString
-        protected $_rules = array();
-        
-        // Array of errors, niceName => Error Message
-        protected $_errors = array();
-        
-        // Array of post Key => Nice name labels
-        protected $_labels = array();
-        
-        /**
-         * The errors delimiters
-         * @var array
-         */
-        protected $_allErrorsDelimiter = array('<div class="error">', '</div>');
+        private $errors = array();
 
         /**
-         * The each error delimiter
-         * @var array
-         */
-        protected $_eachErrorDelimiter = array('<p class="error">', '</p>');
-        
-        /**
-         * Indicated if need force the validation to be failed
+         * The validation status
          * @var boolean
          */
-        protected $_forceFail = false;
+        private $valid = false;
 
         /**
-         * The list of the error messages overrides by the original
+         * Whether we force validation to be an error
+         * @var boolean
+         */
+        private $forceError = false;
+        
+        /**
+         * The list of rules errors messages
+         *
+         * Format:
+         * [rule1] => 'message 1';
+         * [rule2] => 'message 2';
+         * Message can contain placeholder: {field}, {label}, {value}, {paramValue}, {field2}'
+         *
          * @var array
          */
-        protected $_errorMsgOverrides = array();
-
+        private $messages = array();
+        
+        /**
+         * The list of the custom errors messages overrides by the original
+         *
+         * Format:
+         * [field1][rule1] = message 1
+         * [field2][rule2] = message 2
+         *
+         * @var array
+         */
+        private $customErrors = array();
+        
         /**
          * The data to be validated, the default is to use $_POST
          * @var array
          */
         private $data = array();
 
-
         /**
-         * The database instance
+         * The database instance to use to validate rules:
+         * - exists
+         * - is_unique
+         * - is_unique_update
          * @var object
          */
-        private $databaseInstance = null;
-
+        private $database = null;
+        
         /**
-         * Set all errors and rule sets empty, and sets success to false.
-         *
-         * @return void
+         * Construct new Form Validation instance
+         * Reset the field to the default value
+         * Set the rules validations messages
+         * And if data of $_POST exists set it as the default
          */
         public function __construct() {
             parent::__construct();
-           
-            //Load form validation language message
-            Loader::lang('form_validation');
-            $obj = & get_instance();
-            $this->_errorsMessages = array(
-                        'required'         => $obj->lang->get('fv_required'),
-                        'min_length'       => $obj->lang->get('fv_min_length'),
-                        'max_length'       => $obj->lang->get('fv_max_length'),
-                        'exact_length'     => $obj->lang->get('fv_exact_length'),
-                        'less_than'        => $obj->lang->get('fv_less_than'),
-                        'greater_than'     => $obj->lang->get('fv_greater_than'),
-                        'matches'          => $obj->lang->get('fv_matches'),
-                        'valid_email'      => $obj->lang->get('fv_valid_email'),
-                        'not_equal'        => array(
-                                                'post:key' => $obj->lang->get('fv_not_equal_post_key'),
-                                                'string'   => $obj->lang->get('fv_not_equal_string')
-                                            ),
-                        'depends'          => $obj->lang->get('fv_depends'),
-                        'is_unique'        => $obj->lang->get('fv_is_unique'),
-                        'is_unique_update' => $obj->lang->get('fv_is_unique_update'),
-                        'exists'           => $obj->lang->get('fv_exists'),
-                        'regex'            => $obj->lang->get('fv_regex'),
-                        'in_list'          => $obj->lang->get('fv_in_list'),
-                        'numeric'          => $obj->lang->get('fv_numeric'),
-                        'callback'         => $obj->lang->get('fv_callback'),
-                    );
-            $this->_resetValidation();
-            if (is_array($obj->request->post(null))) {
-                $this->setData($obj->request->post(null));
+
+            //Reset the validation instance
+            $this->reset();
+
+            //Set default messages for each validation rule
+            $this->setValidationMessages();
+
+            //Set default data to validation from $_POST
+            if (is_array(get_instance()->request->post(null))) {
+                $this->setData(get_instance()->request->post(null));
             }
         }
 
-        /**
-         * Set the database instance
-         * @param object $database the database instance
+         /**
+         * Reset the form validation instance
+         *
+         * @return object the current instance
          */
-        public function setDatabase(Database $database) {
-            $this->databaseInstance = $database;
+        public function reset() {
+            $this->rules        = array();
+            $this->labels       = array();
+            $this->errors       = array();
+            $this->customErrors = array();
+            $this->valid        = false;
+            $this->data         = array();
+            return $this;
+        }
+        
+        /**
+         * Set the validation data
+         * @param array $data the data to be validated
+         *
+         * @return object the current instance.
+         */
+        public function setData(array $data) {
+            $this->logger->debug('Setting the form validation data, the values are: ' . stringfy_vars($data));
+            $this->data = $data;
+            return $this;
+        }
+
+         /**
+         * Return the validation data
+         * 
+         * @return array the validation data
+         */
+        public function getData() {
+            return $this->data;
+        }
+
+        /**
+         * Add new validation rule.
+         *
+         * @param string $field name of the field or the data key to add a rule to
+         * @param string $label the value of the field label
+         * @param string|array $rule pipe seperated string or array of validation rules
+         *
+         * @return object the current instance.
+         */
+        public function setRule($field, $label, $rule) {
+            $rules = array();
+            //if the rule is array
+            if (is_array($rule)) {
+                $rules = $rule;
+            } else{
+                //the rule is not an array explode pipe values
+                $rules = explode('|', $rule);
+            }
+            $this->rules[$field] = $rules;
+            $this->labels[$field] = $label;
+            return $this;
+        }
+
+        /**
+         * Takes an array of rules and uses $this->setRule() to set them.
+         * @param array $rules the array of rule
+         *
+         * @return object the current instance.
+         */
+        public function setRules(array $rules) {
+            foreach ($rules as $rule) {
+                call_user_func_array(array($this, 'setRule'), array($rule['name'], $rule['label'], $rule['rules']));
+            }
+            return $this;
+        }
+
+        /**
+         * Return the list of the validations rules
+         * @return array
+         */
+        public function getRules() {
+            return $this->rules;
+        }
+
+         /**
+         * Return the list of the validations rules for the given field
+         * 
+         * @return array
+         */
+        public function getFieldRules($field) {
+            $rules = array();
+            if (array_key_exists($field, $this->rules)) {
+                $rules = $this->rules[$field];
+            }
+            return $rules;
+        }
+
+        /**
+         * Return the value for the given field if exists otherwise null
+         * will be returned
+         * 
+         * @return string|null
+         */
+        public function getFieldValue($field) {
+             $value = null;
+            if (array_key_exists($field, $this->data)) {
+                $value = $this->data[$field];
+            }
+            return $value;
+        }
+
+        /**
+         * Return the label for the given field if exists otherwise null
+         * will be returned
+         * 
+         * @return string|null
+         */
+        public function getFieldLabel($field) {
+            $label = null;
+            if (array_key_exists($field, $this->labels)) {
+                $label = $this->labels[$field];
+            }
+            return $label;
+        }
+            
+        
+       /**
+        * Return the list of validation errors
+        * 
+        * @return array the errors list. 
+        * Format:
+        *  [field1] => 'error message 1', 
+        *  [field2] => 'error message 2' 
+        */
+       public function getErrors() {
+            return $this->errors;
+        }
+
+        /**
+         * Process the data validation of each field, if it has any rules, run
+         * each rule against the data value. 
+         * and finally set $this->valid to true if there are no errors otherwise set to false
+         * in case of error
+         */
+        public function validate() {
+            //if the data is empty just return false
+            if (empty($this->data)) {
+                return false;
+            }
+            //Apply some filter/clean in the data to validate
+            $this->filterValidationData();
+
+            //Check the CSRF status
+            $this->checkCsrf();
+
+            //Now loop in each field rule and validate it
+            foreach($this->rules as $field => $rules) {
+                $this->validateField($field, $rules);
+            }
+            $this->valid = empty($this->errors) && $this->forceError === false;
+            return $this->valid;
+        }
+
+        /**
+         * Return the validation status
+         * @return boolean
+         */
+        public function isValid() {
+            return $this->valid;
+        }
+
+        /**
+         * Set a custom error message that can override the default error phrase provided.
+         *  
+         * If the parameter $field is null so means will set the error message for
+         * all fields for the given rule, otherwise only error message for this field and rule will be set
+         * the others fields use the default one for this rule.
+         *
+         * @param string $rule the name of the rule to set error message for.
+         * @param string $message the error message it can contains the placeholder
+         * {field}, {label}, {value}, {paramValue}, {field2}.
+         * @param string|null $field if not null will set the error message only for this field and rule
+         *
+         * @return object the current instance.
+         */
+        public function setCustomErrorMessage($rule, $message, $field = null) {
+            //1st if field is null all fields for this rule will be set to the same message
+            //2nd if field is not null set only for this field
+            if ($field !== null) {
+                $this->customErrors[$field][$rule] = $message;
+            } else {
+                foreach(array_keys($this->rules) as $field) {
+                    $this->customErrors[$field][$rule] = $message;
+                }
+            }
             return $this;
         }
 
@@ -141,750 +332,712 @@
          * @return object the database instance
          */
         public function getDatabase() {
-            return $this->databaseInstance;
+            return $this->database;
         }
 
         /**
-         * Reset the form validation instance
-         */
-        protected function _resetValidation() {
-            $this->_rules                = array();
-            $this->_labels               = array();
-            $this->_errorMsgOverrides    = array();
-            $this->_errors               = array();
-            $this->_success              = false;
-            $this->_forceFail            = false;
-            $this->data                  = array();
-        }
-
-        /**
-         * Set the form validation data
-         * @param array $data the values to be validated
+         * Set the database instance
+         * @param object $database the database instance
          *
-         * @return FormValidation Current instance of object.
+         * @return object the current instance
          */
-        public function setData(array $data) {
-            $this->logger->debug('Setting the form validation data, the values are: ' . stringfy_vars($data));
-            $this->data = $data;
+        public function setDatabase(Database $database) {
+            $this->database = $database;
+            return $this;
+        }
+
+         /**
+         * Set the database instance using get_instance() if is null
+         *
+         * @return object the current instance
+         */
+        protected function setDatabaseFromSuperInstanceIfNotSet(){
+            if (!is_object($this->database)) {
+                $this->database = get_instance()->database;
+            }
             return $this;
         }
 
         /**
-         * Get the form validation data
-         * @return array the form validation data to be validated
-         */
-        public function getData() {
-            return $this->data;
-        }
-
-        /**
-         * Get the validation function name to validate a rule
+         * Set the validation error for the given field
+         * @param string $field      the error field
+         * @param string $rule       the name of the rule raise this error
+         * @param mixed $paramValue the value of rule parameter
+         * Example: min_length[17], the $paramValue will be "17"
+         * @param string|null $field2     the second field used in some validation rule like "matches", "not_equal"
          *
-         * @return string the function name
+         * @return object the current instance
          */
-        protected function _toCallCase($funcName, $prefix = '_validate') {
-            $funcName = strtolower($funcName);
-            $finalFuncName = $prefix;
-            foreach (explode('_', $funcName) as $funcNamePart) {
-                $finalFuncName .= strtoupper($funcNamePart[0]) . substr($funcNamePart, 1);
+        protected function setFieldError($field, $rule, $paramValue = null, $field2 = null) {
+            //do we have error before?
+            if (!array_key_exists($field, $this->errors)) {
+                $this->errors[$field] = $this->getFieldErrorMessage($field, $rule, $paramValue, $field2);
             }
-            return $finalFuncName;
+            return $this;
         }
 
         /**
-         * Returns the boolean of the data status success. It goes by the simple
+         * Set the validation error for the given field by checking if the field is not required
+         * or contains the value
+         * @param string $field      the error field
+         * @param mixed $value      the value of field
+         * @param string $rule       the name of the rule raise this error
+         * @param mixed $paramValue the value of rule parameter
+         * Example: min_length[17], the $paramValue will be "17"
+         * @param string|null $field2     the second field used in some validation rule like "matches", "not_equal"
          *
-         * @return boolean Whether or not the data validation has succeeded
          */
-        public function isSuccess() {
-            return $this->_success;
+         protected function setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue = null, $field2 = null) {
+            //if the field is not required and his value is not set don't set error
+            //but in case the field have value validate it
+            if (!$this->fieldIsRequired($field) && strlen($value) <= 0) {
+                return;
+            }
+            $this->setFieldError($field, $rule, $paramValue, $field2);
         }
 
         /**
-         * Checks if the request method is POST or the Data to be validated is set
-         *
-         * @return boolean Whether or not the form has been submitted or the data is available for validation.
-         */
-        public function canDoValidation() {
-            return get_instance()->request->method() === 'POST' || !empty($this->data);
-        }
-
-        /**
-         * Runs _run once POST data has been submitted or data is set manually.
-         *
+         * Check whether the given field is required or not
+         * @param  string $field the name of the field
          * @return boolean
          */
-        public function run() {
-            if ($this->canDoValidation()) {
-                $this->logger->info('The data to validate are listed below: ' . stringfy_vars($this->getData()));
-                $this->_run();
+        protected function fieldIsRequired($field) {
+            $rules = $this->getFieldRules($field);
+            return in_array('required', $rules);
+        }
+        
+        /**
+         * Return the name of the method to use to validate the given rule
+         * each method has a prefix of "checkRule"
+         * @param  string $rule the name of the rule
+         * @return string       the name of the validation method
+         */
+        protected function getRuleValidationMethod($rule) {
+             $parts = explode('_', $rule);
+             $parts = array_map('ucfirst', $parts);
+             return 'checkRule' . implode('', $parts);
+        }
+        
+        /**
+         * This method is used to apply some filter rule on the validation data
+         * like remove space, do some clean, etc.
+         * @return object the current instance
+         */
+        protected function filterValidationData() {
+            foreach($this->data as $key => $value ) {
+                $this->data[$key] = trim($value);
             }
-            return $this->isSuccess();
+            return $this;
         }
 
         /**
-         * Validate the CSRF 
-         * @return boolean
+         * Validate the CSRF if the current request method is POST
+         * and the check of CSRF is enabled in the configuration
          */
-        protected function validateCSRF() {
+        protected function checkCsrf() {
             if (get_instance()->request->method() == 'POST') {
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
                 if (get_config('csrf_enable', false) && !Security::validateCSRF()) {
+                    $this->forceError = true;
                     show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
-                    return false;
                 } else {
                     $this->logger->info('CSRF is not enabled in configuration or not set manully, no need to check it');
                 }
             }
-            return true;
+        }
+              
+        /**
+         * Return the validation error message content for the given field
+         * after replace all placeholders with their values
+         * @param string $field      the error field
+         * @param string $rule       the name of the rule raise this error
+         * @param mixed $paramValue the value of rule parameter
+         * Example: min_length[17], the $paramValue will be "17"
+         * @param string|null $field2     the second field used in some validation rule like "matches", "not_equal"
+         *
+         * @return string the error message
+         */
+        protected function getFieldErrorMessage($field, $rule, $paramValue = null, $field2 = null) {
+            $template = array(
+                            '{field}'      => $field,
+                            '{value}'      => $this->getFieldValue($field),
+                            '{label}'      => $this->getFieldLabel($field),
+                            '{paramValue}' => $paramValue
+                            );
+            if ($field2 !== null) {
+                $template['field2}']  = $field2;
+                $template['{value2}'] = $this->getFieldValue($field2);
+                $template['{label2}'] = $this->getFieldLabel($field2);
+             }     
+            $message = $this->messages[$rule];
+            //Check for custom message
+            if (isset($this->customErrors[$field][$rule])) {
+                $message = $this->customErrors[$field][$rule];
+            }
+            return strtr($message, $template);
+        }
+
+        /**
+         * Perform validation for the given field
+         * @param  string $field the field name
+         * @param  array $rules the list of rule to validate
+         */
+        protected function validateField($field, array $rules) {
+            foreach($rules as $rule) {
+                $match = array();
+                $paramValue = null;
+                //Is the rule with parameter ??
+                preg_match('/\[(.*)\]/', $rule, $match);
+                if (isset($match[1])) {
+                    $paramValue = $match[1];
+                }
+                //Now get the real rule name for example 
+                //min_length[34]
+                //the name will be "min_length" and paramValue will be "14"
+                $realRuleName = preg_replace('/\[(.*)\]/', '', $rule);
+
+                //Get the name of the method to validate this rule
+                $method = $this->getRuleValidationMethod($realRuleName);
+                if (method_exists($this, $method)) {
+                       call_user_func_array(array($this, $method), array($field, $realRuleName, $paramValue));
+                }
+                else{
+                    $this->forceError = true;
+                    show_error('Invalid validaton rule "' . $realRuleName . '"');
+                }
+            }
         }
         
         /**
-         * Takes and trims each data, if it has any rules, we parse the rule string and run
-         * each rule against the data value. Sets _success to true if there are no errors
-         * afterwards.
+         * Set the rules validation messages using translation messages
          */
-        protected function _run() {
-            //validate CSRF
-            if (!$this->validateCSRF()) {
-                return;
-            }
-            /////////////////////////////////////////////
-            $this->_forceFail = false;
+        protected function setValidationMessages() {
+            //Load form validation language message
+            Loader::lang('form_validation');
+            $obj = & get_instance();
 
-            foreach ($this->getData() as $inputName => $inputVal) {
-                $this->data[$inputName] = trim($this->data[$inputName]);
-
-                if (array_key_exists($inputName, $this->_rules)) {
-                    foreach ($this->_parseRuleString($this->_rules[$inputName]) as $eachRule) {
-                        $this->_validateRule($inputName, $this->data[$inputName], $eachRule);
-                    }
-                }
-            }
-            $this->_success = empty($this->_errors) && $this->_forceFail === false;
+            $this->messages['required']         = $obj->lang->get('fv_required');
+            $this->messages['min_length']       = $obj->lang->get('fv_min_length');
+            $this->messages['max_length']       = $obj->lang->get('fv_max_length');
+            $this->messages['exact_length']     = $obj->lang->get('fv_exact_length');
+            $this->messages['matches']          = $obj->lang->get('fv_matches');
+            $this->messages['not_equal']        = $obj->lang->get('fv_not_equal');
+            $this->messages['min']              = $obj->lang->get('fv_min');
+            $this->messages['max']              = $obj->lang->get('fv_max');
+            $this->messages['between']          = $obj->lang->get('fv_between');
+            $this->messages['in_list']          = $obj->lang->get('fv_in_list');
+            $this->messages['numeric']          = $obj->lang->get('fv_numeric');
+            $this->messages['integer']          = $obj->lang->get('fv_integer');
+            $this->messages['integer_natural']  = $obj->lang->get('fv_integer_natural');
+            $this->messages['alpha']            = $obj->lang->get('fv_alpha');
+            $this->messages['alpha_dash']       = $obj->lang->get('fv_alpha_dash');
+            $this->messages['alnum']            = $obj->lang->get('fv_alnum');
+            $this->messages['alnum_dash']       = $obj->lang->get('fv_alnum_dash');
+            $this->messages['email']            = $obj->lang->get('fv_email');
+            $this->messages['date']             = $obj->lang->get('fv_date');
+            $this->messages['date_before']      = $obj->lang->get('fv_date_before');
+            $this->messages['date_after']       = $obj->lang->get('fv_date_after');
+            $this->messages['url']              = $obj->lang->get('fv_url');
+            $this->messages['ip']               = $obj->lang->get('fv_ip');
+            $this->messages['ipv4']             = $obj->lang->get('fv_ipv4');
+            $this->messages['ipv6']             = $obj->lang->get('fv_ipv6');
+            $this->messages['is_unique']        = $obj->lang->get('fv_is_unique');
+            $this->messages['is_unique_update'] = $obj->lang->get('fv_is_unique_update');
+            $this->messages['exists']           = $obj->lang->get('fv_exists');
+            $this->messages['regex']            = $obj->lang->get('fv_regex');
+            $this->messages['callback']         = $obj->lang->get('fv_callback');
         }
+        
 
+        /* ---------------------------------------------------------------------------------- */
+        ///////////////////////////////////////////////////////////////////////////////////////
+        /**************************** RULES VALIDATION METHODS ******************************/
+        /////////////////////////////////////////////////////////////////////////////////////
+        
         /**
-         * Adds a rule to a form data validation field.
+         * Validation of rule "default_value[param]"
          *
-         * @param string $inputField Name of the field or the data key to add a rule to
-         * @param string $ruleSets PIPE seperated string of rules
-         *
-         * @return FormValidation Current instance of object.
-         */
-        public function setRule($inputField, $inputLabel, $ruleSets) {
-            $this->_rules[$inputField] = $ruleSets;
-            $this->_labels[$inputField] = $inputLabel;
-            $this->logger->info('Set the field rule: name [' . $inputField . '], label [' . $inputLabel . '], rules [' . $ruleSets . ']');
-            return $this;
-        }
-
-        /**
-         * Takes an array of rules and uses setRule() to set them, accepts an array
-         * of rule names rather than a pipe-delimited string as well.
-         * @param array $ruleSets
-         *
-         * @return FormValidation Current instance of object.
-         */
-        public function setRules(array $ruleSets) {
-            foreach ($ruleSets as $ruleSet) {
-                $pipeDelimitedRules = null;
-                if (is_array($ruleSet['rules'])) {
-                    $pipeDelimitedRules = implode('|', $ruleSet['rules']);
-                } else {
-                    $pipeDelimitedRules = $ruleSet['rules'];
-                }
-                $this->setRule($ruleSet['name'], $ruleSet['label'], $pipeDelimitedRules);
-            }
-            return $this;
-        }
-
-        /**
-         * This method creates the global errors delimiter, each argument occurs once, at the beginning, and
-         * end of the errors block respectively.
-         *
-         * @param string $start Before block of errors gets displayed, HTML allowed.
-         * @param string $end After the block of errors gets displayed, HTML allowed.
-         *
-         * @return FormValidation Current instance of object.
-         */
-        public function setErrorsDelimiter($start, $end) {
-            $this->_allErrorsDelimiter[0] = $start;
-            $this->_allErrorsDelimiter[1] = $end;
-            return $this;
-        }
-
-        /**
-         * This is the individual error delimiter, each argument occurs once before and after
-         * each individual error listed.
-         *
-         * @param string $start Displayed before each error.
-         * @param string $end Displayed after each error.
+         * NOTE: This one it's not a validation rule it just check if the value for the
+         * given field is null, empty and set it by the paramter value.
          * 
-         * @return FormValidation Current instance of object.
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("default_value")
+         * @param  string|null  $paramValue  the rule parameter
          */
-        public function setErrorDelimiter($start, $end) {
-            $this->_eachErrorDelimiter[0] = $start;
-            $this->_eachErrorDelimiter[1] = $end;
-            return $this;
-        }
-
-        /**
-         * Get the each errors delimiters
-         *
-         * @return array
-         */
-        public function getErrorDelimiter() {
-            return $this->_eachErrorDelimiter;
-        }
-
-        /**
-         * Get the all errors delimiters
-         *
-         * @return array
-         */
-        public function getErrorsDelimiter() {
-            return $this->_allErrorsDelimiter;
-        }
-
-        /**
-         * This sets a custom error message that can override the default error phrase provided
-         * by FormValidation, it can be used in the format of setMessage('rule', 'error phrase')
-         * which will globally change the error phrase of that rule, or in the format of:
-         * setMessage('rule', 'fieldname', 'error phrase') - which will only change the error phrase for
-         * that rule, applied on that field.
-         *
-         * @return boolean True on success, false on failure.
-         */
-        public function setMessage() {
-            $numArgs = func_num_args();
-            if ($numArgs == 2) {
-               foreach ($this->post(null) as $key => $val) {
-                    $this->_errorMsgOverrides[$key][func_get_arg(0)] = func_get_arg(1);
-                }
-                return true;
-            } else if ($numArgs == 3) {
-                $this->_errorMsgOverrides[func_get_arg(1)][func_get_arg(0)] = func_get_arg(2);
-                 return true;
+        protected function checkRuleDefaultValue($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);
+            if (strlen($value) <= 0) {
+                $this->data[$field] = $paramValue;
             }
-            return false;
         }
-
-        /**
-         * Adds a custom error message in the errorSet array, that will
-         * forcibly display it.
-         *
-         * @param string $inputName The form input name or data key
-         * @param string $errorMessage Error to display
-         *
-         * @return formValidation Current instance of the object
-         */
-        public function setCustomError($inputName, $errorMessage) {
-            $errorMessage = str_replace('%1', $this->_labels[$inputName], $errorMessage);
-            $this->_errors[$inputName] = $errorMessage;
-            return $this;
-        }
-
-        /**
-         * Allows for an accesor to any/all post values, if a value of null is passed as the key, it
-         * will recursively find all keys/values of the $_POST array or data array. It also automatically trims
-         * all values.
-         *
-         * @param string $key Key of $this->data to be found, pass null for all Key => Val pairs.
-         * @param boolean $trim Defaults to true, trims all $this->data values.
-         * @return string|array Array of post or data values if null is passed as key, string if only one key is desired.
-         */
-        public function post($key = null, $trim = true) {
-            $returnValue = null;
-            if (is_null($key)) {
-                $returnValue = array();
-                foreach ($this->data  as $key => $val) {
-                    $returnValue[$key] = $this->post($key, $trim);
-                }
-            } else if (array_key_exists($key, $this->data)) {
-                $returnValue = $this->data[$key];
-                if ($trim) {
-                    $returnValue = trim($this->data[$key]);
-                }
-            }
-            return $returnValue;
-        }
-
-        /**
-         * Gets all errors from errorSet and displays them, can be echo out from the
-         * function or just returned.
-         *
-         * @param boolean $echo Whether or not the values are to be returned or displayed
-         *
-         * @return string|void Errors formatted for output
-         */
-        public function displayErrors($echo = true) {
-            list($errorsStart, $errorsEnd) = $this->_allErrorsDelimiter;
-            list($errorStart, $errorEnd) = $this->_eachErrorDelimiter;
-            $errorOutput = $errorsStart;
-            $i = 0;
-            if (!empty($this->_errors)) {
-                foreach ($this->_errors as $fieldName => $error) {
-                    $errorOutput .= $errorStart;
-                    $errorOutput .= $error;
-                    $errorOutput .= $errorEnd;
-                    $i++;
-                }
-            }
-            $errorOutput .= $errorsEnd;
-            if (!$echo) {
-                return $errorOutput;
-            }
-            echo $errorOutput;
-        }
-
-        /**
-         * Returns raw array of errors in no format instead of displaying them
-         * formatted.
-         *
-         * @return array
-         */
-        public function returnErrors() {
-            return $this->_errors;
-        }
-
-        /**
-         * Breaks up a PIPE seperated string of rules, and puts them into an array.
-         *
-         * @param string $ruleString String to be parsed.
-         *
-         * @return array Array of each value in original string.
-         */
-        protected function _parseRuleString($ruleString) {
-            $ruleSets = array();
-            /*
-            //////////////// hack for regex rule that can contain "|"
-            */
-            if (strpos($ruleString, 'regex') !== false) {
-                $regexRule = array();
-                $rule = '#regex\[\/(.*)\/([a-zA-Z0-9]?)\]#';
-                preg_match($rule, $ruleString, $regexRule);
-                $ruleStringTemp = preg_replace($rule, '', $ruleString);
-                if (!empty($regexRule[0])) {
-                    $ruleSets[] = $regexRule[0];
-                }
-                 $ruleStringRegex = explode('|', $ruleStringTemp);
-                foreach ($ruleStringRegex as $rule) {
-                    $rule = trim($rule);
-                    if ($rule) {
-                        $ruleSets[] = $rule;
-                    }
-                }
-                 
-            }
-            /***********************************/
-            else {
-                if (strpos($ruleString, '|') !== FALSE) {
-                    $ruleSets = explode('|', $ruleString);
-                } else {
-                    $ruleSets[] = $ruleString;
-                }
-            }
-            return $ruleSets;
-        }
-
-        /**
-         * Returns whether or not a field obtains the rule "required".
-         *
-         * @param string $fieldName Field to check if required.
-         *
-         * @return boolean Whether or not the field is required.
-         */
-        protected function _fieldIsRequired($fieldName) {
-            $rules = $this->_parseRuleString($this->_rules[$fieldName]);
-            return (in_array('required', $rules));
-        }
-
-        /**
-         * Takes a data input name, it's value, and the rule it's being validated against (ex: max_length[16])
-         * and adds an error to the errorSet if it fails validation of the rule.
-         *
-         * @param string $inputName Name or key of the validation data
-         * @param string $inputVal Value of the validation data
-         * @param string $ruleName Rule to be validated against, including args (exact_length[5])
-         * @return void
-         */
-        protected function _validateRule($inputName, $inputVal, $ruleName) {
-            $this->logger->debug('Rule validation of field [' . $inputName . '], value [' . $inputVal . '], rule [' . $ruleName . ']');
-            // Array to store args
-            $ruleArgs = array();
-
-            preg_match('/\[(.*)\]/', $ruleName, $ruleArgs);
-
-            // Get the rule arguments, realRule is just the base rule name
-            // Like min_length instead of min_length[3]
-            $ruleName = preg_replace('/\[(.*)\]/', '', $ruleName);
             
-            if (method_exists($this, $this->_toCallCase($ruleName))) {
-                $methodToCall = $this->_toCallCase($ruleName);
-                call_user_func(array($this, $methodToCall), $inputName, $ruleName, $ruleArgs);
-            }
-        }
-
         /**
-         * Set error for the given field or key
-         *
-         * @param string $inputName the input or key name
-         * @param string $ruleName the rule name
-         * @param array|string $replacements
+         * Validation of rule "required"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("required")
+         * @param  string|null  $paramValue  the rule parameter
          */
-        protected function _setError($inputName, $ruleName, $replacements = array()) {
-            $rulePhraseKeyParts = explode(',', $ruleName);
-            $rulePhrase = null;
-            foreach ($rulePhraseKeyParts as $rulePhraseKeyPart) {
-                if (array_key_exists($rulePhraseKeyPart, $this->_errorsMessages)) {
-                    $rulePhrase = $this->_errorsMessages[$rulePhraseKeyPart];
-                } else {
-                    $rulePhrase = $rulePhrase[$rulePhraseKeyPart];
-                }
-            }
-            // Any overrides?
-            if (array_key_exists($inputName, $this->_errorMsgOverrides) && array_key_exists($ruleName, $this->_errorMsgOverrides[$inputName])) {
-                $rulePhrase = $this->_errorMsgOverrides[$inputName][$ruleName];
-            }
-            // Type cast to array in case it's a string
-            $replacements = (array) $replacements;
-            $replacementCount = count($replacements);
-            for ($i = 1; $i <= $replacementCount; $i++) {
-                $key = $i - 1;
-                $rulePhrase = str_replace('%' . $i, $replacements[$key], $rulePhrase);
-            }
-            if (!array_key_exists($inputName, $this->_errors)) {
-                $this->_errors[$inputName] = $rulePhrase;
-            }
-        }
-
-        /**
-         * Used to run a callback for the callback rule, as well as pass in a default
-         * argument of the data value. For example the username field having a rule:
-         * callback[userExists] will call the function userExists() with parameter data[username].
-         *
-         * @param type $inputArg
-         * @param string $callbackFunc
-         *
-         * @return boolean
-         */
-        protected function _runCallback($inputArg, $callbackFunc) {
-            return call_user_func($callbackFunc, $inputArg);
-        }
-
-        /**
-         * Gets a specific label of a specific field input name.
-         *
-         * @param string $inputName
-         *
-         * @return string
-         */
-        protected function _getLabel($inputName) {
-            return (array_key_exists($inputName, $this->_labels)) ? $this->_labels[$inputName] : $inputName;
-        }
-        
-        /**
-         * Peform validation for the rule "required"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("required")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateRequired($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if ($inputVal == '') {
-                $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
-            }
-        }
-
-        /**
-         * Perform validation for the honey pot so means for the validation to be failed
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateHoneypot($inputName, $ruleName, array $ruleArgs) {
-            if ($this->data[$inputName] != '') {
-                $this->_forceFail = true;
-            }
-        }
-
-        /**
-         * Peform validation for the rule "callback"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("callback")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateCallback($inputName, $ruleName, array $ruleArgs) {
-            if (function_exists($ruleArgs[1]) && array_key_exists($inputName, $this->data)) {
-                $result = $this->_runCallback($this->data[$inputName], $ruleArgs[1]);
-                if (!$result) {
-                    $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
-                }
-            }
-        }
-
-        /**
-         * Peform validation for the rule "depends"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("depends")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateDepends($inputName, $ruleName, array $ruleArgs) {
-            if (array_key_exists($ruleArgs[1], $this->_errors)) {
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "not_equal"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("not_equal")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateNotEqual($inputName, $ruleName, array $ruleArgs) {
-            $canNotEqual = explode(',', $ruleArgs[1]);
-            foreach ($canNotEqual as $doNotEqual) {
-                $inputVal = $this->post($inputName);
-                if (preg_match('/post:(.*)/', $doNotEqual)) {
-                    if ($inputVal == $this->data[str_replace('post:', '', $doNotEqual)]) {
-                        $this->_setError($inputName, $ruleName . ',post:key', array($this->_getLabel($inputName), $this->_getLabel(str_replace('post:', '', $doNotEqual))));
-                        continue;
-                    }
-                } else {
-                    if ($inputVal == $doNotEqual) {
-                        $this->_setError($inputName, $ruleName . ',string', array($this->_getLabel($inputName), $doNotEqual));
-                        continue;
-                    }
-                }
-            }
-        }
-
-        /**
-         * Peform validation for the rule "matches"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("matches")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateMatches($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if ($inputVal != $this->data[$ruleArgs[1]]) {
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "valid_email"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("valid_email")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateValidEmail($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (!preg_match("/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i", $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, $this->_getLabel($inputName));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "exact_length"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("exact_length")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateExactLength($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (strlen($inputVal) != $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "max_length"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("max_length")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateMaxLength($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (strlen($inputVal) > $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-
-        /**
-         * Peform validation for the rule "min_length"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("min_length")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateMinLength($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (strlen($inputVal) < $ruleArgs[1]) { // $ruleArgs[0] is [length] $rulesArgs[1] is just length
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
+        protected function checkRuleRequired($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);
+            if ($value == '') {
+                $this->setFieldError($field, $rule, $paramValue);
             }
         }
         
         /**
-         * Peform validation for the rule "less_than"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("less_than")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateLessThan($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if ($inputVal >= $ruleArgs[1]) { 
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-        
-        /**
-         * Peform validation for the rule "greater_than"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("greater_than")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateGreaterThan($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if ($inputVal <= $ruleArgs[1]) {
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
-            }
-        }
-        
-        /**
-         * Peform validation for the rule "numeric"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("numeric")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateNumeric($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (!is_numeric($inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+         * Validation of rule "min_length[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("min_length")
+         * @param  string|null  $paramValue  the rule parameter
+         */ 
+        protected function checkRuleMinLength($field, $rule, $paramValue) {
+           $value = $this->getFieldValue($field);    
+            if (strlen($value) < $paramValue) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
 
         /**
-         * Peform validation for the rule "in_list"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("in_list")
-         * @param  array  $ruleArgs  the rules argument
+         * Validation of rule "max_length[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("max_length")
+         * @param  string|null  $paramValue  the rule parameter
          */
-        protected function _validateInList($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            $list = explode(',', $ruleArgs[1]);
+        protected function checkRuleMaxLength($field, $rule, $paramValue) {
+           $value = $this->getFieldValue($field);    
+            if (strlen($value) > $paramValue) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "exact_length[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("exact_length")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleExactLength($field, $rule, $paramValue) {
+           $value = $this->getFieldValue($field);    
+            if (strlen($value) != $paramValue) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "matches[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("matches")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleMatches($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if ($value != $this->getFieldValue($paramValue)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue, $field2 = $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "not_equal[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("not_equal")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleNotEqual($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if ($value == $this->getFieldValue($paramValue)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue, $field2 = $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "min[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("min")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleMin($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if ($value < $paramValue) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "max[param]"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("max")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleMax($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if ($value > $paramValue) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "between[param]" param format is x,y
+         * Example: between[1,100]
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("between")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleBetween($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            $betweens = explode(',', $paramValue, 2);
+            $betweens = array_map('trim', $betweens);
+            if (($value < $betweens[0]) || ($value > $betweens[1])) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "in_list[param]" param format is a,b,c,d
+         * Example: in_list[1,3,56,100]
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("in_list")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleInList($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            $list = explode(',', $paramValue);
             $list = array_map('trim', $list);
-            if (!in_array($inputVal, $list)) {
-                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName), $this->_getLabel($ruleArgs[1])));
+            $paramValue = implode(',', $list);
+            if (!in_array($value, $list)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
 
         /**
-         * Peform validation for the rule "regex"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("regex")
-         * @param  array  $ruleArgs  the rules argument
+         * Validation of rule "numeric"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("numeric")
+         * @param  string|null  $paramValue  the rule parameter
          */
-        protected function _validateRegex($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            $regex = $ruleArgs[1];
-            if (!preg_match($regex, $inputVal)) {
-                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
-            }
-        }
-        
-        /**
-         * Peform validation for the rule "exists"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("exists")
-         * @param  array  $ruleArgs  the rules argument
-         */
-        protected function _validateExists($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (!is_object($this->databaseInstance)) {
-                $obj = & get_instance();
-                if (isset($obj->database)) {
-                    $this->databaseInstance = $obj->database;
-                } 
-            }
-            list($table, $column) = explode('.', $ruleArgs[1]);
-            $this->databaseInstance->getQueryBuilder()->from($table)
-                                                        ->where($column, $inputVal);
-            $this->databaseInstance->get();
-            if ($this->databaseInstance->numRows() <= 0) {
-                if (!$this->_fieldIsRequired($inputName) && strlen($this->data[$inputName]) <= 0) {
-                    return;
-                }
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+        protected function checkRuleNumeric($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (!is_numeric($value)) {
+               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
 
         /**
-         * Peform validation for the rule "is_unique"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("is_unique")
-         * @param  array  $ruleArgs  the rules argument
+         * Validation of rule "integer"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("integer")
+         * @param  string|null  $paramValue  the rule parameter
          */
-        protected function _validateIsUnique($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (!is_object($this->databaseInstance)) {
-                $obj = & get_instance();
-                if (isset($obj->database)) {
-                    $this->databaseInstance = $obj->database;
-                } 
-            }
-            list($table, $column) = explode('.', $ruleArgs[1]);
-            $this->databaseInstance->getQueryBuilder()->from($table)
-                                                        ->where($column, $inputVal);
-            $this->databaseInstance->get();
-            if ($this->databaseInstance->numRows() > 0) {
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+        protected function checkRuleInteger($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_INT) === false) {
+               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
-        
+
         /**
-         * Peform validation for the rule "is_unique_update"
-         * @param  string $inputName the form field or data key name used
-         * @param  string $ruleName  the rule name for this validation ("is_unique_update")
-         * @param  array  $ruleArgs  the rules argument
+         * Validation of rule "integer_natural"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("integer_natural")
+         * @param  string|null  $paramValue  the rule parameter
          */
-        protected function _validateIsUniqueUpdate($inputName, $ruleName, array $ruleArgs) {
-            $inputVal = $this->post($inputName);
-            if (!is_object($this->databaseInstance)) {
-                $obj = & get_instance();
-                if (isset($obj->database)) {
-                    $this->databaseInstance = $obj->database;
-                } 
+        protected function checkRuleIntegerNatural($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_INT) === false || $value < 0) {
+               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
-            $data = explode(',', $ruleArgs[1]);
-            if (count($data) < 2) {
-                return;
+        }
+
+        /**
+         * Validation of rule "alpha"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("alpha")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleAlpha($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (!preg_match('/^[\pL\pM\s]+$/u', $value)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
+        }
+
+        /**
+         * Validation of rule "alpha_dash"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("alpha_dash")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleAlphaDash($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);
+            if (!preg_match('/^[\pL\pM_-]+$/u', $value)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "alnum"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("alnum")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleAlnum($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);
+            if (!preg_match('/^[\pL\pM\pN\s]+$/u', $value)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "alnum_dash"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("alnum_dash")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleAlnumDash($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);
+            if (!preg_match('/^[\pL\pM\pN_-]+$/u', $value)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "email"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("email")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleEmail($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "date[param]" param can be a valid 
+         * value supported by function date()
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("date")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleDate($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);
+            $format = $paramValue;
+            $dateValue = date_create_from_format($format, $value);    
+            if ($dateValue === false || $dateValue->format($format) !== $value) {
+               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "date_before[param]" param can be a valid 
+         * value supported by function strtotime()
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("date_before")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleDateBefore($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (strtotime($value) >= strtotime($paramValue)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "date_after[param]" param can be a valid 
+         * value supported by function strtotime()
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("date_after")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleDateAfter($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (strtotime($value) <= strtotime($paramValue)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "url"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("url")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleUrl($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "ip", the correct value can be ipv4, ipv6, for specific rule
+         * use the rule below like ipv4 or ipv6.
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("ip")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleIp($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_IP) === false) {
+               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "ipv4"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("ipv4")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleIpv4($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "ipv6"
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("ipv6")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleIpv6($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "is_unique[param]" param value format is
+         * [tablename.fieldname]
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("is_unique")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleIsUnique($field, $rule, $paramValue) {
+            $this->setDatabaseFromSuperInstanceIfNotSet();
+            $value = $this->getFieldValue($field);    
+            list($table, $column) = explode('.', $paramValue);
+            $this->database->getQueryBuilder()->from($table)
+                                              ->where($column, $value);
+            $this->database->get();
+            if ($this->database->numRows() > 0) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "is_unique_update[param]" param value format is
+         * [tablename.fieldname,keyfield=value]
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("is_unique_update")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleIsUniqueUpdate($field, $rule, $paramValue) {
+            $this->setDatabaseFromSuperInstanceIfNotSet();
+            $value = $this->getFieldValue($field);  
+            $data = explode(',', $paramValue, 2);
             list($table, $column) = explode('.', $data[0]);
-            list($field, $val)    = explode('=', $data[1]);
-            $this->databaseInstance->getQueryBuilder()->from($table)
-                                                        ->where($column, $inputVal)
-                                                        ->where($field, '!=', trim($val));
-            $this->databaseInstance->get();
-            if ($this->databaseInstance->numRows() > 0) {
-                $this->_setError($inputName, $ruleName, array($this->_getLabel($inputName)));
+            list($columnKey, $valueKey) = explode('=', $data[1]);
+            $this->database->getQueryBuilder()->from($table)
+                                              ->where($column, $value)
+                                              ->where($columnKey, '!=', trim($valueKey));
+            $this->database->get();
+            if ($this->database->numRows() > 0) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
-        
+
+        /**
+         * Validation of rule "exists[param]" param value format is
+         * [tablename.fieldname]
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("exists")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleExists($field, $rule, $paramValue) {
+            $this->setDatabaseFromSuperInstanceIfNotSet();
+            $value = $this->getFieldValue($field);    
+            list($table, $column) = explode('.', $paramValue);
+            $this->database->getQueryBuilder()->from($table)
+                                              ->where($column, $value);
+            $this->database->get();
+            if ($this->database->numRows() <= 0) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "regex[param]" param can be any value supported by
+         * function preg_match()
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("regex")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleRegex($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (!preg_match($paramValue, $value)) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+            }
+        }
+
+        /**
+         * Validation of rule "callback[param]" param can be any value supported by
+         * function is_callable() and this callable must accept one argument for
+         * the field value and must return false or true for the validation status.
+         * Example:
+         *
+         * function check_username_exists($value) {
+         *   //some check
+         *   return {true|false}
+         * }
+         * 
+         * @param  string $field the name of the field or data key name used
+         * @param  string $rule  the rule name for this validation ("required")
+         * @param  string|null  $paramValue  the rule parameter
+         */
+        protected function checkRuleCallback($field, $rule, $paramValue) {
+            $value = $this->getFieldValue($field);    
+            if (is_callable($paramValue)) {
+                if (call_user_func_array($paramValue, array($value)) === false) {
+                    $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
+                }
+            } else{
+                $this->forceError = true;
+                show_error('The callback validation function/method "' . $paramValue . '" does not exist');
+            }
+        }
+
     }

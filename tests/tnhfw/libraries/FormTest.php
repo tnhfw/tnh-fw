@@ -85,17 +85,14 @@
             
             $fv = $this->getMockBuilder('FormValidation')->getMock();
 			$fv->expects($this->any())
-                    ->method('returnErrors')
+                    ->method('getErrors')
                     ->will($this->returnValue(array($fieldName => 'foo error message')));
-            $fv->expects($this->any())
-                    ->method('getErrorDelimiter')
-                    ->will($this->returnValue(array('<bar>', '</bar>')));
                     
             $obj = & get_instance();
             $obj->formvalidation = $fv;
             
             $f = new Form();
-            $expected = '<bar>foo error message</bar>';
+            $expected = 'foo error message';
 			$this->assertSame($expected, $f->error($fieldName));
 		}
         
