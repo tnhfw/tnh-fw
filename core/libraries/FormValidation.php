@@ -183,7 +183,7 @@
             //if the rule is array
             if (is_array($rule)) {
                 $rules = $rule;
-            } else{
+            } else {
                 //the rule is not an array explode pipe values
                 $rules = explode('|', $rule);
             }
@@ -285,7 +285,7 @@
             $this->checkCsrf();
 
             //Now loop in each field rule and validate it
-            foreach($this->rules as $field => $rules) {
+            foreach ($this->rules as $field => $rules) {
                 $this->validateField($field, $rules);
             }
             $this->valid = empty($this->errors) && $this->forceError === false;
@@ -320,7 +320,7 @@
             if ($field !== null) {
                 $this->customErrors[$field][$rule] = $message;
             } else {
-                foreach(array_keys($this->rules) as $field) {
+                foreach (array_keys($this->rules) as $field) {
                     $this->customErrors[$field][$rule] = $message;
                 }
             }
@@ -351,7 +351,7 @@
          *
          * @return object the current instance
          */
-        protected function setDatabaseFromSuperInstanceIfNotSet(){
+        protected function setDatabaseFromSuperInstanceIfNotSet() {
             if (!is_object($this->database)) {
                 $this->database = get_instance()->database;
             }
@@ -424,8 +424,12 @@
          * @return object the current instance
          */
         protected function filterValidationData() {
-            foreach($this->data as $key => $value ) {
-                $this->data[$key] = trim($value);
+            foreach ($this->data as $key => $value ) {
+                if (is_array($value)) {
+                   $this->data[$key] = array_map('trim', $value);
+                } else {
+                    $this->data[$key] = trim($value);
+                }
             }
             return $this;
         }
@@ -484,7 +488,7 @@
          * @param  array $rules the list of rule to validate
          */
         protected function validateField($field, array $rules) {
-            foreach($rules as $rule) {
+            foreach ($rules as $rule) {
                 $match = array();
                 $paramValue = null;
                 //Is the rule with parameter ??
@@ -501,8 +505,7 @@
                 $method = $this->getRuleValidationMethod($realRuleName);
                 if (method_exists($this, $method)) {
                        call_user_func_array(array($this, $method), array($field, $realRuleName, $paramValue));
-                }
-                else{
+                } else {
                     $this->forceError = true;
                     show_error('Invalid validaton rule "' . $realRuleName . '"');
                 }

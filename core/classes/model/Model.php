@@ -864,7 +864,7 @@
             $fv->setData($data);
             $fv->setRules($this->validate);
 
-            if ($fv->run()) {
+            if ($fv->validate()) {
                 return $data;
             }
             return FALSE;
