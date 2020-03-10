@@ -10,31 +10,31 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/7cd6345e1f49603a0817/maintainability)](https://codeclimate.com/github/tnhfw/tnh-fw/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7cd6345e1f49603a0817/test_coverage)](https://codeclimate.com/github/tnhfw/tnh-fw/test_coverage)
 
-## Requirements
 
+### Requirements 
+You can use **TNH Framework** for web or command line application. For web application: 
  - Any web server **(Apache, nginx, lighttp, etc.)**
- - **PHP >= 5.4**, **PHP 7**
+ - **PHP >= 5.4**, **PHP 7** 
 
-## Installation 
-### Using composer (recommended)
+For CLI application just PHP executable is needed. 
+
+### Installation
+#### Using composer (recommended)
 ```bash
 composer create-project tnhfw/tnh-fw --stability dev
 ```
-### Using GitHub releases
+#### Using GitHub releases
  - Download the framework using the following link [https://github.com/tnhfw/tnh-fw/releases](https://github.com/tnhfw/tnh-fw/releases)
  - Extract the downloaded file in your web directory (**www, htdocs, web, etc.)** for example **/www/tnh-fw** or with your application name **/www/my-apps**
 
 ### Launch it
 Open your browser with the url like **http://localhost/tnh-fw** or **http://localhost/my-apps** change localhost with your real IP address or domain name.
 
-
 ### Tests
 See [TESTING.MD](TESTING.MD)
 
 ### License
-MIT License
-See [LICENSE.MD](LICENSE.MD)
-
+MIT License See [LICENSE.MD](LICENSE.MD)
 
 ### Documentation 
 Read the doc
