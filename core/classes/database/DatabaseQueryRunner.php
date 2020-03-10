@@ -82,11 +82,8 @@
         /**
          * Construct new DatabaseQueryRunner
          * @param object $connection the DatabaseConnection object
-         * @param string $query the SQL query to be executed
-         * @param boolean $returnAsList if need return as list or just one row
-         * @param boolean $returnAsArray whether to return the result as array or not
          */
-        public function __construct(DatabaseConnection $connection = null, $query = null, $returnAsList = true, $returnAsArray = false) {
+        public function __construct(DatabaseConnection $connection = null) {
             parent::__construct();
             if ($connection !== null) {
                 $this->connection = $connection;
@@ -97,29 +94,6 @@
              
             //Set Benchmark instance to use
             $this->setDependencyInstanceFromParamOrCreate('benchmarkInstance', null, 'Benchmark', 'libraries');
-       
-            $this->query         = $query;
-            $this->returnAsList  = $returnAsList;
-            $this->returnAsArray = $returnAsArray;
-        }
-
-        /**
-         * Return the DatabaseConnection instance
-         * @return object DatabaseConnection
-         */
-        public function getConnection() {
-            return $this->connection;
-        }
-
-        /**
-         * Set the DatabaseConnection instance
-         * @param object DatabaseConnection $connection the DatabaseConnection object
-         *
-         * @return object the current instance
-         */
-        public function setConnection(DatabaseConnection $connection) {
-            $this->connection = $connection;
-            return $this;
         }
         
         /**
@@ -138,17 +112,16 @@
             $this->benchmarkInstance->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');                
             //Now execute the query
             $this->pdoStatment = $this->connection->getPdo()->query($this->query);
-            
             //get response time for this query
             $responseTime = $this->benchmarkInstance->elapsedTime(
                                                                     'DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 
                                                                     'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')'
                                                                     );
                 //TODO use the configuration value for the high response time currently is 1 second
-            if ($responseTime >= 1) {
+            if ((double) $responseTime >= 1.000000) {
                 $this->logger->warning(
-                                        'High response time while processing database query [' . $this->query . ']. 
-                                         The response time is [' .$responseTime . '] sec.'
+                                        'High response time while processing database query [' . $this->query . '].' 
+                                        . 'The response time is [' .$responseTime . '] sec.'
                                         );
             }
     		
@@ -159,60 +132,31 @@
                 } else {
                     $this->setResultForNonSelect();
                 }
+                //close cursor
+                $this->pdoStatment->closeCursor();
+
                 return $this->queryResult;
             }
             $this->setQueryRunnerError();
         }
     	
         /**
-         * Return the result for SELECT query
-         * @see DatabaseQueryRunner::execute
+         * Return the DatabaseConnection instance
+         * @return object DatabaseConnection
          */
-        protected function setResultForSelect() {
-            //if need return all result like list of record
-            $result = null;
-            $numRows = 0;
-            $fetchMode = PDO::FETCH_OBJ;
-            if ($this->returnAsArray) {
-                $fetchMode = PDO::FETCH_ASSOC;
-            }
-            if ($this->returnAsList) {
-                $result = $this->pdoStatment->fetchAll($fetchMode);
-            } else {
-                $result = $this->pdoStatment->fetch($fetchMode);
-            }
-            //Sqlite and pgsql always return 0 when using rowCount()
-            if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
-                //by default count() return 1 if the parameter is not an array
-                //object or object implements Countable.
-                if (is_array($result) || is_object($result) || $result instanceof Countable) {
-                     $numRows = count($result);  
-                }
-            } else {
-                $numRows = $this->pdoStatment->rowCount(); 
-            }
-            $this->queryResult->setResult($result);
-            $this->queryResult->setNumRows($numRows);
+        public function getConnection() {
+            return $this->connection;
         }
 
         /**
-         * Return the result for non SELECT query
-         * @see DatabaseQueryRunner::execute
+         * Set the DatabaseConnection instance
+         * @param object DatabaseConnection $connection the DatabaseConnection object
+         *
+         * @return object the current instance
          */
-        protected function setResultForNonSelect() {
-            //Sqlite and pgsql always return 0 when using rowCount()
-            $result = false;
-            $numRows = 0;
-            if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
-                $result = true; //to test the result for the query like UPDATE, INSERT, DELETE
-                $numRows = 1; //TODO use the correct method to get the exact affected row
-            } else {
-                //to test the result for the query like UPDATE, INSERT, DELETE
-                $result  = $this->pdoStatment->rowCount() >= 0; 
-                $numRows = $this->pdoStatment->rowCount(); 
-            }
-            $this->queryResult->setResult($result);
-            $this->queryResult->setNumRows($numRows);
+        public function setConnection(DatabaseConnection $connection) {
+            $this->connection = $connection;
+            return $this;
         }
 
 
@@ -319,6 +263,58 @@
             //show error message
             show_error('Query: "' . $this->query . '" Error: ' . $this->error, 'Database Error');
         }
+
+        /**
+         * Return the result for SELECT query
+         * @see DatabaseQueryRunner::execute
+         */
+        protected function setResultForSelect() {
+            //if need return all result like list of record
+            $result = null;
+            $numRows = 0;
+            $fetchMode = PDO::FETCH_OBJ;
+            if ($this->returnAsArray) {
+                $fetchMode = PDO::FETCH_ASSOC;
+            }
+            if ($this->returnAsList) {
+                $result = $this->pdoStatment->fetchAll($fetchMode);
+            } else {
+                $result = $this->pdoStatment->fetch($fetchMode);
+            }
+            //Sqlite and pgsql always return 0 when using rowCount()
+            if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
+                //by default count() return 1 if the parameter is not an array
+                //object or object implements Countable.
+                if (is_array($result) || is_object($result) || $result instanceof Countable) {
+                     $numRows = count($result);  
+                }
+            } else {
+                $numRows = $this->pdoStatment->rowCount(); 
+            }
+            $this->queryResult->setResult($result);
+            $this->queryResult->setNumRows($numRows);
+        }
+
+        /**
+         * Return the result for non SELECT query
+         * @see DatabaseQueryRunner::execute
+         */
+        protected function setResultForNonSelect() {
+            //Sqlite and pgsql always return 0 when using rowCount()
+            $result = false;
+            $numRows = 0;
+            if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
+                $result = true; //to test the result for the query like UPDATE, INSERT, DELETE
+                $numRows = 1; //TODO use the correct method to get the exact affected row
+            } else {
+                //to test the result for the query like UPDATE, INSERT, DELETE
+                $result  = $this->pdoStatment->rowCount() >= 0; 
+                $numRows = $this->pdoStatment->rowCount(); 
+            }
+            $this->queryResult->setResult($result);
+            $this->queryResult->setNumRows($numRows);
+        }
+
         
         
         /**
