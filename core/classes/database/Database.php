@@ -146,32 +146,31 @@
 
         /**
          * Get the result of one record rows returned by the current query
-         * @param  boolean $returnSQLQueryOrResultType if is boolean and true will return the SQL query string.
+         * @param  boolean $sqlOrResult if is boolean and true will return the SQL query string.
          * If is string will determine the result type "array" or "object"
          * @return mixed       the query SQL string or the record result
          */
-        public function get($returnSQLQueryOrResultType = false) {
+        public function get($sqlOrResult = false) {
             $this->queryBuilder->limit(1);
             $query = $this->getAll($returnSql = true);
-            if ($returnSQLQueryOrResultType === true) {
+            if ($sqlOrResult === true) {
                 return $query;
-            } else {
-                return $this->query($query, false, $returnSQLQueryOrResultType == 'array');
-            }
+            } 
+            return $this->query($query, false, $sqlOrResult == 'array');
         }
 
         /**
          * Get the result of record rows list returned by the current query
-         * @param  boolean|string $returnSQLQueryOrResultType if is boolean and true will return the SQL query string.
+         * @param  boolean|string $sqlOrResult if is boolean and true will return the SQL query string.
          * If is string will determine the result type "array" or "object"
          * @return mixed       the query SQL string or the record result
          */
-        public function getAll($returnSQLQueryOrResultType = false) {
+        public function getAll($sqlOrResult = false) {
             $query = $this->queryBuilder->getQuery();
-            if ($returnSQLQueryOrResultType === true) {
+            if ($sqlOrResult === true) {
                 return $query;
             }
-            return $this->query($query, true, $returnSQLQueryOrResultType == 'array');
+            return $this->query($query, true, $sqlOrResult == 'array');
         }
 
         /**
@@ -276,7 +275,7 @@
          *
          * @return object the current instance
          */
-        public function setConnection(DatabaseConnection $connection) {
+        public function setConnection(DatabaseConnection $connection = null) {
             $this->connection = $connection;
             return $this;
         }
@@ -293,7 +292,7 @@
          * Set the DatabaseQueryBuilder instance
          * @param object DatabaseQueryBuilder $queryBuilder the DatabaseQueryBuilder object
          */
-        public function setQueryBuilder(DatabaseQueryBuilder $queryBuilder) {
+        public function setQueryBuilder(DatabaseQueryBuilder $queryBuilder = null) {
             $this->queryBuilder = $queryBuilder;
             return $this;
         }
@@ -310,7 +309,7 @@
          * Set the DatabaseCache instance
          * @param object DatabaseCache $cacheInstance the DatabaseCache object
          */
-        public function setCacheInstance(DatabaseCache $cacheInstance) {
+        public function setCacheInstance(DatabaseCache $cacheInstance = null) {
             $this->cacheInstance = $cacheInstance;
             return $this;
         }
@@ -327,7 +326,7 @@
          * Set the DatabaseQueryRunner instance
          * @param object DatabaseQueryRunner $queryRunner the DatabaseQueryRunner object
          */
-        public function setQueryRunner(DatabaseQueryRunner $queryRunner) {
+        public function setQueryRunner(DatabaseQueryRunner $queryRunner = null) {
             $this->queryRunner = $queryRunner;
             return $this;
         }
@@ -353,7 +352,7 @@
                     $this->setData($k, $v, $escape);
                 }	
             } else {
-            $this->data[$key] = $this->connection->escape($value, $escape);
+                $this->data[$key] = $this->connection->escape($value, $escape);
             }
             return $this;
         }

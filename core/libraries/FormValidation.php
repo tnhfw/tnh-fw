@@ -144,6 +144,7 @@
             $this->errors       = array();
             $this->customErrors = array();
             $this->valid        = false;
+            $this->forceError   = false;
             $this->data         = array();
             return $this;
         }

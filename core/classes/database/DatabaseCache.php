@@ -162,15 +162,9 @@
                 $this->logger->info('The cache is not enabled for this query or is not a SELECT query'); 
                 return null;
             }
+            $this->setCacheInstanceFromSuperInstanceIfNull();
             $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
             $cacheKey = $this->getCacheKey();
-            if (!is_object($this->cacheInstance)) {
-                    //can not call method with reference in argument
-                    //like $this->setCacheInstance(& get_instance()->cache);
-                    //use temporary variable
-                    $instance = & get_instance()->cache;
-                    $this->cacheInstance = $instance;
-            }
             return $this->cacheInstance->get($cacheKey);
         }
 
@@ -180,17 +174,26 @@
          * @param mixed $result the query result to save
          * @param int $expire the cache TTL
          *
-         * @return boolean the status of the operation
+         * @return boolean|null the status of the operation
          */
         public function saveCacheContent($result) {
             //set some attributes values
             $this->setPropertiesValues();
             if(! $this->isSelectQuery || ! $this->dbCacheStatus){
                 //just return true
-                return true;
+                return null;
             }
+            $this->setCacheInstanceFromSuperInstanceIfNull();
             $cacheKey = $this->getCacheKey();
             $this->logger->info('Save the result for query [' . $this->query . '] into cache for future use');
+            return $this->cacheInstance->set($cacheKey, $result, $this->cacheTtl);
+        }
+
+        /**
+         * Set the cache instance using the super global instance if the current instance is null 
+         * and the cache feature is enabled.
+         */
+        protected function setCacheInstanceFromSuperInstanceIfNull() {
             if (!is_object($this->cacheInstance)) {
                 //can not call method with reference in argument
                 //like $this->setCacheInstance(& get_instance()->cache);
@@ -198,7 +201,6 @@
                 $instance = & get_instance()->cache;
                 $this->cacheInstance = $instance;
             }
-            return $this->cacheInstance->set($cacheKey, $result, $this->cacheTtl);
         }
 
         /**
