@@ -10,7 +10,7 @@ Running the unit tests is as simple as navigating to the root folder and running
 
     $ vendor/bin/phpunit
 
-That's it! You can also tell it specific groups (which we will get into in minute) to run. For example to run only the core tests:
+That's it! You can also tell it specific groups (which we will get into in minute) to run. For example to run only some group of tests:
 
     $ vendor/bin/phpunit --group=core
     $ vendor/bin/phpunit --group=libraries
