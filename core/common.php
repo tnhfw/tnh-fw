@@ -334,7 +334,7 @@
         $lastError = error_get_last();
         if (isset($lastError) &&
             ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
-            php_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
+            fw_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
         }
     }
 

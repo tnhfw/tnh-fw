@@ -124,6 +124,24 @@
 		//echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ")\n";
         return true;
 	}
+    
+    function fw_exception_handler($ex){
+		//show only and continue to help track of some error occured
+		//echo 'fw_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
+        return true;
+	}
+	
+	
+	function fw_error_handler($errno , $errstr, $errfile , $errline){
+		//show only and continue to help track of some error occured
+        //echo 'fw_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
+        return true;
+	}
+
+	function fw_shudown_handler(){
+		return true;
+	}
+
 
 	function is_https(){
 		 /*
@@ -148,24 +166,6 @@
 	function is_url($url){
 		return preg_match('/^(http|https|ftp):\/\/(.*)/', $url);
 	}
-		
-	function fw_exception_handler($ex){
-		//show only and continue to help track of some error occured
-		//echo 'fw_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
-        return true;
-	}
-	
-	
-	function fw_error_handler($errno , $errstr, $errfile , $errline){
-		//show only and continue to help track of some error occured
-        //echo 'fw_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
-        return true;
-	}
-
-	function fw_shudown_handler(){
-		return true;
-	}
-
 
 	/**
 	*  @test
