@@ -391,7 +391,8 @@
                 self::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
                 self::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
                 self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
-                if ($globals->server('HTTP_IF_MODIFIED_SINCE') && $lastModified <= strtotime($globals->server('HTTP_IF_MODIFIED_SINCE'))) {
+                $headerModifiedSince = $globals->server('HTTP_IF_MODIFIED_SINCE');
+                if (!empty($headerModifiedSince) && $lastModified <= strtotime($headerModifiedSince)) {
                     $logger->info('The cache page content is not yet expire for the URL [' . $this->_currentUrl . '] send 304 header to browser');
                     self::sendHeaders(304);
                     return true;

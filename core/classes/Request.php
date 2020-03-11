@@ -181,7 +181,7 @@
 
         /**
          * Set the value for header.
-         * @param  string  $key the item key to be set or array if need set the current header  
+         * @param  string|array  $key the item key to be set or array if need set the current header  
          * by this value
          * @param mixed $value the value to set if $key is not an array
          * 
