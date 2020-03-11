@@ -1231,16 +1231,9 @@
             $this->assertTrue($fv->validate());
         }
         
-        
-        
         public function testRuleExists()
         {
-            $cfg = $this->getDbConfig();
-            $connection = new DatabaseConnection($cfg, false);
-            $isConnected = $connection->connect();
-            $this->assertTrue($isConnected);
-            $db = new Database($connection);
-            
+            $db = $this->getFormValidationDbInstanceForTest();
             //Validation failed
             $fv = new FormValidation();
             $fv->setDatabase($db);            
@@ -1250,11 +1243,12 @@
 
             //Validation success
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
+            $fv->setDatabase($db);    
             $fv->setRule('foo', 'foo label', 'exists[form_validation.name]');
             $fv->setData(array('foo' => 'foo'));
             $this->assertTrue($fv->validate());  
             
+            $db = $this->getFormValidationDbInstanceForTest();
             
             //using super object database instance
             $obj = &get_instance();
@@ -1274,13 +1268,8 @@
         
         public function testRuleIsUnique()
         {
-            $cfg = $this->getDbConfig();
-            $connection = new DatabaseConnection($cfg, false);
-            $isConnected = $connection->connect();
-            $this->assertTrue($isConnected);
-            $db = new Database($connection);
-            
-            
+            $db = $this->getFormValidationDbInstanceForTest();
+           
             //Validation failed
             $fv = new FormValidation();
             $fv->setDatabase($db);            
@@ -1313,12 +1302,7 @@
         
         public function testRuleIsUniqueUpdate()
         {
-            $cfg = $this->getDbConfig();
-            $connection = new DatabaseConnection($cfg, false);
-            $isConnected = $connection->connect();
-            $this->assertTrue($isConnected);
-            $db = new Database($connection);
-            
+            $db = $this->getFormValidationDbInstanceForTest();
             
             //Validation failed
             $fv = new FormValidation();
@@ -1359,6 +1343,27 @@
             $this->assertTrue($fv->validate());
         }
         
+        private function getFormValidationDbInstanceForTest() {
+            $cfg = $this->getDbConfig();
+            $connection = new DatabaseConnection($cfg, false);
+            $isConnected = $connection->connect();
+            $this->assertTrue($isConnected);
+            $db = new Database($connection);
+            
+            
+            $qr = new DatabaseQueryRunner($connection);
+            $qr->setBenchmark(new Benchmark());
+            
+            $qresult = new DatabaseQueryResult();
+            $qr->setQueryResult($qresult);
+            
+            $db->setQueryRunner($qr);
+            
+            $qb = new DatabaseQueryBuilder($connection);
+            $db->setQueryBuilder($qb);
+            
+            return $db;
+        }
         
         
     }

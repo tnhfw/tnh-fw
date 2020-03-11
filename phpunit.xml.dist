@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit
-	bootstrap="./tests/bootstrap.php"
+	bootstrap="tests/bootstrap.php"
 	colors="true"
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
@@ -11,17 +11,15 @@
 	stopOnSkipped="false">
 	<testsuites>
 		<testsuite name="TNH Framework Core Test Suite">
-			<directory suffix="Test.php">./tests/tnhfw/classes</directory>
-			<directory suffix="Test.php">./tests/tnhfw/functions</directory>
-			<directory suffix="Test.php">./tests/tnhfw/libraries</directory>
-			<file>./tests/tnhfw/CommonTest.php</file>
+			<directory suffix="Test.php">tests/tnhfw/</directory>
+			<file>tests/tnhfw/CommonTest.php</file>
 		</testsuite>
 	</testsuites>
 	<filter>
 		<whitelist>
-			<directory suffix=".php">./core/classes</directory>
-			<directory suffix=".php">./core/functions</directory>
-			<directory suffix=".php">./core/libraries</directory>
+			<directory suffix=".php">core/classes</directory>
+			<directory suffix=".php">core/functions</directory>
+			<directory suffix=".php">core/libraries</directory>
 		</whitelist>
 	</filter>
 </phpunit>

@@ -165,6 +165,7 @@
     $SECURITY = & class_loader('Security', 'classes');
     if (!$SECURITY->checkWhiteListIpAccess()) {
         show_error('You are not allowed to access this application');
+        return;
     }
 	
     /**
