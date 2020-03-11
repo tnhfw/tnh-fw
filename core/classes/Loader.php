@@ -27,19 +27,20 @@
      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
      * SOFTWARE.
      */
-    class Loader extends BaseStaticClass {
+    class Loader extends BaseClass {
 		
         /**
          * List of loaded resources
          * @var array
          */
-        public static $loaded = array();
+        public $loaded = array();
 		
 
         public function __construct() {
+            parent::__construct();
             //add the resources already loaded during application bootstrap
             //in the list to prevent duplicate or loading the resources again.
-            self::$loaded = class_loaded();
+            $this->loaded = class_loaded();
 			
             //Load resources from autoload configuration
             $this->loadResourcesFromAutoloadConfig();
@@ -54,45 +55,44 @@
          *
          * @return void
          */
-        public static function model($class, $instance = null) {
-            $logger = self::getLogger();
+        public function model($class, $instance = null) {
             $class = str_ireplace('.php', '', $class);
             $class = trim($class, '/\\');
             $file = ucfirst($class) . '.php';
-            $logger->debug('Loading model [' . $class . '] ...');
+            $this->logger->debug('Loading model [' . $class . '] ...');
             //************
             if (!$instance) {
-                $instance = self::getModelLibraryInstanceName($class);
+                $instance = $this->getModelLibraryInstanceName($class);
             }
             //****************
-            if (isset(self::$loaded[$instance])) {
-                $logger->info('Model [' . $class . '] already loaded no need to load it again, cost in performance');
+            if (isset($this->loaded[$instance])) {
+                $this->logger->info('Model [' . $class . '] already loaded no need to load it again, cost in performance');
                 return;
             }
             $classFilePath = APPS_MODEL_PATH . $file;
             //first check if this model is in the module
-            $logger->debug('Checking model [' . $class . '] from module list ...');
+            $this->logger->debug('Checking model [' . $class . '] from module list ...');
             //check if the request class contains module name
-            $moduleInfo = self::getModuleInfoForModelLibrary($class);
+            $moduleInfo = $this->getModuleInfoForModelLibrary($class);
             $module = $moduleInfo['module'];
             $class  = $moduleInfo['class'];
 			
             $moduleModelFilePath = Module::findModelFullPath($class, $module);
             if ($moduleModelFilePath) {
-                $logger->info('Found model [' . $class . '] from module [' . $module . '], the file path is [' . $moduleModelFilePath . '] we will used it');
+                $this->logger->info('Found model [' . $class . '] from module [' . $module . '], the file path is [' . $moduleModelFilePath . '] we will used it');
                 $classFilePath = $moduleModelFilePath;
             } else {
-                $logger->info('Cannot find model [' . $class . '] from modules using the default location');
+                $this->logger->info('Cannot find model [' . $class . '] from modules using the default location');
             }
-            $logger->info('The model file path to be loaded is [' . $classFilePath . ']');
+            $this->logger->info('The model file path to be loaded is [' . $classFilePath . ']');
             if (file_exists($classFilePath)) {
                 require_once $classFilePath;
                 if (class_exists($class)) {
                     $c = new $class();
                     $obj = & get_instance();
                     $obj->{$instance} = $c;
-                    self::$loaded[$instance] = $class;
-                    $logger->info('Model [' . $class . '] --> ' . $classFilePath . ' loaded successfully.');
+                    $this->loaded[$instance] = $class;
+                    $this->logger->info('Model [' . $class . '] --> ' . $classFilePath . ' loaded successfully.');
                 } else {
                     show_error('The file ' . $classFilePath . ' exists but does not contain the class [' . $class . ']');
                 }
@@ -111,46 +111,45 @@
          *
          * @return void
          */
-        public static function library($class, $instance = null, array $params = array()) {
-            $logger = self::getLogger();
+        public function library($class, $instance = null, array $params = array()) {
             $class = str_ireplace('.php', '', $class);
             $class = trim($class, '/\\');
             $file = ucfirst($class) . '.php';
-            $logger->debug('Loading library [' . $class . '] ...');
+            $this->logger->debug('Loading library [' . $class . '] ...');
             if (!$instance) {
-                $instance = self::getModelLibraryInstanceName($class);
+                $instance = $this->getModelLibraryInstanceName($class);
             }
-            if (isset(self::$loaded[$instance])) {
-                $logger->info('Library [' . $class . '] already loaded no need to load it again, cost in performance');
+            if (isset($this->loaded[$instance])) {
+                $this->logger->info('Library [' . $class . '] already loaded no need to load it again, cost in performance');
                 return;
             }
             $obj = & get_instance();
             //Check and load Database library
             if (strtolower($class) == 'database') {
-                $logger->info('This is the Database library ...');
+                $this->logger->info('This is the Database library ...');
                 $obj->{$instance} = & class_loader('Database', 'classes/database');
-                self::$loaded[$instance] = $class;
-                $logger->info('Library Database loaded successfully.');
+                $this->loaded[$instance] = $class;
+                $this->logger->info('Library Database loaded successfully.');
                 return;
             }
             $libraryFilePath = null;
-            $logger->debug('Check if this is a system library ...');
+            $this->logger->debug('Check if this is a system library ...');
             if (file_exists(CORE_LIBRARY_PATH . $file)) {
                 $libraryFilePath = CORE_LIBRARY_PATH . $file;
                 $class = ucfirst($class);
-                $logger->info('This library is a system library');
+                $this->logger->info('This library is a system library');
             } else {
-                $logger->info('This library is not a system library');	
+                $this->logger->info('This library is not a system library');	
                 //first check if this library is in the module
-                $info = self::getLibraryPathUsingModuleInfo($class);
+                $info = $this->getLibraryPathUsingModuleInfo($class);
                 $class = $info['class'];
                 $libraryFilePath = $info['path'];
             }
             if (!$libraryFilePath && file_exists(LIBRARY_PATH . $file)) {
                 $libraryFilePath = LIBRARY_PATH . $file;
             }
-            $logger->info('The library file path to be loaded is [' . $libraryFilePath . ']');
-            self::loadLibrary($libraryFilePath, $class, $instance, $params);
+            $this->logger->info('The library file path to be loaded is [' . $libraryFilePath . ']');
+            $this->loadLibrary($libraryFilePath, $class, $instance, $params);
         }
 
         /**
@@ -160,21 +159,20 @@
          *
          * @return void
          */
-        public static function functions($function) {
-            $logger = self::getLogger();
+        public function functions($function) {
             $function = str_ireplace('.php', '', $function);
             $function = trim($function, '/\\');
             $function = str_ireplace('function_', '', $function);
             $file = 'function_' . $function . '.php';
-            $logger->debug('Loading helper [' . $function . '] ...');
-            if (isset(self::$loaded['function_' . $function])) {
-                $logger->info('Helper [' . $function . '] already loaded no need to load it again, cost in performance');
+            $this->logger->debug('Loading helper [' . $function . '] ...');
+            if (isset($this->loaded['function_' . $function])) {
+                $this->logger->info('Helper [' . $function . '] already loaded no need to load it again, cost in performance');
                 return;
             }
             $functionFilePath = null;
             //first check if this helper is in the module
-            $logger->debug('Checking helper [' . $function . '] from module list ...');
-            $moduleInfo = self::getModuleInfoForFunction($function);
+            $this->logger->debug('Checking helper [' . $function . '] from module list ...');
+            $moduleInfo = $this->getModuleInfoForFunction($function);
             $module    = $moduleInfo['module'];
             $function  = $moduleInfo['function'];
             if (!empty($moduleInfo['file'])) {
@@ -182,19 +180,19 @@
             }
             $moduleFunctionPath = Module::findFunctionFullPath($function, $module);
             if ($moduleFunctionPath) {
-                $logger->info('Found helper [' . $function . '] from module [' . $module . '], the file path is [' . $moduleFunctionPath . '] we will used it');
+                $this->logger->info('Found helper [' . $function . '] from module [' . $module . '], the file path is [' . $moduleFunctionPath . '] we will used it');
                 $functionFilePath = $moduleFunctionPath;
             } else {
-                $logger->info('Cannot find helper [' . $function . '] from modules using the default location');
+                $this->logger->info('Cannot find helper [' . $function . '] from modules using the default location');
             }
             if (!$functionFilePath) {
-                $functionFilePath = self::getDefaultFilePathForFunctionLanguage($file, 'function');
+                $functionFilePath = $this->getDefaultFilePathForFunctionLanguage($file, 'function');
             }
-            $logger->info('The helper file path to be loaded is [' . $functionFilePath . ']');
+            $this->logger->info('The helper file path to be loaded is [' . $functionFilePath . ']');
             if ($functionFilePath) {
                 require_once $functionFilePath;
-                self::$loaded['function_' . $function] = $functionFilePath;
-                $logger->info('Helper [' . $function . '] --> ' . $functionFilePath . ' loaded successfully.');
+                $this->loaded['function_' . $function] = $functionFilePath;
+                $this->logger->info('Helper [' . $function . '] --> ' . $functionFilePath . ' loaded successfully.');
             } else {
                 show_error('Unable to find helper file [' . $file . ']');
             }
@@ -207,35 +205,34 @@
          *
          * @return void
          */
-        public static function config($filename) {
-            $logger = self::getLogger();
+        public function config($filename) {
             $filename = str_ireplace('.php', '', $filename);
             $filename = trim($filename, '/\\');
             $filename = str_ireplace('config_', '', $filename);
             $file = 'config_' . $filename . '.php';
-            $logger->debug('Loading configuration [' . $filename . '] ...');
+            $this->logger->debug('Loading configuration [' . $filename . '] ...');
             $configFilePath = CONFIG_PATH . $file;
             //first check if this config is in the module
-            $logger->debug('Checking config [' . $filename . '] from module list ...');
-            $moduleInfo = self::getModuleInfoForConfig($filename);
+            $this->logger->debug('Checking config [' . $filename . '] from module list ...');
+            $moduleInfo = $this->getModuleInfoForConfig($filename);
             $module    = $moduleInfo['module'];
             $filename  = $moduleInfo['filename'];
             $moduleConfigPath = Module::findConfigFullPath($filename, $module);
             if ($moduleConfigPath) {
-                $logger->info('Found config [' . $filename . '] from module [' . $module . '], the file path is [' . $moduleConfigPath . '] we will used it');
+                $this->logger->info('Found config [' . $filename . '] from module [' . $module . '], the file path is [' . $moduleConfigPath . '] we will used it');
                 $configFilePath = $moduleConfigPath;
             } else {
-                $logger->info('Cannot find config [' . $filename . '] from modules using the default location');
+                $this->logger->info('Cannot find config [' . $filename . '] from modules using the default location');
             }
-            $logger->info('The config file path to be loaded is [' . $configFilePath . ']');
+            $this->logger->info('The config file path to be loaded is [' . $configFilePath . ']');
             $config = array();
             if (file_exists($configFilePath)) {
                 //note need use require instead of require_once
                 require $configFilePath;
                 if (!empty($config) && is_array($config)) {
-                    Config::setAll($config);
-                    $logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
-                    $logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
+                    get_instance()->config->setAll($config);
+                    $this->logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
+                    $this->logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
                     unset($config);
                 }
             } else {
@@ -251,23 +248,22 @@
          *
          * @return void
          */
-        public static function lang($language) {
-            $logger = self::getLogger();
+        public function lang($language) {
             $language = str_ireplace('.php', '', $language);
             $language = trim($language, '/\\');
             $language = str_ireplace('lang_', '', $language);
             $file = 'lang_' . $language . '.php';
-            $logger->debug('Loading language [' . $language . '] ...');
-            if (isset(self::$loaded['lang_' . $language])) {
-                $logger->info('Language [' . $language . '] already loaded no need to load it again, cost in performance');
+            $this->logger->debug('Loading language [' . $language . '] ...');
+            if (isset($this->loaded['lang_' . $language])) {
+                $this->logger->info('Language [' . $language . '] already loaded no need to load it again, cost in performance');
                 return;
             }
             //get the current language
-            $appLang = self::getAppLang();
+            $appLang = $this->getAppLang();
             $languageFilePath = null;
             //first check if this language is in the module
-            $logger->debug('Checking language [' . $language . '] from module list ...');
-            $moduleInfo = self::getModuleInfoForLanguage($language);
+            $this->logger->debug('Checking language [' . $language . '] from module list ...');
+            $moduleInfo = $this->getModuleInfoForLanguage($language);
             $module    = $moduleInfo['module'];
             $language  = $moduleInfo['language'];
             if (!empty($moduleInfo['file'])) {
@@ -275,16 +271,16 @@
             }
             $moduleLanguagePath = Module::findLanguageFullPath($language, $appLang, $module);
             if ($moduleLanguagePath) {
-                $logger->info('Found language [' . $language . '] from module [' . $module . '], the file path is [' . $moduleLanguagePath . '] we will used it');
+                $this->logger->info('Found language [' . $language . '] from module [' . $module . '], the file path is [' . $moduleLanguagePath . '] we will used it');
                 $languageFilePath = $moduleLanguagePath;
             } else {
-                $logger->info('Cannot find language [' . $language . '] from modules using the default location');
+                $this->logger->info('Cannot find language [' . $language . '] from modules using the default location');
             }
             if (!$languageFilePath) {
-                $languageFilePath = self::getDefaultFilePathForFunctionLanguage($file, 'language', $appLang);
+                $languageFilePath = $this->getDefaultFilePathForFunctionLanguage($file, 'language', $appLang);
             }
-            $logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
-            self::loadLanguage($languageFilePath, $language);
+            $this->logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
+            $this->loadLanguage($languageFilePath, $language);
         }
 
         /**
@@ -292,7 +288,7 @@
          * if can not found will use the default value from configuration
          * @return string the app language like "en", "fr"
          */
-        protected static function getAppLang() {
+        protected function getAppLang() {
             //determine the current language
             $appLang = get_config('default_language');
             //if the language exists in the cookie use it
@@ -312,7 +308,7 @@
          * @param  string $appLang the application language, only if type = "language"
          * @return string|null          the full file path
          */
-        protected static function getDefaultFilePathForFunctionLanguage($file, $type, $appLang = null){
+        protected function getDefaultFilePathForFunctionLanguage($file, $type, $appLang = null){
             $searchDir = null;
             if ($type == 'function') {
                $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
@@ -338,7 +334,7 @@
          * @param  string|null $module the module if is not null will return it
          * @return string|null
          */
-        protected static function getModuleFromSuperController($module){
+        protected function getModuleFromSuperController($module){
             $obj = & get_instance();
             if (!$module && !empty($obj->moduleName)) {
                 $module = $obj->moduleName;
@@ -355,7 +351,7 @@
          * 	'class' => 'class_name'
          * )
          */
-        protected static function getModuleInfoForModelLibrary($class) {
+        protected function getModuleInfoForModelLibrary($class) {
             $module = null;
             $path = explode('/', $class);
             if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
@@ -364,7 +360,7 @@
             } else {
                 $class = ucfirst($class);
             }
-            $module = self::getModuleFromSuperController($module);
+            $module = $this->getModuleFromSuperController($module);
             return array(
                         'class' => $class,
                         'module' => $module
@@ -381,7 +377,7 @@
          * 	'file' => 'file'
          * )
          */
-        protected static function getModuleInfoForFunction($function) {
+        protected function getModuleInfoForFunction($function) {
             $module = null;
             $file = null;
             //check if the request class contains module name
@@ -391,7 +387,7 @@
                 $function = 'function_' . $path[1];
                 $file = $path[0] . DS . $function . '.php';
             }
-            $module = self::getModuleFromSuperController($module);
+            $module = $this->getModuleFromSuperController($module);
             return array(
                         'function' => $function,
                         'module' => $module,
@@ -409,7 +405,7 @@
          * 	'file' => 'file'
          * )
          */
-        protected static function getModuleInfoForLanguage($language) {
+        protected function getModuleInfoForLanguage($language) {
             $module = null;
             $file = null;
             //check if the request class contains module name
@@ -419,7 +415,7 @@
                 $language = 'lang_' . $path[1] . '.php';
                 $file = $path[0] . DS . $language;
             }
-            $module = self::getModuleFromSuperController($module);
+            $module = $this->getModuleFromSuperController($module);
             return array(
                         'language' => $language,
                         'module' => $module,
@@ -437,7 +433,7 @@
          * 	'filename' => 'filename'
          * )
          */
-        protected static function getModuleInfoForConfig($filename) {
+        protected function getModuleInfoForConfig($filename) {
             $module = null;
             //check if the request class contains module name
             $path = explode('/', $filename);
@@ -445,7 +441,7 @@
                 $module = $path[0];
                 $filename = $path[1] . '.php';
             }
-            $module = self::getModuleFromSuperController($module);
+            $module = $this->getModuleFromSuperController($module);
             return array(
                         'filename' => $filename,
                         'module' => $module
@@ -457,7 +453,7 @@
          * @param  string $class the class name to determine the instance
          * @return string        the instance name
          */
-        protected static function getModelLibraryInstanceName($class) {
+        protected function getModelLibraryInstanceName($class) {
             //for module
             $instance = null;
             $path = explode('/', $class);
@@ -474,19 +470,18 @@
          * @param  string $class the class name
          * @return array        the library file path and class name
          */
-        protected static function getLibraryPathUsingModuleInfo($class) {
-            $logger = self::getLogger();
+        protected function getLibraryPathUsingModuleInfo($class) {
             $libraryFilePath = null;
-            $logger->debug('Checking library [' . $class . '] from module list ...');
-            $moduleInfo = self::getModuleInfoForModelLibrary($class);
+            $this->logger->debug('Checking library [' . $class . '] from module list ...');
+            $moduleInfo = $this->getModuleInfoForModelLibrary($class);
             $module = $moduleInfo['module'];
             $class  = $moduleInfo['class'];
             $moduleLibraryPath = Module::findLibraryFullPath($class, $module);
             if ($moduleLibraryPath) {
-                $logger->info('Found library [' . $class . '] from module [' . $module . '], the file path is [' . $moduleLibraryPath . '] we will used it');
+                $this->logger->info('Found library [' . $class . '] from module [' . $module . '], the file path is [' . $moduleLibraryPath . '] we will used it');
                 $libraryFilePath = $moduleLibraryPath;
             } else {
-                $logger->info('Cannot find library [' . $class . '] from modules using the default location');
+                $this->logger->info('Cannot find library [' . $class . '] from modules using the default location');
             }
             return array(
                         'path' => $libraryFilePath,
@@ -502,16 +497,15 @@
          * @param  array  $params          the parameter to use
          * @return void
          */
-        protected static function loadLibrary($libraryFilePath, $class, $instance, $params = array()) {
+        protected function loadLibrary($libraryFilePath, $class, $instance, $params = array()) {
             if ($libraryFilePath) {
-                $logger = self::getLogger();
-                require_once $libraryFilePath;
+                    require_once $libraryFilePath;
                 if (class_exists($class)) {
                     $c = $params ? new $class($params) : new $class();
                     $obj = & get_instance();
                     $obj->{$instance} = $c;
-                    self::$loaded[$instance] = $class;
-                    $logger->info('Library [' . $class . '] --> ' . $libraryFilePath . ' loaded successfully.');
+                    $this->loaded[$instance] = $class;
+                    $this->logger->info('Library [' . $class . '] --> ' . $libraryFilePath . ' loaded successfully.');
                 } else {
                     show_error('The file ' . $libraryFilePath . ' exists but does not contain the class ' . $class);
                 }
@@ -526,21 +520,20 @@
          * @param  string $language           the language name
          * @return void
          */
-        protected static function loadLanguage($languageFilePath, $language) {
+        protected function loadLanguage($languageFilePath, $language) {
             if ($languageFilePath) {
-                $logger = self::getLogger();
-                $lang = array();
+                    $lang = array();
                 require_once $languageFilePath;
                 if (!empty($lang) && is_array($lang)) {
-                    $logger->info('Language file  [' . $languageFilePath . '] contains the valid languages keys add them to language list');
+                    $this->logger->info('Language file  [' . $languageFilePath . '] contains the valid languages keys add them to language list');
                     //Note: may be here the class 'Lang' not yet loaded
                     $langObj = & class_loader('Lang', 'classes');
                     $langObj->addLangMessages($lang);
                     //free the memory
                     unset($lang);
                 }
-                self::$loaded['lang_' . $language] = $languageFilePath;
-                $logger->info('Language [' . $language . '] --> ' . $languageFilePath . ' loaded successfully.');
+                $this->loaded['lang_' . $language] = $languageFilePath;
+                $this->logger->info('Language [' . $language . '] --> ' . $languageFilePath . ' loaded successfully.');
             } else {
                 show_error('Unable to find language [' . $language . ']');
             }

@@ -73,17 +73,16 @@
                 return false;
             }
             //perform form data
-            //super instance
-            $obj = & get_instance();
-            $token = $obj->request->post($key);
+            $token = get_instance()->request->post($key);
             if (!$token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime) {
                 $logger->warning('The CSRF data [' . $token . '] is not valide may be attacker do his job');
                 return false;
             }
             $logger->info('The CSRF data [' . $token . '] is valide the form data is safe continue');
-            //remove the token from session
+            //remove the token from session and data
             Session::clear($key);
             Session::clear($keyExpire);
+            get_instance()->globalvar->removePost($key);
             return true;
         }
 		

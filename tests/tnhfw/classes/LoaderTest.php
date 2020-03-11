@@ -176,6 +176,8 @@
         
         
         public function testLoadConfig() {
+            $obj = & get_instance();
+            $obj->config = $this->config;
             $l = new Loader();
             $l->config('test');
             $this->assertSame('bar', $this->config->get('cfg_test'));

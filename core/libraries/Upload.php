@@ -216,21 +216,20 @@
         public function __construct() {
             parent::__construct();
 
-            Loader::lang('file_upload');
-            $obj = & get_instance();
-
+            get_instance()->loader->lang('file_upload');
+            
             $this->error_messages = array(
-                'upload_err_ini_size' => $obj->lang->get('fu_upload_err_ini_size'),
-                'upload_err_form_size' => $obj->lang->get('fu_upload_err_form_size'),
-                'upload_err_partial' => $obj->lang->get('fu_upload_err_partial'),
-                'upload_err_no_file' => $obj->lang->get('fu_upload_err_no_file'),
-                'upload_err_no_tmp_dir' => $obj->lang->get('fu_upload_err_no_tmp_dir'),
-                'upload_err_cant_write' => $obj->lang->get('fu_upload_err_cant_write'),
-                'upload_err_extension' => $obj->lang->get('fu_upload_err_extension'),
-                'accept_file_types' => $obj->lang->get('fu_accept_file_types'),
-                'file_uploads' => $obj->lang->get('fu_file_uploads_disabled'),
-                'max_file_size' => $obj->lang->get('fu_max_file_size'),
-                'overwritten_not_allowed' => $obj->lang->get('fu_overwritten_not_allowed'),
+                'upload_err_ini_size'     => get_instance()->lang->get('fu_upload_err_ini_size'),
+                'upload_err_form_size'    => get_instance()->lang->get('fu_upload_err_form_size'),
+                'upload_err_partial'      => get_instance()->lang->get('fu_upload_err_partial'),
+                'upload_err_no_file'      => get_instance()->lang->get('fu_upload_err_no_file'),
+                'upload_err_no_tmp_dir'   => get_instance()->lang->get('fu_upload_err_no_tmp_dir'),
+                'upload_err_cant_write'   => get_instance()->lang->get('fu_upload_err_cant_write'),
+                'upload_err_extension'    => get_instance()->lang->get('fu_upload_err_extension'),
+                'accept_file_types'       => get_instance()->lang->get('fu_accept_file_types'),
+                'file_uploads'            => get_instance()->lang->get('fu_file_uploads_disabled'),
+                'max_file_size'           => get_instance()->lang->get('fu_max_file_size'),
+                'overwritten_not_allowed' => get_instance()->lang->get('fu_overwritten_not_allowed'),
             );
 
             $this->file = array(

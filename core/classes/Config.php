@@ -28,28 +28,29 @@
      * SOFTWARE.
      */
 
-    class Config extends BaseStaticClass {
+    class Config extends BaseClass {
 		
         /**
          * The list of loaded configuration
          * @var array
          */
-        private static $config = array();
+        private $config = array();
 
         /**
          * Initialize the configuration by loading all the configuration from config file
          * @codeCoverageIgnore
          */
-        public static function init() {
-            $logger = self::getLogger();
-            $logger->debug('Initialization of the configuration');
-            self::$config = & load_configurations();
-            self::setBaseUrlUsingServerVar();
-            if (ENVIRONMENT == 'production' && in_array(strtolower(self::$config['log_level']), array('debug', 'info', 'all'))) {
-                $logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
+        public function __construct() {
+            parent::__construct();
+
+            $this->logger->debug('Initialization of the configuration');
+            $this->config = & load_configurations();
+            $this->setBaseUrlUsingServerVar();
+            if (ENVIRONMENT == 'production' && in_array(strtolower($this->config['log_level']), array('debug', 'info', 'all'))) {
+                $this->logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
             }
-            $logger->info('Configuration initialized successfully');
-            $logger->info('The application configuration are listed below: ' . stringfy_vars(self::$config));
+            $this->logger->info('Configuration initialized successfully');
+            $this->logger->info('The application configuration are listed below: ' . stringfy_vars($this->config));
         }
 
         /**
@@ -58,12 +59,11 @@
          * @param  mixed $default the default value to use if can not find the config item in the list
          * @return mixed          the config value if exist or the default value
          */
-        public static function get($item, $default = null) {
-            $logger = self::getLogger();
-            if (array_key_exists($item, self::$config)) {
-                return self::$config[$item];
+        public function get($item, $default = null) {
+            if (array_key_exists($item, $this->config)) {
+                return $this->config[$item];
             }
-            $logger->warning('Cannot find config item [' . $item . '] using the default value [' . $default . ']');
+            $this->logger->warning('Cannot find config item [' . $item . '] using the default value [' . $default . ']');
             return $default;
         }
 
@@ -72,24 +72,24 @@
          * @param string $item  the config item name to set
          * @param mixed $value the config item value
          */
-        public static function set($item, $value) {
-            self::$config[$item] = $value;
+        public function set($item, $value) {
+            $this->config[$item] = $value;
         }
 
         /**
          * Get all the configuration values
          * @return array the config values
          */
-        public static function getAll() {
-            return self::$config;
+        public function getAll() {
+            return $this->config;
         }
 
         /**
          * Set the configuration values bu merged with the existing configuration
          * @param array $config the config values to add in the configuration list
          */
-        public static function setAll(array $config = array()) {
-            self::$config = array_merge(self::$config, $config);
+        public function setAll(array $config = array()) {
+            $this->config = array_merge($this->config, $config);
         }
 
         /**
@@ -97,14 +97,13 @@
          * @param  string $item the config item name to be deleted
          * @return boolean true if the item exists and is deleted successfully otherwise will return false.
          */
-        public static function delete($item) {
-            $logger = self::getLogger();
-            if (array_key_exists($item, self::$config)) {
-                $logger->info('Delete config item [' . $item . ']');
-                unset(self::$config[$item]);
+        public function delete($item) {
+            if (array_key_exists($item, $this->config)) {
+                $this->logger->info('Delete config item [' . $item . ']');
+                unset($this->config[$item]);
                 return true;
             } 
-            $logger->warning('Config item [' . $item . '] to be deleted does not exists');
+            $this->logger->warning('Config item [' . $item . '] to be deleted does not exists');
             return false;
             
         }
@@ -112,8 +111,8 @@
         /**
          * Delete all the configuration values
          */
-        public static function deleteAll() {
-            self::$config = array();
+        public function deleteAll() {
+            $this->config = array();
         }
 
         /**
@@ -121,19 +120,18 @@
          * @param  string $config the config name to be loaded
          * @codeCoverageIgnore will test in Loader::config
          */
-        public static function load($config) {
-            Loader::config($config);
+        public function load($config) {
+            get_instance()->loader->config($config);
         }
 
         /**
          * Set the configuration for "base_url" if is not set in the configuration
          * @codeCoverageIgnore
          */
-        private static function setBaseUrlUsingServerVar() {
-            $logger = self::getLogger();
-            if (empty(self::$config['base_url'])) {
+        private function setBaseUrlUsingServerVar() {
+            if (empty($this->config['base_url'])) {
                 if (ENVIRONMENT == 'production') {
-                    $logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
+                    $this->logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
                 }
                 $baseUrl = null;
                 $protocol = 'http';
@@ -149,19 +147,19 @@
                     if (strpos($serverAddr, ':') !== FALSE) {
                         $baseUrl = '[' . $serverAddr . ']';
                     }
-                    $port = self::getServerPort();
+                    $port = $this->getServerPort();
                     $baseUrl = $protocol . $baseUrl . $port . substr(
                                                                         $globals->server('SCRIPT_NAME'), 
                                                                         0, 
                                                                         strpos($globals->server('SCRIPT_NAME'), basename($globals->server('SCRIPT_FILENAME')))
                                                                     );
                 } else {
-                    $logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
+                    $this->logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
                     $baseUrl = 'http://localhost/';
                 }
-                self::$config['base_url'] = $baseUrl;
+                $this->config['base_url'] = $baseUrl;
             }
-            self::$config['base_url'] = rtrim(self::$config['base_url'], '/') . '/';
+            $this->config['base_url'] = rtrim($this->config['base_url'], '/') . '/';
         }
          
         /**
@@ -170,7 +168,7 @@
         * @codeCoverageIgnore
         * @return string
         */
-        protected static function getServerPort() {
+        protected function getServerPort() {
             $globals = & class_loader('GlobalVar', 'classes');
             $serverPortValue = $globals->server('SERVER_PORT');
             $serverPort = 80;

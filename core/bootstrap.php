@@ -128,16 +128,12 @@
      */
     require_once CORE_CLASSES_PATH . 'EventInfo.php';
 
-
-    $BENCHMARK->mark('CONFIG_INIT_START');
     /**
-     * Load configurations and using the 
-     * static method "init()" to initialize the Config class .
+     * Load configurations 
      */
     $CONFIG = & class_loader('Config', 'classes');	
-    $CONFIG->init();
-    $BENCHMARK->mark('CONFIG_INIT_END');
 
+    
     $BENCHMARK->mark('MODULE_INIT_START');
     /**
      * Load modules and using the 

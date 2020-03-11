@@ -10,6 +10,8 @@
 	class PaginationTest extends TnhTestCase {	
 	
 		public function testContructor() {
+            $obj = & get_instance();
+            $obj->config = $this->config;
             $p = new Pagination();
 			$this->assertArrayHasKey('pagination_per_page', $p->getConfig());
 		}

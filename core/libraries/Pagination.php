@@ -54,7 +54,7 @@
             $config = array_merge($config, $overwriteConfig);
             $this->config = $config;
             //put it gobally
-            Config::setAll($config);
+            get_instance()->config->setAll($config);
             unset($config);
         }
 
@@ -67,7 +67,7 @@
         public function setConfig(array $config = array()) {
             if (!empty($config)) {
                 $this->config = array_merge($this->config, $config);
-                Config::setAll($config);
+                get_instance()->config->setAll($config);
             }
         }
 

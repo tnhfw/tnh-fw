@@ -50,9 +50,7 @@
 	
 		public function __construct() {
             parent::__construct();
-           //some global configuration
            $this->config = new Config();
-           $this->config->init();
            
            $this->vfsRoot = vfsStream::setup();
            $this->vfsLogPath = vfsStream::newDirectory('logs')->at($this->vfsRoot);
@@ -64,7 +62,7 @@
         
         protected function setUp()
 		{
-           //delete all configuration each test will set the custom config to use
+            //delete all configuration, so each test will set the custom config to use
            $this->config->deleteAll();
 		}
         

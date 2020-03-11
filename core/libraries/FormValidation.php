@@ -518,39 +518,38 @@
          */
         protected function setValidationMessages() {
             //Load form validation language message
-            Loader::lang('form_validation');
-            $obj = & get_instance();
-
-            $this->messages['required']         = $obj->lang->get('fv_required');
-            $this->messages['min_length']       = $obj->lang->get('fv_min_length');
-            $this->messages['max_length']       = $obj->lang->get('fv_max_length');
-            $this->messages['exact_length']     = $obj->lang->get('fv_exact_length');
-            $this->messages['matches']          = $obj->lang->get('fv_matches');
-            $this->messages['not_equal']        = $obj->lang->get('fv_not_equal');
-            $this->messages['min']              = $obj->lang->get('fv_min');
-            $this->messages['max']              = $obj->lang->get('fv_max');
-            $this->messages['between']          = $obj->lang->get('fv_between');
-            $this->messages['in_list']          = $obj->lang->get('fv_in_list');
-            $this->messages['numeric']          = $obj->lang->get('fv_numeric');
-            $this->messages['integer']          = $obj->lang->get('fv_integer');
-            $this->messages['integer_natural']  = $obj->lang->get('fv_integer_natural');
-            $this->messages['alpha']            = $obj->lang->get('fv_alpha');
-            $this->messages['alpha_dash']       = $obj->lang->get('fv_alpha_dash');
-            $this->messages['alnum']            = $obj->lang->get('fv_alnum');
-            $this->messages['alnum_dash']       = $obj->lang->get('fv_alnum_dash');
-            $this->messages['email']            = $obj->lang->get('fv_email');
-            $this->messages['date']             = $obj->lang->get('fv_date');
-            $this->messages['date_before']      = $obj->lang->get('fv_date_before');
-            $this->messages['date_after']       = $obj->lang->get('fv_date_after');
-            $this->messages['url']              = $obj->lang->get('fv_url');
-            $this->messages['ip']               = $obj->lang->get('fv_ip');
-            $this->messages['ipv4']             = $obj->lang->get('fv_ipv4');
-            $this->messages['ipv6']             = $obj->lang->get('fv_ipv6');
-            $this->messages['is_unique']        = $obj->lang->get('fv_is_unique');
-            $this->messages['is_unique_update'] = $obj->lang->get('fv_is_unique_update');
-            $this->messages['exists']           = $obj->lang->get('fv_exists');
-            $this->messages['regex']            = $obj->lang->get('fv_regex');
-            $this->messages['callback']         = $obj->lang->get('fv_callback');
+            get_instance()->loader->lang('form_validation');
+            
+            $this->messages['required']         = get_instance()->lang->get('fv_required');
+            $this->messages['min_length']       = get_instance()->lang->get('fv_min_length');
+            $this->messages['max_length']       = get_instance()->lang->get('fv_max_length');
+            $this->messages['exact_length']     = get_instance()->lang->get('fv_exact_length');
+            $this->messages['matches']          = get_instance()->lang->get('fv_matches');
+            $this->messages['not_equal']        = get_instance()->lang->get('fv_not_equal');
+            $this->messages['min']              = get_instance()->lang->get('fv_min');
+            $this->messages['max']              = get_instance()->lang->get('fv_max');
+            $this->messages['between']          = get_instance()->lang->get('fv_between');
+            $this->messages['in_list']          = get_instance()->lang->get('fv_in_list');
+            $this->messages['numeric']          = get_instance()->lang->get('fv_numeric');
+            $this->messages['integer']          = get_instance()->lang->get('fv_integer');
+            $this->messages['integer_natural']  = get_instance()->lang->get('fv_integer_natural');
+            $this->messages['alpha']            = get_instance()->lang->get('fv_alpha');
+            $this->messages['alpha_dash']       = get_instance()->lang->get('fv_alpha_dash');
+            $this->messages['alnum']            = get_instance()->lang->get('fv_alnum');
+            $this->messages['alnum_dash']       = get_instance()->lang->get('fv_alnum_dash');
+            $this->messages['email']            = get_instance()->lang->get('fv_email');
+            $this->messages['date']             = get_instance()->lang->get('fv_date');
+            $this->messages['date_before']      = get_instance()->lang->get('fv_date_before');
+            $this->messages['date_after']       = get_instance()->lang->get('fv_date_after');
+            $this->messages['url']              = get_instance()->lang->get('fv_url');
+            $this->messages['ip']               = get_instance()->lang->get('fv_ip');
+            $this->messages['ipv4']             = get_instance()->lang->get('fv_ipv4');
+            $this->messages['ipv6']             = get_instance()->lang->get('fv_ipv6');
+            $this->messages['is_unique']        = get_instance()->lang->get('fv_is_unique');
+            $this->messages['is_unique_update'] = get_instance()->lang->get('fv_is_unique_update');
+            $this->messages['exists']           = get_instance()->lang->get('fv_exists');
+            $this->messages['regex']            = get_instance()->lang->get('fv_regex');
+            $this->messages['callback']         = get_instance()->lang->get('fv_callback');
         }
         
 
