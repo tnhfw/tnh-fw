@@ -249,9 +249,7 @@
             $this->destination_directory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 
             // Set file array
-            if (isset($_FILES) && is_array($_FILES)) {
-                $this->file_array = $_FILES;
-            }
+            $this->file_array = get_instance()->globalvar->files();
             $this->logger->info('The upload file information are : ' . stringfy_vars($this->file_array));
         }
 

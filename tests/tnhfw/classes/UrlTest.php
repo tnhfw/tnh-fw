@@ -173,9 +173,7 @@
             $obj->request = new Request();
             
             $url = new Url();
-            //Note Url::queryString() use internally Request::server that apply 
-            //XSS filter by default so char '&'will be '&amp;' 
-            $expected = 'a=b&amp;b=c';
+            $expected = 'a=b&b=c';
 			$this->assertSame($expected, $url->queryString());
 		}
 

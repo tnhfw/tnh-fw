@@ -141,18 +141,19 @@
                     $protocol = 'https';
                 }
                 $protocol .= '://';
-
-                if (isset($_SERVER['SERVER_ADDR'])) {
-                    $baseUrl = $_SERVER['SERVER_ADDR'];
+                $globals = & class_loader('GlobalVar', 'classes');
+                $serverAddr = $globals->server('SERVER_ADDR');
+                if ($serverAddr) {
+                    $baseUrl = $serverAddr;
                     //check if the server is running under IPv6
-                    if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE) {
-                        $baseUrl = '[' . $_SERVER['SERVER_ADDR'] . ']';
+                    if (strpos($serverAddr, ':') !== FALSE) {
+                        $baseUrl = '[' . $serverAddr . ']';
                     }
                     $port = self::getServerPort();
                     $baseUrl = $protocol . $baseUrl . $port . substr(
-                                                                        $_SERVER['SCRIPT_NAME'], 
+                                                                        $globals->server('SCRIPT_NAME'), 
                                                                         0, 
-                                                                        strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME']))
+                                                                        strpos($globals->server('SCRIPT_NAME'), basename($globals->server('SCRIPT_FILENAME')))
                                                                     );
                 } else {
                     $logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
@@ -170,9 +171,11 @@
         * @return string
         */
         protected static function getServerPort() {
+            $globals = & class_loader('GlobalVar', 'classes');
+            $serverPortValue = $globals->server('SERVER_PORT');
             $serverPort = 80;
-            if (isset($_SERVER['SERVER_PORT'])) {
-                 $serverPort = $_SERVER['SERVER_PORT'];
+            if ($serverPortValue) {
+                 $serverPort = $serverPortValue;
             }
             $port = '';
             if ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80)) {

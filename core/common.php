@@ -237,9 +237,10 @@
         if (strpos(php_sapi_name(), 'cgi') === 0) {
             header('Status: ' . $code . ' ' . $text, TRUE);
         } else {
+            $globals = & class_loader('GlobalVar', 'classes');
             $proto = 'HTTP/1.1';
-            if (isset($_SERVER['SERVER_PROTOCOL'])) {
-                $proto = $_SERVER['SERVER_PROTOCOL'];
+            if ($globals->server('SERVER_PROTOCOL')) {
+                $proto = $globals->server('SERVER_PROTOCOL');
             }
             header($proto . ' ' . $code . ' ' . $text, TRUE, $code);
         }
@@ -350,13 +351,14 @@
 		* some servers pass the "HTTPS" parameter in the server variable,
 		* if is the case, check if the value is "on", "true", "1".
 		*/
-        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+        $globals = & class_loader('GlobalVar', 'classes');
+        if ($globals->server('HTTPS') && strtolower($globals->server('HTTPS')) !== 'off') {
             return true;
         }
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        if ($globals->server('HTTP_X_FORWARDED_PROTO') && $globals->server('HTTP_X_FORWARDED_PROTO') === 'https') {
             return true;
         }
-        if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
+        if ($globals->server('HTTP_FRONT_END_HTTPS') && strtolower($globals->server('HTTP_FRONT_END_HTTPS')) !== 'off') {
             return true;
         }
         return false;

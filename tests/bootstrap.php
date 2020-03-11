@@ -265,6 +265,9 @@
     
     //mock of PDO testcase class
 	require_once  'include/PDOMock.php';
+    
+    //Load super global class
+    $FWGLOBAL = &class_loader('GlobalVar', 'classes');
 	
 	/**
 	* Setting of the PHP error message handling function

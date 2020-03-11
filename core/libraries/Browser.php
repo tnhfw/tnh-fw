@@ -144,7 +144,7 @@
          * Reset all properties
          */
         public function reset() {
-            $this->_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+            $this->_agent =  get_instance()->globalvar->server('HTTP_USER_AGENT');
             $this->_browser_name = 'unknown';
             $this->_version = 'unknown';
             $this->_platform = 'unknown';

@@ -26,6 +26,7 @@
 			'Controller' => CORE_CLASSES_PATH . 'Controller.php',
             'DBSessionHandler' => CORE_CLASSES_PATH . 'DBSessionHandler.php',
 			'EventInfo' => CORE_CLASSES_PATH . 'EventInfo.php',
+            'GlobalVar' => CORE_CLASSES_PATH . 'GlobalVar.php',
 			'EventDispatcher' => CORE_CLASSES_PATH . 'EventDispatcher.php',
 			'Lang' => CORE_CLASSES_PATH . 'Lang.php',
 			'Loader' => CORE_CLASSES_PATH . 'Loader.php',

@@ -64,20 +64,20 @@
          * Construct new instance
          */
         public function __construct() {
+            $globals = & class_loader('GlobalVar', 'classes');
             $currentUrl = '';
-            if (!empty($_SERVER['REQUEST_URI'])) {
-                $currentUrl = $_SERVER['REQUEST_URI'];
+            if ($globals->server('REQUEST_URI')) {
+                $currentUrl = $globals->server('REQUEST_URI');
             }
-            if (!empty($_SERVER['QUERY_STRING'])) {
-                $currentUrl .= '?' . $_SERVER['QUERY_STRING'];
+            if ($globals->server('QUERY_STRING')) {
+                $currentUrl .= '?' . $globals->server('QUERY_STRING');
             }
-            $this->_currentUrl = $currentUrl;
-					
+            $this->_currentUrl = $currentUrl;		
             $this->_currentUrlCacheKey = md5($this->_currentUrl);
 			
             self::$_canCompressOutput = get_config('compress_output')
-                                          && isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
-                                          && stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false 
+                                          && $globals->server('HTTP_ACCEPT_ENCODING') !== null 
+                                          && stripos($globals->server('HTTP_ACCEPT_ENCODING'), 'gzip') !== false 
                                           && extension_loaded('zlib')
                                           && (bool) ini_get('zlib.output_compression') === false;
         }
@@ -385,12 +385,13 @@
                 $logger = self::getLogger();
                 $lastModified = $cacheInfo['mtime'];
                 $expire = $cacheInfo['expire'];
-                $maxAge = $expire - $_SERVER['REQUEST_TIME'];
+                $globals = & class_loader('GlobalVar', 'classes');
+                $maxAge = $expire - (double) $globals->server('REQUEST_TIME');
                 self::setHeader('Pragma', 'public');
                 self::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
                 self::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
                 self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
-                if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $lastModified <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+                if ($globals->server('HTTP_IF_MODIFIED_SINCE') && $lastModified <= strtotime($globals->server('HTTP_IF_MODIFIED_SINCE'))) {
                     $logger->info('The cache page content is not yet expire for the URL [' . $this->_currentUrl . '] send 304 header to browser');
                     self::sendHeaders(304);
                     return true;

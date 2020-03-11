@@ -66,10 +66,10 @@
      *  Note: we use the PHP version_compare function to compare the required version with 
      *  the version installed on your system.
      */
-    define('TNH_REQUIRED_PHP_MIN_VERSION', '5.4');
+    define('TNH_MIN_PHP_VERSION', '5.4');
 
     /**
      *  The maximum version of PHP required to use the framework. 
      *  If the version of PHP installed is higher than the required one, then the application will not work.
      */
-    define('TNH_REQUIRED_PHP_MAX_VERSION', '7.1');
+    define('TNH_MAX_PHP_VERSION', '7.1');

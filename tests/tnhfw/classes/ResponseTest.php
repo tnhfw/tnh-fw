@@ -33,12 +33,10 @@
 		}
 		
 		public function testConstructor() {
-            
-        
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
-			$this->assertSame('/foo/bar?a=b&b=c', $this->currentUrl->getValue($r));
+            $this->assertSame('/foo/bar?a=b&b=c', $this->currentUrl->getValue($r));
 			$this->assertSame(md5('/foo/bar?a=b&b=c'), $this->currentUrlCacheKey->getValue($r));
 			$this->assertFalse($this->canCompressOutput->getValue($r));
 		}

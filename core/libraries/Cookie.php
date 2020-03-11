@@ -38,8 +38,8 @@
          */
         public static function get($item, $default = null) {
             $logger = self::getLogger();
-            if (array_key_exists($item, $_COOKIE)) {
-                return $_COOKIE[$item];
+            if (array_key_exists($item, get_instance()->globalvar->cookie())) {
+                return get_instance()->globalvar->cookie($item);
             }
             $logger->warning('Cannot find cookie item [' . $item . '], using the default value [' . $default . ']');
             return $default;
@@ -75,9 +75,9 @@
          */
         public static function delete($item) {
             $logger = self::getLogger();
-            if (array_key_exists($item, $_COOKIE)) {
+            if (array_key_exists($item, get_instance()->globalvar->cookie())) {
                 $logger->info('Delete cookie item [' . $item . ']');
-                unset($_COOKIE[$item]);
+                get_instance()->globalvar->removeCookie($item);
                 return true;
             } else {
                 $logger->warning('Cookie item [' . $item . '] to be deleted does not exists');
@@ -91,7 +91,7 @@
          * @return boolean       true if the cookie item is set, false or not
          */
         public static function exists($item) {
-            return array_key_exists($item, $_COOKIE);
+            return array_key_exists($item, get_instance()->globalvar->cookie());
         }
 
     }

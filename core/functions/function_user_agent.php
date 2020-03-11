@@ -63,9 +63,10 @@
                                 'HTTP_FORWARDED_FOR',
                                 'HTTP_FORWARDED'
                             );
+            $globals = & class_loader('GlobalVar', 'classes');
             foreach ($ipServerVars as $var) {
-                if (isset($_SERVER[$var])) {
-                    $ip = $_SERVER[$var];
+                if ($globals->server($var)) {
+                    $ip = $globals->server($var);
                     break;
                 }
             }

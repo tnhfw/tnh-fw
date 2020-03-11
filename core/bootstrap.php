@@ -43,11 +43,6 @@
      *  @version 1.0.0
      *  @filesource
      */
-	
-    //if the application is running in CLI mode $_SESSION global variable is not available
-    if (IS_CLI) {
-        $_SESSION = array();
-    }
 		
     /**
      *  inclusion of global constants of the environment that contain : name of the framework,
@@ -72,6 +67,11 @@
     require_once CORE_CLASSES_PATH . 'BaseStaticClass.php';
 
     /**
+     * The Super global variable class
+     */
+    $FWGLOBALS = & class_loader('GlobalVar', 'classes');
+
+    /**
      * The Benchmark class
      */
     $BENCHMARK = & class_loader('Benchmark');
@@ -90,12 +90,12 @@
     /**
      * Verification of the PHP environment: minimum and maximum version
      */
-    if (version_compare(phpversion(), TNH_REQUIRED_PHP_MIN_VERSION, '<')) {
-        show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_REQUIRED_PHP_MIN_VERSION . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
-    } else if (version_compare(phpversion(), TNH_REQUIRED_PHP_MAX_VERSION, '>')) {
-        show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_REQUIRED_PHP_MAX_VERSION . '] please install a PHP version that is compatible.', 'PHP Error environment');	
+    if (version_compare(phpversion(), TNH_MIN_PHP_VERSION, '<')) {
+        show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
+    } else if (version_compare(phpversion(), TNH_MAX_PHP_VERSION, '>')) {
+        show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.', 'PHP Error environment');	
     }
-    $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_REQUIRED_PHP_MIN_VERSION . ', REQUIRED MAXIMUM: ' . TNH_REQUIRED_PHP_MAX_VERSION . '], application can work without any issue');
+    $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_MIN_PHP_VERSION . ', REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '], application can work without any issue');
 
     /**
      * Setting of the PHP error message handling function
@@ -191,7 +191,7 @@
             $CACHE = & class_loader($cacheHandler);
         }
         //check if the page already cached
-        if (!empty($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'get') {
+        if (!empty($FWGLOBALS->server('REQUEST_METHOD')) && strtolower($FWGLOBALS->server('REQUEST_METHOD')) == 'get') {
             $RESPONSE = & class_loader('Response', 'classes');
             if ($RESPONSE->renderFinalPageFromCache($CACHE)) {
                 return;

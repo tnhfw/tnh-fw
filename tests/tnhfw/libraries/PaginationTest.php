@@ -70,9 +70,7 @@
              
              //When query string is not null and not contain 'queryPageName='
               $qs = 'foo=bar&bar=baz';
-              //Note Url::queryString() use internally Request::server that apply 
-              //XSS filter by default so char '&'will be '&amp;' 
-              $qsExpected = 'foo=bar&amp;bar=baz';
+              $qsExpected = 'foo=bar&bar=baz';
               $_SERVER['QUERY_STRING'] = $qs;
             
               $obj = & get_instance();
@@ -84,9 +82,7 @@
              
                //When query string is not null and contains 'queryPageName='
               $qs = 'foo=bar&bar=baz&page=3';
-              //Note Url::queryString() use internally Request::server that apply 
-              //XSS filter by default so char '&'will be '&amp;' 
-              $qsExpected = 'foo=bar&amp;bar=baz&amp;page=';
+              $qsExpected = 'foo=bar&bar=baz&page=';
               $_SERVER['QUERY_STRING'] = $qs;
             
              $obj = & get_instance();

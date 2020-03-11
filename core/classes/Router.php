@@ -283,14 +283,16 @@
          */
         public function setRouteUri($uri = '') {
             $routeUri = '';
+            $globals = & class_loader('GlobalVar', 'classes');
+            $cliArgs = $globals->server('argv');
             if (!empty($uri)) {
                 $routeUri = $uri;
-            } else if (isset($_SERVER['REQUEST_URI'])) {
-                $routeUri = $_SERVER['REQUEST_URI'];
+            } else if ($globals->server('REQUEST_URI')) {
+                $routeUri = $globals->server('REQUEST_URI');
             }
             //if the application is running in CLI mode use the first argument
-            else if (IS_CLI && isset($_SERVER['argv'][1])) {
-                $routeUri = $_SERVER['argv'][1];
+            else if (IS_CLI && isset($cliArgs[1])) {
+                $routeUri = $cliArgs[1];
             } 
             $routeUri = $this->removeSuffixAndQueryStringFromUri($routeUri);
             $this->uri = trim($routeUri, $this->uriTrim);

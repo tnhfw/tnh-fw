@@ -44,7 +44,7 @@
 				}
                 //already found
 				$found = true;
-				break;
+                break;
 			}
 		}
 		if(! $found){
@@ -112,14 +112,8 @@
 	function save_to_log($level, $message, $logger = null){
 		echo 'save_to_log('.$level . ',' . $message . ',' . $logger . ")\n";
 	}
-
-	
-	function set_http_status_header($code = 200, $text = null){
-		return true;
-	}
-
-	
-	function show_error($msg, $title = 'error', $logging = true){
+    
+    function show_error($msg, $title = 'error', $logging = true){
 		//show only and continue to help track of some error occured
 		//echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ")\n";
         return true;
@@ -142,23 +136,28 @@
 		return true;
 	}
 
+	
+	function set_http_status_header($code = 200, $text = null){
+		return true;
+	}
 
-	function is_https(){
-		 /*
+	function is_https() {
+        /*
 		* some servers pass the "HTTPS" parameter in the server variable,
 		* if is the case, check if the value is "on", "true", "1".
 		*/
-        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+        $globals = & class_loader('GlobalVar', 'classes');
+        if ($globals->server('HTTPS') && strtolower($globals->server('HTTPS')) !== 'off') {
             return true;
         }
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        if ($globals->server('HTTP_X_FORWARDED_PROTO') && $globals->server('HTTP_X_FORWARDED_PROTO') === 'https') {
             return true;
         }
-        if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
+        if ($globals->server('HTTP_FRONT_END_HTTPS') && strtolower($globals->server('HTTP_FRONT_END_HTTPS')) !== 'off') {
             return true;
         }
         return false;
-	}
+    }
 	
 	/**
 	*  @test

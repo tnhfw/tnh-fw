@@ -180,7 +180,6 @@
             //set some attributes values
             $this->setPropertiesValues();
             if(! $this->isSelectQuery || ! $this->dbCacheStatus){
-                //just return true
                 return null;
             }
             $this->setCacheInstanceFromSuperInstanceIfNull();

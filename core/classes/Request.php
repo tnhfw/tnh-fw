@@ -31,42 +31,6 @@
     class Request {
 		
         /**
-         * The value for the super global $_GET
-         * @var array
-         */
-        private $get = null;
-
-        /**
-         * The value for the super global $_POST
-         * @var array
-         */
-        private $post = null;
-
-        /**
-         * The value for the super global $_SERVER
-         * @var array
-         */
-        private $server = null;
-
-        /**
-         * The value for the super global $_COOKIE
-         * @var array
-         */
-        private $cookie = null;
-
-        /**
-         * The value for the super global $_FILES
-         * @var array
-         */
-        private $file = null;
-
-        /**
-         * The value for the super global $_REQUEST
-         * @var array
-         */
-        private $query = null;
-		
-        /**
          * The session instance
          * @var Session
          */
@@ -90,17 +54,10 @@
          */
         private $requestUri = null;
 		
-		
         /**
          * Construct new request instance
          */
         public function __construct() {
-            $this->get = $_GET;
-            $this->post = $_POST;
-            $this->server = $_SERVER;
-            $this->query = $_REQUEST;
-            $this->cookie = $_COOKIE;
-            $this->file = $_FILES;
             $this->session = & class_loader('Session', 'classes');
             $this->method = $this->server('REQUEST_METHOD');
             $this->requestUri = $this->server('REQUEST_URI');
@@ -131,70 +88,67 @@
         }
 
         /**
-         * Get the value from $_REQUEST for given key. if the key is empty will return the all values
-         * @see Request::getVars 
+         * Get the value from $_REQUEST for given key. if the key is empty will return all values
+         * @see GlobalVar::request 
          */
         public function query($key = null, $xss = true) {
-            return $this->getVars('query', $key, $xss);
+            return get_instance()->globalvar->request($key, $xss);
         }
 		
         /**
-         * Get the value from $_GET for given key. if the key is empty will return the all values
-         * @see Request::getVars 
+         * Get the value from $_GET for given key. if the key is empty will return all values
+         * @see GlobalVar::get 
          */
         public function get($key = null, $xss = true) {
-            return $this->getVars('get', $key, $xss);
+            return get_instance()->globalvar->get($key, $xss);
         }
 		
         /**
-         * Get the value from $_POST for given key. if the key is empty will return the all values
-         * @see Request::getVars 
+         * Get the value from $_POST for given key. if the key is empty will return all values
+         * @see GlobalVar::post 
          */
         public function post($key = null, $xss = true) {
-            return $this->getVars('post', $key, $xss);
+            return get_instance()->globalvar->post($key, $xss);
         }
 		
         /**
-         * Get the value from $_SERVER for given key. if the key is empty will return the all values
-         * @see Request::getVars 
+         * Get the value from $_SERVER for given key. if the key is empty will return all values
+         * @see GlobalVar::server 
          */
-        public function server($key = null, $xss = true) {
-            return $this->getVars('server', $key, $xss);
+        public function server($key = null, $xss = false) {
+            return get_instance()->globalvar->server($key, $xss);
         }
 		
         /**
-         * Get the value from $_COOKIE for given key. if the key is empty will return the all values
-         * @see Request::getVars 
+         * Get the value from $_COOKIE for given key. if the key is empty will return all values
+         *
+         *  NOTE: This super global is not filter by default
+         *  
+         * @see GlobalVar::cookie 
          */
-        public function cookie($key = null, $xss = true) {
-            return $this->getVars('cookie', $key, $xss);
-        }
-
-        /**
-         * Get the value from header array for given key.
-         * @see Request::getVars 
-         */
-        public function header($key = null, $xss = true) {
-            return $this->getVars('header', $key, $xss);
+        public function cookie($key = null, $xss = false) {
+            return get_instance()->globalvar->cookie($key, $xss);
         }
 		
         /**
-         * Get the value from $_FILES for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
-         * @return array|mixed       the item value if the key exists or all array if the key does not exists or is empty
+         * Get the value from $_FILES for given key. if the key is empty will return all values
+         * @see GlobalVar::files 
          */
-        public function file($key) {
-            $file = array_key_exists($key, $this->file) ? $this->file[$key] : null;
-            return $file;
+        public function file($key, $xss = true) {
+            return get_instance()->globalvar->files($key, $xss);
         }
 		
         /**
          * Get the value from $_SESSION for given key. if the key is empty will return the all values
-         * @param  string  $key the item key to be fetched
+         *
+         *  NOTE: This super global is not filter by default
+         *  
+         * @param  string  $key the item key to be set or array if need set the current global variable 
+         * by this value
          * @param  boolean $xss if need apply some XSS attack rule on the value
          * @return array|mixed       the item value if the key exists or null if the key does not exists
          */
-        public function session($key, $xss = true) {
+        public function session($key, $xss = false) {
             $session = $this->session->get($key);
             if ($xss) {
                 $session = clean_input($session);
@@ -203,59 +157,44 @@
         }
 
         /**
-         * Set the value for $_REQUEST for the given key.
-         * @see Request::setVars 
+         * Get the value for header for given key. if the key is empty will return the all values
+         *
+         *  NOTE: This is not filter by default
+         *  
+         * @param  string  $key the item key to be fetched
+         * @param  boolean $xss if need apply some XSS rule on the value
+         * @return array|mixed       the item value if the key exists or all array if the key is null
          */
-        public function setQuery($key, $value = null) {
-            return $this->setVars('query', $key, $value);
+        public function header($key = null, $xss = true) {
+            $data = null;
+            if ($key === null) {
+                //return all
+                $data = $this->header;
+            } else if (array_key_exists($key, $this->header)) {
+                $data = $this->header[$key];
+            }
+            if ($xss) {
+                $data = clean_input($data);
+            }
+            return $data;
         }
 
         /**
-         * Set the value for $_GET for the given key.
-         * @see Request::setVars 
-         */
-        public function setGet($key, $value = null) {
-            return $this->setVars('get', $key, $value);
-        }
-
-        /**
-         * Set the value for $_POST for the given key.
-         * @see Request::setVars 
-         */
-        public function setPost($key, $value = null) {
-            return $this->setVars('post', $key, $value);
-        }
-
-        /**
-         * Set the value for $_SERVER for the given key.
-         * @see Request::setVars 
-         */
-        public function setServer($key, $value = null) {
-            return $this->setVars('server', $key, $value);
-        }
-
-        /**
-         * Set the value for $_COOKIE for the given key.
-         * @see Request::setVars 
-         */
-        public function setCookie($key, $value = null) {
-            return $this->setVars('cookie', $key, $value);
-        }
-
-        /**
-         * Set the value for header for the given key.
-         * @see Request::setVars 
+         * Set the value for header.
+         * @param  string  $key the item key to be set or array if need set the current header  
+         * by this value
+         * @param mixed $value the value to set if $key is not an array
+         * 
+         * @return object       the current instance
          */
         public function setHeader($key, $value = null) {
-            return $this->setVars('header', $key, $value);
-        }
-
-        /**
-         * Set the value for $_FILES for the given key.
-         * @see Request::setVars 
-         */
-        public function setFile($key, $value = null) {
-            return $this->setVars('file', $key, $value);
+            if (is_array($key)) {
+                //set all
+                $this->header = $key;
+            } else {
+                $this->header[$key] = $value;
+            }
+            return $this;
         }
 
         /**
@@ -276,47 +215,4 @@
             return $this->session;
         }
 
-         /**
-         * Set the value for $_GET, $_POST, $_SERVER etc. if the key is an array will
-         * set the current super variable value by this.
-         * @param string $type the type can be "post", "get", etc.
-         * @param  string|array  $key the item key to be set or array if need set the current global variable 
-         * by this value
-         * @param mixed $value the value to set if $key is not an array
-         *
-         * @return object       the current instance
-         */
-        protected function setVars($type, $key, $value = null) {
-            if (is_array($key)) {
-                //set all
-                $this->{$type} = $key;
-            } else {
-                $this->{$type}[$key] = $value;
-            }
-            return $this;
-        }
-
-        /**
-         * Get the value from $_GET, $_POST, $_SERVER etc. for given key. if the key is empty will return the all values
-         * @param string $type the type can be "post", "get", etc.
-         * @param  string  $key the item key to be fetched
-         * @param  boolean $xss if need apply some XSS rule on the value
-         * @return array|mixed       the item value if the key exists or all array if the key is null
-         */
-        protected function getVars($type, $key = null, $xss = true) {
-            $data = null;
-            if ($key === null) {
-                //return all
-                $data = $this->{$type};
-            } else if (array_key_exists($key, $this->{$type})) {
-                $data = $this->{$type}[$key];
-            }
-            if ($xss) {
-                $data = clean_input($data);
-            }
-            return $data;
-        }
-
-       
-		
     }

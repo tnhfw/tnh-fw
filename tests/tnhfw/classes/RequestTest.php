@@ -9,6 +9,7 @@
      */
 	class RequestTest extends TnhTestCase {	
 		
+       
 		public function testGetMethod() {
             $_SERVER['REQUEST_METHOD'] = 'GET';
             $r = new Request();
@@ -59,11 +60,23 @@
             $r = new Request();
             $r->setHeader('fooheader', 'foobar');
 			$this->assertSame('foobar', $r->header('fooheader'));
+            
+            $r = new Request();
+            $r->setHeader('foo', 'bar');
+			$this->assertSame('bar', $r->header('foo'));
+            
+            $headers = array('bar' => 'foo');
+            $r->setHeader($headers);
+            $this->assertNotEmpty($r->header());
+			$this->assertArrayHasKey('bar', $r->header());
+			$this->assertContains('foo', $r->header('bar'));
 		}
         
+       
+        
         public function testFile() {
+            get_instance()->globalvar->setFiles('foofile', array('name' => 'bar'));
             $r = new Request();
-            $r->setFile('foofile', array('name' => 'bar'));
 			$this->assertNotEmpty($r->file('foofile'));
 			$this->assertArrayHasKey('name', $r->file('foofile'));
 			$this->assertContains('bar', $r->file('foofile'));
@@ -80,47 +93,7 @@
 			$this->assertSame('bar', $r->session('foo'));
 		}
         
-        public function testSetQuery() {
-            $r = new Request();
-            $r->setQuery('foo', 'bar');
-			$this->assertSame('bar', $r->query('foo'));
-		}
         
-        public function testSetGet() {
-            $r = new Request();
-            $r->setGet('foo', 'bar');
-			$this->assertSame('bar', $r->get('foo'));
-		}
-        
-        public function testSetPost() {
-            $r = new Request();
-            $r->setPost('foo', 'bar');
-			$this->assertSame('bar', $r->post('foo'));
-		}
-        
-        public function testSetServer() {
-            $r = new Request();
-            $r->setServer('foo', 'bar');
-			$this->assertSame('bar', $r->server('foo'));
-		}
-        
-        public function testSetCookie() {
-            $r = new Request();
-            $r->setCookie('foo', 'bar');
-			$this->assertSame('bar', $r->cookie('foo'));
-		}
-        
-        public function testSetHeader() {
-            $r = new Request();
-            $r->setHeader('foo', 'bar');
-			$this->assertSame('bar', $r->header('foo'));
-		}
-        
-        public function testSetFile() {
-            $r = new Request();
-            $r->setFile('foo', 'bar');
-			$this->assertSame('bar', $r->file('foo'));
-		}
         
         public function testSetSession() {
             $r = new Request();
@@ -134,16 +107,4 @@
             $r = new Request();
             $this->assertSame(2, count($r->get(null)));
 		}
-        
-        public function testSetWhenKeyIsAnArray() {
-            $a = array(
-                'foo' => 'bar',
-                'bar' => 'foo',
-            );
-            $r = new Request();
-            $r->setGet($a);
-            $this->assertSame(2, count($r->get(null)));
-		}
-
-
 	}

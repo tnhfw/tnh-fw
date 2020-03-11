@@ -21,10 +21,11 @@
             $this->assertInstanceOf('Log', $o->getLogger());
 		}
         
+        
         public function testSetDependenciesInstanceIsNull() {
             $o = new BaseClass();
-            $o = $this->runPrivateProtectedMethod($o, 'setDependencyInstanceFromParamOrCreate', array('foo', null, 'Request'));
-            $this->assertInstanceOf('Request', $o->foo);
+            $o = $this->runPrivateProtectedMethod($o, 'setDependencyInstanceFromParamOrCreate', array('foo', null, 'Benchmark', 'libraries'));
+            $this->assertInstanceOf('Benchmark', $o->foo);
 		}
         
         public function testSetDependenciesInstanceIsNotNull() {

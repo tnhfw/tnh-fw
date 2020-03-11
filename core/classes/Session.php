@@ -44,10 +44,11 @@
          */
         public static function get($item, $default = null) {
             $logger = self::getLogger();
+            $sessions = get_instance()->globalvar->session();
             $logger->debug('Getting session data for item [' . $item . '] ...');
-            if (array_key_exists($item, $_SESSION)) {
-                $logger->info('Found session data for item [' . $item . '] the vaue is : [' . stringfy_vars($_SESSION[$item]) . ']');
-                return $_SESSION[$item];
+            if (array_key_exists($item, $sessions)) {
+                $logger->info('Found session data for item [' . $item . '] the vaue is : [' . stringfy_vars($sessions[$item]) . ']');
+                return $sessions[$item];
             }
             $logger->warning('Cannot find session item [' . $item . '] using the default value [' . $default . ']');
             return $default;
@@ -61,7 +62,7 @@
         public static function set($item, $value) {
             $logger = self::getLogger();
             $logger->debug('Setting session data for item [' . $item . '], value [' . stringfy_vars($value) . ']');
-            $_SESSION[$item] = $value;
+            get_instance()->globalvar->setSession($item, $value);
         }
 
         /**
@@ -74,9 +75,10 @@
             $logger = self::getLogger();
             $key = self::SESSION_FLASH_KEY . '_' . $item;
             $return = $default;
-            if (array_key_exists($key, $_SESSION)) {
-                $return = $_SESSION[$key];
-                unset($_SESSION[$key]);
+            $sessions = get_instance()->globalvar->session();
+            if (array_key_exists($key, $sessions)) {
+                $return = $sessions[$key];
+                get_instance()->globalvar->removeSession($key);
             } else {
                 $logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . $default . ']');
             }
@@ -90,7 +92,7 @@
          */
         public static function hasFlash($item) {
             $key = self::SESSION_FLASH_KEY . '_' . $item;
-            return array_key_exists($key, $_SESSION);
+            return array_key_exists($key, get_instance()->globalvar->session());
         }
 
         /**
@@ -100,7 +102,7 @@
          */
         public static function setFlash($item, $value) {
             $key = self::SESSION_FLASH_KEY . '_' . $item;
-            $_SESSION[$key] = $value;
+            get_instance()->globalvar->setSession($key, $value);
         }
 
         /**
@@ -111,9 +113,9 @@
          */
         public static function clear($item) {
             $logger = self::getLogger();
-            if (array_key_exists($item, $_SESSION)) {
+            if (array_key_exists($item, get_instance()->globalvar->session())) {
                 $logger->info('Deleting of session for item [' . $item . ' ]');
-                unset($_SESSION[$item]);
+                get_instance()->globalvar->removeSession($item);
                 return true;
             } 
             $logger->warning('Session item [' . $item . '] to be deleted does not exists');
@@ -129,9 +131,9 @@
         public static function clearFlash($item) {
             $logger = self::getLogger();
             $key = self::SESSION_FLASH_KEY . '_' . $item;
-            if (array_key_exists($key, $_SESSION)) {
+            if (array_key_exists($key, get_instance()->globalvar->session())) {
                 $logger->info('Delete session flash for item [' . $key . ']');
-                unset($_SESSION[$key]);
+                get_instance()->globalvar->removeSession($key);
                 return true;
             } 
             $logger->warning('Dession flash item [' . $key . '] to be deleted does not exists');
@@ -144,7 +146,7 @@
          * @return boolean 
          */
         public static function exists($item) {
-            return array_key_exists($item, $_SESSION);
+            return array_key_exists($item, get_instance()->globalvar->session());
         }
 
         /**
