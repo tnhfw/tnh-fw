@@ -14,7 +14,7 @@
 			'skey' => 'test_id' //VARCHAR(255) 
 		);
 		
-		public function deleteByTime($time){
+		public function deleteExipredSession($time){
 			$this->getQueryBuilder()->from($this->_table)
 									->where('s_time', '<', $time);
 			$this->_database->delete();

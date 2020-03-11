@@ -57,7 +57,7 @@
 	
     /**
      *  include file containing commons functions used in the framework such: show_error, 
-     *  php_exception_handler, php_error_handler, get_instance, etc.
+     *  fw_exception_handler, fw_error_handler, get_instance, etc.
      */
     require_once CORE_PATH . 'common.php';
 
@@ -100,17 +100,17 @@
     /**
      * Setting of the PHP error message handling function
      */
-    set_error_handler('php_error_handler');
+    set_error_handler('fw_error_handler');
 
     /**
      * Setting of the PHP error exception handling function
      */
-    set_exception_handler('php_exception_handler');
+    set_exception_handler('fw_exception_handler');
 
     /**
      * Setting of the PHP shutdown handling function
      */
-    register_shutdown_function('php_shudown_handler');
+    register_shutdown_function('fw_shudown_handler');
 	
     //if user have some composer packages
     $LOGGER->debug('Check for composer autoload');

@@ -270,6 +270,74 @@
         die();
     }
 
+       /**
+     *  Function defined for handling PHP exception error message, 
+     *  it displays an error message using the function "show_error"
+     *  
+     *  @param object $ex instance of the "Exception" class or a derived class
+     *  @codeCoverageIgnore
+     *  
+     *  @return boolean
+     */
+    function fw_exception_handler($ex) {
+        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
+            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
+        } else {
+            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
+        }
+        return true;
+    }
+    
+    /**
+     *  Function defined for PHP error message handling
+     *              
+     *  @param int $errno the type of error for example: E_USER_ERROR, E_USER_WARNING, etc.
+     *  @param string $errstr the error message
+     *  @param string $errfile the file where the error occurred
+     *  @param int $errline the line number where the error occurred
+     *  @codeCoverageIgnore
+     *  
+     *  @return boolean 
+     */
+    function fw_error_handler($errno, $errstr, $errfile, $errline) {
+        $isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
+        if ($isError) {
+            set_http_status_header(500);
+        }
+        if (!(error_reporting() & $errno)) {
+            save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
+            return;
+        }
+        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
+            $errorType = 'error';
+            switch ($errno) {
+                case E_USER_WARNING:
+                    $errorType = 'warning';
+                    break;
+                case E_USER_NOTICE:
+                    $errorType = 'notice';
+                    break;
+            }
+            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
+        }
+        if ($isError) {
+            die();
+        }
+        return true;
+    }
+
+    /**
+     * This function is used to run in shutdown situation of the script
+     * @codeCoverageIgnore
+     */
+    function fw_shudown_handler() {
+        $lastError = error_get_last();
+        if (isset($lastError) &&
+            ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
+            php_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
+        }
+    }
+
     /**
      *  Check whether the protocol used is "https" or not
      *  That is, the web server is configured to use a secure connection.
@@ -318,75 +386,6 @@
             require_once $path;
         }
     }
-	
-    /**
-     *  Function defined for handling PHP exception error message, 
-     *  it displays an error message using the function "show_error"
-     *  
-     *  @param object $ex instance of the "Exception" class or a derived class
-     *  @codeCoverageIgnore
-     *  
-     *  @return boolean
-     */
-    function php_exception_handler($ex) {
-        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
-        } else {
-            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
-        }
-        return true;
-    }
-	
-    /**
-     *  Function defined for PHP error message handling
-     *  			
-     *  @param int $errno the type of error for example: E_USER_ERROR, E_USER_WARNING, etc.
-     *  @param string $errstr the error message
-     *  @param string $errfile the file where the error occurred
-     *  @param int $errline the line number where the error occurred
-     *  @codeCoverageIgnore
-     *  
-     *  @return boolean	
-     */
-    function php_error_handler($errno, $errstr, $errfile, $errline) {
-        $isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
-        if ($isError) {
-            set_http_status_header(500);
-        }
-        if (!(error_reporting() & $errno)) {
-            save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
-            return;
-        }
-        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            $errorType = 'error';
-            switch ($errno) {
-                case E_USER_WARNING:
-                    $errorType = 'warning';
-                    break;
-                case E_USER_NOTICE:
-                    $errorType = 'notice';
-                    break;
-            }
-            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
-        }
-        if ($isError) {
-            die();
-        }
-        return true;
-    }
-
-    /**
-     * This function is used to run in shutdown situation of the script
-     * @codeCoverageIgnore
-     */
-    function php_shudown_handler() {
-        $lastError = error_get_last();
-        if (isset($lastError) &&
-            ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
-            php_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
-        }
-    }
-
 
     /**
      *  Convert array attributes to string

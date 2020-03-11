@@ -75,7 +75,7 @@
          * @param  int $time the unix timestamp
          * @return int       affected rows
          */
-        abstract public function deleteByTime($time);
+        abstract public function deleteExipredSession($time);
 
 		
         /**

@@ -260,7 +260,7 @@
             $instance = $this->modelInstance;
             $time = time() - $maxLifetime;
             $this->logger->debug('Garbage collector of expired session. maxLifetime [' . $maxLifetime . '] sec, expired time [' . $time . ']');
-            $instance->deleteByTime($time);
+            $instance->deleteExipredSession($time);
             return true;
         }
 

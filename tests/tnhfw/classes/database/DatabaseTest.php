@@ -65,12 +65,12 @@
             //Note instance is already set in constructor
             $this->assertNotNull($db->getCacheInstance());
              
-            $cache = $this->getMockBuilder('FileCache')
+            $cache = $this->getMockBuilder('DatabaseCache')
                           ->getMock();
                         
             $db->setCacheInstance($cache);
             $this->assertNotNull($db->getCacheInstance());
-            $this->assertInstanceOf('FileCache', $db->getCacheInstance());
+            $this->assertInstanceOf('DatabaseCache', $db->getCacheInstance());
 		}
         
         public function testGetSetQueryBuilder() {

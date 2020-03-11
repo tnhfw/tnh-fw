@@ -149,20 +149,20 @@
 		return preg_match('/^(http|https|ftp):\/\/(.*)/', $url);
 	}
 		
-	function php_exception_handler($ex){
+	function fw_exception_handler($ex){
 		//show only and continue to help track of some error occured
-		//echo 'php_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
+		//echo 'fw_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
         return true;
 	}
 	
 	
-	function php_error_handler($errno , $errstr, $errfile , $errline){
+	function fw_error_handler($errno , $errstr, $errfile , $errline){
 		//show only and continue to help track of some error occured
-        //echo 'php_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
+        //echo 'fw_error_handler('.$errno .', ' . $errstr.', ' . $errfile.', '.$errline . ")\n";
         return true;
 	}
 
-	function php_shudown_handler(){
+	function fw_shudown_handler(){
 		return true;
 	}
 

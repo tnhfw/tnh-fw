@@ -56,19 +56,9 @@
     define('TNH_VERSION', '1.0.0-dev');
 
     /**
-     *  The date of publication or release of the framework
+     *  The release date of the framework
      */
     define('TNH_RELEASE_DATE', '2017/02/05');
-
-    /**
-     *  The author of the framework, the person who developed the framework.
-     */
-    define('TNH_AUTHOR', 'Tony NGUEREZA');
-
-    /**
-     *  Email address of the author of the framework.
-     */
-    define('TNH_AUTHOR_EMAIL', 'nguerezatony@gmail.com');
 
     /**
      *  The minimum PHP version required to use the framework. 

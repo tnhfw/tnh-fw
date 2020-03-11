@@ -31,8 +31,6 @@
             <p>Version : <b><?php echo TNH_VERSION; ?></b></p>
             <p>Required PHP version : <b>PHP >= <?php echo TNH_REQUIRED_PHP_MIN_VERSION; ?>, PHP <= <?php echo TNH_REQUIRED_PHP_MAX_VERSION; ?></b></p>
             <p>Release date : <b><?php echo TNH_RELEASE_DATE; ?></b></p>
-            <p>Author : <b><?php echo TNH_AUTHOR; ?></b></p>
-            <p>Author E-mail : <b><?php echo TNH_AUTHOR_EMAIL; ?></b></p>
             <hr />
             <p>Current controller: <b class = "text-muted label-danger"><?php echo APPS_CONTROLLER_PATH . 'Home.php';?></b>
             <p>Current view: <b class = "text-muted label-danger"><?php echo APPS_VIEWS_PATH . 'home.php';?></b>
