@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit
 	bootstrap="tests/bootstrap.php"
 	colors="true"
@@ -17,10 +16,9 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<!--<directory suffix=".php">core/classes</directory>
+			<directory suffix=".php">core/classes</directory>
 			<directory suffix=".php">core/functions</directory>
-			<directory suffix=".php">core/libraries</directory>-->
-            <file>core/classes/Router.php</file>
+			<directory suffix=".php">core/libraries</directory>
 		</whitelist>
 	</filter>
 </phpunit>
