@@ -62,11 +62,6 @@
     require_once CORE_CLASSES_PATH . 'BaseClass.php';
 
     /**
-     * Include of the file containing the BaseStaticClass 
-     */
-    require_once CORE_CLASSES_PATH . 'BaseStaticClass.php';
-
-    /**
      * The Super global variable class
      */
     $FWGLOBALS = & class_loader('GlobalVar', 'classes');

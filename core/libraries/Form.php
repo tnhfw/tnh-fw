@@ -40,7 +40,7 @@
          */
         public static function open($path = null, array $attributes = array(), $method = 'POST', $enctype = null) {
             if ($path) {
-                $path = Url::site_url($path);
+                $path = get_instance()->url->appUrl($path);
             }
             $method = strtoupper($method);
             $str = null;

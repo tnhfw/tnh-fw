@@ -42,32 +42,38 @@
      *  @since 1.0.0
      *  @filesource
      */
-    class Assets extends BaseStaticClass {
+    class Assets extends BaseClass {
 
+         /**
+         * Construct new instance
+         */
+        public function __construct() {
+            parent::__construct();
+        }
 
         /**
          *  Generate the link of the assets file.
          *  
          *  Generates the absolute link of a file inside ASSETS_PATH folder.
          *  For example :
-         *  	echo Assets::path('foo/bar/css/style.css'); => http://mysite.com/assets/foo/bar/css/style.css
+         *  	path('foo/bar/css/style.css'); => http://mysite.com/assets/foo/bar/css/style.css
          *  Note:
-         *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+         *  The argument passed to this function must be the relative link to the 
+         *  folder that contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $asset the name of the assets file path with the extension.
-         *  @return string|null the absolute path of the assets file, if it exists otherwise returns null if the file does not exist.
+         *  @return string|null the absolute path of the assets file, if it exists o
+         *  therwise returns null if the file does not exist.
          */
-        public static function path($asset) {
-            $logger = self::getLogger();	
+        public function path($asset) {
             $path = ASSETS_PATH . $asset;
-			
-            $logger->debug('Including the Assets file [' . $path . ']');
+            $this->logger->debug('Including the Assets file [' . $path . ']');
             //Check if the file exists
             if (file_exists($path)) {
-                $logger->info('Assets file [' . $path . '] included successfully');
-                return Url::base_url($path);
+                $this->logger->info('Assets file [' . $path . '] included successfully');
+                return get_instance()->url->mainUrl($path);
             }
-            $logger->warning('Assets file [' . $path . '] does not exist');
+            $this->logger->warning('Assets file [' . $path . '] does not exist');
             return null;
         }
 		
@@ -76,29 +82,27 @@
          *  
          *  Generates the absolute link of a file containing the CSS style.
          *  For example :
-         *  	echo Assets::css('mystyle'); => http://mysite.com/assets/css/mystyle.css
+         *  	css('mystyle'); => http://mysite.com/assets/css/mystyle.css
          *  Note:
          *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $path the name of the css file without the extension.
          *  @return string|null the absolute path of the css file, if it exists otherwise returns null if the file does not exist.
          */
-        public static function css($path) {
-            $logger = self::getLogger();
+        public function css($path) {
             /*
 			* if the file name contains the ".css" extension, replace it with 
 			* an empty string for better processing.
 			*/
             $path = str_ireplace('.css', '', $path);
             $path = ASSETS_PATH . 'css/' . $path . '.css';
-			
-            $logger->debug('Including the Assets file [' . $path . '] for CSS');
+            $this->logger->debug('Including the Assets file [' . $path . '] for CSS');
             //Check if the file exists
             if (file_exists($path)) {
-                $logger->info('Assets file [' . $path . '] for CSS included successfully');
-                return Url::base_url($path);
+                $this->logger->info('Assets file [' . $path . '] for CSS included successfully');
+                return get_instance()->url->mainUrl($path);
             }
-            $logger->warning('Assets file [' . $path . '] for CSS does not exist');
+            $this->logger->warning('Assets file [' . $path . '] for CSS does not exist');
             return null;
         }
 
@@ -107,23 +111,24 @@
          *  
          *  Generates the absolute link of a file containing the javascript.
          *  For example :
-         *  	echo Assets::js('myscript'); => http://mysite.com/assets/js/myscript.js
+         *  	js('myscript'); => http://mysite.com/assets/js/myscript.js
          *  Note:
-         *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+         *  The argument passed to this function must be the relative link to 
+         *  the folder that contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $path the name of the javascript file without the extension.
-         *  @return string|null the absolute path of the javascript file, if it exists otherwise returns null if the file does not exist.
+         *  @return string|null the absolute path of the javascript file, 
+         *  if it exists otherwise returns null if the file does not exist.
          */
-        public static function js($path) {
-            $logger = self::getLogger();
+        public function js($path) {
             $path = str_ireplace('.js', '', $path);
             $path = ASSETS_PATH . 'js/' . $path . '.js';
-            $logger->debug('Including the Assets file [' . $path . '] for javascript');
+            $this->logger->debug('Including the Assets file [' . $path . '] for javascript');
             if (file_exists($path)) {
-                $logger->info('Assets file [' . $path . '] for Javascript included successfully');
-                return Url::base_url($path);
+                $this->logger->info('Assets file [' . $path . '] for Javascript included successfully');
+                return get_instance()->url->mainUrl($path);
             }
-            $logger->warning('Assets file [' . $path . '] for Javascript does not exist');
+            $this->logger->warning('Assets file [' . $path . '] for Javascript does not exist');
             return null;
         }
 
@@ -132,22 +137,23 @@
          *  
          *  Generates the absolute link of a file containing the image.
          *  For example :
-         *  	echo Assets::img('myimage.png'); => http://mysite.com/assets/images/myimage.png
+         *  	img('myimage.png'); => http://mysite.com/assets/images/myimage.png
          *  Note:
-         *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+         *  The argument passed to this function must be the relative link to 
+         *  the folder that contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $path the name of the image file with the extension.
-         *  @return string|null the absolute path of the image file, if it exists otherwise returns null if the file does not exist.
+         *  @return string|null the absolute path of the image file, if it exists 
+         *  otherwise returns null if the file does not exist.
          */
-        public static function img($path) {
-            $logger = self::getLogger();
+        public function img($path) {
             $path = ASSETS_PATH . 'images/' . $path;
-            $logger->debug('Including the Assets file [' . $path . '] for image');
+            $this->logger->debug('Including the Assets file [' . $path . '] for image');
             if (file_exists($path)) {
-                $logger->info('Assets file [' . $path . '] for image included successfully');
-                return Url::base_url($path);
+                $this->logger->info('Assets file [' . $path . '] for image included successfully');
+                return get_instance()->url->mainUrl($path);
             }
-            $logger->warning('Assets file [' . $path . '] for image does not exist');
+            $this->logger->warning('Assets file [' . $path . '] for image does not exist');
             return null;
         }
     }

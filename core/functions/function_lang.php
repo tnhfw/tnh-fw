@@ -28,7 +28,7 @@
      * SOFTWARE.
      */
 
-    if (!function_exists('__')) {
+    if (!function_exists('__tr')) {
         /**
          * function for the shortcut to Lang::get()
          * @param  string $key the language key to retrieve
@@ -36,7 +36,7 @@
          * for the given key
          * @return string  the language value
          */
-        function __($key, $default = 'LANGUAGE_ERROR') {
+        function __tr($key, $default = 'LANGUAGE_ERROR') {
             return get_instance()->lang->get($key, $default);
         }
 

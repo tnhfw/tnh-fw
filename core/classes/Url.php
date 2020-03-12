@@ -28,14 +28,21 @@
      * SOFTWARE.
      */
 
-    class Url {
+    class Url extends BaseClass{
 
         /**
-         * Return the link using base_url config without front controller "index.php"
+         * Construct new instance
+         */
+        public function __construct() {
+            parent::__construct();
+        }
+        
+        /**
+         * Return the link using "base_url" config without front controller "index.php"
          * @param  string $path the link path or full URL
          * @return string the full link URL
          */
-        public static function base_url($path = '') {
+        public function mainUrl($path = '') {
             if (is_url($path)) {
                 return $path;
             }
@@ -43,11 +50,11 @@
         }
 
         /**
-         * Return the link using base_url config with front controller "index.php"
+         * Return the link using "base_url" config with front controller "index.php"
          * @param  string $path the link path or full URL
          * @return string the full link URL
          */
-        public static function site_url($path = '') {
+        public function appUrl($path = '') {
             if (is_url($path)) {
                 return $path;
             }
@@ -57,7 +64,7 @@
             if ($frontController) {
                 $url .= $frontController . '/';
             }
-            $path = self::addSuffixInPath($path);
+            $path = $this->addSuffixInPath($path);
             return $url . $path;
         }
 
@@ -65,13 +72,13 @@
          * Return the current site URL
          * @return string
          */
-        public static function current() {
+        public function current() {
             $current = '/';
             $requestUri = get_instance()->request->requestUri();
             if ($requestUri) {
                 $current = $requestUri;
             }
-            return static::domain() . $current;
+            return $this->domain() . $current;
         }
 
         /**
@@ -81,7 +88,7 @@
          * @param  boolean $lowercase whether to set the final text to lowe case or not
          * @return string the friendly generated text
          */
-        public static function title($str = null, $separator = '-', $lowercase = true) {
+        public function title($str = null, $separator = '-', $lowercase = true) {
             $str = trim($str);
             $from = array('ç', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'à', 'á', 'â', 'ã', 'ä', 'å', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'È', 'É', 'Ê', 'Ë', 'è', 'é', 'ê', 'ë', 'Ç', 'ç', 'Ì', 'Í', 'Î', 'Ï', 'ì', 'í', 'î', 'ï', 'Ù', 'Ú', 'Û', 'Ü', 'ù', 'ú', 'û', 'ü', 'ÿ', 'Ñ', 'ñ');
             $to = array('c', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'n', 'n');
@@ -102,7 +109,7 @@
          * Get the current application domain with protocol
          * @return string the domain name
          */
-        public static function domain() {
+        public function domain() {
             $domain = 'localhost';
             $port = get_instance()->request->server('SERVER_PORT');
             $protocol = 'http';
@@ -115,7 +122,6 @@
                 'SERVER_NAME',
                 'SERVER_ADDR'
             );
-
             foreach ($domainserverVars as $var) {
                 $value = get_instance()->request->server($var);
                 if ($value) {
@@ -134,7 +140,7 @@
          * Get the current request query string
          * @return string
          */
-        public static function queryString() {
+        public function queryString() {
             return get_instance()->request->server('QUERY_STRING');
         }
 
@@ -145,7 +151,7 @@
          * @return string the final path after add suffix if configured
          * otherwise the same value will be returned
          */
-        protected static function addSuffixInPath($path){
+        protected function addSuffixInPath($path){
             $suffix = get_config('url_suffix');
             if ($suffix && $path) {
                 if (strpos($path, '?') !== false) {

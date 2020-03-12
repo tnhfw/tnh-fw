@@ -8,58 +8,58 @@
      * @group http
      */
 	class UrlTest extends TnhTestCase {	
-		public function testBaseUrl() {
+		public function testMainUrl() {
             $url = new Url();
-			$this->assertEmpty($url->base_url());
+			$this->assertEmpty($url->mainUrl());
             
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
-            $this->assertNotEmpty($url->base_url());
-            $this->assertSame($base_url, $url->base_url());
+            $this->assertNotEmpty($url->mainUrl());
+            $this->assertSame($base_url, $url->mainUrl());
             
-            $this->assertSame($base_url . 'foo', $url->base_url('foo'));
+            $this->assertSame($base_url . 'foo', $url->mainUrl('foo'));
 		}
         
-        public function testBaseUrlWhenParamIsAbsoluteUrl() {
+        public function testMainUrlWhenParamIsAbsoluteUrl() {
             $url = new Url();
 			$link = 'http://www.example.com';
-            $this->assertSame($link, $url->base_url($link));
+            $this->assertSame($link, $url->mainUrl($link));
 		}
         
-        public function testSiteUrlWhenParamIsAbsoluteUrl() {
+        public function testAppUrlWhenParamIsAbsoluteUrl() {
             $url = new Url();
 			$link = 'http://www.example.com';
-            $this->assertSame($link, $url->site_url($link));
+            $this->assertSame($link, $url->appUrl($link));
 		}
         
-        public function testSiteUrlWhenFrontControllerConfigIsNotEmpty() {
+        public function testAppUrlWhenFrontControllerConfigIsNotEmpty() {
             $url = new Url();
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
             $this->config->set('front_controller', 'foo.php');
             $expected = $base_url . 'foo.php/controller';
             
-			$this->assertSame($expected, $url->site_url('controller'));
+			$this->assertSame($expected, $url->appUrl('controller'));
 		}
         
-        public function testSiteUrlWhenUrlSuffixIsSetInConfig() {
+        public function testAppUrlWhenUrlSuffixIsSetInConfig() {
             $url = new Url();
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
             $this->config->set('url_suffix', '.html');
             $expected = $base_url . 'controller.html';
             
-			$this->assertSame($expected, $url->site_url('controller'));
+			$this->assertSame($expected, $url->appUrl('controller'));
 		}
         
-        public function testSiteUrlWhenUrlSuffixIsSetInConfigAndRequestHasQueryStringValue() {
+        public function testAppUrlWhenUrlSuffixIsSetInConfigAndRequestHasQueryStringValue() {
             $url = new Url();
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
             $this->config->set('url_suffix', '.html');
             $expected = $base_url . 'controller.html?a=b&b=c';
             
-			$this->assertSame($expected, $url->site_url('controller?a=b&b=c'));
+			$this->assertSame($expected, $url->appUrl('controller?a=b&b=c'));
 		}
         
         public function testGetCurrentUrl() {

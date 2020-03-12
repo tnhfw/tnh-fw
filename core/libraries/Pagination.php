@@ -106,8 +106,8 @@
          */
         public function determinePaginationQueryStringValue() {
             $pageQueryName = $this->config['page_query_string_name'];
-            $queryString = Url::queryString();
-            $currentUrl = Url::current();
+            $queryString = get_instance()->url->queryString();
+            $currentUrl = get_instance()->url->current();
             $query = '';
             if ($queryString == '') {
                 $query = '?' . $pageQueryName . '=';

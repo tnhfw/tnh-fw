@@ -148,7 +148,7 @@
          * @codeCoverageIgnore
          */
         public function redirect($path = '') {
-            $url = Url::site_url($path);
+            $url = get_instance()->url->appUrl($path);
             if (!headers_sent()) {
                 header('Location: ' . $url);
                 exit;

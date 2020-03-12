@@ -39,8 +39,8 @@
          *
          * @return string|void             the anchor link generated html if $return is true or display it if not
          */
-        public static function a($link = '', $anchor = null, array $attributes = array(), $return = true) {
-            $link = Url::site_url($link);
+        public static function anchor($link = '', $anchor = null, array $attributes = array(), $return = true) {
+            $link = get_instance()->url->appUrl($link);
             if (!$anchor) {
                 $anchor = $link;
             }

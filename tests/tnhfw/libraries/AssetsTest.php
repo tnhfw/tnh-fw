@@ -8,7 +8,14 @@
      * @group html
      */
 	class AssetsTest extends TnhTestCase {	
-		
+    
+    
+        protected function setUp()
+		{
+            parent::setUp();
+            $this->setUrlInstanceForTest();
+		}
+    
 		public function testPathFileExists() {
             $a = new Assets();
             
@@ -54,6 +61,7 @@
         public function testJsFileExists() {
             $a = new Assets();
             
+            
             $expected = ASSETS_PATH . 'js/test.js';
 			$this->assertSame($expected, $a->js('test'));
             
@@ -92,6 +100,15 @@
             $a = new Assets();
             $this->assertNull($a->img('foofile.jpg'));
 		}
+        
+         /**
+        * Set instance for url in super controller
+        */
+        private function setUrlInstanceForTest() {
+            $obj = &get_instance();
+            $obj->url = new Url();
+        }
+		
 
 
 	}

@@ -8,9 +8,9 @@
     <meta name="description" content="A simple PHP framework using HMVC architecture">
     <meta name="author" content="Tony NGUEREZA">
     <title>TNH Framework</title>
-    <link href="<?php echo Assets::css('bootstrap.min'); ?>" rel="stylesheet" type = "text/css" >
-	<link href="<?php echo Assets::css('fontawesome-all.min'); ?>" rel="stylesheet" type = "text/css" >
-    <link rel="icon" href="<?php echo Assets::img('favicon.ico'); ?>">
+    <link href="<?php echo get_instance()->assets->css('bootstrap.min'); ?>" rel="stylesheet" type = "text/css" >
+	<link href="<?php echo get_instance()->assets->css('fontawesome-all.min'); ?>" rel="stylesheet" type = "text/css" >
+    <link rel="icon" href="<?php echo get_instance()->assets->img('favicon.ico'); ?>">
   </head>
   <body>
 	<br />
@@ -22,14 +22,14 @@
             <h3>Welcome on <?php echo TNH_NAME; ?> v<?php echo TNH_VERSION; ?></h3>
           </div>
           <div class="card-body">
-            <img src = "<?php echo Assets::img('logo.png'); ?>" class = "img-responsive" style = "float:left;" />
+            <img src = "<?php echo get_instance()->assets->img('logo.png'); ?>" class = "img-responsive" style = "float:left;" />
             <h4>A simple PHP framework using HMVC architecture</h4>
             <br />
-            <p><?php echo Html::a('https://github.com/tnhfw/tnh-fw', 'Framework on Github', array('class' => 'btn btn-sm btn-primary', 'target' => '_blank')); ?></p>
+            <p><?php echo Html::anchor('https://github.com/tnhfw/tnh-fw', 'Framework on Github', array('class' => 'btn btn-sm btn-primary', 'target' => '_blank')); ?></p>
             <br />
             <hr />
             <p>Version : <b><?php echo TNH_VERSION; ?></b></p>
-            <p>Required PHP version : <b>PHP >= <?php echo TNH_MIN_PHP_VERSION; ?>, PHP < <?php echo TNH_MAX_PHP_VERSION; ?></b></p>
+            <p>Required PHP version : <b>PHP &gt;= <?php echo TNH_MIN_PHP_VERSION; ?>, PHP &lt; <?php echo TNH_MAX_PHP_VERSION; ?></b></p>
             <p>Release date : <b><?php echo TNH_RELEASE_DATE; ?></b></p>
             <hr />
             <p>Current controller: <b class = "text-muted label-danger"><?php echo APPS_CONTROLLER_PATH . 'Home.php';?></b>
@@ -39,7 +39,7 @@
       </div>
     </div>
     
-	<script src="<?php echo Assets::js('jquery.min'); ?>"></script>
-	<script src="<?php echo Assets::js('bootstrap.bundle.min'); ?>"></script>
+	<script src="<?php echo get_instance()->assets->js('jquery.min'); ?>"></script>
+	<script src="<?php echo get_instance()->assets->js('bootstrap.bundle.min'); ?>"></script>
 	</body>
 </html>

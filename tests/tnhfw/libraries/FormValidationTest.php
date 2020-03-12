@@ -1041,6 +1041,12 @@
             $fv->setData(array('foo' => '-2'));
             $this->assertTrue($fv->validate());
             
+            //using char 
+            $fv = new FormValidation();
+            $fv->setRule('foo', 'foo label', 'between[a,f]');
+            $fv->setData(array('foo' => 'b'));
+            $this->assertTrue($fv->validate());
+            
         }
         
         public function testRuleNumeric()

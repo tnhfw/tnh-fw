@@ -18,11 +18,11 @@
             $l->set('name', 'Your name');
             $this->assertNotEmpty($l->getAll());
             $this->assertSame(1, count($l->getAll()));
-            $this->assertSame('LANGUAGE_ERROR', __('unknowKey'));
-			$this->assertSame('default', __('unknowKey', 'default'));
+            $this->assertSame('LANGUAGE_ERROR', __tr('unknowKey'));
+			$this->assertSame('default', __tr('unknowKey', 'default'));
             $obj = & get_instance();
             $obj->lang = $l;
-            $this->assertSame('Your name', __('name'));
+            $this->assertSame('Your name', __tr('name'));
 		}
         
         public function testGetLanguages() {

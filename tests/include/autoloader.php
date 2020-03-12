@@ -21,7 +21,6 @@
 			
             //Core classes
 			'BaseClass' => CORE_CLASSES_PATH . 'BaseClass.php',
-			'BaseStaticClass' => CORE_CLASSES_PATH . 'BaseStaticClass.php',
 			'Config' => CORE_CLASSES_PATH . 'Config.php',
 			'Controller' => CORE_CLASSES_PATH . 'Controller.php',
             'DBSessionHandler' => CORE_CLASSES_PATH . 'DBSessionHandler.php',

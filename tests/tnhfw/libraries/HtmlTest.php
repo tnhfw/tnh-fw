@@ -12,27 +12,27 @@
 		public function testAnchor() {
             $h = new Html();
             $expected = '<a href = ""></a>';
-			$this->assertSame($expected, $h->a());
+			$this->assertSame($expected, $h->anchor());
             
             //using attributes
             $expected = '<a href = "" class = "foo" id = "bar">foo</a>';
-			$this->assertSame($expected, $h->a(null, 'foo', array('class' => 'foo', 'id' => 'bar')));
+			$this->assertSame($expected, $h->anchor(null, 'foo', array('class' => 'foo', 'id' => 'bar')));
             
              //using absolute url
             $url = 'http://www.foo.bar/';
             $expected = '<a href = "'.$url.'">'.$url.'</a>';
-			$this->assertSame($expected, $h->a($url));
+			$this->assertSame($expected, $h->anchor($url));
             
             //Display it directly
             $expected = '<a href = ""></a>';
             $this->expectOutputString($expected);
-			$h->a(null, null, array(), false);
+			$h->anchor(null, null, array(), false);
             
              //using base url
             $base_url = 'http://localhost/';
             $this->config->set('base_url', $base_url);
             $expected = '<a href = "'.$base_url.'controller/method">'.$base_url.'controller/method</a>';
-			$this->assertSame($expected, $h->a('controller/method'));
+			$this->assertSame($expected, $h->anchor('controller/method'));
 		}
         
         public function testMailto() {
