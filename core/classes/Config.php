@@ -38,7 +38,6 @@
 
         /**
          * Initialize the configuration by loading all the configuration from config file
-         * @codeCoverageIgnore
          */
         public function __construct() {
             parent::__construct();
