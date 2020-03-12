@@ -98,14 +98,23 @@
         protected $error404 = false;
 
         /**
-         * Construct the new Router instance
+         * The instance of module to use
+         * @var object
          */
-        public function __construct() {
+        protected $moduleInstance = null;
+
+        /**
+         * Construct the new Router instance
+         *
+         * @param object $module the instance of module to use
+         */
+        public function __construct(Module $module = null) {
             parent::__construct();
-			
+            $this->setModuleInstance($module);
+
             //loading routes for module
             $moduleRouteList = array();
-            $modulesRoutes = Module::getModulesRoutesConfig();
+            $modulesRoutes = $this->moduleInstance->getModulesRoutesConfig();
             if ($modulesRoutes && is_array($modulesRoutes)) {
                 $moduleRouteList = $modulesRoutes;
                 unset($modulesRoutes);
@@ -115,7 +124,28 @@
         }
 
         /**
-         * Return if we have 404 error or not
+         * Return the module instance to use
+         * @return object
+         */
+        public function getModuleInstance() {
+            return $this->moduleInstance;
+        }
+
+        /**
+         * Set the module instance to use
+         *
+         * @param object $module the new module instance
+         * 
+         * @return object the current instance
+         */
+        public function setModuleInstance(Module $module = null) {
+            $this->moduleInstance = $module;
+
+            return $this;
+        }
+
+        /**
+         * Return the 404 error or not
          * @return boolean
          */
         public function is404() {
@@ -386,7 +416,7 @@
                 $controllerPath = APPS_CONTROLLER_PATH . ucfirst($this->controller) . '.php';
                 //if the controller is in module
                 if ($this->module) {
-                    $path = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
+                    $path = $this->moduleInstance->findControllerFullPath(ucfirst($this->controller), $this->module);
                     if ($path !== false) {
                         $controllerPath = $path;
                     }
@@ -458,7 +488,7 @@
             if (strpos($callback, '#') === false && strpos($callback, '@') === false) {
                 $this->logger->info('Callback [' . $callback . '] does not have module or controller definition try to check if is an module or controller');
                 //get the module list
-                $modules = Module::getModuleList();
+                $modules = $this->moduleInstance->getModuleList();
                 if (in_array($callback, $modules)) {
                     $this->logger->info('Callback [' . $callback . '] found in module use it as an module');
                     $this->module = $callback;
@@ -557,7 +587,7 @@
          * @return boolean true if the file path is found otherwise false.
          */
         protected function findControllerFullPathUsingCurrentModule(){
-            $path = Module::findControllerFullPath(ucfirst($this->controller), $this->module);
+            $path = $this->moduleInstance->findControllerFullPath(ucfirst($this->controller), $this->module);
             if (!$path) {
                 $this->logger->info('The controller [' . $this->controller . '] not found in the module, may be will use the module [' . $this->module . '] as controller');
                 $this->controller = $this->module;
@@ -595,7 +625,7 @@
          */
         protected function setRouteParamsIfAppHasModuleOrFound(){
             //get the module list
-            $modules = Module::getModuleList();
+            $modules = $this->moduleInstance->getModuleList();
             $segment = $this->segments;
             if (in_array($segment[0], $modules)) {
                 $this->logger->info('Found, the current request use the module [' . $segment[0] . ']');
@@ -633,7 +663,7 @@
             //if segment is null so means no need to perform
             if ($nbSegment > 0) {
                 //get the module list
-                $modules = Module::getModuleList();
+                $modules = $this->moduleInstance->getModuleList();
 
                 //first check if no module
                 if (empty($modules)) {
@@ -701,6 +731,4 @@
             }
             $this->error404 = $e404;
         }
-    
-
     }

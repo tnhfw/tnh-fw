@@ -70,9 +70,9 @@
             //set the cache instance using the configuration
             $this->setCacheFromParamOrConfig(null);
 			
-            //set application session configuration
-            $this->logger->debug('Setting PHP application session handler');
-            set_session_config();
+            //set application session configuration and then started it
+            $this->logger->debug('Starting application session handler');
+            $this->startAppSession();
 
             //dispatch the loaded instance of super controller event
             $this->eventdispatcher->dispatch('SUPER_CONTROLLER_CREATED');
@@ -81,10 +81,90 @@
 
         /**
          * This is a very useful method it's used to get the super object instance
-         * @return Controller the super object instance
+         * @return object the super object instance
          */
-        public static function &get_instance(){
+        public static function &getInstance(){
             return self::$instance;
+        }
+
+        /**
+         * This method is used to set the session configuration
+         * using the configured value and start the session if not yet started
+         *
+         * @codeCoverageIgnore
+         */
+         protected function startAppSession() {
+            //$_SESSION is not available on cli mode 
+            if (!IS_CLI) {
+                //set session params
+                $sessionName = $this->config->get('session_name');
+                $this->logger->info('Session name: ' . $sessionName);
+                if ($sessionName) {
+                    session_name($sessionName);
+                }
+
+                //Set app session handler configuration
+                $this->setAppSessionConfig();
+
+                $lifetime = $this->config->get('session_cookie_lifetime', 0);
+                $path = $this->config->get('session_cookie_path', '/');
+                $domain = $this->config->get('session_cookie_domain', '');
+                $secure = $this->config->get('session_cookie_secure', false);
+                if (is_https()) {
+                    $secure = true;
+                }
+                session_set_cookie_params(
+                    $lifetime,
+                    $path,
+                    $domain,
+                    $secure,
+                    $httponly = true /*for security for access to cookie via javascript or XSS attack*/
+                );
+                //to prevent attack of Session Fixation 
+                //thank to https://www.phparch.com/2018/01/php-sessions-in-depth/
+                ini_set('session.use_strict_mode ', 1);
+                ini_set('session.use_only_cookies', 1);
+                ini_set('session.use_trans_sid ', 0);
+                
+                $this->logger->info('Session lifetime: ' . $lifetime);
+                $this->logger->info('Session cookie path: ' . $path);
+                $this->logger->info('Session domain: ' . $domain);
+                $this->logger->info('Session is secure: ' . ($secure ? 'TRUE' : 'FALSE'));
+                
+                if ((session_status() !== PHP_SESSION_ACTIVE) || !session_id()) {
+                    $this->logger->info('Session not yet start, start it now');
+                    session_start();
+                }
+            }
+        }
+
+        /**
+         * Set the session handler configuration
+         * @codeCoverageIgnore
+         */
+        protected function setAppSessionConfig() {
+             //the default is to store in the files
+            $sessionHandler = $this->config->get('session_handler', 'files');
+            $this->logger->info('Session handler: ' . $sessionHandler);
+            if ($sessionHandler == 'files') {
+                $sessionSavePath = $this->config->get('session_save_path');
+                if ($sessionSavePath) {
+                    if (!is_dir($sessionSavePath)) {
+                        mkdir($sessionSavePath, 1773);
+                    }
+                    $this->logger->info('Session save path: ' . $sessionSavePath);
+                    session_save_path($sessionSavePath);
+                }
+            } else if ($sessionHandler == 'database') {
+                //load database session handle library
+                //Database Session handler Model
+                require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
+                $dbSessionHandler = & class_loader('DBSessionHandler', 'classes');
+                session_set_save_handler($dbSessionHandler, true);
+                $this->logger->info('Session database handler model: ' . $this->config->get('session_save_path'));
+            } else {
+                show_error('Invalid session handler configuration');
+            }
         }
 
         /**
@@ -104,12 +184,12 @@
         protected function setCacheFromParamOrConfig(CacheInterface $cache = null) {
             $this->logger->debug('Setting the cache handler instance');
             //set cache handler instance
-            if (get_config('cache_enable', false)) {
+            if ($this->config->get('cache_enable', false)) {
                 if ($cache !== null) {
                     $this->cache = $cache;
-                } else if (isset($this->{strtolower(get_config('cache_handler'))})) {
-                    $this->cache = $this->{strtolower(get_config('cache_handler'))};
-                    unset($this->{strtolower(get_config('cache_handler'))});
+                } else if (isset($this->{strtolower($this->config->get('cache_handler'))})) {
+                    $this->cache = $this->{strtolower($this->config->get('cache_handler'))};
+                    unset($this->{strtolower($this->config->get('cache_handler'))});
                 } 
             }
         }
@@ -135,7 +215,7 @@
          */
         private function setAppSupportedLanguages() {
             //add the supported languages ('key', 'display name')
-            $languages = get_config('languages', array());
+            $languages = $this->config->get('languages', array());
             foreach ($languages as $key => $displayName) {
                 $this->lang->addLang($key, $displayName);
             }

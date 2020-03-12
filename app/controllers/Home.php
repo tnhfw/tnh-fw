@@ -41,8 +41,8 @@
          * The default method
          */
         public function index() {
-            Loader::library('Assets');
-            Loader::library('Html');
+            $this->loader->library('Assets');
+            $this->loader->library('Html');
             $this->response->render('home');
         }
     }

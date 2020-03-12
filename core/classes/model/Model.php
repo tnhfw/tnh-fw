@@ -129,18 +129,6 @@
          */
         protected $dbCacheTime = 0;
 
-        /**
-         * Instance of the Loader class
-         * @var Loader
-         */
-        protected $loaderInstance = null;
-
-        /**
-         * Instance of the FormValidation library
-         * @var FormValidation
-         */
-        protected $formValidationInstance = null;
-		
         /* --------------------------------------------------------------
          * GENERIC METHODS
          * ------------------------------------------------------------ */
@@ -257,7 +245,6 @@
                 return $id;
             } 
             return FALSE;
-            
         }
 
         /**
@@ -633,24 +620,6 @@
         }
 
         /**
-         * Return the loader instance
-         * @return Loader the loader instance
-         */
-        public function getLoader() {
-            return $this->loaderInstance;
-        }
-
-        /**
-         * Set the loader instance for future use
-         * @param Loader $loader the loader object
-         * @return object
-         */
-        public function setLoader($loader) {
-            $this->loaderInstance = $loader;
-            return $this;
-        }
-
-        /**
          * Return the queryBuilder instance this is the shortcut to database queryBuilder
          * @return object the DatabaseQueryBuilder instance
          */
@@ -665,24 +634,6 @@
          */
         public function setQueryBuilder($queryBuilder) {
             $this->_database->setQueryBuilder($queryBuilder);
-            return $this;
-        }
-
-        /**
-         * Return the FormValidation instance
-         * @return FormValidation the form validation instance
-         */
-        public function getFormValidation() {
-            return $this->formValidationInstance;
-        }
-
-        /**
-         * Set the form validation instance for future use
-         * @param FormValidation $fv the form validation object
-         * @return object
-         */
-        public function setFormValidation($fv) {
-            $this->formValidationInstance = $fv;
             return $this;
         }
 
@@ -728,17 +679,6 @@
             }
             return $data;
         }
-        
-        /**
-         * Return the loader instance or create
-         * @return object
-         */
-        protected function getLoaderInstanceOrCreate() {
-            if (! is_object($this->loaderInstance)) {
-                $this->loaderInstance = & get_instance()->loader;
-            } 
-            return $this->loaderInstance;
-        }
 
          /**
          * Get the return type array or object
@@ -773,8 +713,7 @@
          */
         protected function relateBelongsToAndHasMany($relationship, $options, $row, $type){
             if (in_array($relationship, $this->_with)) {
-                $loaderInstance = $this->getLoaderInstanceOrCreate();
-                $loaderInstance->model($options['model'], $relationship . '_model');
+                get_instance()->loader->model($options['model'], $relationship . '_model');
 
                 if($type == 'belongs_to'){
                     if (is_object($row)) {
@@ -855,16 +794,10 @@
             if ($this->skip_validation || empty($this->validate)) {
                 return $data;
             }
-            $fv = $this->formValidationInstance;
-            if (!is_object($fv)) {
-                Loader::library('FormValidation');
-                $fv = $this->formvalidation;
-                $this->setFormValidation($fv);  
-            }
-            $fv->setData($data);
-            $fv->setRules($this->validate);
+            get_instance()->formvalidation->setData($data);
+            get_instance()->formvalidation->setRules($this->validate);
 
-            if ($fv->validate()) {
+            if (get_instance()->formvalidation->validate()) {
                 return $data;
             }
             return FALSE;

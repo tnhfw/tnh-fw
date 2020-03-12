@@ -501,78 +501,10 @@
     }
 	
     /**
-     * This function is used to set the initial session config regarding the configuration
-     * @codeCoverageIgnore
-     */
-    function set_session_config() {
-        //$_SESSION is not available on cli mode 
-        if (!IS_CLI) {
-            $logger = & class_loader('Log', 'classes');
-            $logger->setLogger('PHPSession');
-            //set session params
-            $sessionHandler = get_config('session_handler', 'files'); //the default is to store in the files
-            $sessionName = get_config('session_name');
-            if ($sessionName) {
-                session_name($sessionName);
-            }
-            $logger->info('Session handler: ' . $sessionHandler);
-            $logger->info('Session name: ' . $sessionName);
-
-            if ($sessionHandler == 'files') {
-                $sessionSavePath = get_config('session_save_path');
-                if ($sessionSavePath) {
-                    if (!is_dir($sessionSavePath)) {
-                        mkdir($sessionSavePath, 1773);
-                    }
-                    session_save_path($sessionSavePath);
-                    $logger->info('Session save path: ' . $sessionSavePath);
-                }
-            } else if ($sessionHandler == 'database') {
-                //load database session handle library
-                //Database Session handler Model
-                require_once CORE_CLASSES_MODEL_PATH . 'DBSessionHandlerModel.php';
-
-                $DBS = & class_loader('DBSessionHandler', 'classes');
-                session_set_save_handler($DBS, true);
-                $logger->info('session save path: ' . get_config('session_save_path'));
-            } else {
-                show_error('Invalid session handler configuration');
-            }
-            $lifetime = get_config('session_cookie_lifetime', 0);
-            $path = get_config('session_cookie_path', '/');
-            $domain = get_config('session_cookie_domain', '');
-            $secure = get_config('session_cookie_secure', false);
-            if (is_https()) {
-                $secure = true;
-            }
-            session_set_cookie_params(
-                $lifetime,
-                $path,
-                $domain,
-                $secure,
-                $httponly = true /*for security for access to cookie via javascript or XSS attack*/
-            );
-            //to prevent attack of Session Fixation 
-            //thank to https://www.phparch.com/2018/01/php-sessions-in-depth/
-            ini_set('session.use_strict_mode ', 1);
-            ini_set('session.use_only_cookies', 1);
-            ini_set('session.use_trans_sid ', 0);
-			
-            $logger->info('Session lifetime: ' . $lifetime);
-            $logger->info('Session cookie path: ' . $path);
-            $logger->info('Session domain: ' . $domain);
-            $logger->info('Session is secure: ' . ($secure ? 'TRUE' : 'FALSE'));
-			
-            if ((function_exists('session_status') && session_status() !== PHP_SESSION_ACTIVE) || !session_id()) {
-                $logger->info('Session not yet start, start it now');
-                session_start();
-            }
-        }
-    }
-	
-    /**
-     * This function is very useful, it allows to recover the instance of the global controller.
-     * Note this function always returns the address of the super instance.
+     * This function is very useful, it allows to use the shared instance of 
+     * the super controller in of all parts of your application.
+     * 
+     * NOTE: this function always returns the reference of the super instance.
      * For example :
      * $obj = & get_instance();
      * 
@@ -581,5 +513,5 @@
      * @return object the instance of the "Controller" class
      */
     function & get_instance(){
-        return Controller::get_instance();
+        return Controller::getInstance();
     }

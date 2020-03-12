@@ -30,6 +30,9 @@
 	use PHPUnit\Framework\TestCase;
 
 	class TnhTestCase extends TestCase {	
+        //The super controller instance
+        private $instance = null;
+        
         //vfsStream root
         protected $vfsRoot = null;
         
@@ -46,10 +49,10 @@
         //see class "Config"
         protected $config = null;
         
-       
 	
 		public function __construct() {
             parent::__construct();
+            $this->instance = & get_instance();
            $this->config = new Config();
            
            $this->vfsRoot = vfsStream::setup();
@@ -59,6 +62,22 @@
            //log file name
            $this->logFilename = 'logs-' . date('Y-m-d') . '.log';
         }
+        
+        /**
+         * &get_instance() adapter for test
+         */
+        public static function getInstanceForTest(){
+           if(! Controller::getInstance()){
+                //Some required classes
+                class_loader('GlobalVar', 'classes');
+                class_loader('Module', 'classes');
+                class_loader('Config', 'classes');
+        
+                $instance = new Controller();
+                return $instance;
+            }
+            return Controller::getInstance();
+       }
         
         protected function setUp()
 		{

@@ -133,16 +133,11 @@
      */
     $CONFIG = & class_loader('Config', 'classes');	
 
-    
-    $BENCHMARK->mark('MODULE_INIT_START');
     /**
-     * Load modules and using the 
-     * static method "init()" to initialize the Module class.
+     * Load modules and initialize the list of module.
      */
     $MODULE = & class_loader('Module', 'classes');
-    $MODULE->init();
-    $BENCHMARK->mark('MODULE_INIT_END');
-
+    
     $LOGGER->debug('Loading Base Controller ...');
     /**
      * Include of the file containing the Base Controller class 
@@ -203,5 +198,5 @@
      * Routing
      * instantiation of the "Router" class and request processing.
      */
-    $ROUTER = & class_loader('Router', 'classes');
+    $ROUTER = & class_loader('Router', 'classes', $MODULE);
     $ROUTER->processRequest();

@@ -33,7 +33,7 @@
          * List of loaded resources
          * @var array
          */
-        public $loaded = array();
+        private $loaded = array();
 		
 
         public function __construct() {
@@ -77,7 +77,7 @@
             $module = $moduleInfo['module'];
             $class  = $moduleInfo['class'];
 			
-            $moduleModelFilePath = Module::findModelFullPath($class, $module);
+            $moduleModelFilePath = get_instance()->module->findModelFullPath($class, $module);
             if ($moduleModelFilePath) {
                 $this->logger->info('Found model [' . $class . '] from module [' . $module . '], the file path is [' . $moduleModelFilePath . '] we will used it');
                 $classFilePath = $moduleModelFilePath;
@@ -178,7 +178,7 @@
             if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
-            $moduleFunctionPath = Module::findFunctionFullPath($function, $module);
+            $moduleFunctionPath = get_instance()->module->findFunctionFullPath($function, $module);
             if ($moduleFunctionPath) {
                 $this->logger->info('Found helper [' . $function . '] from module [' . $module . '], the file path is [' . $moduleFunctionPath . '] we will used it');
                 $functionFilePath = $moduleFunctionPath;
@@ -217,7 +217,7 @@
             $moduleInfo = $this->getModuleInfoForConfig($filename);
             $module    = $moduleInfo['module'];
             $filename  = $moduleInfo['filename'];
-            $moduleConfigPath = Module::findConfigFullPath($filename, $module);
+            $moduleConfigPath = get_instance()->module->findConfigFullPath($filename, $module);
             if ($moduleConfigPath) {
                 $this->logger->info('Found config [' . $filename . '] from module [' . $module . '], the file path is [' . $moduleConfigPath . '] we will used it');
                 $configFilePath = $moduleConfigPath;
@@ -269,7 +269,7 @@
             if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
-            $moduleLanguagePath = Module::findLanguageFullPath($language, $appLang, $module);
+            $moduleLanguagePath = get_instance()->module->findLanguageFullPath($language, $appLang, $module);
             if ($moduleLanguagePath) {
                 $this->logger->info('Found language [' . $language . '] from module [' . $module . '], the file path is [' . $moduleLanguagePath . '] we will used it');
                 $languageFilePath = $moduleLanguagePath;
@@ -354,7 +354,7 @@
         protected function getModuleInfoForModelLibrary($class) {
             $module = null;
             $path = explode('/', $class);
-            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], get_instance()->module->getModuleList())) {
                 $module = $path[0];
                 $class = ucfirst($path[1]);
             } else {
@@ -382,7 +382,7 @@
             $file = null;
             //check if the request class contains module name
             $path = explode('/', $function);
-            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], get_instance()->module->getModuleList())) {
                 $module = $path[0];
                 $function = 'function_' . $path[1];
                 $file = $path[0] . DS . $function . '.php';
@@ -410,7 +410,7 @@
             $file = null;
             //check if the request class contains module name
             $path = explode('/', $language);
-            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], get_instance()->module->getModuleList())) {
                 $module = $path[0];
                 $language = 'lang_' . $path[1] . '.php';
                 $file = $path[0] . DS . $language;
@@ -437,7 +437,7 @@
             $module = null;
             //check if the request class contains module name
             $path = explode('/', $filename);
-            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], get_instance()->module->getModuleList())) {
                 $module = $path[0];
                 $filename = $path[1] . '.php';
             }
@@ -476,7 +476,7 @@
             $moduleInfo = $this->getModuleInfoForModelLibrary($class);
             $module = $moduleInfo['module'];
             $class  = $moduleInfo['class'];
-            $moduleLibraryPath = Module::findLibraryFullPath($class, $module);
+            $moduleLibraryPath = get_instance()->module->findLibraryFullPath($class, $module);
             if ($moduleLibraryPath) {
                 $this->logger->info('Found library [' . $class . '] from module [' . $module . '], the file path is [' . $moduleLibraryPath . '] we will used it');
                 $libraryFilePath = $moduleLibraryPath;
@@ -572,7 +572,7 @@
                 }
             }
             //loading autoload configuration for modules
-            $modulesAutoloads = Module::getModulesAutoloadConfig();
+            $modulesAutoloads = get_instance()->module->getModulesAutoloadConfig();
             if (!empty($modulesAutoloads) && is_array($modulesAutoloads)) {
                 $autoloads = array_merge_recursive($autoloads, $modulesAutoloads);
             }

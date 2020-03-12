@@ -134,7 +134,6 @@
                 }
                 //close cursor
                 $this->pdoStatment->closeCursor();
-
                 return $this->queryResult;
             }
             $this->setQueryRunnerError();
@@ -284,9 +283,14 @@
             //Sqlite and pgsql always return 0 when using rowCount()
             if (in_array($this->connection->getDriver(), array('sqlite', 'pgsql'))) {
                 //by default count() return 1 if the parameter is not an array
-                //object or object implements Countable.
-                if (is_array($result) || is_object($result) || $result instanceof Countable) {
-                     $numRows = count($result);  
+                //or object implements Countable.
+                if ($result) {
+                    if ($this->returnAsList) {
+                        $numRows = count($result);
+                    } else {
+                        //if object only one row will be returned
+                        $numRows = 1;
+                    }
                 }
             } else {
                 $numRows = $this->pdoStatment->rowCount(); 
@@ -315,8 +319,6 @@
             $this->queryResult->setNumRows($numRows);
         }
 
-        
-        
         /**
          * Reset the instance before run each query
          */

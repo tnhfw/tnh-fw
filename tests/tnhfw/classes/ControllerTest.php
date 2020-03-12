@@ -11,8 +11,8 @@
 		public function testGetInstance() {
 			$c = new Controller();
             $this->assertInstanceOf('Controller', $c);
-            $this->assertNotNull(Controller::get_instance());
-            $this->assertInstanceOf('Controller', Controller::get_instance());
+            $this->assertNotNull(Controller::getInstance());
+            $this->assertInstanceOf('Controller', Controller::getInstance());
 		}
         
         public function testSetAppSupportedLanguages() {
@@ -21,15 +21,18 @@
             
 			$c = new Controller();
             $this->assertInstanceOf('Controller', $c);
-            $this->assertNotNull(Controller::get_instance());
-            $this->assertInstanceOf('Controller', Controller::get_instance());
+            $this->assertNotNull(Controller::getInstance());
+            $this->assertInstanceOf('Controller', Controller::getInstance());
             $this->runPrivateProtectedMethod($c, 'setAppSupportedLanguages', array());
             $this->assertNotEmpty($c->lang->getSupported());
             
 		}
         
         public function testSetModuleNameUsingRouter() {
-            $router = $this->getMockBuilder('Router')->getMock();
+            $router = $this->getMockBuilder('Router')
+                            ->disableOriginalConstructor()
+                            ->getMock();
+                            
 			$router->expects($this->any())
                     ->method('getModule')
                     ->will($this->returnValue('fooModule'));

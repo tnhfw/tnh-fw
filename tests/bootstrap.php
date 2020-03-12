@@ -265,9 +265,6 @@
     
     //mock of PDO testcase class
 	require_once  'include/PDOMock.php';
-    
-    //Load super global class
-    $FWGLOBAL = &class_loader('GlobalVar', 'classes');
 	
 	/**
 	* Setting of the PHP error message handling function
@@ -283,10 +280,4 @@
 	 * Setting of the PHP shutdown handling function
 	 */
 	register_shutdown_function('fw_shudown_handler');
-	
-	/**
-	* Register the tests autoload
-	*/
-	spl_autoload_register('tests_autoload');
-    
     

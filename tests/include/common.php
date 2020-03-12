@@ -248,14 +248,9 @@
 		return $startNonHiddenStr . $hiddenStr . $endNonHiddenStr;
 	}
 	
-	function set_session_config(){
-		return true;
-	}
-	
+    /**
+     * Mock of get_instance()
+     */
 	function & get_instance(){
-		if(! Controller::get_instance()){
-			$c = new Controller();
-			return $c;
-		}
-		return Controller::get_instance();
+		return TnhTestCase::getInstanceForTest();
 	}

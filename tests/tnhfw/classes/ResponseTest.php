@@ -74,8 +74,6 @@
      	}
         
         public function testRenderModule() {
-            $m = new Module();
-            $m->init();
             $r = new Response();
             $r->render('testmodule/module_view');
             $this->assertNotEmpty($r->getFinalPageRendered());
@@ -85,8 +83,6 @@
         public function testRenderUsingCurrentControllerModule() {
             $obj = & get_instance();
             $obj->moduleName= 'testmodule';
-            $m = new Module();
-            $m->init();
             $r = new Response();
             $r->render('module_view');
             $this->assertNotEmpty($r->getFinalPageRendered());

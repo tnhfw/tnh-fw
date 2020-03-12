@@ -7,8 +7,24 @@
      * @group core_classes
      */
 	class LoaderTest extends TnhTestCase {	
-		
+		//the Instance of module to use
+        private $module = null;
+        
+        public function setUp(){
+            parent::setUp();
+            $this->module = new Module();
+        }
+        
+        /**
+        * Set the module instance in super global to use
+        */
+        private function setModuleInstanceForTest() {
+            $this->instance->module = $this->module;
+        }
+        
 		public function testLoadModel() {
+            $this->setModuleInstanceForTest();
+            
             $l = new Loader();
             $obj = & get_instance();
 			$l->model('DBSessionModel');
@@ -30,8 +46,7 @@
             $l = new Loader();
             $obj = & get_instance();
             $m = new Module();
-            $m->init();
-			$l->model('testmodule/ModuleModelTest');
+            $l->model('testmodule/ModuleModelTest');
 			$l->model('testmodule/ModuleModelTest', 'mod');
             
             $this->assertInstanceOf('ModuleModelTest', $obj->modulemodeltest);
@@ -50,8 +65,7 @@
             $obj->moduleName = 'testmodule';
             $l = new Loader();
             $m = new Module();
-            $m->init();
-			$l->model('ModuleModelTest');
+            $l->model('ModuleModelTest');
 			$l->model('ModuleModelTest', 'mod');
             
             $this->assertInstanceOf('ModuleModelTest', $obj->modulemodeltest);
@@ -106,8 +120,7 @@
             $l = new Loader();
             $obj = & get_instance();
             $m = new Module();
-            $m->init();
-			$l->library('testmodule/ModuleLibraryTest');
+            $l->library('testmodule/ModuleLibraryTest');
 			$l->library('testmodule/ModuleLibraryTest', 'mod');
             
             $this->assertInstanceOf('ModuleLibraryTest', $obj->modulelibrarytest);
@@ -118,7 +131,6 @@
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->library('ModuleLibraryTest');
 			$l->library('ModuleLibraryTest', 'mod');
@@ -146,7 +158,6 @@
         
         public function testLoadFunctionInModule() {
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->functions('testmodule/module_test');
             $this->assertTrue(is_callable('foo_module_test'));
@@ -159,7 +170,6 @@
             $obj = & get_instance();
             $obj->moduleName = 'testmodule';
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->functions('module_test');
             $this->assertTrue(is_callable('foo_module_test'));
@@ -174,7 +184,6 @@
             $this->assertTrue(true);   
 		}
         
-        
         public function testLoadConfig() {
             $obj = & get_instance();
             $obj->config = $this->config;
@@ -186,11 +195,8 @@
             $this->assertSame('bar', $this->config->get('cfg_test'));
 		}
         
-        
-        
         public function testLoadConfigInModule() {
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->config('testmodule/config');
             $this->assertSame('foo', $this->config->get('cfg_module'));
@@ -205,7 +211,6 @@
             $obj->moduleName = 'testmodule';
             
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->config('config');
             $this->assertSame('foo', $this->config->get('cfg_module'));
@@ -245,7 +250,6 @@
             $obj = & get_instance();
             $lg = $obj->lang;
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->lang('testmodule/module_test');
             $this->assertSame('foo module lang', $lg->get('l_module'));
@@ -260,10 +264,8 @@
             $obj = & get_instance();
             $lg = $obj->lang;
             $m = new Module();
-            $m->init();
             $obj->moduleName = 'testmodule';
             $m = new Module();
-            $m->init();
             $l = new Loader();
             $l->lang('module_test');
             $this->assertSame('foo module lang', $lg->get('l_module'));

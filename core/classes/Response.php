@@ -182,7 +182,7 @@
             $module = $moduleInfo['module'];
             $view = $moduleInfo['view'];
 			
-            $moduleViewPath = Module::findViewFullPath($view, $module);
+            $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
             if ($moduleViewPath) {
                 $path = $moduleViewPath;
                 $logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
@@ -486,8 +486,6 @@
             return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content); 
         }
 
-		
-
         /**
          * Get the module information for the view to load
          * @param  string $view the view name like moduleName/viewName, viewName
@@ -505,7 +503,7 @@
             $obj = & get_instance();
             //check if the request class contains module name
             $viewPath = explode('/', $view);
-            if (count($viewPath) >= 2 && isset($viewPath[0]) && in_array($viewPath[0], Module::getModuleList())) {
+            if (count($viewPath) >= 2 && in_array($viewPath[0], get_instance()->module->getModuleList())) {
                 $module = $viewPath[0];
                 array_shift($viewPath);
                 $view = implode('/', $viewPath);

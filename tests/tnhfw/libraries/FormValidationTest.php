@@ -1233,7 +1233,7 @@
         
         public function testRuleExists()
         {
-            $db = $this->getFormValidationDbInstanceForTest();
+            $db = $this->getDbInstanceForTest();
             //Validation failed
             $fv = new FormValidation();
             $fv->setDatabase($db);            
@@ -1248,7 +1248,7 @@
             $fv->setData(array('foo' => 'foo'));
             $this->assertTrue($fv->validate());  
             
-            $db = $this->getFormValidationDbInstanceForTest();
+            $db = $this->getDbInstanceForTest();
             
             //using super object database instance
             $obj = &get_instance();
@@ -1268,7 +1268,7 @@
         
         public function testRuleIsUnique()
         {
-            $db = $this->getFormValidationDbInstanceForTest();
+            $db = $this->getDbInstanceForTest();
            
             //Validation failed
             $fv = new FormValidation();
@@ -1302,7 +1302,7 @@
         
         public function testRuleIsUniqueUpdate()
         {
-            $db = $this->getFormValidationDbInstanceForTest();
+            $db = $this->getDbInstanceForTest();
             
             //Validation failed
             $fv = new FormValidation();
@@ -1343,7 +1343,10 @@
             $this->assertTrue($fv->validate());
         }
         
-        private function getFormValidationDbInstanceForTest() {
+        /**
+        * Return the database instance for test of rules related to database
+        */
+        private function getDbInstanceForTest() {
             $cfg = $this->getDbConfig();
             $connection = new DatabaseConnection($cfg, false);
             $isConnected = $connection->connect();

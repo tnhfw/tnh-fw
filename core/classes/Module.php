@@ -28,30 +28,31 @@
      * SOFTWARE.
      */
    
-    class Module extends BaseStaticClass {
+    class Module extends BaseClass {
 		
         /**
          * list of loaded module
          * @var array
          */
-        private static $list = array();
+        private $list = array();
 
         /**
-         * Initialise the module list by scanning the directory MODULE_PATH
+         * Construct new module
+         * Initialize the module list by scanning the directory MODULE_PATH
          */
-        public function init() {
-            $logger = self::getLogger();
-            $logger->debug('Check if the application contains the modules ...');
+        public function __construct() {
+            parent::__construct();
+
+            $this->logger->debug('Check if the application contains the modules ...');
             $dirList = glob(MODULE_PATH . '*', GLOB_ONLYDIR);
             if ($dirList !== false) {
-               self::$list = array_map('basename', $dirList);
+               $this->list = array_map('basename', $dirList);
             }
-            if (!empty(self::$list)) {
-                $logger->info('The application contains the module below [' . implode(', ', self::getModuleList()) . ']');
+            if (!empty($this->list)) {
+                $this->logger->info('The application contains the module below [' . implode(', ', $this->list) . ']');
             }
         }
 		
-
         /**
          * Add new module in the list
          * @param string $name the name of the module
@@ -59,63 +60,62 @@
          * @return object the current instance
          */
         public function add($name) {
-            $logger = self::getLogger();
-            if (in_array($name, self::$list)) {
-               $logger->info('The module [' .$name. '] already added skipping.');
+            if (in_array($name, $this->list)) {
+               $this->logger->info('The module [' .$name. '] already added skipping.');
                return $this;
             }
-            self::$list[] = $name;
+            $this->list[] = $name;
             return $this;
         }
 
         /**
          * Remove the module from list
          * @param  string   $name the module name
+         *
+         * @return object the current instance
          */
-        public static function remove($name) {
-            $logger = self::getLogger();
-            $logger->debug('Removing of the module [' . $name . '] ...');
-            if (false !== $index = array_search($name, self::$list, true)) {
-                $logger->info('Found the module at index [' . $index . '] remove it');
-                unset(self::$list[$index]);
+        public function remove($name) {
+            $this->logger->debug('Removing of the module [' . $name . '] ...');
+            if (false !== $index = array_search($name, $this->list, true)) {
+                $this->logger->info('Found the module at index [' . $index . '] remove it');
+                unset($this->list[$index]);
             } else {
-                $logger->info('Cannot found this module in the list');
+                $this->logger->info('Cannot found this module in the list');
             }
+            return $this;
         }
         
         /**
          * Remove all the module. 
          */
-        public static function removeAll() {
-            $logger = self::getLogger();
-            $logger->debug('Removing of all module ...');
-            self::$list = array();
+        public function removeAll() {
+            $this->logger->debug('Removing of all module ...');
+            $this->list = array();
         }
 
          /**
          * Get the list of module loaded
          * @return array the module list
          */
-        public static function getModuleList() {
-            return self::$list;
+        public function getModuleList() {
+            return $this->list;
         }
 
         /**
          * Check if the application has an module
          * @return boolean
          */
-        public static function hasModule() {
-            return !empty(self::$list);
+        public function hasModule() {
+            return !empty($this->list);
         }
 		
         /**
          * Get the list of the custom autoload configuration from module if exists
          * @return array|boolean the autoload configurations list or false if no module contains the autoload configuration values
          */
-        public static function getModulesAutoloadConfig() {
-            $logger = self::getLogger();
-            if (empty(self::$list)) {
-                $logger->info('No module was loaded skipping.');
+        public function getModulesAutoloadConfig() {
+            if (empty($this->list)) {
+                $this->logger->info('No module was loaded skipping.');
                 return false;
             }
             $autoloads = array();
@@ -125,7 +125,7 @@
             $autoloads['functions'] = array();
             $autoloads['languages'] = array();
 			
-            foreach (self::$list as $module) {
+            foreach ($this->list as $module) {
                 $file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
                 if (file_exists($file)) {
                     $autoload = array();
@@ -143,14 +143,13 @@
          * Get the list of the custom routes configuration from module if exists
          * @return array|boolean the routes list or false if no module contains the routes configuration
          */
-        public static function getModulesRoutesConfig() {
-            $logger = self::getLogger();
-            if (empty(self::$list)) {
-                $logger->info('No module was loaded skipping.');
+        public function getModulesRoutesConfig() {
+            if (empty($this->list)) {
+                $this->logger->info('No module was loaded skipping.');
                 return false;
             }
             $routes = array();
-            foreach (self::$list as $module) {
+            foreach ($this->list as $module) {
                 $file = MODULE_PATH . $module . DS . 'config' . DS . 'routes.php';
                 if (file_exists($file)) {
                     $route = array();
@@ -170,8 +169,8 @@
          * @see Module::findClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this controller, path the full path of the controller
          */
-        public static function findControllerFullPath($class, $module = null) {
-            return self::findClassInModuleFullFilePath($class, $module, 'controllers');
+        public function findControllerFullPath($class, $module = null) {
+            return $this->findClassInModuleFullFilePath($class, $module, 'controllers');
         }
 
         /**
@@ -179,8 +178,8 @@
          * @see Module::findClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this model, return the full path of this model
          */
-        public static function findModelFullPath($class, $module = null) {
-            return self::findClassInModuleFullFilePath($class, $module, 'models');
+        public function findModelFullPath($class, $module = null) {
+            return $this->findClassInModuleFullFilePath($class, $module, 'models');
         }
 
         /**
@@ -188,8 +187,8 @@
          * @see Module::findClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this library,  return the full path of this library
          */
-        public static function findLibraryFullPath($class, $module = null) {
-            return self::findClassInModuleFullFilePath($class, $module, 'libraries');
+        public function findLibraryFullPath($class, $module = null) {
+            return $this->findClassInModuleFullFilePath($class, $module, 'libraries');
         }
 
 		
@@ -198,8 +197,8 @@
          * @see  Module::findNonClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this configuration,  return the full path of this configuration
          */
-        public static function findConfigFullPath($configuration, $module = null) {
-            return self::findNonClassInModuleFullFilePath($configuration, $module, 'config');
+        public function findConfigFullPath($configuration, $module = null) {
+            return $this->findNonClassInModuleFullFilePath($configuration, $module, 'config');
         }
 
         /**
@@ -207,8 +206,8 @@
          * @see  Module::findNonClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this helper,  return the full path of this helper
          */
-        public static function findFunctionFullPath($helper, $module = null) {
-            return self::findNonClassInModuleFullFilePath($helper, $module, 'functions');
+        public function findFunctionFullPath($helper, $module = null) {
+            return $this->findNonClassInModuleFullFilePath($helper, $module, 'functions');
         }
 
         /**
@@ -216,8 +215,8 @@
          * @see  Module::findNonClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this view, path the full path of the view
          */
-        public static function findViewFullPath($view, $module = null) {
-            return self::findNonClassInModuleFullFilePath($view, $module, 'views');
+        public function findViewFullPath($view, $module = null) {
+            return $this->findNonClassInModuleFullFilePath($view, $module, 'views');
         }
 
         /**
@@ -225,8 +224,8 @@
          * @see  Module::findNonClassInModuleFullFilePath
          * @return boolean|string  false or null if no module have this language,  return the full path of this language
          */
-        public static function findLanguageFullPath($language, $appLang, $module = null) {
-            return self::findNonClassInModuleFullFilePath($language, $module, 'lang', $appLang);
+        public function findLanguageFullPath($language, $appLang, $module = null) {
+            return $this->findNonClassInModuleFullFilePath($language, $module, 'lang', $appLang);
         }
 
         /**
@@ -237,18 +236,17 @@
          * @return boolean|string  false or null if no module 
          * have this class, return the full path of the class
          */
-        protected static function findClassInModuleFullFilePath($class, $module, $type) {
-            $logger = self::getLogger();
+        protected function findClassInModuleFullFilePath($class, $module, $type) {
             $class = str_ireplace('.php', '', $class);
             $class = ucfirst($class);
             $classFile = $class . '.php';
-            $logger->debug('Checking the class [' . $class . '] in module [' . $module . '] for [' . $type . '] ...');
+            $this->logger->debug('Checking the class [' . $class . '] in module [' . $module . '] for [' . $type . '] ...');
             $filePath = MODULE_PATH . $module . DS . $type . DS . $classFile;
             if (file_exists($filePath)) {
-                $logger->info('Found class [' . $class . '] in module [' . $module . '] for [' . $type . '] the file path is [' . $filePath . ']');
+                $this->logger->info('Found class [' . $class . '] in module [' . $module . '] for [' . $type . '] the file path is [' . $filePath . ']');
                 return $filePath;
             }
-            $logger->info('Class [' . $class . '] does not exist in the module [' . $module . '] for [' . $type . ']');
+            $this->logger->info('Class [' . $class . '] does not exist in the module [' . $module . '] for [' . $type . ']');
             return false;
         }
 
@@ -261,8 +259,7 @@
          * @return boolean|string  false or null if no module 
          * have this resource, return the full path of the resource
          */
-        protected static function findNonClassInModuleFullFilePath($name, $module, $type, $appLang = null) {
-            $logger = self::getLogger();
+        protected function findNonClassInModuleFullFilePath($name, $module, $type, $appLang = null) {
             $name = str_ireplace('.php', '', $name);
             $file = $name . '.php';
             $filePath = MODULE_PATH . $module . DS . $type . DS . $file;
@@ -284,12 +281,12 @@
                     $filePath = MODULE_PATH . $module . DS . $type . DS . $appLang . DS . $file;
                 break;
             }
-            $logger->debug('Checking resource [' . $name . '] in module [' . $module . '] for [' . $type . '] ...');
+            $this->logger->debug('Checking resource [' . $name . '] in module [' . $module . '] for [' . $type . '] ...');
             if (file_exists($filePath)) {
-                $logger->info('Found resource [' . $name . '] in module [' . $module . '] for [' . $type . '] the file path is [' . $filePath . ']');
+                $this->logger->info('Found resource [' . $name . '] in module [' . $module . '] for [' . $type . '] the file path is [' . $filePath . ']');
                 return $filePath;
             }
-            $logger->info('Resource [' . $name . '] does not exist in the module [' . $module . '] for [' . $type . ']');
+            $this->logger->info('Resource [' . $name . '] does not exist in the module [' . $module . '] for [' . $type . ']');
             return false;
         }
 
