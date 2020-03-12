@@ -28,20 +28,26 @@
      * SOFTWARE.
      */
 
-    class Cookie extends BaseStaticClass {
+    class Cookie extends BaseClass {
 
+        /**
+         * Construct new instance
+         */
+        public function __construct() {
+            parent::__construct();
+        }
+        
         /**
          * Get the cookie item value
          * @param  string $item    the cookie item name to get
          * @param  mixed $default the default value to use if can not find the cokkie item in the list
          * @return mixed          the cookie value if exist or the default value
          */
-        public static function get($item, $default = null) {
-            $logger = self::getLogger();
+        public function get($item, $default = null) {
             if (array_key_exists($item, get_instance()->globalvar->cookie())) {
                 return get_instance()->globalvar->cookie($item);
             }
-            $logger->warning('Cannot find cookie item [' . $item . '], using the default value [' . $default . ']');
+            $this->logger->warning('Cannot find cookie item [' . $item . '], using the default value [' . $default . ']');
             return $default;
         }
 
@@ -55,7 +61,7 @@
          * @param boolean $secure   if this cookie will be available on secure connection or not
          * @param boolean $httponly if this cookie will be available under HTTP protocol.
          */
-        public static function set($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = false) {
+        public function set($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = false) {
             if (headers_sent()) {
                 show_error('There exists a cookie that we wanted to create that we couldn\'t 
 						    because headers was already sent. Make sure to do this first 
@@ -73,14 +79,13 @@
          * @param  string $item the cookie item name to be cleared
          * @return boolean true if the item exists and is deleted successfully otherwise will return false.
          */
-        public static function delete($item) {
-            $logger = self::getLogger();
+        public function delete($item) {
             if (array_key_exists($item, get_instance()->globalvar->cookie())) {
-                $logger->info('Delete cookie item [' . $item . ']');
+                $this->logger->info('Delete cookie item [' . $item . ']');
                 get_instance()->globalvar->removeCookie($item);
                 return true;
             } else {
-                $logger->warning('Cookie item [' . $item . '] to be deleted does not exists');
+                $this->logger->warning('Cookie item [' . $item . '] to be deleted does not exists');
                 return false;
             }
         }
@@ -90,7 +95,7 @@
          * @param  string $item the cookie item name
          * @return boolean       true if the cookie item is set, false or not
          */
-        public static function exists($item) {
+        public function exists($item) {
             return array_key_exists($item, get_instance()->globalvar->cookie());
         }
 

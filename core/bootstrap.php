@@ -164,6 +164,9 @@
      */
     $URL = & class_loader('Url', 'classes');
 	
+    /**
+     * Check if the cache feature is enabled and available
+     */
     if (get_config('cache_enable', false)) {
         /**
          * Load Cache interface file

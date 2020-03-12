@@ -28,13 +28,13 @@
      * SOFTWARE.
      */
 
-    class Response extends BaseStaticClass {
+    class Response extends BaseClass {
 
         /**
          * The list of request header to send with response
          * @var array
          */
-        private static $headers = array();
+        private $headers = array();
 		
         /**
          * The final page content to display to user
@@ -58,12 +58,13 @@
          * Whether we can compress the output using Gzip
          * @var boolean
          */
-        private static $_canCompressOutput = false;
+        private $_canCompressOutput = false;
 		
         /**
          * Construct new instance
          */
         public function __construct() {
+            parent::__construct();
             $globals = & class_loader('GlobalVar', 'classes');
             $currentUrl = '';
             if ($globals->server('REQUEST_URI')) {
@@ -75,7 +76,7 @@
             $this->_currentUrl = $currentUrl;		
             $this->_currentUrlCacheKey = md5($this->_currentUrl);
 			
-            self::$_canCompressOutput = get_config('compress_output')
+            $this->_canCompressOutput = get_config('compress_output')
                                           && $globals->server('HTTP_ACCEPT_ENCODING') !== null 
                                           && stripos($globals->server('HTTP_ACCEPT_ENCODING'), 'gzip') !== false 
                                           && extension_loaded('zlib')
@@ -88,14 +89,14 @@
          * @param  integer $httpCode the HTTP status code
          * @param  array   $headers   the additional headers to add to the existing headers list
          */
-        public static function sendHeaders($httpCode = 200, array $headers = array()) {
+        public function sendHeaders($httpCode = 200, array $headers = array()) {
             set_http_status_header($httpCode);
-            self::setHeaders($headers);
-            self::setRequiredHeaders();
+            $this->setHeaders($headers);
+            $this->setRequiredHeaders();
             //@codeCoverageIgnoreStart
             //not available when running in CLI mode
             if (!headers_sent()) {
-                foreach (self::getHeaders() as $key => $value) {
+                foreach ($this->getHeaders() as $key => $value) {
                     header($key . ': ' . $value);
                 }
             }
@@ -106,8 +107,8 @@
          * Get the list of the headers
          * @return array the headers list
          */
-        public static function getHeaders() {
-            return self::$headers;
+        public function getHeaders() {
+            return $this->headers;
         }
 
         /**
@@ -115,9 +116,9 @@
          * @param  string $name the header name
          * @return string|null       the header value
          */
-        public static function getHeader($name) {
-            if (array_key_exists($name, self::$headers)) {
-                return self::$headers[$name];
+        public function getHeader($name) {
+            if (array_key_exists($name, $this->headers)) {
+                return $this->headers[$name];
             }
             return null;
         }
@@ -128,8 +129,8 @@
          * @param string $name  the header name
          * @param string $value the header value to be set
          */
-        public static function setHeader($name, $value) {
-            self::$headers[$name] = $value;
+        public function setHeader($name, $value) {
+            $this->headers[$name] = $value;
         }
 
         /**
@@ -137,8 +138,8 @@
          * @param array $headers the list of the headers to set. 
          * Note: this will merge with the existing headers
          */
-        public static function setHeaders(array $headers) {
-            self::$headers = array_merge(self::getHeaders(), $headers);
+        public function setHeaders(array $headers) {
+            $this->headers = array_merge($this->headers, $headers);
         }
 		
         /**
@@ -146,10 +147,8 @@
          * @param  string $path the URL or URI to be redirect to
          * @codeCoverageIgnore
          */
-        public static function redirect($path = '') {
-            $logger = self::getLogger();
+        public function redirect($path = '') {
             $url = Url::site_url($path);
-            $logger->info('Redirect to URL [' . $url . ']');
             if (!headers_sent()) {
                 header('Location: ' . $url);
                 exit;
@@ -168,8 +167,7 @@
          * will display the view content.
          */
         public function render($view, $data = null, $return = false) {
-            $logger = self::getLogger();
-            //convert data to an array
+            //try to convert data to an array if is object or other thing
             $data = (array) $data;
             $view = str_ireplace('.php', '', $view);
             $view = trim($view, '/\\');
@@ -177,7 +175,7 @@
             $path = null;
 			
             //check in module first
-            $logger->debug('Checking the view [' . $view . '] from module list ...');
+            $this->logger->debug('Checking the view [' . $view . '] from module list ...');
             $moduleInfo = $this->getModuleInfoForView($view);
             $module = $moduleInfo['module'];
             $view = $moduleInfo['view'];
@@ -185,14 +183,14 @@
             $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
             if ($moduleViewPath) {
                 $path = $moduleViewPath;
-                $logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
+                $this->logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
             } else {
-                $logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
+                $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
             }
 			if (!$path) {
                 $path = $this->getDefaultFilePathForView($viewFile);
             }
-            $logger->info('The view file path to be loaded is [' . $path . ']');
+            $this->logger->info('The view file path to be loaded is [' . $path . ']');
 			
             if ($return) {
                 return $this->loadView($path, $data, true);
@@ -200,29 +198,20 @@
             $this->loadView($path, $data, false);
         }
 
-		
         /**
-         * Send the final page output to user
+         * Send the final page output
          */
         public function renderFinalPage() {
-            $logger = self::getLogger();
-            $obj = & get_instance();
-            $cachePageStatus = get_config('cache_enable', false) && !empty($obj->view_cache_enable);
-            $dispatcher = $obj->eventdispatcher;
             $content = $this->_pageRender;
             if (!$content) {
-                $logger->warning('The final view content is empty.');
+                $this->logger->warning('The final view content is empty.');
                 return;
             }
-            //dispatch
-            $event = $dispatcher->dispatch(new EventInfo('FINAL_VIEW_READY', $content, true));
-            $content = null;
-            if (!empty($event->payload)) {
-                $content = $event->payload;
-            }
-            if (empty($content)) {
-                $logger->warning('The view content is empty after dispatch to event listeners.');
-            }
+            $obj = & get_instance();
+            $cachePageStatus = get_instance()->config->get('cache_enable', false) && !empty($obj->view_cache_enable);
+            
+            $content = $this->dispatchFinalViewEvent();
+            
             //check whether need save the page into cache.
             if ($cachePageStatus) {
                 $this->savePageContentIntoCache($content);
@@ -234,13 +223,38 @@
 
             //compress the output if is available
             $type = null;
-            if (self::$_canCompressOutput) {
+            if ($this->_canCompressOutput) {
                 $type = 'ob_gzhandler';
             }
             ob_start($type);
-            self::sendHeaders(200);
+            $this->sendHeaders(200);
             echo $content;
             ob_end_flush();
+        }
+
+        /**
+         * Dispatch the FINAL_VIEW_READY event
+         *             
+         * @return string|null the final view content after processing by each listener
+         * if they exists otherwise the same content will be returned
+         */
+        protected function dispatchFinalViewEvent() {
+            //dispatch
+            $event = get_instance()->eventdispatcher->dispatch(
+                                                                new EventInfo(
+                                                                                'FINAL_VIEW_READY', 
+                                                                                $this->_pageRender, 
+                                                                                true
+                                                                            )
+                                                            );
+            $content = null;
+            if (!empty($event->payload)) {
+                $content = $event->payload;
+            }
+            if (empty($content)) {
+                $this->logger->warning('The view content is empty after dispatch to event listeners.');
+            }
+            return $content;
         }
 
 		
@@ -251,11 +265,10 @@
          * @return boolean whether the page content if available or not
          */
         public function renderFinalPageFromCache(&$cache) {
-            $logger = self::getLogger();
             //the current page cache key for identification
             $pageCacheKey = $this->_currentUrlCacheKey;
 			
-            $logger->debug('Checking if the page content for the URL [' . $this->_currentUrl . '] is cached ...');
+            $this->logger->debug('Checking if the page content for the URL [' . $this->_currentUrl . '] is cached ...');
             //get the cache information to prepare header to send to browser
             $cacheInfo = $cache->getInfo($pageCacheKey);
             if ($cacheInfo) {
@@ -293,17 +306,15 @@
          * routing information for the current request
          */
         public function send404() {
-            $logger = self::getLogger();
-            $obj = & get_instance();
-            $cachePageStatus = get_config('cache_enable', false) && !empty($obj->view_cache_enable);
-            $dispatcher = $obj->eventdispatcher;
             $content = $this->_pageRender;
             if (!$content) {
-                $logger->warning('The final view content is empty.');
+                $this->logger->warning('The final view content is empty.');
                 return;
             }
+            $obj = & get_instance();
+            $cachePageStatus = get_instance()->config->get('cache_enable', false) && !empty($obj->view_cache_enable);
             //dispatch
-            $dispatcher->dispatch(new EventInfo('PAGE_NOT_FOUND'));
+            get_instance()->eventdispatcher->dispatch(new EventInfo('PAGE_NOT_FOUND'));
             //check whether need save the page into cache.
             if ($cachePageStatus) {
                 $this->savePageContentIntoCache($content);
@@ -318,17 +329,15 @@
             $str .= ' Unable to find the request page [' . $obj->request->requestUri() . ']. The visitor IP address [' . get_ip() . '], browser [' . $browser . ']';
             
             //Todo fix the issue the logger name change after load new class
-            $logger = self::getLogger();
-            $logger->error($str);
+            $this->logger->error($str);
             /**********************************************************************/
-
             //compress the output if is available
             $type = null;
-            if (self::$_canCompressOutput) {
+            if ($this->_canCompressOutput) {
                 $type = 'ob_gzhandler';
             }
             ob_start($type);
-            self::sendHeaders(404);
+            $this->sendHeaders(404);
             echo $content;
             ob_end_flush();
         }
@@ -337,20 +346,19 @@
          * Display the error to user
          */
         public function sendError() {
-            $logger = self::getLogger();
             $content = $this->_pageRender;
             if (!$content) {
-                $logger->warning('The final view content is empty.');
+                $this->logger->warning('The final view content is empty.');
                 return;
             }
             $content = $this->replaceElapseTimeAndMemoryUsage($content);
             //compress the output if is available
             $type = null;
-            if (self::$_canCompressOutput) {
+            if ($this->_canCompressOutput) {
                 $type = 'ob_gzhandler';
             }
             ob_start($type);
-            self::sendHeaders(503);
+            $this->sendHeaders(503);
             echo $content;
             ob_end_flush();
         }
@@ -361,7 +369,7 @@
          * 
          * @return string|null          the full file path
          */
-        protected static function getDefaultFilePathForView($file){
+        protected function getDefaultFilePathForView($file){
             $searchDir = array(APPS_VIEWS_PATH, CORE_VIEWS_PATH);
             $fullFilePath = null;
             foreach ($searchDir as $dir) {
@@ -382,19 +390,19 @@
          */
         protected function sendCacheNotYetExpireInfoToBrowser($cacheInfo) {
             if (!empty($cacheInfo)) {
-                $logger = self::getLogger();
-                $lastModified = $cacheInfo['mtime'];
+                    $lastModified = $cacheInfo['mtime'];
                 $expire = $cacheInfo['expire'];
                 $globals = & class_loader('GlobalVar', 'classes');
                 $maxAge = $expire - (double) $globals->server('REQUEST_TIME');
-                self::setHeader('Pragma', 'public');
-                self::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
-                self::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
-                self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
+                $this->setHeader('Pragma', 'public');
+                $this->setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+                $this->setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
+                $this->setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
                 $headerModifiedSince = $globals->server('HTTP_IF_MODIFIED_SINCE');
                 if (!empty($headerModifiedSince) && $lastModified <= strtotime($headerModifiedSince)) {
-                    $logger->info('The cache page content is not yet expire for the URL [' . $this->_currentUrl . '] send 304 header to browser');
-                    self::sendHeaders(304);
+                    $this->logger->info('The cache page content is not yet expire for the '
+                                         . 'URL [' . $this->_currentUrl . '] send 304 header to browser');
+                    $this->sendHeaders(304);
                     return true;
                 }
             }
@@ -407,20 +415,22 @@
          * @return boolean     the status of the operation
          */
         protected function sendCachePageContentToBrowser(&$cache) {
-            $logger = self::getLogger();
-            $logger->info('The cache page content is expired or the browser does not send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->_currentUrl . '] send cache headers to tell the browser');
-            self::sendHeaders(200);
+            $this->logger->info('The cache page content is expired or the browser does '
+                 . 'not send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->_currentUrl . '] '
+                 . 'send cache headers to tell the browser');
+
+            $this->sendHeaders(200);
             //current page cache key
             $pageCacheKey = $this->_currentUrlCacheKey;
             //get the cache content
             $content = $cache->get($pageCacheKey);
             if ($content) {
-                $logger->info('The page content for the URL [' . $this->_currentUrl . '] already cached just display it');
+                $this->logger->info('The page content for the URL [' . $this->_currentUrl . '] already cached just display it');
                 $content = $this->replaceElapseTimeAndMemoryUsage($content);
                 ///display the final output
                 //compress the output if is available
                 $type = null;
-                if (self::$_canCompressOutput) {
+                if ($this->_canCompressOutput) {
                     $type = 'ob_gzhandler';
                 }
                 ob_start($type);
@@ -428,7 +438,7 @@
                 ob_end_flush();
                 return true;
             }
-            $logger->info('The page cache content for the URL [' . $this->_currentUrl . '] is not valid may be already expired');
+            $this->logger->info('The page cache content for the URL [' . $this->_currentUrl . '] is not valid may be already expired');
             $cache->delete($pageCacheKey);
             return false;
         }
@@ -440,12 +450,10 @@
          */
         protected function savePageContentIntoCache($content) {
             $obj = & get_instance();
-            $logger = self::getLogger();
-
             //current page URL
             $url = $this->_currentUrl;
             //Cache view Time to live in second
-            $viewCacheTtl = get_config('cache_ttl');
+            $viewCacheTtl = get_instance()->config->get('cache_ttl');
             if (!empty($obj->view_cache_ttl)) {
                 $viewCacheTtl = $obj->view_cache_ttl;
             }
@@ -453,7 +461,7 @@
             $cacheInstance = $obj->cache;
             //the current page cache key for identification
             $cacheKey = $this->_currentUrlCacheKey;
-            $logger->debug('Save the page content for URL [' . $url . '] into the cache ...');
+            $this->logger->debug('Save the page content for URL [' . $url . '] into the cache ...');
             $cacheInstance->set($cacheKey, $content, $viewCacheTtl);
 			
             //get the cache information to prepare header to send to browser
@@ -462,10 +470,10 @@
                 $lastModified = $cacheInfo['mtime'];
                 $expire = $cacheInfo['expire'];
                 $maxAge = $expire - time();
-                self::setHeader('Pragma', 'public');
-                self::setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
-                self::setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
-                self::setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');	
+                $this->setHeader('Pragma', 'public');
+                $this->setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
+                $this->setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
+                $this->setHeader('Last-modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');	
             }
         }
 
@@ -476,13 +484,12 @@
          * '{elapsed_time}', '{memory_usage}'
          */
         protected function replaceElapseTimeAndMemoryUsage($content) {
-            //load benchmark class
-            $benchmark = & class_loader('Benchmark');
-            
             // Parse out the elapsed time and memory usage,
             // then swap the pseudo-variables with the data
-            $elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-            $memoryUsage    = round($benchmark->memoryUsage('APP_EXECUTION_START', 'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
+            $elapsedTime = get_instance()->benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+            $memoryUsage = round(get_instance()->benchmark->memoryUsage(
+                                                                        'APP_EXECUTION_START', 
+                                                                        'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
             return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content); 
         }
 
@@ -531,7 +538,7 @@
                 $obj = & get_instance();
                 if ($obj instanceof Controller) {
                     foreach (get_object_vars($obj) as $key => $value) {
-                        if (!isset($this->{$key})) {
+                        if (!property_exists($this, $key)) {
                             $this->{$key} = & $obj->{$key};
                         }
                     }
@@ -555,14 +562,14 @@
          /**
          * Set the mandory headers, like security, etc.
          */
-        protected static function setRequiredHeaders() {
+        protected function setRequiredHeaders() {
             $requiredHeaders = array(
                                 'X-XSS-Protection' => '1; mode=block',
                                 'X-Frame-Options'  => 'SAMEORIGIN'
                             );
             foreach ($requiredHeaders as $key => $value) {
-               if (!isset(self::$headers[$key])) {
-                    self::$headers[$key] = $value;
+               if (!isset($this->headers[$key])) {
+                    $this->headers[$key] = $value;
                } 
             }
         }

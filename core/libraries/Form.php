@@ -55,7 +55,7 @@
             $str .= '>';
             //if CSRF is enabled in the configuration
             if (get_config('csrf_enable', false) && $method == 'POST') {
-                $csrfValue = Security::generateCSRF();
+                $csrfValue = get_instance()->security->generateCSRF();
                 $csrfName = get_config('csrf_key', 'csrf_key');
                 $str .= static::hidden($csrfName, $csrfValue);
             }

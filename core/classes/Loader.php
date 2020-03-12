@@ -290,9 +290,9 @@
          */
         protected function getAppLang() {
             //determine the current language
-            $appLang = get_config('default_language');
+            $appLang = get_instance()->config->get('default_language');
             //if the language exists in the cookie use it
-            $cfgKey = get_config('language_cookie_name');
+            $cfgKey = get_instance()->config->get('language_cookie_name');
             $objCookie = & class_loader('Cookie');
             $cookieLang = $objCookie->get($cfgKey);
             if ($cookieLang) {

@@ -102,44 +102,26 @@
             $csrfValue = uniqid();
             $_SESSION['kcsrf'] =  $csrfValue;
             $_SESSION['csrf_expire'] = time() + 600;
-            
-            $request = $this->getMockBuilder('Request')->getMock();
-            $request->expects($this->any())
-                    ->method('method')
-                    ->will($this->returnValue('POST'));
                     
-            $request->expects($this->any())
-                    ->method('query')
-                    ->with('kcsrf')
-                    ->will($this->returnValue($csrfValue));
-                    
-            $obj = & get_instance();
+            $obj = &get_instance();
+            $obj->globalvar->setServer('REQUEST_METHOD', 'POST');
+            $obj->globalvar->setPost('kcsrf', $csrfValue);
+            $session = new Session();
+            $request = new Request();
+            $request->setSession($session);
             $obj->request = $request;
+            $obj->security = new Security();
             
-           
             $fv = new FormValidation();
             $fv->setRule('name', 'name', 'required');
             $fv->setData(array('name' => 'foo'));
-            $this->assertFalse($fv->validate());
+            $this->assertTrue($fv->validate());
             
             //invalid CSRF
             $_SESSION['kcsrf'] =  $csrfValue;
             $_SESSION['csrf_expire'] = time() + 600;
             
-            $request = $this->getMockBuilder('Request')->getMock();
-            $request->expects($this->any())
-                    ->method('method')
-                    ->will($this->returnValue('POST'));
-                    
-            $request->expects($this->any())
-                    ->method('query')
-                    ->with('kcsrf')
-                    ->will($this->returnValue('invalid CSRF'));
-                    
-            $obj = & get_instance();
-            $obj->request = $request;
-            
-           
+            $obj->globalvar->setPost('kcsrf', 'invalid CSRF');           
             $fv = new FormValidation();
             $fv->setRule('name', 'name', 'required');
             $fv->setData(array('name' => 'foo'));

@@ -103,6 +103,8 @@
      	}
         
         public function testRenderFinalPage() {
+            $obj = &get_instance();
+            $obj->benchmark = $this->getMockBuilder('Benchmark')->getMock();
             $r = new Response();
             $r->render('testview');
             $this->assertNotEmpty($r->getFinalPageRendered());

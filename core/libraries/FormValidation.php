@@ -443,7 +443,7 @@
             if (get_instance()->request->method() == 'POST') {
                 $this->logger->debug('Check if CSRF is enabled in configuration');
                 //first check for CSRF
-                if (get_config('csrf_enable', false) && !Security::validateCSRF()) {
+                if (get_config('csrf_enable', false) && !get_instance()->security->validateCSRF()) {
                     $this->forceError = true;
                     show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
                 } else {

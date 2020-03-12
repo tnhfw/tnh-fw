@@ -33,6 +33,9 @@
             $_SESSION['kcsrf'] =  $csrfValue;
             $_SESSION['csrf_expire'] = time() + 600;
             
+            $obj = &get_instance();
+            $obj->security = new Security();
+            
             $expected = '<form action = "" method = "POST" accept-charset = "UTF-8"><input type = "hidden" name = "kcsrf" value = "'.$csrfValue.'"/>';
 			$this->assertSame($expected, $f->open());
             

@@ -28,30 +28,42 @@
      * SOFTWARE.
      */
 
-    class Security extends BaseStaticClass {
+    class Security extends BaseClass {
+
+        /**
+         * Construct new instance
+         */
+        public function __construct() {
+            parent::__construct();
+        }
 
         /**
          * This method is used to generate the CSRF token
          * @return string the generated CSRF token
          */
-        public static function generateCSRF() {
-            $logger = self::getLogger();
-            $logger->debug('Generation of CSRF ...');
-			
+        public function generateCSRF() {
+            $this->logger->debug('Generation of CSRF ...');
             $key = get_config('csrf_key', 'csrf_key');
             $expire = get_config('csrf_expire', 60);
             $keyExpire = 'csrf_expire';
             $currentTime = time();
-            if (Session::exists($key) && Session::exists($keyExpire) && Session::get($keyExpire) > $currentTime) {
-                $logger->info('The CSRF token not yet expire just return it');
-                return Session::get($key);
+            $sessionInstance = get_instance()->request->getSession();
+            if (
+                    $sessionInstance->exists($key) 
+                    && $sessionInstance->exists($keyExpire) 
+                    && $sessionInstance->get($keyExpire) > $currentTime
+                ) {
+                $this->logger->info('The CSRF token not yet expire just return it');
+                return $sessionInstance->get($key);
             } else {
                 $newTime = $currentTime + $expire;
                 $token = sha1(uniqid()) . sha1(uniqid());
-                $logger->info('The CSRF informations are listed below: key [' . $key . '], key expire [' . $keyExpire . '], expire time [' . $expire . '], token [' . $token . ']');
-                Session::set($keyExpire, $newTime);
-                Session::set($key, $token);
-                return Session::get($key);
+                $this->logger->info('The CSRF informations are listed below: '
+                    . 'key [' . $key . '], key expire [' . $keyExpire . '], ' 
+                    . 'expire time [' . $expire . '], token [' . $token . ']');
+                $sessionInstance->set($keyExpire, $newTime);
+                $sessionInstance->set($key, $token);
+                return $sessionInstance->get($key);
             }
         }
 
@@ -59,29 +71,28 @@
          * This method is used to check the CSRF if is valid, not yet expire, etc.
          * @return boolean true if valid, false if not valid
          */
-        public static function validateCSRF() {
-            $logger = self::getLogger();
-            $logger->debug('Validation of CSRF ...');
-				
+        public function validateCSRF() {
+            $this->logger->debug('Validation of CSRF ...');
             $key = get_config('csrf_key', 'csrf_key');
             $expire = get_config('csrf_expire', 60);
             $keyExpire = 'csrf_expire';
             $currentTime = time();
-            $logger->info('The CSRF informations are listed below: key [' . $key . '], key expire [' . $keyExpire . '], expire time [' . $expire . ']');
-            if (!Session::exists($key) || Session::get($keyExpire) <= $currentTime) {
-                $logger->warning('The CSRF session data is not valide');
+            $sessionInstance = get_instance()->request->getSession();
+            $this->logger->info('The CSRF informations are listed below: key [' . $key . '], key expire [' . $keyExpire . '], expire time [' . $expire . ']');
+            if (!$sessionInstance->exists($key) || $sessionInstance->get($keyExpire) <= $currentTime) {
+                $this->logger->warning('The CSRF session data is not valide');
                 return false;
             }
             //perform form data
             $token = get_instance()->request->post($key);
-            if (!$token || $token !== Session::get($key) || Session::get($keyExpire) <= $currentTime) {
-                $logger->warning('The CSRF data [' . $token . '] is not valide may be attacker do his job');
+            if (!$token || $token !== $sessionInstance->get($key) || $sessionInstance->get($keyExpire) <= $currentTime) {
+                $this->logger->warning('The CSRF data [' . $token . '] is not valide may be attacker do his job');
                 return false;
             }
-            $logger->info('The CSRF data [' . $token . '] is valide the form data is safe continue');
+            $this->logger->info('The CSRF data [' . $token . '] is valide the form data is safe continue');
             //remove the token from session and data
-            Session::clear($key);
-            Session::clear($keyExpire);
+            $sessionInstance->clear($key);
+            $sessionInstance->clear($keyExpire);
             get_instance()->globalvar->removePost($key);
             return true;
         }
@@ -91,26 +102,25 @@
         *
         * @return boolean
         */
-        public static function checkWhiteListIpAccess() {
-            $logger = self::getLogger();
-            $logger->debug('Validation of the IP address access ...');
-            $logger->debug('Check if whitelist IP access is enabled in the configuration ...');
+        public function checkWhiteListIpAccess() {
+            $this->logger->debug('Validation of the IP address access ...');
+            $this->logger->debug('Check if whitelist IP access is enabled in the configuration ...');
             $isEnable = get_config('white_list_ip_enable', false);
             if (!$isEnable) {
-                $logger->info('Whitelist IP access is not enabled in the configuration, ignore checking');
+                $this->logger->info('Whitelist IP access is not enabled in the configuration, ignore checking');
                 return true;
             }
-            $logger->info('Whitelist IP access is enabled in the configuration');
+            $this->logger->info('Whitelist IP access is enabled in the configuration');
             $list = get_config('white_list_ip_addresses', array());
             if (empty($list)) {
-                $logger->info('The list of whitelist IP is empty, ignore checking');
+                $this->logger->info('The list of whitelist IP is empty, ignore checking');
                 return true;
             }
             //Can't use Loader::functions() at this time because teh "Loader" library is loader after the security prossessing
             require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
             $ip = get_ip();
             if ((count($list) == 1 && $list[0] == '*') || in_array($ip, $list)) {
-                $logger->info('IP address ' . $ip . ' is allowed using the wildcard "*" or the full IP address');
+                $this->logger->info('IP address ' . $ip . ' is allowed using the wildcard "*" or the full IP address');
                 //wildcard to access all ip address
                 return true;
             }
@@ -130,11 +140,11 @@
                     //  whitelisted ip "127.0.*"
                     // then we compared "127.0.*" with "127.0.*"
                     // return success
-                    $logger->info('IP address ' . $ip . ' is allowed using the wildcard address like "x.x.x.*"');
+                    $this->logger->info('IP address ' . $ip . ' is allowed using the wildcard address like "x.x.x.*"');
                     return true;
                 }
             }
-            $logger->warning('IP address ' . $ip . ' is not allowed to access to this application');
+            $this->logger->warning('IP address ' . $ip . ' is not allowed to access to this application');
             return false;
         }
     }

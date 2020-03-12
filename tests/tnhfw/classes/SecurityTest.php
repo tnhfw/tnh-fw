@@ -20,7 +20,8 @@
         }
         
 		public function testGenerateCsrf() {
-            $csrf = Security::generateCSRF();
+            $s = new Security();
+            $csrf = $s->generateCSRF();
             $this->assertNotEmpty($csrf);
 		}
         
@@ -29,15 +30,16 @@
             $exists = uniqid();
             $_SESSION['kcsrf'] =  $exists;
             $_SESSION['csrf_expire'] = time() + 600;
-           
-            $csrf = Security::generateCSRF();
+            $s = new Security();
+            $csrf = $s->generateCSRF();
             $this->assertNotEmpty($csrf);
             $this->assertSame($csrf, $exists);
 		}
         
         public function testValidateCsrfSessionValuesNotExists() {
             $_SESSION = array();
-            $this->assertFalse(Security::validateCSRF());
+            $s = new Security();
+            $this->assertFalse($s->validateCSRF());
 		}
         
         public function testValidateCsrfInvalidCsrfValue()
@@ -45,12 +47,12 @@
             $correct = uniqid();
             $_SESSION['kcsrf'] =  $correct;
             $_SESSION['csrf_expire'] = time() + 600;
-           
-            $csrf = Security::generateCSRF();
+            $s = new Security();
+            $csrf = $s->generateCSRF();
             $this->assertNotEmpty($csrf);
             
             $_POST['kcsrf'] = 'foo';
-            $this->assertFalse(Security::validateCSRF());
+            $this->assertFalse($s->validateCSRF());
         }
         
         public function testValidateCsrf() {
@@ -62,63 +64,69 @@
             
             $_SESSION['kcsrf'] =  $correct;
             $_SESSION['csrf_expire'] = time() + 600;
-           
-            $csrf = Security::generateCSRF();
+            $s = new Security();
+            $csrf = $s->generateCSRF();
             $this->assertNotEmpty($csrf);
             $this->assertSame($csrf, $correct);
-            $this->assertTrue(Security::validateCSRF());
+            $this->assertTrue($s->validateCSRF());
 		}
         
         
         public function testCheckWhiteListIpAccessWhenNotEnabledInConfig()
         {
+            $s = new Security();
             $this->config->set('white_list_ip_enable', false);
-            $this->assertTrue(Security::checkWhiteListIpAccess());
+            $this->assertTrue($s->checkWhiteListIpAccess());
         }
         
         public function testCheckWhiteListIpAccessWhenEnabledInConfigButWhitelistIsEmpty()
         {
+            $s = new Security();
             $this->config->set('white_list_ip_enable', true);
             $this->config->set('white_list_ip_addresses', array());
             
-            $this->assertTrue(Security::checkWhiteListIpAccess());
+            $this->assertTrue($s->checkWhiteListIpAccess());
         }
         
         public function testCheckWhiteListIpAccessUsingFullWildcard()
         {
+            $s = new Security();
             $this->config->set('white_list_ip_enable', true);
             $this->config->set('white_list_ip_addresses', array('*'));
             
-            $this->assertTrue(Security::checkWhiteListIpAccess());
+            $this->assertTrue($s->checkWhiteListIpAccess());
         }
         
          public function testCheckWhiteListIpAccessUsingFullIpAddress()
         {
+            $s = new Security();
             //This one is used by helper "get_ip";
             $_SERVER['REMOTE_ADDR'] = '23.56.23.9';
             $this->config->set('white_list_ip_enable', true);
             $this->config->set('white_list_ip_addresses', array('23.56.23.9'));
             
-            $this->assertTrue(Security::checkWhiteListIpAccess());
+            $this->assertTrue($s->checkWhiteListIpAccess());
         }
         
         
         public function testCheckWhiteListIpAccessUsingPartialWildcard()
         {
+            $s = new Security();
             $_SERVER['REMOTE_ADDR'] = '23.56.23.9';
             $this->config->set('white_list_ip_enable', true);
             $this->config->set('white_list_ip_addresses', array('23.56.23.*'));
             
-            $this->assertTrue(Security::checkWhiteListIpAccess());
+            $this->assertTrue($s->checkWhiteListIpAccess());
         }
         
         public function testCheckWhiteListIpAccessCannotAccess()
         {
+            $s = new Security();
             $_SERVER['REMOTE_ADDR'] = '23.56.23.9';
             $this->config->set('white_list_ip_enable', true);
             $this->config->set('white_list_ip_addresses', array('23.56.23.1'));
             
-            $this->assertFalse(Security::checkWhiteListIpAccess());
+            $this->assertFalse($s->checkWhiteListIpAccess());
         }
         
 

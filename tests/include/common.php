@@ -249,7 +249,7 @@
 	}
 	
     /**
-     * Mock of get_instance()
+     * shortcut of get_instance()
      */
 	function & get_instance(){
 		return TnhTestCase::getInstanceForTest();
