@@ -354,7 +354,7 @@
         protected function getModuleInfoForModelLibrary($class) {
             $module = null;
             $path = explode('/', $class);
-            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
                 $module = $path[0];
                 $class = ucfirst($path[1]);
             } else {
@@ -382,7 +382,7 @@
             $file = null;
             //check if the request class contains module name
             $path = explode('/', $function);
-            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
                 $module = $path[0];
                 $function = 'function_' . $path[1];
                 $file = $path[0] . DS . $function . '.php';
@@ -410,7 +410,7 @@
             $file = null;
             //check if the request class contains module name
             $path = explode('/', $language);
-            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
                 $module = $path[0];
                 $language = 'lang_' . $path[1] . '.php';
                 $file = $path[0] . DS . $language;
@@ -437,7 +437,7 @@
             $module = null;
             //check if the request class contains module name
             $path = explode('/', $filename);
-            if (count($path) >= 2 && isset($path[0]) && in_array($path[0], Module::getModuleList())) {
+            if (count($path) >= 2 && in_array($path[0], Module::getModuleList())) {
                 $module = $path[0];
                 $filename = $path[1] . '.php';
             }
@@ -457,7 +457,7 @@
             //for module
             $instance = null;
             $path = explode('/', $class);
-            if (count($path) >= 2 && isset($path[1])) {
+            if (count($path) >= 2) {
                 $instance = strtolower($path[1]);
             } else {
                 $instance = strtolower($class);

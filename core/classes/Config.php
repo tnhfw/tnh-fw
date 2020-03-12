@@ -84,7 +84,7 @@
         }
 
         /**
-         * Set the configuration values bu merged with the existing configuration
+         * Set the configuration values by merged with the existing configuration
          * @param array $config the config values to add in the configuration list
          */
         public function setAll(array $config = array()) {
