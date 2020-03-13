@@ -146,7 +146,7 @@
 
         /**
          * Get the result of one record rows returned by the current query
-         * @param  boolean $sqlOrResult if is boolean and true will return the SQL query string.
+         * @param  boolean|string $sqlOrResult if is boolean and true will return the SQL query string.
          * If is string will determine the result type "array" or "object"
          * @return mixed       the query SQL string or the record result
          */
