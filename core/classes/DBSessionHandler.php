@@ -189,7 +189,7 @@
             $columns = $this->sessionTableColumns;
             list($ip, $host, $browser) = $this->getSessionDataParams();
 			
-            $data = $instance->get_by(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
+            $data = $instance->getSingleRecordCond(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
             if ($data && isset($data->{$columns['sdata']})) {
                 //checking inactivity 
                 $timeInactivity = time() - get_config('session_inactivity_time', 100);
@@ -227,7 +227,7 @@
                             $columns['skey'] => $keyValue
                         );
             $this->logger->info('Database session data to save are listed below :' . stringfy_vars($params));
-            $exists = $instance->get($sid);
+            $exists = $instance->getSingleRecord($sid);
             if ($exists) {
                 $this->logger->info('Session data for SID: ' . $sid . ' already exists, just update it');
                 //update

@@ -1,8 +1,8 @@
 <?php
 	class DBSessionModel extends DBSessionHandlerModel{
 		
-		protected $_table = 'ses';
-		protected $primary_key = 's_id';
+		protected $table = 'ses';
+		protected $primaryKey = 's_id';
 		
 		protected $sessionTableColumns = array(
 			'sid' => 's_id', //VARCHAR(255)
@@ -15,9 +15,9 @@
 		);
 		
 		public function deleteExipredSession($time){
-			$this->getQueryBuilder()->from($this->_table)
+			$this->getQueryBuilder()->from($this->table)
 									->where('s_time', '<', $time);
-			$this->_database->delete();
+			$this->db->delete();
 		}
 
 		

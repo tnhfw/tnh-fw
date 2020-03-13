@@ -36,7 +36,7 @@
             $this->assertSame(0, $cacheTtl->getValue($db));
             $this->assertSame(0, $temporaryCacheTtl->getValue($db));
             
-            $db->setCache(300);
+            $db->setCacheTimeToLive(300);
             
             $this->assertSame(300, $cacheTtl->getValue($db));
             $this->assertSame(300, $temporaryCacheTtl->getValue($db));
@@ -60,17 +60,17 @@
             $this->assertInstanceOf('DatabaseConnection', $db->getConnection());
 		}
         
-        public function testGetSetCacheInstance() {
+        public function testGetsetCache() {
             $db = new Database();
             //Note instance is already set in constructor
-            $this->assertNotNull($db->getCacheInstance());
+            $this->assertNotNull($db->getCache());
              
             $cache = $this->getMockBuilder('DatabaseCache')
                           ->getMock();
                         
-            $db->setCacheInstance($cache);
-            $this->assertNotNull($db->getCacheInstance());
-            $this->assertInstanceOf('DatabaseCache', $db->getCacheInstance());
+            $db->setCache($cache);
+            $this->assertNotNull($db->getCache());
+            $this->assertInstanceOf('DatabaseCache', $db->getCache());
 		}
         
         public function testGetSetQueryBuilder() {
@@ -144,7 +144,7 @@
                  ->method('getCacheContent')
                  ->will($this->returnValue($result)); 
                  
-            $db->setCacheInstance($cache);
+            $db->setCache($cache);
               
            $this->assertNotEmpty($db->get());
            $this->assertArrayHasKey('foo', $db->get());
@@ -177,7 +177,7 @@
                  ->method('getCacheContent')
                  ->will($this->returnValue(null)); 
                  
-            $db->setCacheInstance($cache);
+            $db->setCache($cache);
             
             $qresult = $this->getMockBuilder('DatabaseQueryResult')
                           ->setMethods(array('getResult', 'getNumRows'))
@@ -240,7 +240,7 @@
                  ->method('getCacheContent')
                  ->will($this->returnValue(null)); 
                  
-            $db->setCacheInstance($cache);
+            $db->setCache($cache);
             
             $qresult = $this->getMockBuilder('DatabaseQueryResult')
                           ->setMethods(array('getResult', 'getNumRows'))

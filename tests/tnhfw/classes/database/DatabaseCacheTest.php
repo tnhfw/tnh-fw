@@ -50,16 +50,16 @@
             $this->assertSame(600, $cacheTtl->getValue($dc));
 		}
         
-        public function testGetSetCacheInstance() {
+        public function testGetSetCache() {
             $dc = new DatabaseCache();
-            $this->assertNull($dc->getCacheInstance());
+            $this->assertNull($dc->getCache());
              
             $cache = $this->getMockBuilder('FileCache')
                           ->getMock();
                         
-            $dc->setCacheInstance($cache);
-            $this->assertNotNull($dc->getCacheInstance());
-            $this->assertInstanceOf('FileCache', $dc->getCacheInstance());
+            $dc->setCache($cache);
+            $this->assertNotNull($dc->getCache());
+            $this->assertInstanceOf('FileCache', $dc->getCache());
 		}
         
         public function testGetCacheContentCacheFeatureIsNotEnabled() {
@@ -85,7 +85,7 @@
                  ->will($this->returnValue(null));   
                          
             $dc = new DatabaseCache();
-            $dc->setCacheInstance($cache);
+            $dc->setCache($cache);
             $dc->setQuery($query);
             $this->assertNull($dc->getCacheContent());
 		}
@@ -100,7 +100,7 @@
                  ->will($this->returnValue(array('foo')));   
                          
             $dc = new DatabaseCache();
-            $dc->setCacheInstance($cache);
+            $dc->setCache($cache);
             
             //enable cache feature
             $this->config->set('cache_enable', true);
@@ -161,7 +161,7 @@
                  ->will($this->returnValue(true));   
                          
             $dc = new DatabaseCache();
-            $dc->setCacheInstance($cache);
+            $dc->setCache($cache);
             
             //enable cache feature
             $this->config->set('cache_enable', true);

@@ -4,6 +4,7 @@
      * Model class tests
      *
      * @group core
+     * @group database
      * @group model
      */
 	class ModelTest extends TnhTestCase {	

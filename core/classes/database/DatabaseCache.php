@@ -37,10 +37,10 @@
         private $cacheTtl = 0;
 	
         /**
-         * The cache instance
+         * The CacheInterface instance
          * @var object
          */
-        private $cacheInstance = null;
+        private $cache = null;
 
         /**
          * The SQL query statment to get or save the result into cache
@@ -113,8 +113,8 @@
          * Return the cache instance
          * @return object CacheInterface
          */
-        public function getCacheInstance() {
-            return $this->cacheInstance;
+        public function getCache() {
+            return $this->cache;
         }
 
         /**
@@ -122,8 +122,8 @@
          * @param object CacheInterface $cache the cache object
          * @return object Database
          */
-        public function setCacheInstance($cache) {
-            $this->cacheInstance = $cache;
+        public function setCache($cache) {
+            $this->cache = $cache;
             return $this;
         }
 
@@ -162,10 +162,10 @@
                 $this->logger->info('The cache is not enabled for this query or is not a SELECT query'); 
                 return null;
             }
-            $this->setCacheInstanceFromSuperInstanceIfNull();
+            $this->setCacheFromSuperInstanceIfNull();
             $this->logger->info('The cache is enabled for this query, try to get result from cache'); 
             $cacheKey = $this->getCacheKey();
-            return $this->cacheInstance->get($cacheKey);
+            return $this->cache->get($cacheKey);
         }
 
         /**
@@ -182,23 +182,23 @@
             if(! $this->isSelectQuery || ! $this->dbCacheStatus){
                 return null;
             }
-            $this->setCacheInstanceFromSuperInstanceIfNull();
+            $this->setCacheFromSuperInstanceIfNull();
             $cacheKey = $this->getCacheKey();
             $this->logger->info('Save the result for query [' . $this->query . '] into cache for future use');
-            return $this->cacheInstance->set($cacheKey, $result, $this->cacheTtl);
+            return $this->cache->set($cacheKey, $result, $this->cacheTtl);
         }
 
         /**
          * Set the cache instance using the super global instance if the current instance is null 
          * and the cache feature is enabled.
          */
-        protected function setCacheInstanceFromSuperInstanceIfNull() {
-            if (!is_object($this->cacheInstance)) {
+        protected function setCacheFromSuperInstanceIfNull() {
+            if (!is_object($this->cache)) {
                 //can not call method with reference in argument
-                //like $this->setCacheInstance(& get_instance()->cache);
+                //like $this->setCache(& get_instance()->cache);
                 //use temporary variable
                 $instance = & get_instance()->cache;
-                $this->cacheInstance = $instance;
+                $this->cache = $instance;
             }
         }
 

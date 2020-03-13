@@ -100,7 +100,7 @@
          * The DatabaseCache instance
          * @var object
          */
-        protected $cacheInstance = null;
+        protected $cache = null;
 
         /**
          * Construct new instance
@@ -117,7 +117,7 @@
             $this->setDependencyInstanceFromParamOrCreate('queryRunner', null, 'DatabaseQueryRunner', 'classes/database');
 
             //Set DatabaseCache instance to use
-            $this->setDependencyInstanceFromParamOrCreate('cacheInstance', null, 'DatabaseCache', 'classes/database');
+            $this->setDependencyInstanceFromParamOrCreate('cache', null, 'DatabaseCache', 'classes/database');
 
             if ($connection !== null) {
                 $this->connection = $connection;
@@ -229,7 +229,7 @@
          * @param integer $ttl the cache time to live in second
          * @return object        the current instance
          */
-        public function setCache($ttl = 0) {
+        public function setCacheTimeToLive($ttl = 0) {
             $this->cacheTtl = $ttl;
             $this->temporaryCacheTtl = $ttl;
             return $this;
@@ -301,16 +301,16 @@
          * Return the DatabaseCache instance
          * @return object DatabaseCache
          */
-        public function getCacheInstance() {
-            return $this->cacheInstance;
+        public function getCache() {
+            return $this->cache;
         }
 
         /**
          * Set the DatabaseCache instance
-         * @param object DatabaseCache $cacheInstance the DatabaseCache object
+         * @param object DatabaseCache $cache the DatabaseCache object
          */
-        public function setCacheInstance(DatabaseCache $cacheInstance = null) {
-            $this->cacheInstance = $cacheInstance;
+        public function setCache(DatabaseCache $cache = null) {
+            $this->cache = $cache;
             return $this;
         }
     
@@ -375,11 +375,11 @@
             $this->temporaryCacheTtl = $this->cacheTtl;
 
             //the database cache content
-            $cacheContent = $this->cacheInstance->setQuery($query)
-                                                ->setReturnType($returnAsList)
-                                                ->setReturnAsArray($returnAsArray)
-                                                ->setCacheTtl($cacheExpire)
-                                                ->getCacheContent();
+            $cacheContent = $this->cache->setQuery($query)
+                                        ->setReturnType($returnAsList)
+                                        ->setReturnAsArray($returnAsArray)
+                                        ->setCacheTtl($cacheExpire)
+                                        ->getCacheContent();
             if (!$cacheContent) {
                 $this->logger->info('No cache data found for this query or is not a SELECT query, get result from real database');
                 //count the number of query execution to server
@@ -394,12 +394,12 @@
                     $this->result  = $queryResult->getResult();
                     $this->numRows = $queryResult->getNumRows();
                     //save the result into cache
-                    $this->cacheInstance->saveCacheContent($this->result);
+                    $this->cache->saveCacheContent($this->result);
                 }
             } else {
                 $this->logger->info('The result for query [' . $this->query . '] already cached use it');
                 $this->result = $cacheContent;
-                $this->numRows = count($this->result);
+                $this->numRows = count($this->result); //TODO check if is_array before use count
             }
             return $this->result;
         }

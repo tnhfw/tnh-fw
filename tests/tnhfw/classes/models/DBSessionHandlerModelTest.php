@@ -4,6 +4,7 @@
      * DBSessionHandlerModel class tests
      *
      * @group core
+     * @group database
      * @group model
      */
 	class DBSessionHandlerModelTest extends TnhTestCase {	
