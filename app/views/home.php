@@ -7,7 +7,7 @@
 	<meta name = "keywords" content = "tnh, framework, php, HTML, Javascript, CSS3" />
     <meta name="description" content="A simple PHP framework using HMVC architecture">
     <meta name="author" content="Tony NGUEREZA">
-    <title>TNH Framework</title>
+    <title><?php echo TNH_NAME; ?> v<?php echo TNH_VERSION; ?></title>
     <link href="<?php echo get_instance()->assets->css('bootstrap.min'); ?>" rel="stylesheet" type = "text/css" >
 	<link href="<?php echo get_instance()->assets->css('fontawesome-all.min'); ?>" rel="stylesheet" type = "text/css" >
     <link rel="icon" href="<?php echo get_instance()->assets->img('favicon.ico'); ?>">
