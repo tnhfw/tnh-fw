@@ -57,7 +57,7 @@
             if (get_config('csrf_enable', false) && $method == 'POST') {
                 $csrfValue = get_instance()->security->generateCSRF();
                 $csrfName = get_config('csrf_key', 'csrf_key');
-                $str .= static::hidden($csrfName, $csrfValue);
+                $str .= self::hidden($csrfName, $csrfValue);
             }
             return $str;
         }

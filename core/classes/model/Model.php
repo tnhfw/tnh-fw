@@ -28,15 +28,6 @@
      * SOFTWARE.
      */
 
-
-    /**
-     * A base model with a series of CRUD functions (powered by CI's query builder),
-     * validation-in-model support, event callbacks and more.
-     *
-     * @link http://github.com/jamierumbelow/codeigniter-base-model
-     * @copyright Copyright (c) 2012, Jamie Rumbelow <http://jamierumbelow.net>
-     */
-
     class Model {
 
        /**
@@ -60,8 +51,6 @@
 
         /**
          * Support for soft deletes and this model's 'deleted' key
-         */
-        /**
          * Whether soft delete is enabled or not
          * @var boolean
          */
@@ -170,8 +159,7 @@
         protected $dbCacheTimeToLive = 0;
 
         /**
-         * Initialise the model, tie into the CodeIgniter superobject and
-         * try our best to guess the table name.
+         * Initialise the model.
          *
          * @param object $db the Database instance to use
          * NOTE: each model need use different database instance 
@@ -179,24 +167,23 @@
          * instance directly.
          */
         public function __construct(Database $db = null) {
-            $instance = null;
-            if (is_object($db)) {
-                $instance = $db;
-            } else {
-                $obj = & get_instance();
-                if (isset($obj->database)){
-                    /**
-                     * NOTE: Need use "clone" because some Model need have the personal instance of the database library
-                     * to prevent duplication
-                     */
-                    $instance = clone $obj->database;
-                }
-            }
             //Note: don't use the property direct access here as 
             //some update is done in the method
             //$this->setDb()
-            $this->setDb($instance);
-
+            if ($db !== null) {
+                $this->setDb($db);
+            } else {
+                 /**
+                 * NOTE: Need use "clone" because some Model need have the personal instance of the database library
+                 * to prevent duplication
+                 */
+                $obj = & get_instance();
+                 $this->setDb(clone $obj->database);
+/*                $obj = & get_instance();
+                if (isset($obj->database)){
+                   
+                    $instance = clone $obj->database;*/
+            }
             array_unshift($this->beforeCreateCallbacks, 'removeProtectedTableColumns');
             array_unshift($this->beforeUpdateCallbacks, 'removeProtectedTableColumns');
             $this->temporaryReturnRecordType = $this->returnRecordType;
@@ -510,6 +497,18 @@
         }
 
         /**
+         * Fetch a total count of rows, disregarding any previous conditions
+         * 
+         * @return integer the number of rows
+         */
+        public function countAllRecord() {
+            $this->checkForSoftDelete();
+            $this->getQueryBuilder()->from($this->table);
+            $this->db->getAll();
+            return $this->db->numRows();
+        }
+        
+        /**
          * Fetch a count of rows based on an arbitrary WHERE call.
          *
          * @return integer the number of rows
@@ -522,19 +521,7 @@
             $this->db->getAll();
             return $this->db->numRows();
         }
-
-        /**
-         * Fetch a total count of rows, disregarding any previous conditions
-         * 
-         * @return integer the number of rows
-         */
-        public function countAllRecord() {
-            $this->checkForSoftDelete();
-            $this->getQueryBuilder()->from($this->table);
-            $this->db->getAll();
-            return $this->db->numRows();
-        }
-		
+        
         /**
          * Enabled cache temporary. This method is the shortcut to Database::cached
          *
@@ -568,16 +555,28 @@
         }
 
         /**
-         * Return the next auto increment of the table. Only tested on MySQL.
+         * Return the next auto increment of the table. 
+         * Only tested on MySQL and SQLite
          *
          * @return mixed
          */
         public function getNextAutoIncrementId() {
-            $this->getQueryBuilder()->select('AUTO_INCREMENT')
-                                    ->from('information_schema.TABLES')
-                                    ->where('TABLE_NAME', $this->table)
-                                    ->where('TABLE_SCHEMA', $this->db->getConnection()->getDatabase());
-            return (int) $this->db->get()->AUTO_INCREMENT;
+            $driver = $this->db->getConnection()->getDriver();
+            if ($driver == 'mysql') {
+                $this->getQueryBuilder()->select('AUTO_INCREMENT')
+                                        ->from('information_schema.TABLES')
+                                        ->where('TABLE_NAME', $this->getTable())
+                                        ->where('TABLE_SCHEMA', $this->db->getConnection()->getDatabase());
+                return (int) $this->db->get()->AUTO_INCREMENT;
+            }
+
+            if ($driver == 'sqlite') {
+                $this->getQueryBuilder()->select('SEQ')
+                                        ->from('SQLITE_SEQUENCE')
+                                        ->where('NAME', $this->getTable());
+                return ((int) $this->db->get()->seq) + 1;
+            }
+            return null;
         }
 
         /**
@@ -637,33 +636,25 @@
         /**
          * Table DATETIME field created_at
          *
-         * @param array|object $row the data to be inserted
+         * @param array $row the data to be inserted
          *
-         * @return array|object the data after add field for created time
+         * @return array the data after add field for created time
          */
         public function createdAt($row) {
-            if (is_object($row)) {
-                $row->created_at = date('Y-m-d H:i:s');
-            } else {
-                $row['created_at'] = date('Y-m-d H:i:s');
-            }
+            $row['created_at'] = date('Y-m-d H:i:s');
             return $row;
         }
 
         /**
          * Table DATETIME field  updated_at
          *
-         * @param array|object $row the data to be updated
+         * @param array $row the data to be updated
          *
-         * @return array|object the data after add field for updated time
+         * @return array the data after add field for updated time
          */
         public function updatedAt($row) {
-            if (is_object($row)) {
-                $row->updated_at = date('Y-m-d H:i:s');
-            } else {
-                $row['updated_at'] = date('Y-m-d H:i:s');
-            }
-            return $row;
+           $row['updated_at'] = date('Y-m-d H:i:s');
+           return $row;
         }
 
         /**
@@ -708,9 +699,7 @@
          */
         public function removeProtectedTableColumns($row) {
             foreach ($this->protectedTableColumns as $attr) {
-                if (is_object($row) && isset($row->$attr)) {
-                    unset($row->$attr);
-                } else if (isset($row[$attr])) {
+               if (isset($row[$attr])) {
                     unset($row[$attr]);
                 }
             }
@@ -729,7 +718,7 @@
          * Set the Database instance for future use
          * @param Database $db the database object
          */
-        public function setDb(Database $db = null) {
+        public function setDb(Database $db) {
             $this->db = $db;
             if ($this->dbCacheTimeToLive > 0) {
                 $this->db->setCacheTimeToLive($this->dbCacheTimeToLive);
@@ -793,7 +782,7 @@
         protected function deleteRecords() {
             $result = false;
             if ($this->softDeleteStatus) {
-                $result = $this->db->update(array($this->softDeleteTableColumn => true));
+                $result = $this->db->update(array($this->softDeleteTableColumn => 1));
             } else {
                 $result = $this->db->delete();
             }
@@ -822,7 +811,7 @@
          * @return array|boolean 
          */
         protected function validateRules(array $data) {
-            if ($this->skipRulesValidation || empty($this->validationRules)) {
+            if ($this->isSkipRulesValidation() || empty($this->validationRules)) {
                 return $data;
             }
             get_instance()->formvalidation->setData($data);
@@ -854,7 +843,7 @@
             if ($this->softDeleteStatus && $this->returnRecordWithDeleted !== true) {
                 $this->getQueryBuilder()->where(
                                                 $this->softDeleteTableColumn, 
-                                                (bool) $this->returnOnlyRecordDeleted
+                                                (int) $this->returnOnlyRecordDeleted
                                             );
             }
             return $this;
@@ -998,10 +987,12 @@
          * @return object the current instance
          */
         protected function setWhereValues($params) {
-            if (count($params) == 1 && is_array($params[0])) {
-                $this->setWhereValuesArray($params[0]);
-            } else if (count($params) == 1) {
-                $this->getQueryBuilder()->where($params[0]);
+            if (count($params) == 1) {
+                if (is_array($params[0])) {
+                    $this->setWhereValuesArray($params[0]);
+                } else {
+                    $this->getQueryBuilder()->where($params[0]);
+                }
             } else if (count($params) == 2) {
                 if (is_array($params[1])) {
                     $this->getQueryBuilder()->in($params[0], $params[1]);
@@ -1010,12 +1001,6 @@
                 }
             } else if (count($params) == 3) {
                 $this->getQueryBuilder()->where($params[0], $params[1], $params[2]);
-            } else {
-                if (is_array($params[1])) {
-                    $this->getQueryBuilder()->in($params[0], $params[1]);
-                } else {
-                    $this->getQueryBuilder()->where($params[0], $params[1]);
-                }
-            }
+            } 
         }
     }

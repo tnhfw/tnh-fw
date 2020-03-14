@@ -32,12 +32,13 @@
 		
         /**
          * Whether to enable compression of the cache data file.
+         * Note: extension zlib must be availabe for this to work
          * @var boolean
          */
         private $compressCacheData = true;
 
         /**
-         * The path to file cache data
+         * The path of saved file cache
          * @var string
          */
         private $cacheFilePath = null;
@@ -55,14 +56,16 @@
 			
             //if Zlib extension is not loaded set compressCacheData to false
             if (!extension_loaded('zlib')) {
-                $this->logger->warning('The zlib extension is not loaded set cache compress data to FALSE');
+                $this->logger->warning('The zlib extension is not loaded set cache compress data to false');
                 $this->compressCacheData = false;
             }
         }
 
         /**
          * This is used to get the cache data using the key
+         * 
          * @param  string $key the key to identify the cache data
+         * 
          * @return mixed      the cache data if exists else return false
          */
         public function get($key) {
@@ -105,9 +108,11 @@
 
         /**
          * Save data to the cache
+         * 
          * @param string  $key  the key to identify this cache data
          * @param mixed  $data the cache data
          * @param integer $ttl  the cache life time
+         * 
          * @return boolean true if success otherwise will return false
          */
         public function set($key, $data, $ttl = 0) {
@@ -146,7 +151,9 @@
 
         /**
          * Delete the cache data for given key
+         * 
          * @param  string $key the key for cache to be deleted
+         * 
          * @return boolean      true if the cache is delete, false if can't delete 
          * the cache or the cache with the given key not exist
          */
@@ -164,8 +171,11 @@
 		
         /**
          * Get the cache information for given key
+         * 
          * @param  string $key the key for cache to get the information for
-         * @return boolean|array    the cache information. The associative array and must contains the following information:
+         * 
+         * @return boolean|array    the cache information. The associative 
+         * array and must contains the following information:
          * 'mtime' => creation time of the cache (Unix timestamp),
          * 'expire' => expiration time of the cache (Unix timestamp),
          * 'ttl' => the time to live of the cache in second
@@ -205,6 +215,7 @@
 
         /**
          * Used to delete expired cache data
+         * @see  CacheInterface::deleteExpiredCache
          */
         public function deleteExpiredCache() {
             $this->logger->debug('Deleting of expired cache files');
@@ -234,6 +245,7 @@
 
         /**
          * Remove all file from cache folder
+         * @see  CacheInterface::clean
          */
         public function clean() {
             $this->logger->debug('Deleting of all cache files');
@@ -250,6 +262,8 @@
         }
 	
         /**
+         * Whether the compression is enabled or not
+         * 
          * @return boolean
          */
         public function isCompressCacheData() {
@@ -257,12 +271,15 @@
         }
 
         /**
+         * Set the compression data status
+         * Note: this is set to "true" only if zlib extension is loaded and enabled
+         * 
          * @param boolean $compressCacheData
          *
          * @return object
          */
         public function setCompressCacheData($status = true) {
-            //if Zlib extension is not loaded set compressCacheData to false
+            //if zlib extension is not loaded set compressCacheData to false
             if ($status === true && !extension_loaded('zlib')) {
                 $this->logger->warning('The zlib extension is not loaded set cache compress data to false');
                 $this->compressCacheData = false;
@@ -285,6 +302,7 @@
 
         /**
          * Set the cache file path used to save the cache data
+         * 
          * @param string|null $path the file path if null will use the constant CACHE_PATH
          *
          * @return object the current instance
@@ -306,6 +324,7 @@
          * Get the cache file full path for the given key
          *
          * @param string $key the cache item key
+         * 
          * @return string the full cache file path for this key
          */
         private function getFilePath($key) {

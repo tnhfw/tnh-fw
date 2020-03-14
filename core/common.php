@@ -176,6 +176,99 @@
     }
 
     /**
+     *  This function displays an error message to the user and ends the execution of the script.
+     *  
+     *  @param string $msg the message to display
+     *  @param string $title the message title: "error", "info", "warning", etc.
+     *  @param boolean $logging either to save error in log
+     *  
+     *  @codeCoverageIgnore
+     */
+    function show_error($msg, $title = 'error', $logging = true) {
+        $title = strtoupper($title);
+        $data = array();
+        $data['error'] = $msg;
+        $data['title'] = $title;
+        if ($logging) {
+            save_to_log('error', '[' . $title . '] ' . strip_tags($msg), 'GLOBAL::ERROR');
+        }
+        $response = & class_loader('Response', 'classes');
+        //remove other content set to prevent duplicate view
+        $response->setFinalPageContent(null);
+        $response->render('errors', $data);
+        $response->sendError();
+        die();
+    }
+
+     /**
+     *  Function defined for PHP error message handling
+     *              
+     *  @param int $errno the type of error for example: E_USER_ERROR, E_USER_WARNING, etc.
+     *  @param string $errstr the error message
+     *  @param string $errfile the file where the error occurred
+     *  @param int $errline the line number where the error occurred
+     *  @codeCoverageIgnore
+     *  
+     *  @return boolean 
+     */
+    function fw_error_handler($errno, $errstr, $errfile, $errline) {
+        $isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
+        if ($isError) {
+            set_http_status_header(500);
+        }
+        if (!(error_reporting() & $errno)) {
+            save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
+            return;
+        }
+        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
+            $errorType = 'error';
+            switch ($errno) {
+                case E_USER_WARNING:
+                    $errorType = 'warning';
+                    break;
+                case E_USER_NOTICE:
+                    $errorType = 'notice';
+                    break;
+            }
+            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
+        }
+        if ($isError) {
+            die();
+        }
+        return true;
+    }
+
+    /**
+     *  Function defined for handling PHP exception error message, 
+     *  it displays an error message using the function "show_error"
+     *  
+     *  @param object $ex instance of the "Exception" class or a derived class
+     *  @codeCoverageIgnore
+     *  
+     *  @return boolean
+     */
+    function fw_exception_handler($ex) {
+        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
+            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
+        } else {
+            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
+        }
+        return true;
+    }
+    
+    /**
+     * This function is used to run in shutdown situation of the script
+     * @codeCoverageIgnore
+     */
+    function fw_shudown_handler() {
+        $lastError = error_get_last();
+        if (isset($lastError) &&
+            ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
+            fw_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
+        }
+    }
+
+    /**
      * Set the HTTP status header
      * @param integer $code the HTTP status code
      * @param string  $text the HTTP status text
@@ -233,7 +326,7 @@
                 show_error('No HTTP status text found for your code please check it.');
             }
         }
-		
+        
         if (strpos(php_sapi_name(), 'cgi') === 0) {
             header('Status: ' . $code . ' ' . $text, TRUE);
         } else {
@@ -246,98 +339,6 @@
         }
     }
 
-    /**
-     *  This function displays an error message to the user and ends the execution of the script.
-     *  
-     *  @param string $msg the message to display
-     *  @param string $title the message title: "error", "info", "warning", etc.
-     *  @param boolean $logging either to save error in log
-     *  
-     *  @codeCoverageIgnore
-     */
-    function show_error($msg, $title = 'error', $logging = true) {
-        $title = strtoupper($title);
-        $data = array();
-        $data['error'] = $msg;
-        $data['title'] = $title;
-        if ($logging) {
-            save_to_log('error', '[' . $title . '] ' . strip_tags($msg), 'GLOBAL::ERROR');
-        }
-        $response = & class_loader('Response', 'classes');
-        //remove other content set to prevent duplicate view
-        $response->setFinalPageContent(null);
-        $response->render('errors', $data);
-        $response->sendError();
-        die();
-    }
-
-       /**
-     *  Function defined for handling PHP exception error message, 
-     *  it displays an error message using the function "show_error"
-     *  
-     *  @param object $ex instance of the "Exception" class or a derived class
-     *  @codeCoverageIgnore
-     *  
-     *  @return boolean
-     */
-    function fw_exception_handler($ex) {
-        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
-        } else {
-            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
-        }
-        return true;
-    }
-    
-    /**
-     *  Function defined for PHP error message handling
-     *              
-     *  @param int $errno the type of error for example: E_USER_ERROR, E_USER_WARNING, etc.
-     *  @param string $errstr the error message
-     *  @param string $errfile the file where the error occurred
-     *  @param int $errline the line number where the error occurred
-     *  @codeCoverageIgnore
-     *  
-     *  @return boolean 
-     */
-    function fw_error_handler($errno, $errstr, $errfile, $errline) {
-        $isError = (((E_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $errno) === $errno);
-        if ($isError) {
-            set_http_status_header(500);
-        }
-        if (!(error_reporting() & $errno)) {
-            save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
-            return;
-        }
-        if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            $errorType = 'error';
-            switch ($errno) {
-                case E_USER_WARNING:
-                    $errorType = 'warning';
-                    break;
-                case E_USER_NOTICE:
-                    $errorType = 'notice';
-                    break;
-            }
-            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
-        }
-        if ($isError) {
-            die();
-        }
-        return true;
-    }
-
-    /**
-     * This function is used to run in shutdown situation of the script
-     * @codeCoverageIgnore
-     */
-    function fw_shudown_handler() {
-        $lastError = error_get_last();
-        if (isset($lastError) &&
-            ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
-            fw_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
-        }
-    }
 
     /**
      *  Check whether the protocol used is "https" or not

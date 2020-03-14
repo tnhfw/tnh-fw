@@ -40,25 +40,25 @@
          * The final page content to display to user
          * @var string
          */
-        private $_pageRender = null;
+        private $finalPageContent = null;
 		
         /**
          * The current request URL
          * @var string
          */
-        private $_currentUrl = null;
+        private $currentUrl = null;
 		
         /**
          * The current request URL cache key
          * @var string
          */
-        private $_currentUrlCacheKey = null;
+        private $currentUrlCacheKey = null;
 		
         /**
          * Whether we can compress the output using Gzip
          * @var boolean
          */
-        private $_canCompressOutput = false;
+        private $canCompressOutput = false;
 		
         /**
          * Construct new instance
@@ -73,10 +73,10 @@
             if ($globals->server('QUERY_STRING')) {
                 $currentUrl .= '?' . $globals->server('QUERY_STRING');
             }
-            $this->_currentUrl = $currentUrl;		
-            $this->_currentUrlCacheKey = md5($this->_currentUrl);
+            $this->currentUrl = $currentUrl;		
+            $this->currentUrlCacheKey = md5($this->currentUrl);
 			
-            $this->_canCompressOutput = get_config('compress_output')
+            $this->canCompressOutput = get_config('compress_output')
                                           && $globals->server('HTTP_ACCEPT_ENCODING') !== null 
                                           && stripos($globals->server('HTTP_ACCEPT_ENCODING'), 'gzip') !== false 
                                           && extension_loaded('zlib')
@@ -160,9 +160,11 @@
 
         /**
          * Render the view to display later or return the content
+         * 
          * @param  string  $view   the view name or path
          * @param  array|object   $data   the variable data to use in the view
          * @param  boolean $return whether to return the view generated content or display it directly
+         * 
          * @return void|string          if $return is true will return the view content otherwise
          * will display the view content.
          */
@@ -202,13 +204,14 @@
          * Send the final page output
          */
         public function renderFinalPage() {
-            $content = $this->_pageRender;
+            $content = $this->finalPageContent;
             if (!$content) {
                 $this->logger->warning('The final view content is empty.');
                 return;
             }
             $obj = & get_instance();
-            $cachePageStatus = get_instance()->config->get('cache_enable', false) && !empty($obj->view_cache_enable);
+            $cachePageStatus = get_instance()->config->get('cache_enable', false) 
+                               && !empty($obj->view_cache_enable);
             
             $content = $this->dispatchFinalViewEvent();
             
@@ -216,17 +219,13 @@
             if ($cachePageStatus) {
                 $this->savePageContentIntoCache($content);
             }
-            //update content
-            $this->_pageRender = $content;
-
+            //update final page content
+            $this->finalPageContent = $content;
             $content = $this->replaceElapseTimeAndMemoryUsage($content);
 
             //compress the output if is available
-            $type = null;
-            if ($this->_canCompressOutput) {
-                $type = 'ob_gzhandler';
-            }
-            ob_start($type);
+            $compressOutputHandler = $this->getCompressOutputHandler();
+            ob_start($compressOutputHandler);
             $this->sendHeaders(200);
             echo $content;
             ob_end_flush();
@@ -243,7 +242,7 @@
             $event = get_instance()->eventdispatcher->dispatch(
                                                                 new EventInfo(
                                                                                 'FINAL_VIEW_READY', 
-                                                                                $this->_pageRender, 
+                                                                                $this->finalPageContent, 
                                                                                 true
                                                                             )
                                                             );
@@ -266,9 +265,9 @@
          */
         public function renderFinalPageFromCache(&$cache) {
             //the current page cache key for identification
-            $pageCacheKey = $this->_currentUrlCacheKey;
+            $pageCacheKey = $this->currentUrlCacheKey;
 			
-            $this->logger->debug('Checking if the page content for the URL [' . $this->_currentUrl . '] is cached ...');
+            $this->logger->debug('Checking if the page content for the URL [' . $this->currentUrl . '] is cached ...');
             //get the cache information to prepare header to send to browser
             $cacheInfo = $cache->getInfo($pageCacheKey);
             if ($cacheInfo) {
@@ -287,7 +286,7 @@
          * @return string
          */
         public function getFinalPageRendered() {
-            return $this->_pageRender;
+            return $this->finalPageContent;
         }
 
          /**
@@ -297,7 +296,7 @@
          * @return object
          */
         public function setFinalPageContent($finalPage) {
-            $this->_pageRender = $finalPage;
+            $this->finalPageContent = $finalPage;
             return $this;
         }
 
@@ -306,13 +305,14 @@
          * routing information for the current request
          */
         public function send404() {
-            $content = $this->_pageRender;
+            $content = $this->finalPageContent;
             if (!$content) {
                 $this->logger->warning('The final view content is empty.');
                 return;
             }
             $obj = & get_instance();
-            $cachePageStatus = get_instance()->config->get('cache_enable', false) && !empty($obj->view_cache_enable);
+            $cachePageStatus = get_instance()->config->get('cache_enable', false) 
+                                && !empty($obj->view_cache_enable);
             //dispatch
             get_instance()->eventdispatcher->dispatch(new EventInfo('PAGE_NOT_FOUND'));
             //check whether need save the page into cache.
@@ -322,21 +322,18 @@
             $content = $this->replaceElapseTimeAndMemoryUsage($content);
 
             /**************************************** save the content into logs **************/
-            $bwsr = & class_loader('Browser');
-            $browser = $bwsr->getPlatform() . ', ' . $bwsr->getBrowser() . ' ' . $bwsr->getVersion();
+            $userAgent = & class_loader('Browser');
+            $browser = $userAgent->getPlatform() . ', ' . $userAgent->getBrowser() . ' ' . $userAgent->getVersion();
             $obj->loader->functions('user_agent');
             $str = '[404 page not found] : ';
-            $str .= ' Unable to find the request page [' . $obj->request->requestUri() . ']. The visitor IP address [' . get_ip() . '], browser [' . $browser . ']';
-            
-            //Todo fix the issue the logger name change after load new class
+            $str .= ' Unable to find the request page [' . $obj->request->requestUri() . '].'
+                    .' The visitor IP address [' . get_ip() . '], browser [' . $browser . ']';
             $this->logger->error($str);
             /**********************************************************************/
+            
             //compress the output if is available
-            $type = null;
-            if ($this->_canCompressOutput) {
-                $type = 'ob_gzhandler';
-            }
-            ob_start($type);
+            $compressOutputHandler = $this->getCompressOutputHandler();
+            ob_start($compressOutputHandler);
             $this->sendHeaders(404);
             echo $content;
             ob_end_flush();
@@ -346,22 +343,33 @@
          * Display the error to user
          */
         public function sendError() {
-            $content = $this->_pageRender;
+            $content = $this->finalPageContent;
             if (!$content) {
                 $this->logger->warning('The final view content is empty.');
                 return;
             }
             $content = $this->replaceElapseTimeAndMemoryUsage($content);
             //compress the output if is available
-            $type = null;
-            if ($this->_canCompressOutput) {
-                $type = 'ob_gzhandler';
-            }
-            ob_start($type);
+            $compressOutputHandler = $this->getCompressOutputHandler();
+            ob_start($compressOutputHandler);
             $this->sendHeaders(503);
             echo $content;
             ob_end_flush();
         }
+
+        /**
+         * Get the compress output handler is can compress the page content
+         * before send
+         * @return null|string the name of function to handler compression
+         */
+        protected function getCompressOutputHandler() {
+            $handler = null;
+            if ($this->canCompressOutput) {
+                $handler = 'ob_gzhandler';
+            }
+            return $handler;
+        }
+
 
          /**
          * Return the default full file path for view
@@ -390,7 +398,7 @@
          */
         protected function sendCacheNotYetExpireInfoToBrowser($cacheInfo) {
             if (!empty($cacheInfo)) {
-                    $lastModified = $cacheInfo['mtime'];
+                $lastModified = $cacheInfo['mtime'];
                 $expire = $cacheInfo['expire'];
                 $globals = & class_loader('GlobalVar', 'classes');
                 $maxAge = $expire - (double) $globals->server('REQUEST_TIME');
@@ -401,7 +409,7 @@
                 $headerModifiedSince = $globals->server('HTTP_IF_MODIFIED_SINCE');
                 if (!empty($headerModifiedSince) && $lastModified <= strtotime($headerModifiedSince)) {
                     $this->logger->info('The cache page content is not yet expire for the '
-                                         . 'URL [' . $this->_currentUrl . '] send 304 header to browser');
+                                         . 'URL [' . $this->currentUrl . '] send 304 header to browser');
                     $this->sendHeaders(304);
                     return true;
                 }
@@ -416,29 +424,25 @@
          */
         protected function sendCachePageContentToBrowser(&$cache) {
             $this->logger->info('The cache page content is expired or the browser does '
-                 . 'not send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->_currentUrl . '] '
+                 . 'not send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->currentUrl . '] '
                  . 'send cache headers to tell the browser');
-
             $this->sendHeaders(200);
             //current page cache key
-            $pageCacheKey = $this->_currentUrlCacheKey;
+            $pageCacheKey = $this->currentUrlCacheKey;
             //get the cache content
             $content = $cache->get($pageCacheKey);
             if ($content) {
-                $this->logger->info('The page content for the URL [' . $this->_currentUrl . '] already cached just display it');
+                $this->logger->info('The page content for the URL [' . $this->currentUrl . '] already cached just display it');
                 $content = $this->replaceElapseTimeAndMemoryUsage($content);
                 ///display the final output
                 //compress the output if is available
-                $type = null;
-                if ($this->_canCompressOutput) {
-                    $type = 'ob_gzhandler';
-                }
-                ob_start($type);
+                $compressOutputHandler = $this->getCompressOutputHandler();
+                ob_start($compressOutputHandler);
                 echo $content;
                 ob_end_flush();
                 return true;
             }
-            $this->logger->info('The page cache content for the URL [' . $this->_currentUrl . '] is not valid may be already expired');
+            $this->logger->info('The page cache content for the URL [' . $this->currentUrl . '] is not valid may be already expired');
             $cache->delete($pageCacheKey);
             return false;
         }
@@ -451,7 +455,7 @@
         protected function savePageContentIntoCache($content) {
             $obj = & get_instance();
             //current page URL
-            $url = $this->_currentUrl;
+            $url = $this->currentUrl;
             //Cache view Time to live in second
             $viewCacheTtl = get_instance()->config->get('cache_ttl');
             if (!empty($obj->view_cache_ttl)) {
@@ -460,7 +464,7 @@
             //the cache handler instance
             $cacheInstance = $obj->cache;
             //the current page cache key for identification
-            $cacheKey = $this->_currentUrlCacheKey;
+            $cacheKey = $this->currentUrlCacheKey;
             $this->logger->debug('Save the page content for URL [' . $url . '] into the cache ...');
             $cacheInstance->set($cacheKey, $content, $viewCacheTtl);
 			
@@ -495,6 +499,7 @@
 
         /**
          * Get the module information for the view to load
+         * 
          * @param  string $view the view name like moduleName/viewName, viewName
          * 
          * @return array        the module information
@@ -551,7 +556,7 @@
                 if ($return) {
                     return $content;
                 }
-                $this->_pageRender .= $content;
+                $this->finalPageContent .= $content;
                 $found = true;
             }
             if (!$found) {

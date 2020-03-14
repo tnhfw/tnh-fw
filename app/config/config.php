@@ -189,6 +189,14 @@
      * By default is PHPSESSID. this must be alpha-numerical characters
      */
     $config['session_name'] = 'PHPSESSID';
+
+    /**
+     * Session handler
+     *
+     * The session handler that we will use to manage the session.
+     * currently the possible values are "files", "database".
+     */
+    $config['session_handler'] = 'files';
 	
     /**
      * Session save path
@@ -202,14 +210,6 @@
      */
     $config['session_save_path'] = '';
 
-    /**
-     * Session handler
-     *
-     * The session handler that we will use to manage the session.
-     * currently the possible values are "files", "database".
-     */
-    $config['session_handler'] = 'files';
-	
     /**
      * Session secret
      *

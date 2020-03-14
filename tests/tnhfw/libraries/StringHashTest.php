@@ -13,12 +13,13 @@
 		public function testHash() {
             $plain = 'fooobarr';
             $wplain = 'fooobarrr';
-            $hash = StringHash::hash($plain);
+            $s = new StringHash();
+            $hash = $s->hash($plain);
 			$this->assertNotEmpty($hash);
             
-            $this->assertTrue(StringHash::check($hash, $plain));
-            $this->assertFalse(StringHash::check($hash, $wplain));
-            $this->assertFalse(StringHash::check('ddjdjgjgssgjgf', $plain));
+            $this->assertTrue($s->check($hash, $plain));
+            $this->assertFalse($s->check($hash, $wplain));
+            $this->assertFalse($s->check('ddjdjgjgssgjgf', $plain));
 		}
 
 	}

@@ -53,11 +53,11 @@
 		public function __construct() {
             parent::__construct();
             $this->instance = & get_instance();
-           $this->config = new Config();
+            $this->config = new Config();
            
-           $this->vfsRoot = vfsStream::setup();
-           $this->vfsLogPath = vfsStream::newDirectory('logs')->at($this->vfsRoot);
-           $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
+            $this->vfsRoot = vfsStream::setup();
+            $this->vfsLogPath = vfsStream::newDirectory('logs')->at($this->vfsRoot);
+            $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
            
            //log file name
            $this->logFilename = 'logs-' . date('Y-m-d') . '.log';
@@ -79,8 +79,7 @@
             return Controller::getInstance();
        }
         
-        protected function setUp()
-		{
+        protected function setUp() {
             //delete all configuration, so each test will set the custom config to use
            $this->config->deleteAll();
 		}

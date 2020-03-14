@@ -55,10 +55,10 @@
          * 
          * @return string           the hashed string
          */
-        public static function hash($value) {
+        public function hash($value) {
             return crypt($value, self::$algo .
                     self::$cost .
-                    '$' . self::uniqueSalt());
+                    '$' . $this->getUniqueSalt());
         }
 
         /**
@@ -68,7 +68,7 @@
          * 
          * @return boolean  true if is valid or false if not
          */
-        public static function check($hash, $plain) {
+        public function check($hash, $plain) {
             $fullSalt = substr($hash, 0, 29);
             $newHash = crypt($plain, $fullSalt);
             return $hash === $newHash;
@@ -80,7 +80,7 @@
          * 
          * @return string the unique generated salt
          */
-        private static function uniqueSalt() {
+        private function getUniqueSalt() {
             /* To generate the salt, first generate enough random bytes. Because
              * base64 returns one character for each 6 bits, so we should generate
              * at least 22*6/8 = 16.5 bytes, so we generate 17 bytes. Then we get the first

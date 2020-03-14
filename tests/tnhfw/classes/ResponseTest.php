@@ -17,13 +17,13 @@
 		public function __construct(){
             parent::__construct();
             
-            $this->currentUrl = new ReflectionProperty('Response', '_currentUrl');
+            $this->currentUrl = new ReflectionProperty('Response', 'currentUrl');
             $this->currentUrl->setAccessible(true);
             
-            $this->currentUrlCacheKey = new ReflectionProperty('Response', '_currentUrlCacheKey');
+            $this->currentUrlCacheKey = new ReflectionProperty('Response', 'currentUrlCacheKey');
             $this->currentUrlCacheKey->setAccessible(true);
             
-            $this->canCompressOutput = new ReflectionProperty('Response', '_canCompressOutput');
+            $this->canCompressOutput = new ReflectionProperty('Response', 'canCompressOutput');
             $this->canCompressOutput->setAccessible(true);
         }
         

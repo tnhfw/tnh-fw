@@ -562,7 +562,7 @@
          * Validation of rule "default_value[param]"
          *
          * NOTE: This one it's not a validation rule it just check if the value for the
-         * given field is null, empty and set it by the paramter value.
+         * given field is null, empty and set it by the parameter value.
          * 
          * @param  string $field the name of the field or data key name used
          * @param  string $rule  the rule name for this validation ("default_value")

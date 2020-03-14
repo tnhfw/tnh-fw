@@ -9,7 +9,17 @@
 	class ConfigTest extends TnhTestCase {	
 	
 		
-		public function testGetValueWhenKeyNotExist() {
+		public function testConstructor() {
+            //Don't init
+            $c = new Config(false);
+            $this->assertEmpty($this->config->getAll());
+            
+            //init configuration
+            $c = new Config(true);
+            $this->assertNotEmpty($this->config->getAll());
+		}
+        
+        public function testGetValueWhenKeyNotExist() {
             $value = $this->config->get('foo');
             $this->assertNull($value);
 		}

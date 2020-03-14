@@ -50,44 +50,44 @@
 
     class Email extends BaseClass{
         /**
-         * @var int $_wrap
+         * @var int $wrap
          */
-        protected $_wrap = 78;
+        protected $wrap = 78;
 
         /**
-         * @var array $_to
+         * @var array $to
          */
-        protected $_to = array();
+        protected $to = array();
 
         /**
-         * @var string $_subject
+         * @var string $subject
          */
-        protected $_subject;
+        protected $subject;
 
         /**
-         * @var string $_message
+         * @var string $message
          */
-        protected $_message;
+        protected $message;
 
         /**
-         * @var array $_headers
+         * @var array $headers
          */
-        protected $_headers = array();
+        protected $headers = array();
 
         /**
-         * @var string $_parameters
+         * @var string $parameters
          */
-        protected $_params;
+        protected $params;
 
         /**
-         * @var array $_attachments
+         * @var array $attachments
          */
-        protected $_attachments = array();
+        protected $attachments = array();
 
         /**
-         * @var string $_uid
+         * @var string $uid
          */
-        protected $_uid;
+        protected $uid;
 		
 
         /**
@@ -108,14 +108,14 @@
          * @return object
          */
         public function reset() {
-            $this->_to = array();
-            $this->_headers = array();
-            $this->_subject = null;
-            $this->_message = null;
-            $this->_wrap = 78;
-            $this->_params = null;
-            $this->_attachments = array();
-            $this->_uid = $this->getUniqueId();
+            $this->to = array();
+            $this->headers = array();
+            $this->subject = null;
+            $this->message = null;
+            $this->wrap = 78;
+            $this->params = null;
+            $this->attachments = array();
+            $this->uid = $this->getUniqueId();
             return $this;
         }
 		
@@ -141,7 +141,7 @@
          * @return object
          */
         public function setTo($email, $name = null) {
-            $this->_to[] = $this->formatHeader((string) $email, (string) $name);
+            $this->to[] = $this->formatHeader((string) $email, (string) $name);
             return $this;
         }
 		
@@ -172,7 +172,7 @@
          * @return array
          */
         public function getTo() {
-            return $this->_to;
+            return $this->to;
         }
 
 
@@ -231,7 +231,7 @@
          * @return object
          */
         public function setSubject($subject) {
-            $this->_subject = $this->encodeUtf8(
+            $this->subject = $this->encodeUtf8(
                 $this->filterOther((string) $subject)
             );
             return $this;
@@ -243,7 +243,7 @@
          * @return string
          */
         public function getSubject() {
-            return $this->_subject;
+            return $this->subject;
         }
 
         /**
@@ -254,7 +254,7 @@
          * @return object
          */
         public function setMessage($message) {
-            $this->_message = str_replace("\n.", "\n..", (string) $message);
+            $this->message = str_replace("\n.", "\n..", (string) $message);
             return $this;
         }
 
@@ -264,7 +264,7 @@
          * @return string
          */
         public function getMessage() {
-            return $this->_message;
+            return $this->message;
         }
 
         /**
@@ -288,7 +288,7 @@
             if (empty($data)) {
                $data = $this->getAttachmentData($path);
             }
-            $this->_attachments[] = array(
+            $this->attachments[] = array(
                 'path' => $path,
                 'file' => $filename,
                 'data' => chunk_split(base64_encode($data))
@@ -329,7 +329,7 @@
          */
         public function addMailHeader($header, $email, $name = null) {
             $address = $this->formatHeader((string) $email, (string) $name);
-            $this->_headers[] = sprintf('%s: %s', (string) $header, $address);
+            $this->headers[] = sprintf('%s: %s', (string) $header, $address);
             return $this;
         }
 
@@ -366,7 +366,7 @@
          * @return object
          */
         public function addGenericHeader($name, $value) {
-            $this->_headers[] = sprintf(
+            $this->headers[] = sprintf(
                 '%s: %s',
                 (string) $name,
                 (string) $value
@@ -382,7 +382,7 @@
          * @return array
          */
         public function getHeaders() {
-            return $this->_headers;
+            return $this->headers;
         }
 
         /**
@@ -395,7 +395,7 @@
          * @return object
          */
         public function setParameters($additionalParameters) {
-            $this->_params = (string) $additionalParameters;
+            $this->params = (string) $additionalParameters;
             return $this;
         }
 
@@ -405,7 +405,7 @@
          * @return string
          */
         public function getParameters() {
-            return $this->_params;
+            return $this->params;
         }
 
         /**
@@ -420,7 +420,7 @@
             if ($wrap < 1) {
                 $wrap = 78;
             }
-            $this->_wrap = $wrap;
+            $this->wrap = $wrap;
             return $this;
         }
 
@@ -430,7 +430,7 @@
          * @return int
          */
         public function getWrap() {
-            return $this->_wrap;
+            return $this->wrap;
         }
 
         /**
@@ -441,7 +441,7 @@
          * @return bool
          */
         public function hasAttachments() {
-            return !empty($this->_attachments);
+            return !empty($this->attachments);
         }
 
         /**
@@ -452,7 +452,7 @@
         public function assembleAttachmentHeaders() {
             $head = array();
             $head[] = "MIME-Version: 1.0";
-            $head[] = "Content-Type: multipart/mixed; boundary=\"{$this->_uid}\"";
+            $head[] = "Content-Type: multipart/mixed; boundary=\"{$this->uid}\"";
 
             return join(PHP_EOL, $head);
         }
@@ -465,15 +465,15 @@
         public function assembleAttachmentBody() {
             $body = array();
             $body[] = "This is a multi-part message in MIME format.";
-            $body[] = "--{$this->_uid}";
+            $body[] = "--{$this->uid}";
             $body[] = "Content-Type: text/html; charset=\"utf-8\"";
             $body[] = "Content-Transfer-Encoding: quoted-printable";
             $body[] = "";
-            $body[] = quoted_printable_encode($this->_message);
+            $body[] = quoted_printable_encode($this->message);
             $body[] = "";
-            $body[] = "--{$this->_uid}";
+            $body[] = "--{$this->uid}";
 
-            foreach ($this->_attachments as $attachment) {
+            foreach ($this->attachments as $attachment) {
                 $body[] = $this->getAttachmentMimeTemplate($attachment);
             }
 
@@ -498,7 +498,7 @@
             $head[] = "";
             $head[] = $data;
             $head[] = "";
-            $head[] = "--{$this->_uid}";
+            $head[] = "--{$this->uid}";
 
             return implode(PHP_EOL, $head);
         }
@@ -523,7 +523,7 @@
                 $message = $this->getWrapMessage();
             }
             $this->logger->info('Sending new mail, the information are listed below: destination: ' . $to . ', headers: ' . $headers . ', message: ' . $message);
-            return mail($to, $this->_subject, $message, $headers, $this->_params);
+            return mail($to, $this->subject, $message, $headers, $this->params);
         }
 
         /**
@@ -681,10 +681,10 @@
          * @return string
          */
         public function getHeadersForSend() {
-            if (empty($this->_headers)) {
+            if (empty($this->headers)) {
                 return '';
             }
-            return join(PHP_EOL, $this->_headers);
+            return join(PHP_EOL, $this->headers);
         }
 
         /**
@@ -693,10 +693,10 @@
          * @return string
          */
         public function getToForSend() {
-            if (empty($this->_to)) {
+            if (empty($this->to)) {
                 return '';
             }
-            return join(', ', $this->_to);
+            return join(', ', $this->to);
         }
 
         /**
@@ -714,6 +714,6 @@
          * @return string
          */
         public function getWrapMessage() {
-            return wordwrap($this->_message, $this->_wrap);
+            return wordwrap($this->message, $this->wrap);
         }
     }

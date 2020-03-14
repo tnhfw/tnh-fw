@@ -59,7 +59,7 @@
          * The initialisation vector to use for openssl
          * @var string
          */
-        private $iv = null;
+        private $initializerVector = null;
 
         /**
          * The model instance to use
@@ -74,23 +74,12 @@
         private $sessionTableColumns = array();
 
         /**
-         * Instance of the Loader class
-         * @var Loader
-         */
-        protected $loader = null;
-
-        /**
          * Create new instance of Database session handler
          * @param object $modelInstance the model instance
          */
         public function __construct(DBSessionHandlerModel $modelInstance = null) {
             parent::__construct();
-			
-            //Set Loader instance to use
-            $this->setDependencyInstanceFromParamOrCreate('loader', null, 'Loader', 'classes');
-	       
             $this->OBJ = & get_instance();
-		    
             if (is_object($modelInstance)) {
                 $this->setModelInstance($modelInstance);
             }
@@ -121,7 +110,7 @@
         public function setInitializerVector($key) {
             $ivLength = openssl_cipher_iv_length(self::DB_SESSION_HASH_METHOD);
             $key = base64_decode($key);
-            $this->iv = substr(hash('sha256', $key), 0, $ivLength);
+            $this->initializerVector = substr(hash('sha256', $key), 0, $ivLength);
             return $this;
         }
 
@@ -130,7 +119,7 @@
          * @return string 
          */
         public function getInitializerVector() {
-            return $this->iv;
+            return $this->initializerVector;
         }
 
         /**
@@ -289,24 +278,6 @@
             return $data;
         }
 
-		
-        /**
-         * Return the loader instance
-         * @return object Loader the loader instance
-         */
-        public function getLoader() {
-            return $this->loader;
-        }
-
-        /**
-         * set the loader instance for future use
-         * @param object Loader $loader the loader object
-         */
-            public function setLoader($loader) {
-            $this->loader = $loader;
-            return $this;
-        }
-
         /**
          * Return the model instance
          * @return object DBSessionHandlerModel the model instance
@@ -330,7 +301,7 @@
         protected function setModelInstanceFromSessionConfig() {
             $modelName = get_config('session_save_path');
             $this->logger->info('The database session model: ' . $modelName);
-            $this->loader->model($modelName, 'dbsessionhandlerinstance'); 
+            $this->OBJ->loader->model($modelName, 'dbsessionhandlerinstance'); 
             //@codeCoverageIgnoreStart
             if (isset($this->OBJ->dbsessionhandlerinstance) 
                 && !($this->OBJ->dbsessionhandlerinstance instanceof DBSessionHandlerModel)
@@ -348,8 +319,8 @@
          * @return array
          */
         protected function getSessionDataParams(){
-            $this->getLoader()->functions('user_agent'); 
-            $this->getLoader()->library('Browser'); 
+            $this->OBJ->loader->functions('user_agent'); 
+            $this->OBJ->loader->library('Browser'); 
             
             $ip = get_ip();
             $host = gethostbyaddr($ip);

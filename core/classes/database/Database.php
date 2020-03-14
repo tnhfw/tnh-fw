@@ -129,22 +129,6 @@
         }
 
         /**
-         * Return the number of rows returned by the current query
-         * @return int
-         */
-        public function numRows() {
-            return $this->numRows;
-        }
-
-        /**
-         * Return the last insert id value
-         * @return mixed
-         */
-        public function insertId() {
-            return $this->insertId;
-        }
-
-        /**
          * Get the result of one record rows returned by the current query
          * @param  boolean|string $sqlOrResult if is boolean and true will return the SQL query string.
          * If is string will determine the result type "array" or "object"
@@ -233,6 +217,22 @@
             $this->cacheTtl = $ttl;
             $this->temporaryCacheTtl = $ttl;
             return $this;
+        }
+
+        /**
+         * Get database cache time to live
+         * @return integer        
+         */
+        public function getCacheTimeToLive() {
+            return $this->cacheTtl;
+        }
+
+        /**
+         * Get database current cache time to live
+         * @return integer        
+         */
+        public function getTempCacheTimeToLive() {
+            return $this->temporaryCacheTtl;
         }
 	
         /**
@@ -355,6 +355,22 @@
                 $this->data[$key] = $this->connection->escape($value, $escape);
             }
             return $this;
+        }
+
+        /**
+         * Return the number of rows returned by the current query
+         * @return int
+         */
+        public function numRows() {
+            return $this->numRows;
+        }
+
+        /**
+         * Return the last insert id value
+         * @return mixed
+         */
+        public function insertId() {
+            return $this->insertId;
         }
 
         /**

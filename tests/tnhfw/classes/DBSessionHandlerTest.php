@@ -117,64 +117,6 @@
 			$this->assertNotEmpty($encoded);
 			$this->assertEquals($dbsh->decode($encoded), 'foo');
 		}
-			
-			
-		public function testUsingCustomLogInstance(){
-			$dbsh = new DBSessionHandler($this->model);
-			$dbsh->setSessionSecret($this->secret);
-            $dbsh->setLogger(new Log());
-			
-			$this->assertTrue($dbsh->open(null, null));
-			$this->assertTrue($dbsh->close());
-			$this->assertNull($dbsh->read('foo'));
-			$this->assertTrue($dbsh->write('foo', '444'));
-			$this->assertNotEmpty($dbsh->read('foo'));
-			$this->assertEquals($dbsh->read('foo'), '444');
-			//put it in expired
-			$this->model->update('foo', array('s_time' => 1234567));
-			
-			$this->assertNull($dbsh->read('foo'));
-			$this->assertTrue($dbsh->write('foo', '444'));
-			
-			//do update of existing data
-			$this->assertTrue($dbsh->write('foo', '445'));
-			$this->assertEquals($dbsh->read('foo'), '445');	
-			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertNull($dbsh->read('foo'));
-			$this->assertTrue($dbsh->gc(13));
-			$encoded = $dbsh->encode('foo');
-			$this->assertNotEmpty($encoded);
-			$this->assertEquals($dbsh->decode($encoded), 'foo');
-		}
-		
-		public function testUsingCustomLoaderInstance(){
-			$dbsh = new DBSessionHandler($this->model);
-			$dbsh->setSessionSecret($this->secret);
-            $dbsh->setLoader(new Loader());
-			
-			$this->assertTrue($dbsh->open(null, null));
-			$this->assertTrue($dbsh->close());
-			$this->assertNull($dbsh->read('foo'));
-			$this->assertTrue($dbsh->write('foo', '444'));
-			$this->assertNotEmpty($dbsh->read('foo'));
-			$this->assertEquals($dbsh->read('foo'), '444');
-			//put it in expired
-			$this->model->update('foo', array('s_time' => 1234567));
-			
-			$this->assertNull($dbsh->read('foo'));
-			$this->assertTrue($dbsh->write('foo', '444'));
-			
-			//do update of existing data
-			$this->assertTrue($dbsh->write('foo', '445'));
-			$this->assertEquals($dbsh->read('foo'), '445');	
-			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertNull($dbsh->read('foo'));
-			$this->assertTrue($dbsh->gc(13));
-			$encoded = $dbsh->encode('foo');
-			$this->assertNotEmpty($encoded);
-			$this->assertEquals($dbsh->decode($encoded), 'foo');
-		}
-		
 		
 		public function testWhenModelInsanceIsNotSet(){
 			$dbsh = new DBSessionHandler();

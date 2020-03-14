@@ -34,7 +34,7 @@
 		 * List of know platforms
 		 * @var array
 		 */
-		private $_platforms = array(
+		private $platforms = array(
 									'/windows nt 10/i'      =>  'Windows 10',
 									'/windows phone 10/i'   =>  'Windows Phone 10',
 									'/windows phone 8.1/i'  =>  'Windows Phone 8.1',
@@ -67,7 +67,7 @@
 		 * List of know browsers
 		 * @var array
 		 */
-	 	private $_browsers = array(
+	 	private $browsers = array(
 									'/mobile/i'     =>  'Handheld Browser',
 									'/msie/i'       =>  'Internet Explorer',
 									'/firefox/i'    =>  'Firefox',
@@ -84,49 +84,49 @@
 	 	 * Agent string
 	 	 * @var string
 	 	 */
-		private $_agent = '';
+		private $agent = '';
 
 		/**
 		 * Browser name
 		 * @var string
 		 */
-        private $_browser_name = '';
+        private $browserName = '';
 
         /**
          * Browser version
          * @var string
          */
-        private $_version = '';
+        private $version = '';
 
         /**
          * Platform or OS
          * @var string
          */
-        private $_platform = '';
+        private $platform = '';
 
         /**
          * Whether is mobile
          * @var boolean
          */
-        private $_is_mobile = false;
+        private $isMobile = false;
 
         /**
          * Whether is table
          * @var boolean
          */
-        private $_is_tablet = false;
+        private $isTablet = false;
 
         /**
          * Whether is robot
          * @var boolean
          */
-        private $_is_robot = false;
+        private $isRobot = false;
 
         /**
          * Whether is facebook external hit
          * @var boolean
          */
-        private $_is_facebook = false;
+        private $isFacebook = false;
 
 		/**
          * Class constructor
@@ -144,14 +144,14 @@
          * Reset all properties
          */
         public function reset() {
-            $this->_agent =  get_instance()->globalvar->server('HTTP_USER_AGENT');
-            $this->_browser_name = 'unknown';
-            $this->_version = 'unknown';
-            $this->_platform = 'unknown';
-            $this->_is_mobile = false;
-            $this->_is_tablet = false;
-            $this->_is_robot = false;
-            $this->_is_facebook = false;
+            $this->agent =  get_instance()->globalvar->server('HTTP_USER_AGENT');
+            $this->browserName = 'unknown';
+            $this->version = 'unknown';
+            $this->platform = 'unknown';
+            $this->isMobile = false;
+            $this->isTablet = false;
+            $this->isRobot = false;
+            $this->isFacebook = false;
         }
 
         /**
@@ -159,7 +159,7 @@
          * @return string the user agent
          */
         public function getUserAgent() {
-            return $this->_agent;
+            return $this->agent;
         }
 
         /**
@@ -169,7 +169,7 @@
         public function setUserAgent($agentString)
         {
             $this->reset();
-            $this->_agent = $agentString;
+            $this->agent = $agentString;
             $this->determine();
         }
 
@@ -178,7 +178,7 @@
          * @return string name of the browser
          */
         public function getBrowser() {
-            return $this->_browser_name;
+            return $this->browserName;
         }
 
         /**
@@ -186,7 +186,7 @@
          * @param $browser string The name of the browser
          */
         public function setBrowser($browser) {
-            $this->_browser_name = $browser;
+            $this->browserName = $browser;
         }
 
         /**
@@ -194,7 +194,7 @@
          * @return string name of the platform
          */
         public function getPlatform() {
-            return $this->_platform;
+            return $this->platform;
         }
 
         /**
@@ -202,7 +202,7 @@
          * @param string $platform the name of the platform
          */
         public function setPlatform($platform) {
-            $this->_platform = $platform;
+            $this->platform = $platform;
         }
 
         /**
@@ -211,7 +211,7 @@
          * alpha-numeric characters and a period)
          */
         public function getVersion() {
-            return $this->_version;
+            return $this->version;
         }
 
         /**
@@ -219,7 +219,7 @@
          * @param string $version the version of the browser
          */
         public function setVersion($version) {
-            $this->_version = $version;
+            $this->version = $version;
         }
 
 
@@ -228,7 +228,7 @@
          * @return boolean true if the browser is from a mobile device otherwise false
          */
         public function isMobile() {
-            return $this->_is_mobile;
+            return $this->isMobile;
         }
 
         /**
@@ -236,7 +236,7 @@
          * @return boolean true if the browser is from a tablet device otherwise false
          */
         public function isTablet() {
-            return $this->_is_tablet;
+            return $this->isTablet;
         }
 
         /**
@@ -244,7 +244,7 @@
          * @return boolean true if the browser is from a robot otherwise false
          */
         public function isRobot() {
-            return $this->_is_robot;
+            return $this->isRobot;
         }
 
         /**
@@ -252,7 +252,7 @@
          * @return boolean true if the browser is from facebook otherwise false
          */
         public function isFacebook() {
-            return $this->_is_facebook;
+            return $this->isFacebook;
         }
 
          /**
@@ -274,7 +274,7 @@
          * @param boolean $value is the browser a mobile browser or not
          */
         protected function setMobile($value = true) {
-            $this->_is_mobile = $value;
+            $this->isMobile = $value;
         }
 
         /**
@@ -282,7 +282,7 @@
          * @param boolean $value is the browser a tablet browser or not
          */
         protected function setTablet($value = true) {
-            $this->_is_tablet = $value;
+            $this->isTablet = $value;
         }
 
         /**
@@ -290,7 +290,7 @@
          * @param boolean $value is the browser a robot or not
          */
         protected function setRobot($value = true) {
-            $this->_is_robot = $value;
+            $this->isRobot = $value;
         }
 
         /**
@@ -298,15 +298,15 @@
          * @param boolean $value is the browser a robot or not
          */
         protected function setFacebook($value = true) {
-            $this->_is_facebook = $value;
+            $this->isFacebook = $value;
         }
 
         /**
          * Determine the user's platform
          */
 		protected function checkPlatform() { 
-			foreach ($this->_platforms as $regex => $value) { 
-				if (preg_match($regex, $this->_agent) ) {
+			foreach ($this->platforms as $regex => $value) { 
+				if (preg_match($regex, $this->agent) ) {
 					$this->setPlatform($value);
 					break;
 				}
@@ -317,8 +317,8 @@
          * Routine to determine the browser type
          */
 		protected function checkBrowser() {
-			foreach ($this->_browsers as $regex => $value) { 
-				if (preg_match($regex, $this->_agent ) ) {
+			foreach ($this->browsers as $regex => $value) { 
+				if (preg_match($regex, $this->agent ) ) {
 					$this->setBrowser($value);
 					break;
 				}
@@ -330,12 +330,12 @@
          */
 		protected function checkBrowserVersion(){
 			$detected = $this->getBrowser();
-			$d = array_search($detected, $this->_browsers);
-			$browser = str_replace(array("/i","/"), "", $d);
+			$detect = array_search($detected, $this->browsers);
+			$browser = str_replace(array('/i','/'), '', $detect);
 			$regex = "/(?<browser>version|{$browser})[\/]+(?<version>[0-9.|a-zA-Z.]*)/i";
-			if (preg_match_all($regex, $this->_agent, $matches)) {
-				$found = array_search($browser, $matches["browser"]);
-				$this->setVersion($matches["version"][$found]);
+			if (preg_match_all($regex, $this->agent, $matches)) {
+				$found = array_search($browser, $matches['browser']);
+				$this->setVersion($matches['version'][$found]);
 			}
 		}
 
@@ -343,7 +343,8 @@
          * Determine if the browser is Mobile or not
          */
 		protected function checkMobile() {
-			if (preg_match('/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i', $this->_agent) ) {
+			if (preg_match('/(android|avantgo|blackberry|bolt|boost|cricket'
+                . '|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i', $this->agent) ) {
 				$this->setMobile(true);
 			}
 		}
@@ -352,7 +353,7 @@
          * Determine if the browser is Tablet or not
          */
 		protected function checkTablet() {
-			if (preg_match('/tablet|ipad/i', $this->_agent) ) {
+			if (preg_match('/tablet|ipad/i', $this->agent) ) {
 				$this->setTablet(true);
 			}
 		}
@@ -361,7 +362,7 @@
          * Determine if the browser is Robot or not
          */
 		protected function checkBot() {
-			if (preg_match('/bot/i', $this->_agent) ) {
+			if (preg_match('/bot/i', $this->agent) ) {
 				$this->setRobot(true);
 			}
 		}
@@ -370,10 +371,10 @@
          * Detect if URL is loaded from FacebookExternalHit
          */
         protected function checkFacebook() {
-            if (stristr($this->_agent, 'FacebookExternalHit')) {
+            if (stristr($this->agent, 'FacebookExternalHit')) {
                 $this->setRobot(true);
                 $this->setFacebook(true);
-            }  else if (stristr($this->_agent, 'FBIOS')) {
+            }  else if (stristr($this->agent, 'FBIOS')) {
                 $this->setFacebook(true);
             }
         }

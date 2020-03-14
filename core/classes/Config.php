@@ -38,18 +38,18 @@
 
         /**
          * Initialize the configuration by loading all the configuration from config file
+         *
+         * @param boolean $init whether to load the configuration
          */
-        public function __construct() {
+        public function __construct($init = true) {
             parent::__construct();
-
-            $this->logger->debug('Initialization of the configuration');
-            $this->config = & load_configurations();
-            $this->setBaseUrlUsingServerVar();
-            if (ENVIRONMENT == 'production' && in_array(strtolower($this->config['log_level']), array('debug', 'info', 'all'))) {
-                $this->logger->warning('You are in production environment, please set log level to WARNING, ERROR, FATAL to increase the application performance');
+            if ($init) {
+                $this->init();
+                 if (ENVIRONMENT == 'production' && in_array(strtolower($this->config['log_level']), array('debug', 'info', 'all'))) {
+                    $this->logger->warning('You are in production environment, please set '
+                                           . 'log level to WARNING, ERROR, FATAL to increase the application performance');
+                }
             }
-            $this->logger->info('Configuration initialized successfully');
-            $this->logger->info('The application configuration are listed below: ' . stringfy_vars($this->config));
         }
 
         /**
@@ -62,7 +62,7 @@
             if (array_key_exists($item, $this->config)) {
                 return $this->config[$item];
             }
-            $this->logger->warning('Cannot find config item [' . $item . '] using the default value [' . $default . ']');
+            $this->logger->warning('Cannot find config item [' . $item . '] using the default value [' . stringfy_vars($default) . ']');
             return $default;
         }
 
@@ -122,6 +122,19 @@
         public function load($config) {
             get_instance()->loader->config($config);
         }
+
+        /**
+         * Load the configuration using config file and check if the config "base_url" is not set
+         * try to set it using serve variable
+         */
+        protected function init() {
+            $this->logger->debug('Initialization of the configuration');
+            $this->config = & load_configurations();
+            $this->setBaseUrlUsingServerVar();
+            $this->logger->info('Configuration initialized successfully');
+            $this->logger->info('The application configuration are listed below: ' . stringfy_vars($this->config));
+        }
+
 
         /**
          * Set the configuration for "base_url" if is not set in the configuration

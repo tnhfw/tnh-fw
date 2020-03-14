@@ -20,17 +20,17 @@
 			$this->assertSame('foo', $u->getInput());
 		}
         
-        public function testSetFileArray() {
+        public function testSetUploadedFileData() {
             $u = new Upload();
-			$this->assertEmpty($u->getFileArray());
+			$this->assertEmpty($u->getUploadedFileData());
             $files = array(
                 'name' => 'foo',
                 'tmp_name' => '/foo/bar',
                 'error' => 0,
                 'size' => 344
             );
-            $u->setFileArray($files);
-			$this->assertSame($files, $u->getFileArray());
+            $u->setUploadedFileData($files);
+			$this->assertSame($files, $u->getUploadedFileData());
 		}
         
         public function testSetFilename() {
@@ -168,8 +168,10 @@
          public function testSizeFormat() {
              $u = new Upload();
              $size = 1024;
-             $this->assertSame('1K', $u->sizeFormat($size));
-             $this->assertNull($u->sizeFormat(-9997));
+             $sizeFormat = $this->runPrivateProtectedMethod($u, 'sizeFormat', array($size));
+             $this->assertSame('1K', $sizeFormat);
+             $sizeFormat = $this->runPrivateProtectedMethod($u, 'sizeFormat', array(-9997));
+             $this->assertNull($sizeFormat);
          }
          
          
@@ -184,7 +186,7 @@
                 'size' => 344,
                 'type' => 'image/jpg'
             );
-             $u->setFileArray($files);
+             $u->setUploadedFileData($files);
              $u->setInput('image');
              $u->setAllowMimeType('image/jpg');
              $u->setUploadFunction('copy');
@@ -200,7 +202,7 @@
              
              //using custom filename
              $u->setFilename('my_image');
-             $u->setFileArray($files);
+             $u->setUploadedFileData($files);
              $u->setInput('image');
              $u->setUploadFunction('copy');
              $this->assertFalse($u->save());
@@ -215,7 +217,7 @@
                 'size' => 344,
                 'type' => 'image/jpg'
             );
-            $u->setFileArray($files);
+            $u->setUploadedFileData($files);
             $u->setInput('image');
             $u->setUploadFunction('copy');
             $u->save();
@@ -233,7 +235,7 @@
                 'size' => 344,
                 'type' => 'image/jpg'
             );
-            $u->setFileArray($files);
+            $u->setUploadedFileData($files);
             $u->setInput('image');
             $u->setCallbackInput('trim');
             $u->setCallbackOutput('rtrim');
@@ -249,7 +251,7 @@
                 'size' => 13,
                 'type' => 'image/jpg'
             );
-            $u->setFileArray($files);
+            $u->setUploadedFileData($files);
             $u->setInput('image');
             $u->setAllowMimeType('foobar');
             $u->save();
@@ -265,7 +267,7 @@
                 'size' => 349997969694,
                 'type' => 'image/jpg'
             );
-            $u->setFileArray($files);
+            $u->setUploadedFileData($files);
             $u->setInput('image');
             $u->setMaxFileSize('1K');
             $u->save();
