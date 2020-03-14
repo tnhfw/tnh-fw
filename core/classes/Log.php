@@ -240,7 +240,7 @@
 			
             if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
                 //NOTE: here need put the show_error() "logging" to false to prevent loop
-                show_error('Error : the log dir does not exists or is not writable', $title = 'Log directory error', $logging = false);
+                show_error('Error : the log dir does not exist or is not writable', $title = 'Log directory error', $logging = false);
             }
 			
             $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';

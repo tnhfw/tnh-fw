@@ -445,7 +445,7 @@
                 //first check for CSRF
                 if (get_config('csrf_enable', false) && !get_instance()->security->validateCSRF()) {
                     $this->forceError = true;
-                    show_error('Invalide data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
+                    show_error('Invalid data, Cross Site Request Forgery do his job, the data to validate is corrupted.');
                 } else {
                     $this->logger->info('CSRF is not enabled in configuration or not set manully, no need to check it');
                 }

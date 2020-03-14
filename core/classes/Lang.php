@@ -168,7 +168,7 @@
             if ($this->isValid($name)) {
                 $this->availables[$name] = $description;
             } else {
-                show_error('The language [' . $name . '] is not valid or does not exists.');
+                show_error('The language [' . $name . '] is not valid or does not exist.');
             }
         }
 

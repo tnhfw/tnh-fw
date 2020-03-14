@@ -826,7 +826,8 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testWhere(){ 
+            $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -871,7 +872,8 @@
             $this->assertSame($expected, $this->obj->getQuery());    
 		}
         
-        public function testOrWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrWhere(){ 
+            $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -893,7 +895,8 @@
             
 		}
         
-        public function testNotWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotWhere(){ 
+            $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -914,7 +917,8 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrNotWhere(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrNotWhere(){ 
+            $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -935,7 +939,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testGroupStartAndEnd(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testGroupStartAndEnd(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1026,7 +1030,7 @@
             
 		}
         
-        public function testIn(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testIn(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1048,7 +1052,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testNotIn(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotIn(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1070,7 +1074,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrIn(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrIn(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1095,7 +1099,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-         public function testOrNotIn(){ $r = new DatabaseQueryBuilder($this->pdo);
+         public function testOrNotIn(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1121,7 +1125,7 @@
 		}
         
         
-        public function testBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testBetween(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1148,7 +1152,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrBetween(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1175,7 +1179,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testNotBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotBetween(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1202,7 +1206,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrNotBetween(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrNotBetween(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1229,7 +1233,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testLike(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testLike(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1254,7 +1258,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrLike(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrLike(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1279,7 +1283,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testNotLike(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testNotLike(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1304,7 +1308,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrNotLike(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrNotLike(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1329,7 +1333,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testLimit(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testLimit(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1352,7 +1356,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testOrderBy(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testOrderBy(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1385,7 +1389,7 @@
             $this->assertSame($expected, $this->obj->getQuery());
 		}
         
-        public function testGroupBy(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testGroupBy(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1414,7 +1418,7 @@
 		}
         
         
-         public function testHaving(){ $r = new DatabaseQueryBuilder($this->pdo);
+         public function testHaving(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1452,7 +1456,7 @@
             $this->assertSame($expected, $this->obj->getQuery());    
 		}
         
-        public function testInsert(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testInsert(){ $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());
@@ -1479,7 +1483,8 @@
             $this->assertSame($expected, $this->obj->getQuery()); 
 		}
         
-        public function testUpdate(){ $r = new DatabaseQueryBuilder($this->pdo);
+        public function testUpdate(){ 
+            $r = new DatabaseQueryBuilder($this->connection);
             
             $expected = 'SELECT * FROM';
             $this->assertSame($expected, $this->obj->getQuery());

@@ -63,9 +63,9 @@
          */
         public function set($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = false) {
             if (headers_sent()) {
-                show_error('There exists a cookie that we wanted to create that we couldn\'t 
-						    because headers was already sent. Make sure to do this first 
-							before outputing anything.');
+                show_error('There exists a cookie that we wanted to create that we couldn\'t '
+						    . 'because headers was already sent. Make sure to do this first ' 
+							. 'before outputing anything.');
             }
             $timestamp = $expire;
             if ($expire) {

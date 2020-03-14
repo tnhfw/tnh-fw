@@ -13,18 +13,12 @@
         public function setUp(){
             parent::setUp();
             $this->module = new Module();
+            $obj = & get_instance();
+            $obj->module = $this->module;
         }
         
-        /**
-        * Set the module instance in super global to use
-        */
-        private function setModuleInstanceForTest() {
-            $this->instance->module = $this->module;
-        }
         
 		public function testLoadModel() {
-            $this->setModuleInstanceForTest();
-            
             $l = new Loader();
             $obj = & get_instance();
 			$l->model('DBSessionModel');
@@ -296,7 +290,7 @@
         
         public function testLoadLangNotExists() {
             $l = new Loader();
-            $l->lang('unkown_config');
+            $l->lang('unkown_lang');
             $this->assertTrue(true);   
 		}
 

@@ -147,7 +147,7 @@
             $this->sessionTableColumns = $this->modelInstance->getSessionTableColumns();
 
             if (empty($this->sessionTableColumns)) {
-                show_error('The session handler is "database" but the table columns not set');
+                show_error('The session handler is "database" but the table columns is not set');
             }
             $this->logger->info('Database session, the model columns are listed below: ' . stringfy_vars($this->sessionTableColumns));
 			
