@@ -19,7 +19,8 @@
 			require APPS_MODEL_PATH . 'AuthorModel.php';
 			require APPS_MODEL_PATH . 'SoftDeleteModel.php';
 			require APPS_MODEL_PATH . 'TriggerEventModel.php';
-			require APPS_MODEL_PATH . 'Relation_Model.php';
+			require APPS_MODEL_PATH . 'Country_model.php';
+			require APPS_MODEL_PATH . 'UserModel.php';
 		}
         
         
@@ -415,22 +416,23 @@
             $this->assertSame(3, count($author['posts']));
          }
          
+         
          public function testRelationshipString() {
             $db = $this->getDbInstanceForTest();
-            $mp = new PostModel($db);
+            $m = new UserModel($db);
             
             //Assign database instance to super objet model relationship need it
             $obj = & get_instance();
             $obj->database = $db;
             
-            $posts = $mp->with('relation')->getSingleRecord(1);
+            $result = $m->with('country')->getSingleRecord(1);
             
-            $this->assertInstanceOf('stdClass', $posts);
-            $this->assertObjectHasAttribute('relation', $posts);
+            $this->assertInstanceOf('stdClass', $result);
+            $this->assertObjectHasAttribute('country', $result);
             
             //For no result
-            $posts = $mp->with('relation')->getSingleRecord(1999999);
-            $this->assertFalse($posts);
+            //$result = $m->with('relation')->getSingleRecord(1999999);
+            //$this->assertFalse($result);
          }
         
         
@@ -595,6 +597,7 @@
             $this->assertObjectHasAttribute('id', $result[0]);
             $this->assertEquals('begoua', $result[0]->name);
          }
+         
          
          public function testSetWhereValues() {
             $db = $this->getDbInstanceForTest();
