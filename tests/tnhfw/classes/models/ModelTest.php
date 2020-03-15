@@ -520,7 +520,7 @@
             
             //get single record deleted 
             $result = $m->getSingleRecord(1);
-            $this->assertNull($result);
+            $this->assertFalse($result);
             
             //get list record with deleted 
             $result = $m->recordWithDeleted()->getListRecord();
