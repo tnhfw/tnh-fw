@@ -14,7 +14,7 @@
             $o->setLogger(null);
 	    $this->assertNull($o->getLogger());
             $o->setLogger(new Log());
-            $this->assertInstanceOf('Log', $o->logger);
+            $this->assertInstanceOf('Log', $o->getLogger());
 	}
         
                
