@@ -45,20 +45,9 @@
             $this->assertNotNull($c->moduleName);
 		}
         
-        public function testSetCacheFromParamOrConfigParamIsNotNull() {
-            $cache = $this->getMockBuilder('FileCache')->getMock();
-            $cache->expects($this->any())
-                    ->method('isSupported')
-                    ->will($this->returnValue(true));
-            //enable cache feature
-            $this->config->set('cache_enable', true);
-            
-			$c = new Controller();
-            $this->runPrivateProtectedMethod($c, 'setCacheFromParamOrConfig', array($cache));
-            $this->assertInstanceOf('FileCache', $c->cache);
-		}
+  
         
-        public function testSetCacheFromParamOrConfigParamIsNull() {
+        public function testSetCacheInstance() {
             $cache = $this->getMockBuilder('ApcCache')->getMock();
             $cache->expects($this->any())
                     ->method('isSupported')
@@ -71,7 +60,7 @@
             //assign manually the instance name will be changed to cache in setCacheFromParamOrConfig()
             $c->apccache = $cache;
 			
-            $this->runPrivateProtectedMethod($c, 'setCacheFromParamOrConfig', array(null));
+            $this->runPrivateProtectedMethod($c, 'setCacheIfEnabled', array());
             $this->assertInstanceOf('ApcCache', $c->cache);
             $this->assertObjectHasAttribute('cache', $c);
             $this->assertAttributeInstanceOf('ApcCache', 'cache', $c);
