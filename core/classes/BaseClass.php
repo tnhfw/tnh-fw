@@ -45,15 +45,15 @@
         }
 
         /**
-         * Set the dependencies instance using class_loader function
+         * Set this class dependency instance using class_loader function
          * @param string $name this class property name.
-         * @param string $loadClassName the name of class to load using class_loader function.
-         * @param string $loadClassPath the path of class to load using class_loader function.
+         * @param string $className the name of class to load using class_loader function.
+         * @param string $classPath the path of class to load using class_loader function.
          *
          * @return object the current instance
          */
-        protected function setDependency($name, $loadClassName, $loadClassePath = 'classes') {
-            $this->{$name} = & class_loader($loadClassName, $loadClassePath);
+        protected function setDependency($name, $className, $classPath = 'classes') {
+            $this->{$name} = & class_loader($className, $classPath);
             return $this;
         }
 
