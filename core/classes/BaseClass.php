@@ -68,7 +68,7 @@
         /**
          * Set the log instance
          * @param object $logger the log object
-         * @return object Database
+         * @return object the current instance 
          */
         public function setLogger($logger) {
             $this->logger = $logger;
