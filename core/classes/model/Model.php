@@ -941,10 +941,10 @@
          *
          * @return mixed the data after each callbacks processed
          */
-        protected function trigger($event, $data = false, $last = true) {
+        protected function trigger($event, $data, $last = true) {
             if (isset($this->$event) && is_array($this->$event)) {
                 foreach ($this->$event as $method) {
-                    if (strpos($method, '(')) {
+                    if (strpos($method, '(') !== false) {
                         preg_match('/([a-zA-Z0-9\_\-]+)(\(([a-zA-Z0-9\_\-\., ]+)\))?/', $method, $matches);
                         $method = $matches[1];
                         $this->callbackParameters = explode(',', $matches[3]);
