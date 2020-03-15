@@ -54,7 +54,7 @@
             $this->assertEquals('bangui', $record->name);
             
             //record not exists
-            $this->assertNull($m->getSingleRecord(99999999));
+            $this->assertFalse($m->getSingleRecord(99999999));
 	}
         
         public function testGetSingleRecordCond() {
@@ -68,7 +68,7 @@
             $this->assertEquals('bangui', $record->name);
             
             //record not exists
-            $this->assertNull($m->getSingleRecordCond('id', 99999999));
+            $this->assertFalse($m->getSingleRecordCond('id', 99999999));
 	}
         
         public function testGetListRecord() {
@@ -402,7 +402,7 @@
             
             //For no result
             $posts = $mp->with('author')->getSingleRecord(1999999);
-            $this->assertNull($posts);
+            $this->assertFalse($posts);
             
             //Using return type array
             $posts = $mp->with('author')->asArray()->getSingleRecord(1);
@@ -431,7 +431,7 @@
             
             //For no result
              $result = $m->with('country')->getSingleRecord(1999999);
-             $this->assertNull($result);
+             $this->assertFalse($result);
          }
         
         
@@ -451,7 +451,6 @@
          public function testCountAllRecord() {
             $db = $this->getDbInstanceForTest();
             $m = new DefaultModel($db);
-            
             $this->assertSame(4, $m->countAllRecord());
          }
          
