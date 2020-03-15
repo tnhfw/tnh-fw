@@ -142,7 +142,7 @@
         protected $returnRecordType = 'object';
 
         /**
-         * Set return type array or object
+         * Set current return type array or object
          * @var string
          */
         protected $temporaryReturnRecordType = null;
@@ -159,7 +159,7 @@
         protected $dbCacheTimeToLive = 0;
 
         /**
-         * Initialise the model.
+         * Initialization of the model.
          *
          * @param object $db the Database instance to use
          * NOTE: each model need use different database instance 
@@ -177,12 +177,8 @@
                  * NOTE: Need use "clone" because some Model need have the personal instance of the database library
                  * to prevent duplication
                  */
-                $obj = & get_instance();
+                 $obj = & get_instance();
                  $this->setDb(clone $obj->database);
-/*                $obj = & get_instance();
-                if (isset($obj->database)){
-                   
-                    $instance = clone $obj->database;*/
             }
             array_unshift($this->beforeCreateCallbacks, 'removeProtectedTableColumns');
             array_unshift($this->beforeUpdateCallbacks, 'removeProtectedTableColumns');
