@@ -7,14 +7,14 @@
      * @group core_classes
      * @group http
      */
-	class ResponseTest extends TnhTestCase {	
+     class ResponseTest extends TnhTestCase {	
     
         protected $currentUrl = null;
         protected $currentUrlCacheKey = null;
         protected $canCompressOutput = null;
         
         
-		public function __construct(){
+	public function __construct(){
             parent::__construct();
             
             $this->currentUrl = new ReflectionProperty('Response', 'currentUrl');
@@ -30,9 +30,9 @@
         public static function setUpBeforeClass() {
             //Used in ResponseTest::testRenderFinalPageWhenEventListenerReturnEmptyContent()
             require_once TESTS_PATH . 'include/listeners_event_dispatcher_test.php';
-		}
+	}
 		
-		public function testConstructor() {
+	public function testConstructor() {
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
@@ -123,7 +123,7 @@
             $this->assertSame('bar', $r->getFinalPageRendered());
      	}
         
-        public function testRenderFinalPageWhenContentIsempty() {
+        public function testRenderFinalPageWhenContentIsEmpty() {
             $r = new Response();
             $this->assertEmpty($r->getFinalPageRendered());
             $r->renderFinalPage();
@@ -151,7 +151,7 @@
             $this->config->set('cache_handler', 'FileCache');
             
             $obj = &get_instance();
-            $this->runPrivateProtectedMethod($obj, 'setCacheFromParamOrConfig', array($cache));
+            $this->runPrivateProtectedMethod($obj, 'setCacheIfEnabled', array());
 			
             $obj->view_cache_enable = true;
             
@@ -289,7 +289,7 @@
             $this->config->set('cache_handler', 'FileCache');
             
             $obj = &get_instance();
-            $this->runPrivateProtectedMethod($obj, 'setCacheFromParamOrConfig', array($cache));
+            $this->runPrivateProtectedMethod($obj, 'setCacheIfEnabled', array());
 			
             $obj->view_cache_enable = true;
             
