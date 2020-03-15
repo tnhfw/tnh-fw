@@ -962,14 +962,14 @@
          * @return object the current instance
          */
         protected function setWhereValuesArray(array $params) {
-            foreach ($params as $field => $filter) {
-                if (is_array($filter)) {
-                    $this->getQueryBuilder()->in($field, $filter);
+            foreach ($params as $field => $value) {
+                if (is_array($value)) {
+                    $this->getQueryBuilder()->in($field, $value);
                 } else {
                     if (is_int($field)) {
-                        $this->getQueryBuilder()->where($filter);
+                        $this->getQueryBuilder()->where($value);
                     } else {
-                        $this->getQueryBuilder()->where($field, $filter);
+                        $this->getQueryBuilder()->where($field, $value);
                     }
                 }
             }
