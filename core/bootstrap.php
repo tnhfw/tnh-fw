@@ -86,9 +86,9 @@
      * Verification of the PHP environment: minimum and maximum version
      */
     if (version_compare(phpversion(), TNH_MIN_PHP_VERSION, '<')) {
-        show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
+        due('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.');	
     } else if (version_compare(phpversion(), TNH_MAX_PHP_VERSION, '>')) {
-        show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.', 'PHP Error environment');	
+        die('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.');	
     }
     $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_MIN_PHP_VERSION . ', REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '], application can work without any issue');
 
@@ -143,15 +143,14 @@
     /**
      * Register controllers autoload function
      */
-        spl_autoload_register('autoload_controller');
+     spl_autoload_register('autoload_controller');
 
     /**
      * Loading Security class
      */
     $SECURITY = & class_loader('Security', 'classes');
     if (!$SECURITY->checkWhiteListIpAccess()) {
-        show_error('You are not allowed to access this application');
-        return;
+        die('You are not allowed to access this application');
     }
 	
     /**
@@ -169,7 +168,7 @@
         require_once CORE_CLASSES_CACHE_PATH . 'CacheInterface.php';
         $cacheHandler = get_config('cache_handler');
         if (!$cacheHandler) {
-            show_error('The cache feature is enabled in the configuration but the cache handler class is not set.');
+            die('The cache feature is enabled in the configuration but the cache handler class is not set.');
         }
         $CACHE = null;
         //first check if the cache handler is the system driver
