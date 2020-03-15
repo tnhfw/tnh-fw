@@ -47,23 +47,12 @@
         /**
          * Set the dependencies instance using argument or create new instance if is null
          * @param string $name this class property name.
-         * @param object $instance the instance. If is not null will use it
-         * otherwise will create new instance.
          * @param string $loadClassName the name of class to load using class_loader function.
          * @param string $loadClassPath the path of class to load using class_loader function.
          *
-         * @return object this current instance
+         * @return object the current instance
          */
-        protected function setDependencyInstanceFromParamOrCreate(
-                                                                    $name, 
-                                                                    $instance = null, 
-                                                                    $loadClassName = null, 
-                                                                    $loadClassePath = 'classes'
-                                                            ) {
-            if ($instance !== null) {
-                $this->{$name} = $instance;
-                return $this;
-            }
+        protected function setDependency($name, $loadClassName, $loadClassePath = 'classes') {
             $this->{$name} = & class_loader($loadClassName, $loadClassePath);
             return $this;
         }
