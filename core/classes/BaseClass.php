@@ -45,7 +45,7 @@
         }
 
         /**
-         * Set the dependencies instance using argument or create new instance if is null
+         * Set the dependencies instance using class_loader function
          * @param string $name this class property name.
          * @param string $loadClassName the name of class to load using class_loader function.
          * @param string $loadClassPath the path of class to load using class_loader function.
