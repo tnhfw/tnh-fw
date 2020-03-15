@@ -33,7 +33,7 @@
         /**
          * Construct new ApcCache instance
          */
-		public function __construct() {
+	public function __construct() {
             parent::__construct();
             if (!$this->isSupported()) {
                 show_error('The cache for APC[u] driver is not available. Check if APC[u] extension is loaded and enabled.');
