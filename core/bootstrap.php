@@ -86,7 +86,7 @@
      * Verification of the PHP environment: minimum and maximum version
      */
     if (version_compare(phpversion(), TNH_MIN_PHP_VERSION, '<')) {
-        due('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.');	
+        die('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.');	
     } else if (version_compare(phpversion(), TNH_MAX_PHP_VERSION, '>')) {
         die('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.');	
     }
