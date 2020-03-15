@@ -68,7 +68,7 @@
             $this->setAppSupportedLanguages();
 			
             //set the cache instance using the configuration
-            $this->setCacheFromParamOrConfig(null);
+            $this->setCacheIfEnabled();
 			
             //set application session configuration and then started it
             $this->logger->debug('Starting application session handler');
@@ -93,7 +93,7 @@
          *
          * @codeCoverageIgnore
          */
-         protected function startAppSession() {
+         private function startAppSession() {
             //$_SESSION is not available on cli mode 
             if (!IS_CLI) {
                 //set session params
@@ -142,7 +142,7 @@
          * Set the session handler configuration
          * @codeCoverageIgnore
          */
-        protected function setAppSessionConfig() {
+        private function setAppSessionConfig() {
              //the default is to store in the files
             $sessionHandler = $this->config->get('session_handler', 'files');
             $this->logger->info('Session handler: ' . $sessionHandler);
@@ -170,7 +170,7 @@
         /**
          * This method is used to set the module name
          */
-        protected function setModuleNameFromRouter() {
+        private function setModuleNameFromRouter() {
             //set the module using the router instance
             if (isset($this->router) && $this->router->getModule()) {
                 $this->moduleName = $this->router->getModule();
@@ -178,18 +178,16 @@
         }
 
         /**
-         * Set the cache using the argument otherwise will use the configuration
-         * @param CacheInterface $cache the implementation of CacheInterface if null will use the configured
+         * Set the cache instance if is enabled in the configuration
          */
-        protected function setCacheFromParamOrConfig(CacheInterface $cache = null) {
+        private function setCacheIfEnabled() {
             $this->logger->debug('Setting the cache handler instance');
             //set cache handler instance
             if ($this->config->get('cache_enable', false)) {
-                if ($cache !== null) {
-                    $this->cache = $cache;
-                } else if (isset($this->{strtolower($this->config->get('cache_handler'))})) {
-                    $this->cache = $this->{strtolower($this->config->get('cache_handler'))};
-                    unset($this->{strtolower($this->config->get('cache_handler'))});
+                $cache = strtolower($this->config->get('cache_handler'));
+                if (isset($this->{$cache})) {
+                    $this->cache = $this->{$cache};
+                    unset($this->{$cache});
                 } 
             }
         }
