@@ -136,7 +136,7 @@
             }
             //check config log level
             if (!self::isValidConfigLevel($configLogLevel)) {
-                //NOTE: here need put the show_error() "logging" to false to prevent loop
+                //NOTE: here can not use show_error() because during the application bootstrap some dependencies are not yet loaded
                 die('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)));	
             }
 			
@@ -239,8 +239,8 @@
             }
 			
             if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
-                //NOTE: here need put the show_error() "logging" to false to prevent loop
-                show_error('Error : the log dir does not exist or is not writable', $title = 'Log directory error', $logging = false);
+                //NOTE: here can not use show_error() during bootstrap some dependencies needed are not yet loaded
+                die('Error : the log dir does not exist or is not writable');
             }
 			
             $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
