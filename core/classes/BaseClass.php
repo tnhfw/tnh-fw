@@ -33,7 +33,7 @@
          * The logger instance
          * @var object
          */
-        protected $logger;
+        protected $logger = null;
 
         /**
          * Class constructor
