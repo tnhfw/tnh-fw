@@ -51,7 +51,7 @@
             parent::__construct();
             $this->setCacheFilePath($cacheFilePath);
             if (!$this->isSupported()) {
-                show_error('The cache for file system is not available. Check the cache directory if is exist or is writable.');
+                die('The cache for file system is not available. Check the cache directory if is exist or is writable.');
             }
 			
             //if Zlib extension is not loaded set compressCacheData to false
