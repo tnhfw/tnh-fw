@@ -137,7 +137,7 @@
             //check config log level
             if (!self::isValidConfigLevel($configLogLevel)) {
                 //NOTE: here need put the show_error() "logging" to false to prevent loop
-                show_error('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)), $title = 'Log Config Error', $logging = false);	
+                die('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)));	
             }
 			
             //check if config log_logger_name and current log can save log data
