@@ -431,8 +431,8 @@
             $this->assertObjectHasAttribute('country', $result);
             
             //For no result
-            //$result = $m->with('relation')->getSingleRecord(1999999);
-            //$this->assertFalse($result);
+             $result = $m->with('country')->getSingleRecord(1999999);
+             $this->assertNull($result);
          }
         
         
@@ -605,8 +605,8 @@
             
             /* One param
                * array
-               1- array with key is array
-               2- array with only string value
+               1- array that have a key and value is an array
+               2- array that have numeric key with string value
                * string            
             */
             //array#1
@@ -667,7 +667,7 @@
         }
         
         /**
-        * truncate the table
+        * Truncate the table and reset SQLite sequence 
         */
         private function truncateAndResetSequenceSqliteTable($m) {
             $db = $this->getDbInstanceForTest();
@@ -677,7 +677,7 @@
         }
         
         /**
-        * Prepare data for delete
+        * Prepare data for delete tests
         */
         private function prepareDataBeforeDeleteTest($m) {
             $db = $this->getDbInstanceForTest();
@@ -705,7 +705,7 @@
         }
         
         /**
-        * Prepare data for soft delete tests case
+        * Prepare data for soft delete tests
         */
         private function prepareDataBeforeSoftDeleteTest($m) {
             $db = $this->getDbInstanceForTest();
