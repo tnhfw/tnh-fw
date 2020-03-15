@@ -46,7 +46,7 @@
          * The benchmark instance
          * @var object
          */
-        protected $benchmarkInstance = null;
+        protected $benchmark = null;
         
         /**
          * The SQL query statment to execute
@@ -90,10 +90,10 @@
             }
 
             //Set DatabaseQueryResult instance to use
-            $this->setDependencyInstanceFromParamOrCreate('queryResult', null, 'DatabaseQueryResult', 'classes/database');
+            $this->setDependency('queryResult', 'DatabaseQueryResult', 'classes/database');
              
             //Set Benchmark instance to use
-            $this->setDependencyInstanceFromParamOrCreate('benchmarkInstance', null, 'Benchmark', 'libraries');
+            $this->setDependency('benchmark', 'Benchmark', 'libraries');
         }
         
         /**
@@ -109,11 +109,11 @@
             //for database query execution time
             $benchmarkMarkerKey = $this->getBenchmarkKey();
             
-            $this->benchmarkInstance->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');                
+            $this->benchmark->mark('DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')');                
             //Now execute the query
             $this->pdoStatment = $this->connection->getPdo()->query($this->query);
             //get response time for this query
-            $responseTime = $this->benchmarkInstance->elapsedTime(
+            $responseTime = $this->benchmark->elapsedTime(
                                                                     'DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 
                                                                     'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')'
                                                                     );
@@ -164,7 +164,7 @@
          * @return Benchmark
          */
         public function getBenchmark() {
-            return $this->benchmarkInstance;
+            return $this->benchmark;
         }
 
         /**
@@ -173,7 +173,7 @@
          * @return object DatabaseQueryRunner
          */
         public function setBenchmark($benchmark) {
-            $this->benchmarkInstance = $benchmark;
+            $this->benchmark = $benchmark;
             return $this;
         }
         
