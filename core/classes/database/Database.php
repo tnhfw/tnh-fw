@@ -111,13 +111,13 @@
             parent::__construct();
     		
             //Set DatabaseQueryBuilder instance to use
-            $this->setDependencyInstanceFromParamOrCreate('queryBuilder', null, 'DatabaseQueryBuilder', 'classes/database');
+            $this->setDependency('queryBuilder', 'DatabaseQueryBuilder', 'classes/database');
            
             //Set DatabaseQueryRunner instance to use
-            $this->setDependencyInstanceFromParamOrCreate('queryRunner', null, 'DatabaseQueryRunner', 'classes/database');
+            $this->setDependency('queryRunner', 'DatabaseQueryRunner', 'classes/database');
 
             //Set DatabaseCache instance to use
-            $this->setDependencyInstanceFromParamOrCreate('cache', null, 'DatabaseCache', 'classes/database');
+            $this->setDependency('cache', 'DatabaseCache', 'classes/database');
 
             if ($connection !== null) {
                 $this->connection = $connection;
