@@ -39,8 +39,9 @@
          * Class constructor
          */
         public function __construct() {
-            //Set Log instance to use
-                $this->setLoggerFromParamOrCreate(null);
+            //Set default Log instance to use
+            $this->logger = & class_loader('Log', 'classes');
+            $this->logger->setLogger('Class::' . get_class($this));
         }
 
         /**
@@ -82,20 +83,6 @@
          */
         public function setLogger($logger) {
             $this->logger = $logger;
-            return $this;
-        }
-
-        /**
-         * Set the Log instance using argument or create new instance
-         * @param object $logger the Log instance if not null
-         *
-         * @return object this current instance
-         */
-        protected function setLoggerFromParamOrCreate(Log $logger = null) {
-            $this->setDependencyInstanceFromParamOrCreate('logger', $logger, 'Log', 'classes');
-            if ($logger === null) {
-                $this->logger->setLogger('Class::' . get_class($this));
-            }
             return $this;
         }
 
