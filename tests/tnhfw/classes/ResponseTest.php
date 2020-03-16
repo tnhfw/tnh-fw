@@ -14,7 +14,7 @@
         protected $canCompressOutput = null;
         
         
-	public function __construct(){
+        public function __construct(){
             parent::__construct();
             
             $this->currentUrl = new ReflectionProperty('Response', 'currentUrl');
@@ -30,9 +30,11 @@
         public static function setUpBeforeClass() {
             //Used in ResponseTest::testRenderFinalPageWhenEventListenerReturnEmptyContent()
             require_once TESTS_PATH . 'include/listeners_event_dispatcher_test.php';
-	}
+        }
+        
+        /*
 		
-	public function testConstructor() {
+        public function testConstructor() {
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
@@ -144,13 +146,15 @@
             $obj->eventdispatcher->removeListener('FINAL_VIEW_READY', array($listener, 'responseTestListener'));
      	}
         
-        
+        */
         public function testRenderFinalPageWhenCacheStatusIsEnabled() {
-            $cache = $this->getMockBuilder('FileCache')->getMock();
+            $fileCache = $this->getMockBuilder('FileCache')->getMock();
+            $benchmark = $this->getMockBuilder('Benchmark')->getMock();
             $this->config->set('cache_enable', true);
             $this->config->set('cache_handler', 'FileCache');
-            
             $obj = &get_instance();
+            $obj->filecache = $fileCache;
+            $obj->benchmark = $benchmark;
             $this->runPrivateProtectedMethod($obj, 'setCacheIfEnabled', array());
 			
             $obj->view_cache_enable = true;
@@ -306,27 +310,17 @@
             $data['title'] = 'error title';
             $data['error'] = 'error message';
             $r = new Response();
-            $r->render('errors', $data);
-            $r->sendError();
+            $r->sendError($data);
+            $this->assertContains('error message', $r->getFinalPageRendered());
         }
-        
-        public function testSendErrorWhenContentIsEmpty(){
-            $data['title'] = 'error title';
-            $data['error'] = 'error message';
-            $r = new Response();
-            $this->assertEmpty($r->getFinalPageRendered());
-            $r->sendError();
-        }
-        
+                
         public function testSendErrorWhenCompressionIsAvailable(){
             $this->config->set('compress_output', true);
             $_SERVER['HTTP_ACCEPT_ENCODING'] = 'gzip';
             $data['title'] = 'error title';
             $data['error'] = 'error message';
             $r = new Response();
-            $r->render('errors', $data);
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $r->sendError();
+            $r->sendError($data);
             $this->assertContains('error message', $r->getFinalPageRendered());
         }
 

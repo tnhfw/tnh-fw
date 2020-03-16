@@ -137,11 +137,14 @@
             }
             //check config log level
             if (!self::isValidConfigLevel($configLogLevel)) {
-                //NOTE: here can not use show_error() because during the application 
-                //bootstrap some dependencies are not yet loaded
-                echo('Invalid config log level [' . $configLogLevel . '], '
+                //NOTE: here need put the show_error() "logging" to false 
+                //to prevent self function loop call
+                show_error('Invalid config log level [' . $configLogLevel . '], '
                            . 'the value must be one of the following: ' 
-                           . implode(', ', array_map('strtoupper', self::$validConfigLevel)));
+                           . implode(', ', array_map('strtoupper', self::$validConfigLevel))
+                           , 'Log Config Error', 
+                           $logging = false
+                       );
                 return;	
             }
 			
@@ -163,11 +166,8 @@
             }
             //check log file and directory
             $path = $this->checkAndSetLogFileDirectory();
-
-            if ($path !== null) {
-                //save the log data
-                $this->saveLogData($path, $level, $message);
-            }
+            //save the log data
+            $this->saveLogData($path, $level, $message);
         }	
 
         /**
@@ -249,10 +249,9 @@
             }
 			
             if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
-                //NOTE: here can not use show_error() during bootstrap 
-                //some dependencies needed are not yet loaded
-                echo('Error : the log dir does not exist or is not writable');
-                return null;
+                //NOTE: here need put the show_error() "logging" to false 
+                //to prevent self function loop call
+                show_error('Error : the log dir does not exist or is not writable', 'Log directory error', $logging = false);
             }
 			
             $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';

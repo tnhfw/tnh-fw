@@ -185,7 +185,7 @@
             //set cache handler instance
             if ($this->config->get('cache_enable', false)) {
                 $cache = strtolower($this->config->get('cache_handler'));
-                if (isset($this->{$cache})) {
+                if (property_exists($this, $cache)) {
                     $this->cache = $this->{$cache};
                     unset($this->{$cache});
                 } 

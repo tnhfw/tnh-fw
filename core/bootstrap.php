@@ -86,9 +86,9 @@
      * Verification of the PHP environment: minimum and maximum version
      */
     if (version_compare(phpversion(), TNH_MIN_PHP_VERSION, '<')) {
-        die('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.');	
+        show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
     } else if (version_compare(phpversion(), TNH_MAX_PHP_VERSION, '>')) {
-        die('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.');	
+        show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.', 'PHP Error environment');	
     }
     $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_MIN_PHP_VERSION . ', REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '], application can work without any issue');
 

@@ -181,14 +181,12 @@
             $moduleInfo = $this->getModuleInfoForView($view);
             $module = $moduleInfo['module'];
             $view = $moduleInfo['view'];
-			if ($module) {
-                $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
-                if ($moduleViewPath) {
-                    $path = $moduleViewPath;
-                    $this->logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
-                } else {
-                    $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
-                }
+            $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
+            if ($moduleViewPath) {
+                $path = $moduleViewPath;
+                $this->logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
+            } else {
+                $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
             }
 			if (!$path) {
                 $path = $this->getDefaultFilePathForView($viewFile);
@@ -342,20 +340,30 @@
 
         /**
          * Display the error to user
+         *
+         * @param  array  $data the error information
          */
-        public function sendError() {
-            $content = $this->finalPageContent;
-            if (!$content) {
-                $this->logger->warning('The final view content is empty.');
-                return;
+        public function sendError(array $data = array()) {
+            $path = CORE_VIEWS_PATH . 'errors.php';
+            if(file_exists($path)){
+                //compress the output if is available
+                $compressOutputHandler = $this->getCompressOutputHandler();
+                ob_start($compressOutputHandler);
+                extract($data);
+                require $path;
+                $content = ob_get_clean();
+                $this->finalPageContent = $content;
+                $this->sendHeaders(503);
+                echo $content;
             }
-            $content = $this->replaceElapseTimeAndMemoryUsage($content);
-            //compress the output if is available
-            $compressOutputHandler = $this->getCompressOutputHandler();
-            ob_start($compressOutputHandler);
-            $this->sendHeaders(503);
-            echo $content;
-            ob_end_flush();
+            //@codeCoverageIgnoreStart
+            else{
+                //can't use show_error() at this time because 
+                //some dependencies not yet loaded
+                set_http_status_header(503);
+                echo 'The error view [' . $path . '] does not exist';
+            }
+            //@codeCoverageIgnoreEnd
         }
 
         /**
@@ -491,9 +499,8 @@
         protected function replaceElapseTimeAndMemoryUsage($content) {
             // Parse out the elapsed time and memory usage,
             // then swap the pseudo-variables with the data
-            $benchmark = & class_loader('Benchmark', 'libraries');
-            $elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-            $memoryUsage = round($benchmark->memoryUsage(
+            $elapsedTime = get_instance()->benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+            $memoryUsage = round(get_instance()->benchmark->memoryUsage(
                                                                         'APP_EXECUTION_START', 
                                                                         'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
             return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content); 
@@ -515,14 +522,6 @@
             $module = null;
             $viewFile = null;
             $obj = & get_instance();
-            if (!is_object($obj)) {
-                //May be super instance not yet loaded
-               return array(
-                        'view' => $view,
-                        'module' => $module,
-                        'viewFile' => $viewFile
-                    );
-            }
             //check if the request class contains module name
             $viewPath = explode('/', $view);
             if (count($viewPath) >= 2 && in_array($viewPath[0], get_instance()->module->getModuleList())) {
