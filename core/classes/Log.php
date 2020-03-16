@@ -125,7 +125,8 @@
         /**
          * Save the log message
          * @param  string $message the log message to be saved
-         * @param  integer|string $level   the log level in integer or string format, if is string will convert into integer
+         * @param  integer|string $level   the log level in integer or string format, 
+         * if is string will convert into integer
          * to allow check the log level threshold.
          */
         public function writeLog($message, $level = self::INFO) {
@@ -136,8 +137,12 @@
             }
             //check config log level
             if (!self::isValidConfigLevel($configLogLevel)) {
-                //NOTE: here can not use show_error() because during the application bootstrap some dependencies are not yet loaded
-                die('Invalid config log level [' . $configLogLevel . '], the value must be one of the following: ' . implode(', ', array_map('strtoupper', self::$validConfigLevel)));	
+                //NOTE: here can not use show_error() because during the application 
+                //bootstrap some dependencies are not yet loaded
+                echo('Invalid config log level [' . $configLogLevel . '], '
+                           . 'the value must be one of the following: ' 
+                           . implode(', ', array_map('strtoupper', self::$validConfigLevel)));
+                return;	
             }
 			
             //check if config log_logger_name and current log can save log data
@@ -158,8 +163,11 @@
             }
             //check log file and directory
             $path = $this->checkAndSetLogFileDirectory();
-            //save the log data
-            $this->saveLogData($path, $level, $message);
+
+            if ($path !== null) {
+                //save the log data
+                $this->saveLogData($path, $level, $message);
+            }
         }	
 
         /**
@@ -202,7 +210,9 @@
                 $line = $fileInfo['line'];
             }
 			
-            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' . $message . ' ' . '[' . $file . '::' . $line . ']' . "\n";
+            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' 
+                            . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
+                            . $message . ' ' . '[' . $file . '::' . $line . ']' . "\n";
             $fp = fopen($path, 'a+');
             if (is_resource($fp)) {
                 flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
@@ -230,7 +240,7 @@
 
         /**
          * Check the file and directory 
-         * @return string the log file path
+         * @return string|null the log file path
          */
         protected function checkAndSetLogFileDirectory() {
             $logSavePath = get_config('log_save_path');
@@ -239,8 +249,10 @@
             }
 			
             if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
-                //NOTE: here can not use show_error() during bootstrap some dependencies needed are not yet loaded
-                die('Error : the log dir does not exist or is not writable');
+                //NOTE: here can not use show_error() during bootstrap 
+                //some dependencies needed are not yet loaded
+                echo('Error : the log dir does not exist or is not writable');
+                return null;
             }
 			
             $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
@@ -266,7 +278,7 @@
          * Get the log level number for the given level string
          * @param  string $level the log level in string format
          * 
-         * @return int        the log level in integer format using the predefined constants
+         * @return int the log level in integer format using the predefined constants
          */
         protected static function getLevelValue($level) {
             $level = strtolower($level);

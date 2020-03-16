@@ -48,7 +48,9 @@
   
         
         public function testSetCacheInstance() {
-            $cache = $this->getMockBuilder('ApcCache')->getMock();
+            $cache = $this->getMockBuilder('ApcCache')
+                          ->disableOriginalConstructor()
+                          ->getMock();
             $cache->expects($this->any())
                     ->method('isSupported')
                     ->will($this->returnValue(true));

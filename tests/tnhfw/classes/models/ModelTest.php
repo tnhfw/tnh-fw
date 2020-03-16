@@ -10,37 +10,40 @@
      class ModelTest extends TnhTestCase {	
     
         public static function setUpBeforeClass() {
-		require APPS_MODEL_PATH . 'DefaultModel.php';
-         	require APPS_MODEL_PATH . 'InsertAutoIncrementModel.php';
-		require APPS_MODEL_PATH . 'InsertNoAutoIncrementModel.php';
-		require APPS_MODEL_PATH . 'UpdateModel.php';
-		require APPS_MODEL_PATH . 'DeleteModel.php';
-		require APPS_MODEL_PATH . 'PostModel.php';
-		require APPS_MODEL_PATH . 'AuthorModel.php';
-		require APPS_MODEL_PATH . 'SoftDeleteModel.php';
-		require APPS_MODEL_PATH . 'TriggerEventModel.php';
-		require APPS_MODEL_PATH . 'Country_model.php';
-		require APPS_MODEL_PATH . 'UserModel.php';
-	}
+            require APPS_MODEL_PATH . 'DefaultModel.php';
+            require APPS_MODEL_PATH . 'InsertAutoIncrementModel.php';
+            require APPS_MODEL_PATH . 'InsertNoAutoIncrementModel.php';
+            require APPS_MODEL_PATH . 'UpdateModel.php';
+            require APPS_MODEL_PATH . 'DeleteModel.php';
+            require APPS_MODEL_PATH . 'PostModel.php';
+            require APPS_MODEL_PATH . 'AuthorModel.php';
+            require APPS_MODEL_PATH . 'SoftDeleteModel.php';
+            require APPS_MODEL_PATH . 'TriggerEventModel.php';
+            require APPS_MODEL_PATH . 'Country_model.php';
+            require APPS_MODEL_PATH . 'UserModel.php';
+        }
         
+        protected function setUp() {
+            parent::setUp();
+		}
         
-	public function testConstructorUsingDbParam() {
-            $db = $this->getMockBuilder('Database')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-			$m = new Model($db);
-            $this->assertInstanceOf('Database', $m->getDb());
-	}
-        
-        public function testConstructorUsingDbFromSuperController() {
-            $db = $this->getMockBuilder('Database')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-            $obj = & get_instance();
-            $obj->database = $db;
-			$m = new Model();
-            $this->assertInstanceOf('Database', $m->getDb());
-	}
+        public function testConstructorUsingDbParam() {
+                $db = $this->getMockBuilder('Database')
+                            ->disableOriginalConstructor()
+                            ->getMock();
+                $m = new Model($db);
+                $this->assertInstanceOf('Database', $m->getDb());
+        }
+            
+            public function testConstructorUsingDbFromSuperController() {
+                $db = $this->getMockBuilder('Database')
+                            ->disableOriginalConstructor()
+                            ->getMock();
+                $obj = & get_instance();
+                $obj->database = $db;
+                $m = new Model();
+                $this->assertInstanceOf('Database', $m->getDb());
+        }
         
         public function testGetSingleRecord() {
             $db = $this->getDbInstanceForTest();
@@ -55,7 +58,7 @@
             
             //record not exists
             $this->assertFalse($m->getSingleRecord(99999999));
-	}
+        }
         
         public function testGetSingleRecordCond() {
             $db = $this->getDbInstanceForTest();
@@ -69,7 +72,7 @@
             
             //record not exists
             $this->assertFalse($m->getSingleRecordCond('id', 99999999));
-	}
+        }
         
         public function testGetListRecord() {
             $db = $this->getDbInstanceForTest();
@@ -87,7 +90,7 @@
             $records = $m->getListRecord(array(2,1,41, 34));
             $this->assertNotEmpty($records);
             $this->assertSame(2, count($records));
-	}
+        }
         
         public function testGetListRecordCond() {
             $db = $this->getDbInstanceForTest();
@@ -105,7 +108,7 @@
             $records = $m->getListRecordCond('status', 3);
             $this->assertEmpty($records);
             $this->assertSame(0, count($records));    
-	}
+        }
       
       
         public function testRulesValidation() {
@@ -129,7 +132,7 @@
             );
             $id = $m->insert($data);
             $this->assertEquals(2, $id);
-	}
+        }
         
         public function testInsertWithAutoIncrement() {
             $db = $this->getDbInstanceForTest();
@@ -163,7 +166,7 @@
             );
             $id = $m->insert($data);
             $this->assertFalse($id);  
-	}
+        }
         
         
         public function testInsertMultipleWithAutoIncrement() { 
@@ -187,7 +190,7 @@
             $expectedIds = array(1, 2);
             $ids = $m->insertMultiple($data);
             $this->assertEquals($expectedIds, $ids);
-	}
+        }
         
        
         
@@ -235,7 +238,7 @@
             $expected = array(true, true);
             $ids = $m->insertMultiple($data);
             $this->assertEquals($expected, $ids);
-	}
+        }
         
         
          public function testUpdate() {
@@ -267,7 +270,7 @@
             );
             $result = $m->update(1, $data);
             $this->assertFalse($result);  
-	}
+        }
         
         public function testUpdateMultiple() {
             $db = $this->getDbInstanceForTest();
@@ -336,7 +339,7 @@
             );
             $result = $m->updateCond('id', 1, $data);
             $this->assertFalse($result);  
-	}
+        }
         
         public function testUpdateAll() {
             $db = $this->getDbInstanceForTest();

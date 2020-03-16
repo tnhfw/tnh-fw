@@ -170,8 +170,7 @@
             $fv->setRule('name', 'name', 'default_value[123]|required');
             $fv->setData(array('name' => ''));
             $this->assertTrue($fv->validate());
-            $this->assertSame('123', $fv->getFieldValue('name'));
-            
+            $this->assertSame('123', $fv->getFieldValue('name'));      
         }
         
         public function testRuleRequired()
@@ -188,9 +187,16 @@
             $fv->setData(array('name' => null));
             $this->assertFalse($fv->validate());
             
+            //Value not empty
             $fv = new FormValidation();
             $fv->setRule('name', 'name', 'required');
             $fv->setData(array('name' => 'tony'));
+            $this->assertTrue($fv->validate());
+            
+            //using value array
+            $fv = new FormValidation();
+            $fv->setRule('name', 'name', 'required');
+            $fv->setData(array('name' => array(1,2)));
             $this->assertTrue($fv->validate());
         }
         

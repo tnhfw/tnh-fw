@@ -389,8 +389,8 @@
          */
         public function delete($id) {
             $this->trigger('beforeDeleteCallbacks', $id);
-            $this->getQueryBuilder()->where($this->primaryKey, $id);
-            $this->getQueryBuilder()->from($this->table);  
+            $this->getQueryBuilder()->where($this->primaryKey, $id)
+                                    ->from($this->table);  
             $result = $this->deleteRecords();
             $this->trigger('afterDeleteCallbacks', $result);
             return $result;
@@ -420,8 +420,8 @@
          */
         public function deleteListRecord(array $pks) {
             $pks = $this->trigger('beforeDeleteCallbacks', $pks);
-            $this->getQueryBuilder()->in($this->primaryKey, $pks);
-            $this->getQueryBuilder()->from($this->table);  
+            $this->getQueryBuilder()->in($this->primaryKey, $pks)
+                                    ->from($this->table);  
             $result = $this->deleteRecords();
             $this->trigger('afterDeleteCallbacks', $result);
             return $result;
@@ -964,12 +964,15 @@
         protected function setWhereValuesArray(array $params) {
             foreach ($params as $field => $value) {
                 if (is_array($value)) {
-                    $this->getQueryBuilder()->in($field, $value);
+                    //Condition like xxxx->getListRecordCond(array('id' => array(1,3)));
+                    $this->getQueryBuilder()->in($field, $value); // WHERE id IN (1, 3)
                 } else {
                     if (is_int($field)) {
-                        $this->getQueryBuilder()->where($value);
+                        //Condition like xxxx->getListRecordCond(array('id'));
+                        $this->getQueryBuilder()->where($value);  // WHERE id = ''
                     } else {
-                        $this->getQueryBuilder()->where($field, $value);
+                        //Condition like xxxx->getListRecordCond(array('status' => 0));
+                        $this->getQueryBuilder()->where($field, $value); // WHERE status = 0
                     }
                 }
             }
@@ -984,19 +987,33 @@
          */
         protected function setWhereValues($params) {
             if (count($params) == 1) {
+                //We have only one parameter
                 if (is_array($params[0])) {
+                    //The parameter is an array
                     $this->setWhereValuesArray($params[0]);
                 } else {
-                    $this->getQueryBuilder()->where($params[0]);
+                    //The parameter is not an array
+                    //Condition like xxxx->getListRecordCond('status'); 
+                    $this->getQueryBuilder()->where($params[0]); // WHERE status = ''
                 }
             } else if (count($params) == 2) {
+                //We have two parameters
                 if (is_array($params[1])) {
-                    $this->getQueryBuilder()->in($params[0], $params[1]);
+                    //2nd param is an array
+                    //Condition like xxxx->getListRecordCond('id', array(1,3,2));
+                    $this->getQueryBuilder()->in($params[0], $params[1]); //WHERE id IN (1, 3, 2)
                 } else {
-                    $this->getQueryBuilder()->where($params[0], $params[1]);
+                    //2nd param is not an array 
+                    //Condition like xxxx->getListRecordCond('status', 1);
+                    $this->getQueryBuilder()->where($params[0], $params[1]); //WHERE status = 1
                 }
             } else if (count($params) == 3) {
-                $this->getQueryBuilder()->where($params[0], $params[1], $params[2]);
+                //We have three parameters
+                //1st param is field
+                //2nd param is operator
+                //3rd param is the value
+                //Condition like xxxx->getListRecordCond('id', '>', 3);
+                $this->getQueryBuilder()->where($params[0], $params[1], $params[2]); //WHERE id > 3
             } 
         }
     }

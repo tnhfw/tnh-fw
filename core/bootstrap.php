@@ -150,7 +150,7 @@
      */
     $SECURITY = & class_loader('Security', 'classes');
     if (!$SECURITY->checkWhiteListIpAccess()) {
-        die('You are not allowed to access this application');
+        show_error('You are not allowed to access this application');
     }
 	
     /**
@@ -168,7 +168,7 @@
         require_once CORE_CLASSES_CACHE_PATH . 'CacheInterface.php';
         $cacheHandler = get_config('cache_handler');
         if (!$cacheHandler) {
-            die('The cache feature is enabled in the configuration but the cache handler class is not set.');
+            show_error('The cache feature is enabled in the configuration but the cache handler class is not set.');
         }
         $CACHE = null;
         //first check if the cache handler is the system driver

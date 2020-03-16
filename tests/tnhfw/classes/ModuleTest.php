@@ -8,6 +8,16 @@
      */
 	class ModuleTest extends TnhTestCase {	
 		
+        public function testConstructor() {
+            //Don't init
+            $m = new Module(false);
+            $this->assertEmpty($m->getModuleList());
+            
+            //init module list
+            $m = new Module(true);
+            $this->assertNotEmpty($m->getModuleList());
+		}
+        
         public function testHasModule()
 		{
             $m = new Module();

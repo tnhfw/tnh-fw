@@ -39,17 +39,14 @@
         /**
          * Construct new module
          * Initialize the module list by scanning the directory MODULE_PATH
+         *
+         * @param boolean $init whether to load the module list
          */
-        public function __construct() {
+        public function __construct($init = true) {
             parent::__construct();
 
-            $this->logger->debug('Check if the application contains the modules ...');
-            $dirList = glob(MODULE_PATH . '*', GLOB_ONLYDIR);
-            if ($dirList !== false) {
-               $this->list = array_map('basename', $dirList);
-            }
-            if (!empty($this->list)) {
-                $this->logger->info('The application contains the module below [' . implode(', ', $this->list) . ']');
+            if ($init) {
+                $this->init();
             }
         }
 		
@@ -226,6 +223,20 @@
          */
         public function findLanguageFullPath($language, $appLang, $module = null) {
             return $this->findNonClassInModuleFullFilePath($language, $module, 'lang', $appLang);
+        }
+
+        /**
+         * Load the module list
+         */
+        protected function init() {
+            $this->logger->debug('Check if the application contains the modules ...');
+            $dirList = glob(MODULE_PATH . '*', GLOB_ONLYDIR);
+            if ($dirList !== false) {
+               $this->list = array_map('basename', $dirList);
+            }
+            if (!empty($this->list)) {
+                $this->logger->info('The application contains the module below [' . implode(', ', $this->list) . ']');
+            }
         }
 
         /**

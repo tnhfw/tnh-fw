@@ -181,13 +181,14 @@
             $moduleInfo = $this->getModuleInfoForView($view);
             $module = $moduleInfo['module'];
             $view = $moduleInfo['view'];
-			
-            $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
-            if ($moduleViewPath) {
-                $path = $moduleViewPath;
-                $this->logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
-            } else {
-                $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
+			if ($module) {
+                $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
+                if ($moduleViewPath) {
+                    $path = $moduleViewPath;
+                    $this->logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
+                } else {
+                    $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
+                }
             }
 			if (!$path) {
                 $path = $this->getDefaultFilePathForView($viewFile);
@@ -490,8 +491,9 @@
         protected function replaceElapseTimeAndMemoryUsage($content) {
             // Parse out the elapsed time and memory usage,
             // then swap the pseudo-variables with the data
-            $elapsedTime = get_instance()->benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
-            $memoryUsage = round(get_instance()->benchmark->memoryUsage(
+            $benchmark = & class_loader('Benchmark', 'libraries');
+            $elapsedTime = $benchmark->elapsedTime('APP_EXECUTION_START', 'APP_EXECUTION_END');
+            $memoryUsage = round($benchmark->memoryUsage(
                                                                         'APP_EXECUTION_START', 
                                                                         'APP_EXECUTION_END') / 1024 / 1024, 6) . 'MB';
             return str_replace(array('{elapsed_time}', '{memory_usage}'), array($elapsedTime, $memoryUsage), $content); 
@@ -513,6 +515,14 @@
             $module = null;
             $viewFile = null;
             $obj = & get_instance();
+            if (!is_object($obj)) {
+                //May be super instance not yet loaded
+               return array(
+                        'view' => $view,
+                        'module' => $module,
+                        'viewFile' => $viewFile
+                    );
+            }
             //check if the request class contains module name
             $viewPath = explode('/', $view);
             if (count($viewPath) >= 2 && in_array($viewPath[0], get_instance()->module->getModuleList())) {
