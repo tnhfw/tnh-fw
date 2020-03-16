@@ -1,6 +1,7 @@
 ## TNH FRAMEWORK
 **A simple PHP framework using HMVC architecture**
 
+[![Project Status](http://opensource.box.com/badges/active.svg)](http://opensource.box.com/badges)
 [![Latest Stable Version](https://poser.pugx.org/tnhfw/tnh-fw/v/stable)](https://packagist.org/packages/tnhfw/tnh-fw)
 [![Latest Unstable Version](https://poser.pugx.org/tnhfw/tnh-fw/v/unstable)](https://packagist.org/packages/tnhfw/tnh-fw)
 [![License](https://poser.pugx.org/tnhfw/tnh-fw/license)](https://packagist.org/packages/tnhfw/tnh-fw)
