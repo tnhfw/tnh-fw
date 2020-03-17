@@ -35,10 +35,9 @@
          * @param  string $path       the form action path
          * @param  array  $attributes the additional form attributes
          * @param  string $method     the form method like 'GET', 'POST'
-         * @param  string $enctype    the form enctype like "multipart/form-data"
          * @return string             the generated form html
          */
-        public static function open($path = null, array $attributes = array(), $method = 'POST', $enctype = null) {
+        public static function open($path = null, array $attributes = array(), $method = 'POST') {
             if ($path) {
                 $path = get_instance()->url->appUrl($path);
             }
@@ -47,9 +46,6 @@
             $str .= '<form action = "' . $path . '" method = "' . $method . '"';
             if (!isset($attributes['accept-charset'])) {
                 $attributes['accept-charset'] = get_config('charset', 'UTF-8');
-            }
-            if (!empty($enctype)) {
-                 $attributes['enctype'] = $enctype;
             }
             $str .= attributes_to_string($attributes);
             $str .= '>';
@@ -68,7 +64,8 @@
          * @return string the generated multipart form html
          */
         public static function openMultipart($path = null, array $attributes = array(), $method = 'POST') {
-            return self::open($path, $attributes, $method, 'multipart/form-data');
+            $attributes['enctype'] = 'multipart/form-data';
+            return self::open($path, $attributes, $method);
         }
 
         /**

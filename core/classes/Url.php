@@ -111,7 +111,6 @@
          */
         public function domain() {
             $domain = 'localhost';
-            $port = get_instance()->request->server('SERVER_PORT');
             $protocol = 'http';
             if (is_https()) {
                 $protocol = 'https';
@@ -129,8 +128,9 @@
                     break;
                 }
             }
-			
-            if ($port && ((is_https() && $port != 443) || (!is_https() && $port != 80))) {
+			$port = get_instance()->request->server('SERVER_PORT');
+            
+            if ($port && !in_array($port, array(80, 443))) {
                 $domain .= ':' . $port;
             }
             return $protocol . '://' . $domain;

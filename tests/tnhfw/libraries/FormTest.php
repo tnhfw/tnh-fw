@@ -10,6 +10,8 @@
 	class FormTest extends TnhTestCase {
 
 		public function testOpen() {
+            $obj = & get_instance();
+            $obj->url = new Url();
             $f = new Form();
             $expected = '<form action = "" method = "POST" accept-charset = "UTF-8">';
 			$this->assertSame($expected, $f->open());
@@ -49,7 +51,7 @@
         
         public function testOpenMultipart() {
             $f = new Form();
-            $expected = '<form action = "" method = "POST" accept-charset = "UTF-8" enctype = "multipart/form-data">';
+            $expected = '<form action = "" method = "POST" enctype = "multipart/form-data" accept-charset = "UTF-8">';
 			$this->assertSame($expected, $f->openMultipart());
 		}
         

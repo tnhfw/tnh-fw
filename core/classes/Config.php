@@ -166,7 +166,10 @@
                     $baseUrl = $protocol . $baseUrl . $port . substr(
                                                                         $globals->server('SCRIPT_NAME'), 
                                                                         0, 
-                                                                        strpos($globals->server('SCRIPT_NAME'), basename($globals->server('SCRIPT_FILENAME')))
+                                                                        strpos(
+                                                                                $globals->server('SCRIPT_NAME'), 
+                                                                                basename($globals->server('SCRIPT_FILENAME')
+                                                                            ))
                                                                     );
                 } else {
                     $this->logger->warning('Can not determine the application '
@@ -186,13 +189,9 @@
         */
         protected function getServerPort() {
             $globals = & class_loader('GlobalVar', 'classes');
-            $serverPortValue = $globals->server('SERVER_PORT');
-            $serverPort = 80;
-            if ($serverPortValue) {
-                 $serverPort = $serverPortValue;
-            }
+            $serverPort = $globals->server('SERVER_PORT');
             $port = '';
-            if ((is_https() && $serverPort != 443) || (!is_https() && $serverPort != 80)) {
+            if (!in_array($serverPort, array(80, 443))) {
                 $port = ':' . $serverPort;
             }
             return $port;

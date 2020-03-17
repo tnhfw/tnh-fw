@@ -128,17 +128,16 @@
                 $event = new EventInfo((string) $event);
             }			
             $this->logger->debug('Dispatch to the event listener, the event [' . stringfy_vars($event) . ']');
-            if (isset($event->stop) && $event->stop) {
+            if ($event->stop === true) {
                 $this->logger->info('This event need stopped, no need call any listener');
                 return;
             }
-            if ($event->returnBack) {
+            if ($event->returnBack === true) {
                 $this->logger->info('This event need return back, return the result for future use');
                 return $this->dispatchToListerners($event);
-            } else {
-                $this->logger->info('This event no need return back the result, just dispatch it');
-                $this->dispatchToListerners($event);
-            }
+            } 
+            $this->logger->info('This event no need return back the result, just dispatch it');
+            $this->dispatchToListerners($event);
         }
 		
         /**
@@ -155,30 +154,26 @@
                     return $event;
                 }
                 return;
-            } else {
-                $this->logger->info('Found the registered event listener for the event [' . $event->name . '] the list are: ' . stringfy_vars($list));
-            }
-            //if the returnBack is true and some listener not return it back
-            $error = false;
+            } 
+            $this->logger->info('Found the registered event listener for the '
+                                 . 'event [' . $event->name . '] the list are: ' . stringfy_vars($list));
             foreach ($list as $listener) {
-                if ($eBackup->returnBack) {
-                    $returnedEvent = call_user_func_array($listener, array($event));
-                    if ($returnedEvent instanceof EventInfo) {
-                        $event = $returnedEvent;
+                $result = call_user_func_array($listener, array($event));
+                if ($eBackup->returnBack === true) {
+                    if ($result instanceof EventInfo) {
+                        $event = $result;
                     } else {
-                        $error = true;
-                        show_error('This event [' . $event->name . '] need you return the event object after processing');
+                        show_error('The event [' . $event->name . '] need you return the event object after processing');
+                        return;
                     }
-                } else {
-                    call_user_func_array($listener, array($event));
                 }
-                if ($event->stop) {
+                if ($event->stop === true) {
                     break;
                 }
             }
             //only test for original event may be during the flow some listeners change this parameter
-            if ($eBackup->returnBack) {
-                return !$error ? $event : null;
+            if ($eBackup->returnBack === true) {
+                return $event;
             }
         }
     }
