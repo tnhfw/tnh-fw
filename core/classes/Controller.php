@@ -126,13 +126,13 @@
                 ini_set('session.use_only_cookies', 1);
                 ini_set('session.use_trans_sid ', 0);
                 
-                $this->logger->info('Session lifetime: ' . $lifetime);
+                $this->logger->info('Session cookie lifetime: ' . $lifetime);
                 $this->logger->info('Session cookie path: ' . $path);
-                $this->logger->info('Session domain: ' . $domain);
+                $this->logger->info('Session cookie domain: ' . $domain);
                 $this->logger->info('Session is secure: ' . ($secure ? 'TRUE' : 'FALSE'));
                 
                 if ((session_status() !== PHP_SESSION_ACTIVE) || !session_id()) {
-                    $this->logger->info('Session not yet start, start it now');
+                    $this->logger->info('Session not yet started, start it now');
                     session_start();
                 }
             }

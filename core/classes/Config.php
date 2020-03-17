@@ -104,7 +104,7 @@
                 unset($this->config[$item]);
                 return true;
             } 
-            $this->logger->warning('Config item [' . $item . '] to be deleted does not exists');
+            $this->logger->warning('Config item [' . $item . '] to be deleted does not exist');
             return false;
             
         }

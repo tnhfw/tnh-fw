@@ -99,6 +99,8 @@
         public function execute() {
             //reset instance
             $this->reset();
+
+            $this->logger->debug('Begin execution of SQL query [' . $this->query .']');
            
             //for database query execution time
             $benchmarkMarkerKey = $this->getBenchmarkKey();
@@ -120,16 +122,20 @@
             }
     		
             if ($this->pdoStatment !== false) {
+                $this->logger->info('No error found for this query');
                 $isSelectQuery = stristr($this->query, 'SELECT') !== false;
                 if ($isSelectQuery) {
+                    $this->logger->info('This an SELECT SQL query');
                     $this->setResultForSelect();              
                 } else {
+                    $this->logger->info('This is not an SELECT SQL query');
                     $this->setResultForNonSelect();
                 }
                 //close cursor
                 $this->pdoStatment->closeCursor();
                 return $this->queryResult;
             }
+            $this->logger->info('The execution of this query got an error');
             $this->setQueryRunnerError();
         }
     	

@@ -122,7 +122,7 @@
                 get_instance()->globalvar->removeSession($item);
                 return true;
             } 
-            $this->logger->warning('Session item [' . $item . '] to be deleted does not exists');
+            $this->logger->warning('Session item [' . $item . '] to be deleted does not exist');
             return false;
         }
 		
@@ -139,7 +139,7 @@
                 get_instance()->globalvar->removeSession($key);
                 return true;
             } 
-            $this->logger->warning('Dession flash item [' . $key . '] to be deleted does not exists');
+            $this->logger->warning('Session flash item [' . $key . '] to be deleted does not exist');
             return false;
         }
 

@@ -193,12 +193,33 @@
             $levelName = self::getLevelName($level);
 			
             //debug info
-            $dtrace = debug_backtrace();
-            $fileInfo = $dtrace[0];
-            if ($dtrace[0]['file'] == __FILE__ || $dtrace[1]['file'] == __FILE__) {
-                $fileInfo = $dtrace[2];
-            }
+            $fileInfo = $this->getLogDebugBacktraceInfo();
 
+            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' 
+                            . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
+                            . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
+            $fp = fopen($path, 'a+');
+            if (is_resource($fp)) {
+                flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
+                fwrite($fp, $str);
+                fclose($fp);
+            }
+        }	
+
+
+        /**
+         * Return the debug backtrace information
+         * @return array the line number and file path
+         */
+        protected function getLogDebugBacktraceInfo() {
+            $dtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            $fileInfo = $dtrace[0];
+            $i = 0;
+            while ($dtrace[$i]['file'] == __FILE__ ) {
+                $i++;
+            } 
+            $fileInfo = $dtrace[$i];
+            
             $line = -1;
             $file = -1;
 
@@ -209,17 +230,11 @@
             if (isset($fileInfo['line'])) {
                 $line = $fileInfo['line'];
             }
-			
-            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' 
-                            . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
-                            . $message . ' ' . '[' . $file . '::' . $line . ']' . "\n";
-            $fp = fopen($path, 'a+');
-            if (is_resource($fp)) {
-                flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
-                fwrite($fp, $str);
-                fclose($fp);
-            }
-        }	
+            return array(
+                'file' => $file,
+                'line' => $line
+            );
+        }
 
         /**
          * Check if the current logger can save log data regarding the configuration

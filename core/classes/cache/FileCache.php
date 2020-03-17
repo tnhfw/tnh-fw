@@ -76,21 +76,9 @@
                 return false;
             }
             $this->logger->info('The cache file [' . $filePath . '] for the key [' . $key . '] exists, check if the cache data is valid');
-            $handle = fopen($filePath, 'r');
-            if (!is_resource($handle)) {
-                $this->logger->error('Can not open the file cache [' . $filePath . '] for the key [' . $key . '], return false');
-                return false;
-            }
-            // Getting a shared lock 
-            flock($handle, LOCK_SH);
-            $data = file_get_contents($filePath);
-            fclose($handle);
-            if ($this->compressCacheData) {
-                $data = gzinflate($data);
-            }   
-            $data = @unserialize($data);
-            if (!$data) {
-                $this->logger->error('Can not unserialize the cache data for the key [' . $key . '], return false');
+            $data = $this->getCacheFileContent($filePath);
+            if ($data === false) {
+                $this->logger->error('The cache data for the key [' . $key . '] is not valid, return false');
                 // If unserializing somehow didn't work out, we'll delete the file
                 unlink($filePath);
                 return false;
@@ -101,7 +89,9 @@
                 unlink($filePath);
                 return false;
             } 
-            $this->logger->info('The cache not yet expire, now return the cache data for key [' . $key . '], the cache will expire at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
+            $this->logger->info('The cache not yet expire, now return the cache data '
+                                . 'for key [' . $key . '], the cache will expire ' 
+                                . 'at [' . date('Y-m-d H:i:s', $data['expire']) . ']');
             return $data['data'];
         }
 
@@ -117,11 +107,14 @@
          */
         public function set($key, $data, $ttl = 0) {
             $expire = time() + $ttl;
-            $this->logger->debug('Setting cache data for key [' . $key . '], time to live [' . $ttl . '], expire at [' . date('Y-m-d H:i:s', $expire) . ']');
+            $this->logger->debug('Setting cache data for key [' . $key . '], '
+                           . 'time to live [' . $ttl . '], '
+                           . 'expire at [' . date('Y-m-d H:i:s', $expire) . ']');
             $filePath = $this->getFilePath($key);
             $handle = fopen($filePath, 'w');
             if (!is_resource($handle)) {
-                $this->logger->error('Can not open the file cache [' . $filePath . '] for the key [' . $key . '], return false');
+                $this->logger->error('Can not open the file cache '
+                                     . '[' . $filePath . '] for the key [' . $key . '], return false');
                 return false;
             }
             flock($handle, LOCK_EX); // exclusive lock, will get released when the file is closed
@@ -131,14 +124,14 @@
                                     'expire' => $expire,
                                     'data' => $data,
                                     'ttl' => $ttl
-                                    )
-                                );	
+                                    ));	
             if ($this->compressCacheData) {
                 $cacheData = gzdeflate($cacheData, 9);
             }	   
             $result = fwrite($handle, $cacheData);
             if (!$result) {
-                $this->logger->error('Can not write cache data into file [' . $filePath . '] for the key [' . $key . '], return false');
+                $this->logger->error('Can not write cache data into file [' . $filePath . '] '
+                                    . 'for the key [' . $key . '], return false');
                 fclose($handle);
                 return false;
             } 
@@ -162,7 +155,7 @@
             $filePath = $this->getFilePath($key);
             $this->logger->info('The file path for the key [' . $key . '] is [' . $filePath . ']');
             if (!file_exists($filePath)) {
-                $this->logger->info('This cache file does not exists skipping');
+                $this->logger->info('The cache file does not exists skipping');
                 return false;
             } 
             $this->logger->info('Found cache file [' . $filePath . '] remove it');
@@ -189,13 +182,9 @@
                 return false;
             }
             $this->logger->info('Found cache file [' . $filePath . '] check the validity');
-            $data = file_get_contents($filePath);
-            if ($this->compressCacheData) {
-                $data = gzinflate($data);
-            }
-            $data = @unserialize($data);
-            if (!$data) {
-                $this->logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
+            $data = $this->getCacheFileContent($filePath);
+            if ($data === false) {
+                $this->logger->warning('Can not get the cache data for file [' . $filePath . ']');
                 return false;
             }
             $this->logger->info('This cache data is OK check for expire');
@@ -212,7 +201,6 @@
             return false;
         }
 
-
         /**
          * Used to delete expired cache data
          * @see  CacheInterface::deleteExpiredCache
@@ -227,13 +215,9 @@
             $this->logger->info('Found [' . count($list) . '] cache files to remove if expired');
             foreach ($list as $file) {
                 $this->logger->debug('Processing the cache file [' . $file . ']');
-                $data = file_get_contents($file);
-                if ($this->compressCacheData) {
-                    $data = gzinflate($data);
-                }
-                $data = @unserialize($data);
-                if (!$data) {
-                    $this->logger->warning('Can not unserialize the cache data for file [' . $file . ']');
+                $data = $this->getCacheFileContent($file);
+                if ($data === false) {
+                    $this->logger->warning('Can not get cache data for file [' . $file . ']');
                 } else if (time() > $data['expire']) {
                     $this->logger->info('The cache data for file [' . $file . '] already expired remove it');
                     unlink($file);
@@ -317,6 +301,24 @@
             }
             $this->cacheFilePath = CACHE_PATH;
             return $this;
+        }
+
+        /**
+         * Get the cache file content for the given path
+         * @param  string $filePath the file path
+         * @return boolean|array           the file cache content
+         */
+        protected function getCacheFileContent($filePath) {
+            $data = file_get_contents($filePath);
+            if ($this->compressCacheData) {
+                $data = gzinflate($data);
+            }
+            $data = @unserialize($data);
+            if (!$data) {
+                $this->logger->warning('Can not unserialize the cache data for file [' . $filePath . ']');
+                return false;
+            }
+            return $data;
         }
 
 	
