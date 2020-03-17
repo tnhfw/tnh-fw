@@ -124,7 +124,6 @@
                 $this->logger->info('Library [' . $class . '] already loaded no need to load it again, cost in performance');
                 return;
             }
-            $obj = & get_instance();
             //Check and load Database library
             if (strtolower($class) == 'database') {
                 $this->logger->info('This is the Database library ...');

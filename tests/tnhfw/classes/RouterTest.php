@@ -301,6 +301,8 @@
             
             $r = new Router($this->module);
             $r->setLogger($log);
+             //First remove all route to prevent duplication
+            $r->removeAllRoute();
             $this->assertSame(0, count($r->getPattern()));
             $r->add('/foo/bar', 'TestController');
             $this->assertSame(1, count($r->getPattern()));
@@ -312,7 +314,12 @@
 		}
         
         public function testRemoveRoute() {
+            
             $r = new Router($this->module);
+            
+            //First remove all route to prevent duplication
+            $r->removeAllRoute();
+            
             $this->assertSame(0, count($r->getPattern()));
             $r->add('/foo/bar', 'TestController');
             $this->assertSame(1, count($r->getPattern()));

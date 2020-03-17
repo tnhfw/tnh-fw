@@ -235,7 +235,8 @@
         public function add($uri, $callback) {
             $uri = trim($uri, $this->uriTrim);
             if (in_array($uri, $this->pattern)) {
-                $this->logger->warning('The route [' . $uri . '] already added, may be adding again can have route conflict');
+                $this->logger->warning('The route [' . $uri . '] already added, '
+                                        . 'may be adding again can have route conflict');
             }
             $this->pattern[] = $uri;
             $this->callback[] = $callback;

@@ -431,7 +431,8 @@
         public function getDatabaseConfigFromFile() {
             $db = array();
             if (file_exists(CONFIG_PATH . 'database.php')) {
-                //here don't use require_once because somewhere user can create database instance directly
+                //here don't use require_once because somewhere can 
+                //create database instance directly
                 require CONFIG_PATH . 'database.php';
             }
             return $db;
@@ -465,7 +466,7 @@
          * Class desctructor this is used to disconnect to server
          * and call $this->disconnect
          */
-        function __destruct() {
+        public function __destruct() {
             $this->disconnect();
         }
     }
