@@ -1337,30 +1337,4 @@
             $this->assertTrue($fv->validate());
         }
         
-        /**
-        * Return the database instance for test of rules related to database
-        */
-        private function getDbInstanceForTest() {
-            $cfg = $this->getDbConfig();
-            $connection = new DatabaseConnection($cfg, false);
-            $isConnected = $connection->connect();
-            $this->assertTrue($isConnected);
-            $db = new Database($connection);
-            
-            
-            $qr = new DatabaseQueryRunner($connection);
-            $qr->setBenchmark(new Benchmark());
-            
-            $qresult = new DatabaseQueryResult();
-            $qr->setQueryResult($qresult);
-            
-            $db->setQueryRunner($qr);
-            
-            $qb = new DatabaseQueryBuilder($connection);
-            $db->setQueryBuilder($qb);
-            
-            return $db;
-        }
-        
-        
     }

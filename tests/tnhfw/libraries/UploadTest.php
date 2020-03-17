@@ -176,11 +176,10 @@
          
          
          public function testSave() {
-             
-             $u = new Upload();
+             $u = $this->getUploadMockInstance(true);
              
              $files['image'] = array(
-                'name' => 'foo',
+                'name' => 'foo.ext',
                 'tmp_name' => '/foo/bar',
                 'error' => 0,
                 'size' => 344,
@@ -193,12 +192,12 @@
              $this->assertFalse($u->save());
              
              //No mime validation
-             $u = new Upload();
+             $u = $this->getUploadMockInstance(true);
              $u->setInput('image');
              $u->setUploadFunction('copy');
              $this->assertFalse($u->save());
              
-             $u = new Upload();
+             $u = $this->getUploadMockInstance(true);
              
              //using custom filename
              $u->setFilename('my_image');
@@ -206,9 +205,10 @@
              $u->setInput('image');
              $u->setUploadFunction('copy');
              $this->assertFalse($u->save());
+             $this->assertSame('my_image.ext', $u->getFilename());
              
              
-             $u = new Upload();
+             $u = $this->getUploadMockInstance(true);
              //upload file contains error
              $files['image'] = array(
                 'name' => 'foo',
@@ -227,7 +227,7 @@
             $this->assertInstanceOf('stdClass', $u->getInfo());
             
             //Using input/output callbacks
-            $u = new Upload();
+            $u = $this->getUploadMockInstance(true);
              $files['image'] = array(
                 'name' => 'foo',
                 'tmp_name' => '/foo/bar',
@@ -243,7 +243,7 @@
             $this->assertFalse($u->getStatus());
             
             //invalide mime type
-            $u = new Upload();
+            $u = $this->getUploadMockInstance(true);
              $files['image'] = array(
                 'name' => 'foo',
                 'tmp_name' => '/foo/bar',
@@ -259,7 +259,7 @@
             
             
             //upload file too big
-            $u = new Upload();
+            $u = $this->getUploadMockInstance(true);
              $files['image'] = array(
                 'name' => 'foo',
                 'tmp_name' => '/foo/bar',
@@ -273,7 +273,26 @@
             $u->save();
             $this->assertFalse($u->getStatus());
             
+            //No uploaded file
+             $u = $this->getUploadMockInstance(false);
+             $u->setInput('image');
+             $u->setUploadFunction('copy');
+             $this->assertFalse($u->save());
             
+         }
+         
+         /**
+         * Get upload instance for test with mocking isUploaded() method
+         */
+         private function getUploadMockInstance($isUploadedStatus = true) {
+             $upload = $this->getMockBuilder('Upload')
+                              ->setMethods(array('isUploaded'))
+                              ->getMock();
+            
+             $upload->expects($this->any())
+                 ->method('isUploaded')
+                 ->will($this->returnValue($isUploadedStatus));
+              return $upload;
          }
 
 	}

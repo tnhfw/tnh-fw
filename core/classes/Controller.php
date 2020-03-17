@@ -57,6 +57,9 @@
             foreach (class_loaded() as $var => $class) {
                 $this->$var = & class_loader($class);
             }
+
+            //set the cache instance using the configuration
+            $this->setCacheIfEnabled();
 			
             //set module using the router
             $this->setModuleNameFromRouter();
@@ -66,9 +69,6 @@
 
             //set application supported languages
             $this->setAppSupportedLanguages();
-			
-            //set the cache instance using the configuration
-            $this->setCacheIfEnabled();
 			
             //set application session configuration and then started it
             $this->logger->debug('Starting application session handler');

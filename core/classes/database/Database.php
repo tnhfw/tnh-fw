@@ -67,19 +67,21 @@
         private $queryCount = 0;
 	
         /**
-         * The default data to be used in the statments query INSERT, UPDATE
+         * The default data to be used in the INSERT, UPDATE statments 
          * @var array
          */
         private $data = array();
 	
         /**
-         * The cache default time to live in second. 0 means no need to use the cache feature
+         * The cache default time to live in second. 0 means no need 
+         * to use the cache feature
          * @var int
          */
         private $cacheTtl = 0;
 
         /**
-         * The cache current time to live. 0 means no need to use the cache feature
+         * The cache current time to live. 0 means no need 
+         * to use the cache feature
          * @var int
          */
         private $temporaryCacheTtl = 0;
@@ -109,23 +111,9 @@
          */
         public function __construct(DatabaseConnection $connection = null) {
             parent::__construct();
-    		
-            //Set DatabaseQueryBuilder instance to use
-            $this->setDependency('queryBuilder', 'DatabaseQueryBuilder', 'classes/database');
-           
-            //Set DatabaseQueryRunner instance to use
-            $this->setDependency('queryRunner', 'DatabaseQueryRunner', 'classes/database');
-
-            //Set DatabaseCache instance to use
-            $this->setDependency('cache', 'DatabaseCache', 'classes/database');
-
-            if ($connection !== null) {
+    		if ($connection !== null) {
                 $this->connection = $connection;
-            } else {
-                $this->setConnectionUsingConfigFile();
-            }
-            //Update some properties
-            $this->updateProperties();
+            } 
         }
 
         /**
@@ -172,13 +160,8 @@
             $query = $this->queryBuilder->insert($data, $escape)->getQuery();
             $result = $this->query($query);
             if ($result) {
-                $this->insertId = $this->connection->getPdo()->lastInsertId();
-                //if the table doesn't have the auto increment field or sequence, the value of 0 will be returned 
-                $id = $this->insertId;
-                if (!$id) {
-                    $id = true;
-                }
-                return $id;
+                $this->setLastInsertId();
+                return $this->insertId;
             }
             return false;
         }
@@ -420,62 +403,33 @@
             return $this->result;
         }
 
-         /**
-         * Set the connection instance using database configuration file
+        /**
+         * Set the last insert id value
          *
-         * @return object|void
-         */
-        protected function setConnectionUsingConfigFile(){
-            $dbConfigFromFile = $this->getDatabaseConfigFromFile();
-            $connection = &class_loader('DatabaseConnection', 'classes/database');
-            $connection->setConfig($dbConfigFromFile);
-            $connection->connect();
-            $this->connection = $connection;
-            return $this;
-        }
-
-
-        /**
-         * Get the database configuration using the configuration file
-         
-         * @return array the database configuration from file
-         */
-        protected function getDatabaseConfigFromFile() {
-            $db = array();
-            if (file_exists(CONFIG_PATH . 'database.php')) {
-                //here don't use require_once because somewhere user can create database instance directly
-                require CONFIG_PATH . 'database.php';
-            }
-            return $db;
-        }
-
-        /**
-         * Update the dependency for some properties
          * @return object the current instance
          */
-        protected function updateProperties() {
-            //update queryBuilder with some properties needed
-            if (is_object($this->queryBuilder)) {
-                $this->queryBuilder->setConnection($this->connection);
+        protected function setLastInsertId() {
+            $id = $this->connection->getPdo()->lastInsertId();
+            //if the table doesn't have the auto increment field or sequence,
+            // the value of 0 will be returned 
+            if (!$id) {
+                $id = true;
             }
-
-            //update queryRunner with some properties needed
-            if (is_object($this->queryRunner)) {
-                $this->queryRunner->setConnection($this->connection);
-            }
+            $this->insertId = $id;
             return $this;
         }
-	
+
         /**
          * Reset the database class attributs to the initail values before each query.
          */
         private function reset() {
             //query builder reset
             $this->queryBuilder->reset();
-            $this->numRows  = 0;
-            $this->insertId = null;
-            $this->query    = null;
-            $this->result   = array();
-            $this->data     = array();
+            $this->numRows    = 0;
+            $this->insertId   = null;
+            $this->query      = null;
+            $this->result     = array();
+            $this->data       = array();
+            $this->queryCount = 0;
         }
     }

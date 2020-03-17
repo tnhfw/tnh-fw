@@ -45,10 +45,12 @@
             parent::__construct();
             if ($init) {
                 $this->init();
+                //@codeCoverageIgnoreStart
                  if (ENVIRONMENT == 'production' && in_array(strtolower($this->config['log_level']), array('debug', 'info', 'all'))) {
                     $this->logger->warning('You are in production environment, please set '
                                            . 'log level to WARNING, ERROR, FATAL to increase the application performance');
                 }
+                //@codeCoverageIgnoreEnd
             }
         }
 
@@ -143,7 +145,8 @@
         private function setBaseUrlUsingServerVar() {
             if (empty($this->config['base_url'])) {
                 if (ENVIRONMENT == 'production') {
-                    $this->logger->warning('Application base URL is not set or invalid, please set application base URL to increase the application loading time');
+                    $this->logger->warning('Application base URL is not set or invalid, please'
+                                           . ' set application base URL to increase the application loading time');
                 }
                 $baseUrl = null;
                 $protocol = 'http';
@@ -166,7 +169,8 @@
                                                                         strpos($globals->server('SCRIPT_NAME'), basename($globals->server('SCRIPT_FILENAME')))
                                                                     );
                 } else {
-                    $this->logger->warning('Can not determine the application base URL automatically, use http://localhost as default');
+                    $this->logger->warning('Can not determine the application '
+                                           . 'base URL automatically, use http://localhost as default');
                     $baseUrl = 'http://localhost/';
                 }
                 $this->config['base_url'] = $baseUrl;

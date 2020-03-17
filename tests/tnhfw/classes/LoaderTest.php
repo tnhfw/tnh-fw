@@ -21,7 +21,10 @@
 		public function testLoadModel() {
             $l = new Loader();
             $obj = & get_instance();
-			$l->model('DBSessionModel');
+            $db = $this->getDbInstanceForTest();
+            $obj->database = $db;//Model classes need it
+			
+            $l->model('DBSessionModel');
             //already exists nothing will be done
             //change some attribute
             $obj->dbsessionmodel->foo = 'bar';

@@ -79,7 +79,8 @@
 			
             $moduleModelFilePath = get_instance()->module->findModelFullPath($class, $module);
             if ($moduleModelFilePath) {
-                $this->logger->info('Found model [' . $class . '] from module [' . $module . '], the file path is [' . $moduleModelFilePath . '] we will used it');
+                $this->logger->info('Found model [' . $class . '] from module [' . $module . '], '
+                                    . 'the file path is [' . $moduleModelFilePath . '] we will used it');
                 $classFilePath = $moduleModelFilePath;
             } else {
                 $this->logger->info('Cannot find model [' . $class . '] from modules using the default location');
@@ -127,9 +128,7 @@
             //Check and load Database library
             if (strtolower($class) == 'database') {
                 $this->logger->info('This is the Database library ...');
-                $obj->{$instance} = & class_loader('Database', 'classes/database');
-                $this->loaded[$instance] = $class;
-                $this->logger->info('Library Database loaded successfully.');
+                $this->loadDatabase();
                 return;
             }
             $libraryFilePath = null;
@@ -180,7 +179,8 @@
             }
             $moduleFunctionPath = get_instance()->module->findFunctionFullPath($function, $module);
             if ($moduleFunctionPath) {
-                $this->logger->info('Found helper [' . $function . '] from module [' . $module . '], the file path is [' . $moduleFunctionPath . '] we will used it');
+                $this->logger->info('Found helper [' . $function . '] from module [' . $module . '], '
+                                    . 'the file path is [' . $moduleFunctionPath . '] we will used it');
                 $functionFilePath = $moduleFunctionPath;
             } else {
                 $this->logger->info('Cannot find helper [' . $function . '] from modules using the default location');
@@ -219,7 +219,8 @@
             $filename  = $moduleInfo['filename'];
             $moduleConfigPath = get_instance()->module->findConfigFullPath($filename, $module);
             if ($moduleConfigPath) {
-                $this->logger->info('Found config [' . $filename . '] from module [' . $module . '], the file path is [' . $moduleConfigPath . '] we will used it');
+                $this->logger->info('Found config [' . $filename . '] from module [' . $module . '], '
+                                  . 'the file path is [' . $moduleConfigPath . '] we will used it');
                 $configFilePath = $moduleConfigPath;
             } else {
                 $this->logger->info('Cannot find config [' . $filename . '] from modules using the default location');
@@ -271,7 +272,8 @@
             }
             $moduleLanguagePath = get_instance()->module->findLanguageFullPath($language, $appLang, $module);
             if ($moduleLanguagePath) {
-                $this->logger->info('Found language [' . $language . '] from module [' . $module . '], the file path is [' . $moduleLanguagePath . '] we will used it');
+                $this->logger->info('Found language [' . $language . '] from module [' . $module . '], '
+                                    . 'the file path is [' . $moduleLanguagePath . '] we will used it');
                 $languageFilePath = $moduleLanguagePath;
             } else {
                 $this->logger->info('Cannot find language [' . $language . '] from modules using the default location');
@@ -281,6 +283,32 @@
             }
             $this->logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
             $this->loadLanguage($languageFilePath, $language);
+        }
+
+        /**
+         * Load the library database with dependencies
+         */
+        protected function loadDatabase() {
+            $connection = &class_loader('DatabaseConnection', 'classes/database');
+            $config = $connection->getDatabaseConfigFromFile();
+            $connection->setConfig($config);
+            $connection->connect();
+
+            $obj = &get_instance();
+
+            $db = & class_loader('Database', 'classes/database', $connection);
+            $queryResult = &class_loader('DatabaseQueryResult', 'classes/database');
+            $queryRunner = &class_loader('DatabaseQueryRunner', 'classes/database', $connection);
+            $queryRunner->setQueryResult($queryResult);
+            $queryRunner->setBenchmark($obj->benchmark);
+            $db->setQueryRunner($queryRunner);
+            
+            $queryBuilder = &class_loader('DatabaseQueryBuilder', 'classes/database', $connection);
+            $db->setQueryBuilder($queryBuilder);
+            
+            $dbCache = &class_loader('DatabaseCache', 'classes/database');
+            $db->setCache($dbCache);
+            $obj->database = $db;
         }
 
         /**
@@ -478,7 +506,8 @@
             $class  = $moduleInfo['class'];
             $moduleLibraryPath = get_instance()->module->findLibraryFullPath($class, $module);
             if ($moduleLibraryPath) {
-                $this->logger->info('Found library [' . $class . '] from module [' . $module . '], the file path is [' . $moduleLibraryPath . '] we will used it');
+                $this->logger->info('Found library [' . $class . '] from module [' . $module . '], the '
+                                   . 'file path is [' . $moduleLibraryPath . '] we will used it');
                 $libraryFilePath = $moduleLibraryPath;
             } else {
                 $this->logger->info('Cannot find library [' . $class . '] from modules using the default location');
@@ -525,7 +554,8 @@
                     $lang = array();
                 require_once $languageFilePath;
                 if (!empty($lang) && is_array($lang)) {
-                    $this->logger->info('Language file  [' . $languageFilePath . '] contains the valid languages keys add them to language list');
+                    $this->logger->info('Language file  [' . $languageFilePath . '] contains the '
+                                        . 'valid languages keys add them to language list');
                     //Note: may be here the class 'Lang' not yet loaded
                     $langObj = & class_loader('Lang', 'classes');
                     $langObj->addLangMessages($lang);
@@ -565,7 +595,7 @@
             //loading of the resources from autoload configuration file
             if (file_exists(CONFIG_PATH . 'autoload.php')) {
                 $autoload = array();
-                require_once CONFIG_PATH . 'autoload.php';
+                require CONFIG_PATH . 'autoload.php';
                 if (!empty($autoload) && is_array($autoload)) {
                     $autoloads = array_merge($autoloads, $autoload);
                     unset($autoload);

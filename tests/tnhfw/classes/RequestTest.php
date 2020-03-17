@@ -72,8 +72,6 @@
 			$this->assertContains('foo', $r->header('bar'));
 		}
         
-       
-        
         public function testFile() {
             get_instance()->globalvar->setFiles('foofile', array('name' => 'bar'));
             $r = new Request();
@@ -91,6 +89,16 @@
             
             $this->assertNotEmpty($r->session('foo'));
 			$this->assertSame('bar', $r->session('foo'));
+            
+            //Using xss flag
+            $session = new Session();
+            $session->set('foo', '<script>bar</script>');
+            
+            $r = new Request();
+            $r->setSession($session);
+            $expected = 'bar';
+            $this->assertNotEmpty($r->session('foo', true));
+			$this->assertSame($expected, $r->session('foo', true));
 		}
         
         

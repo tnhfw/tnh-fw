@@ -216,20 +216,8 @@
         public function __construct() {
             parent::__construct();
 
-            get_instance()->loader->lang('file_upload');
-            $this->errorMessages = array(
-                                    'upload_err_ini_size'     => get_instance()->lang->get('fu_upload_err_ini_size'),
-                                    'upload_err_form_size'    => get_instance()->lang->get('fu_upload_err_form_size'),
-                                    'upload_err_partial'      => get_instance()->lang->get('fu_upload_err_partial'),
-                                    'upload_err_no_file'      => get_instance()->lang->get('fu_upload_err_no_file'),
-                                    'upload_err_no_tmp_dir'   => get_instance()->lang->get('fu_upload_err_no_tmp_dir'),
-                                    'upload_err_cant_write'   => get_instance()->lang->get('fu_upload_err_cant_write'),
-                                    'upload_err_extension'    => get_instance()->lang->get('fu_upload_err_extension'),
-                                    'accept_file_types'       => get_instance()->lang->get('fu_accept_file_types'),
-                                    'file_uploads'            => get_instance()->lang->get('fu_file_uploads_disabled'),
-                                    'max_file_size'           => get_instance()->lang->get('fu_max_file_size'),
-                                    'overwritten_not_allowed' => get_instance()->lang->get('fu_overwritten_not_allowed'),
-                                );
+            //Load language messages
+            $this->loadLangMessages();
 
             $this->file = array(
                 'status'                =>    false, // True: success upload
@@ -251,6 +239,7 @@
             $this->logger->info('The upload file information are : ' . stringfy_vars($this->uploadedFileData));
         }
 
+        
         /**
          *    Set input.
          *    If you have $_FILES["file"], you must use the key "file"
@@ -349,16 +338,16 @@
          *    @method    boolean     setMaxFileSize
          */
         public function setMaxFileSize($fileSize) {
-            $fileSize = $this->sizeInBytes($fileSize);
-            if (is_numeric($fileSize) && $fileSize > -1) {
+            $size = $this->sizeInBytes($fileSize);
+            if (is_numeric($size) && $size > -1) {
                 // Get PHP upload max file size config
-                $phpMaxUploadSize = $this->sizeInBytes((int) ini_get('upload_max_filesize'));
-                // Calculate difference
-                if ($phpMaxUploadSize < $fileSize) {
+                $phpMaxUploadSize = ini_get('upload_max_filesize');
+                // check difference
+                if ($this->sizeInBytes((int) $phpMaxUploadSize) < $size) {
                     $this->logger->warning('The upload max file size you set [' . $fileSize . '] '
                             . 'is greather than the PHP configuration for upload max file size [' . $phpMaxUploadSize . ']');
                 }
-                $this->maxFileSize = $fileSize;
+                $this->maxFileSize = $size;
             }
             return $this;
         }
@@ -381,10 +370,8 @@
          *    @method    boolean     setAllowMimeType
          */
         public function setAllowMimeType($mime) {
-            if (!empty($mime) && is_string($mime)) {
-                $this->allowedMimeTypes[] = strtolower($mime);
-                $this->file['allowed_mime_types'][] = strtolower($mime);
-            } 
+            $this->allowedMimeTypes[] = strtolower($mime);
+            $this->file['allowed_mime_types'][] = strtolower($mime); 
             return $this;
         }
 
@@ -411,10 +398,8 @@
          *    @method    boolean    setMimeHelping
          */
         public function setMimeHelping($name) {
-            if (!empty($name) 
-                && is_string($name) 
-                 && array_key_exists($name, $this->mimeHelping)) {
-                    return $this->setAllowedMimeTypes($this->mimeHelping[$name]);
+            if (array_key_exists($name, $this->mimeHelping)) {
+                return $this->setAllowedMimeTypes($this->mimeHelping[$name]);
             }
             return $this;
         }
@@ -541,9 +526,7 @@
          */
         public function setDestinationDirectory($directory, $autoCreate = false) {
             $dir = realpath($directory);
-            if (substr($dir, -1) != DIRECTORY_SEPARATOR) {
-                $dir .= DIRECTORY_SEPARATOR;
-            }
+            $dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
             if ($this->isDirpath($dir)) {
                 if ($this->dirExists($dir)) {
                     $this->destinationDirectory = $dir;
@@ -586,56 +569,41 @@
          *    @method    boolean    save
          */
         public function save() {
-            if (count($this->uploadedFileData) > 0 && array_key_exists($this->input, $this->uploadedFileData)) {
-                // set original filename if not have a new name
-                if (empty($this->filename)) {
-                    $this->filename = $this->uploadedFileData[$this->input]['name'];
-                } else {
-                    // Replace %s for extension in filename
-                    // Before: /[\w\d]*(.[\d\w]+)$/i
-                    // After: /^[\s[:alnum:]\-\_\.]*\.([\d\w]+)$/iu
-                    // Support unicode(utf-8) characters
-                    // Example: "русские.jpeg" is valid; "Zhōngguó.jpeg" is valid; "Tønsberg.jpeg" is valid
-                    $extension = preg_replace(
-                        '/^[\p{L}\d\s\-\_\.\(\)]*\.([\d\w]+)$/iu',
-                        '$1',
-                        $this->uploadedFileData[$this->input]['name']
-                    );
-                    $this->filename = $this->filename . '.' . $extension;
-                }
-
-                // set file info
-                $this->file['mime']         = $this->uploadedFileData[$this->input]['type'];
-                $this->file['tmp']          = $this->uploadedFileData[$this->input]['tmp_name'];
-                $this->file['original']     = $this->uploadedFileData[$this->input]['name'];
-                $this->file['size']         = $this->uploadedFileData[$this->input]['size'];
-                $this->file['sizeFormated'] = $this->sizeFormat($this->file['size']);
-                $this->file['destination']  = $this->destinationDirectory . $this->filename;
-                $this->file['filename']     = $this->filename;
-                $this->file['error']        = $this->uploadedFileData[$this->input]['error'];
-
-                $this->logger->info('The upload file information to process is : ' . stringfy_vars($this->file));
-
-                $error = $this->uploadHasError();
-                if ($error) {
-                    return false;
-                }
-                // Execute input callback
-                $this->runCallback('input');
-
-                $this->file['status'] = call_user_func_array(
-                    $this->uploadFunction, array(
-                        $this->uploadedFileData[$this->input]['tmp_name'],
-                        $this->destinationDirectory . $this->filename
-                    )
-                );
-
-                // Execute output callback
-                $this->runCallback('output');
-
-                return $this->file['status'];
+            if (!$this->isUploaded()) {
+                return false;
             }
-            return false;
+            // set original filename if not have a new name
+            $this->setFilenameUsingUploadedData();
+
+            // set file info
+            $this->file['mime']         = $this->uploadedFileData[$this->input]['type'];
+            $this->file['tmp']          = $this->uploadedFileData[$this->input]['tmp_name'];
+            $this->file['original']     = $this->uploadedFileData[$this->input]['name'];
+            $this->file['size']         = $this->uploadedFileData[$this->input]['size'];
+            $this->file['sizeFormated'] = $this->sizeFormat($this->file['size']);
+            $this->file['destination']  = $this->destinationDirectory . $this->filename;
+            $this->file['filename']     = $this->filename;
+            $this->file['error']        = $this->uploadedFileData[$this->input]['error'];
+
+            $this->logger->info('The upload file information to process is : ' . stringfy_vars($this->file));
+
+            if ($this->uploadHasError()) {
+                return false;
+            }
+            // Execute input callback
+            $this->runCallback('input');
+
+            $this->file['status'] = call_user_func_array(
+                $this->uploadFunction, array(
+                    $this->uploadedFileData[$this->input]['tmp_name'],
+                    $this->destinationDirectory . $this->filename
+                )
+            );
+
+            // Execute output callback
+            $this->runCallback('output');
+
+            return $this->file['status'];
         }
 
         /**
@@ -686,6 +654,32 @@
                                 && is_file($file);
         }
 
+         /**
+         * Set the filename if is empty using the uploaded data information
+         *
+         * @return object the current instance
+         */
+        protected function setFilenameUsingUploadedData() {
+            // set original filename if not have a new name
+            if (empty($this->filename)) {
+                $this->filename = $this->uploadedFileData[$this->input]['name'];
+            } else {
+                // Replace %s for extension in filename
+                // Before: /[\w\d]*(.[\d\w]+)$/i
+                // After: /^[\s[:alnum:]\-\_\.]*\.([\d\w]+)$/iu
+                // Support unicode(utf-8) characters
+                // Example: "русские.jpeg" is valid; "Zhōngguó.jpeg" 
+                // is valid; "Tønsberg.jpeg" is valid
+                $extension = preg_replace(
+                    '/^[\p{L}\d\s\-\_\.\(\)]*\.([\d\w]+)$/iu',
+                    '$1',
+                    $this->uploadedFileData[$this->input]['name']
+                );
+                $this->filename = $this->filename . '.' . $extension;
+            }
+            return $this;
+        }
+
         /**
          *    Check dir exists
          *
@@ -712,7 +706,7 @@
          */
         protected function isFilename($filename) {
             $filename = basename($filename);
-            return (!empty($filename) && (is_string($filename) || is_numeric($filename)));
+            return !empty($filename);
         }
 
         /**
@@ -726,7 +720,7 @@
          *    @method    boolean     checkMimeType
          */
         protected function checkMimeType($mime) {
-            if (count($this->allowedMimeTypes) == 0) {
+            if (count($this->allowedMimeTypes) === 0) {
                 return true;
             }
             return in_array(strtolower($mime), $this->allowedMimeTypes);
@@ -743,14 +737,11 @@
          *    @method     boolean    isDirpath
          */
         protected function isDirpath($path) {
-            if (!empty($path) && (is_string($path) || is_numeric($path))) {
-                if (DIRECTORY_SEPARATOR == '/') {
-                    return (preg_match('/^[^*?"<>|:]*$/', $path) == 1);
-                } else {
-                    return (preg_match("/^[^*?\"<>|:]*$/", substr($path, 2)) == 1);
-                }
+            if (DIRECTORY_SEPARATOR == '/') {
+                return (preg_match('/^[^*?"<>|:]*$/', $path) == 1);
+            } else {
+                return (preg_match("/^[^*?\"<>|:]*$/", substr($path, 2)) == 1);
             }
-            return false;
         }
 
         /**
@@ -765,13 +756,13 @@
          */
         protected function sizeFormat($size, $precision = 2) {
             if ($size > 0) {
-                $base       = log($size) / log(1024);
-                $suffixes   = array('B', 'K', 'M', 'G', 'T');
-                $suf = '';
+                $base     = log($size) / log(1024);
+                $suffixes = array('B', 'K', 'M', 'G', 'T');
+                $suffixe = '';
                 if (isset($suffixes[floor($base)])) {
-                    $suf = $suffixes[floor($base)];
+                    $suffixe = $suffixes[floor($base)];
                 }
-                return round(pow(1024, $base - floor($base)), $precision) . $suf;
+                return round(pow(1024, $base - floor($base)), $precision) . $suffixe;
             }
             return null;
         }
@@ -800,10 +791,13 @@
         /**
          * Set the upload error message
          * @param string $message the upload error message to set
+         *
+         * @return object the current instance
          */
         protected function setError($message) {
             $this->logger->info('The file upload got error : ' . $message);
             $this->error = $message;
+            return $this;
         }
 
         /**
@@ -828,7 +822,7 @@
                 return true;
             }
 
-                //check for php upload error
+            //check for php upload error
             if (is_numeric($this->file['error']) && $this->file['error'] > 0) {
                 $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
                 return true;
@@ -840,7 +834,7 @@
                 return true;
             }
 
-                // Check file size
+            // Check file size
             if ($this->maxFileSize > 0 && $this->maxFileSize < $this->file['size']) {
                 $this->setError(sprintf($this->errorMessages['max_file_size'], $this->sizeFormat($this->maxFileSize)));
                 return true;
@@ -860,6 +854,7 @@
          * @return string the error message
          */
         protected function getPhpUploadErrorMessageByCode($code) {
+            $error = null;
             $codeMessageMaps = array(
                 1 => $this->errorMessages['upload_err_ini_size'],
                 2 => $this->errorMessages['upload_err_form_size'],
@@ -869,6 +864,30 @@
                 7 => $this->errorMessages['upload_err_cant_write'],
                 8 => $this->errorMessages['upload_err_extension'],
             );
-            return isset($codeMessageMaps[$code]) ? $codeMessageMaps[$code] : null;
+            if (isset($codeMessageMaps[$code])) {
+                $error = $codeMessageMaps[$code];
+            }
+            return $error;
         }
+
+        /**
+         * Load the language messages for upload
+         */
+        protected function loadLangMessages() {
+            get_instance()->loader->lang('file_upload');
+            $this->errorMessages = array(
+                                    'upload_err_ini_size'     => get_instance()->lang->get('fu_upload_err_ini_size'),
+                                    'upload_err_form_size'    => get_instance()->lang->get('fu_upload_err_form_size'),
+                                    'upload_err_partial'      => get_instance()->lang->get('fu_upload_err_partial'),
+                                    'upload_err_no_file'      => get_instance()->lang->get('fu_upload_err_no_file'),
+                                    'upload_err_no_tmp_dir'   => get_instance()->lang->get('fu_upload_err_no_tmp_dir'),
+                                    'upload_err_cant_write'   => get_instance()->lang->get('fu_upload_err_cant_write'),
+                                    'upload_err_extension'    => get_instance()->lang->get('fu_upload_err_extension'),
+                                    'accept_file_types'       => get_instance()->lang->get('fu_accept_file_types'),
+                                    'file_uploads'            => get_instance()->lang->get('fu_file_uploads_disabled'),
+                                    'max_file_size'           => get_instance()->lang->get('fu_max_file_size'),
+                                    'overwritten_not_allowed' => get_instance()->lang->get('fu_overwritten_not_allowed'),
+                                );
+        }
+
     }

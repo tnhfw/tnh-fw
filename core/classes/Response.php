@@ -184,9 +184,11 @@
             $moduleViewPath = get_instance()->module->findViewFullPath($view, $module);
             if ($moduleViewPath) {
                 $path = $moduleViewPath;
-                $this->logger->info('Found view [' . $view . '] in module [' . $module . '], the file path is [' . $moduleViewPath . '] we will used it');
+                $this->logger->info('Found view [' . $view . '] in module [' . $module . '], '
+                                    . 'the file path is [' . $moduleViewPath . '] we will used it');
             } else {
-                $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] using the default location');
+                $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] '
+                                    . 'using the default location');
             }
 			if (!$path) {
                 $path = $this->getDefaultFilePathForView($viewFile);
@@ -230,31 +232,6 @@
             ob_end_flush();
         }
 
-        /**
-         * Dispatch the FINAL_VIEW_READY event
-         *             
-         * @return string|null the final view content after processing by each listener
-         * if they exists otherwise the same content will be returned
-         */
-        protected function dispatchFinalViewEvent() {
-            //dispatch
-            $event = get_instance()->eventdispatcher->dispatch(
-                                                                new EventInfo(
-                                                                                'FINAL_VIEW_READY', 
-                                                                                $this->finalPageContent, 
-                                                                                true
-                                                                            )
-                                                            );
-            $content = null;
-            if (!empty($event->payload)) {
-                $content = $event->payload;
-            }
-            if (empty($content)) {
-                $this->logger->warning('The view content is empty after dispatch to event listeners.');
-            }
-            return $content;
-        }
-
 		
         /**
          * Send the final page output to user if is cached
@@ -266,12 +243,13 @@
             //the current page cache key for identification
             $pageCacheKey = $this->currentUrlCacheKey;
 			
-            $this->logger->debug('Checking if the page content for the URL [' . $this->currentUrl . '] is cached ...');
+            $this->logger->debug('Checking if the page content for the '
+                                . 'URL [' . $this->currentUrl . '] is cached ...');
             //get the cache information to prepare header to send to browser
             $cacheInfo = $cache->getInfo($pageCacheKey);
             if ($cacheInfo) {
                 $status = $this->sendCacheNotYetExpireInfoToBrowser($cacheInfo);
-                if ($status === false) {
+                if($status === false) {
                     return $this->sendCachePageContentToBrowser($cache);
                 }
                 return true;
@@ -364,6 +342,31 @@
                 echo 'The error view [' . $path . '] does not exist';
             }
             //@codeCoverageIgnoreEnd
+        }
+
+                /**
+         * Dispatch the FINAL_VIEW_READY event
+         *             
+         * @return string|null the final view content after processing by each listener
+         * if they exists otherwise the same content will be returned
+         */
+        protected function dispatchFinalViewEvent() {
+            //dispatch
+            $event = get_instance()->eventdispatcher->dispatch(
+                                                                new EventInfo(
+                                                                                'FINAL_VIEW_READY', 
+                                                                                $this->finalPageContent, 
+                                                                                true
+                                                                            )
+                                                            );
+            $content = null;
+            if (!empty($event->payload)) {
+                $content = $event->payload;
+            }
+            if (empty($content)) {
+                $this->logger->warning('The view content is empty after dispatch to event listeners.');
+            }
+            return $content;
         }
 
         /**

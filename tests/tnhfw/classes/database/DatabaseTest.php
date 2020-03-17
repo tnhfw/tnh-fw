@@ -11,13 +11,12 @@
 		public function testConstructor() {
             //connection param is null;
             $db = new Database();
-            //Note instance is already set in constructor
-            $this->assertNotNull($db->getConnection());
+            $this->assertNull($db->getConnection());
              
             //Using connection
             $connection = $this->getMockBuilder('DatabaseConnection')
-                        ->disableOriginalConstructor()
-                        ->getMock();
+                                ->disableOriginalConstructor()
+                                ->getMock();
                         
             $db = new Database($connection);
             $this->assertNotNull($db->getConnection());
@@ -48,8 +47,7 @@
         
         public function testGetSetConnection() {
             $db = new Database();
-            //Note instance is already set in constructor
-            $this->assertNotNull($db->getConnection());
+            $this->assertNull($db->getConnection());
              
             $connection = $this->getMockBuilder('DatabaseConnection')
                         ->disableOriginalConstructor()
@@ -62,8 +60,7 @@
         
         public function testGetsetCache() {
             $db = new Database();
-            //Note instance is already set in constructor
-            $this->assertNotNull($db->getCache());
+            $this->assertNull($db->getCache());
              
             $cache = $this->getMockBuilder('DatabaseCache')
                           ->getMock();
@@ -75,8 +72,7 @@
         
         public function testGetSetQueryBuilder() {
             $db = new Database();
-            //Note instance is already set in constructor
-            $this->assertNotNull($db->getQueryBuilder());
+            $this->assertNull($db->getQueryBuilder());
              
             $qb = $this->getMockBuilder('DatabaseQueryBuilder')
                           ->getMock();
@@ -88,8 +84,7 @@
         
         public function testGetSetQueryRunner() {
             $db = new Database();
-            //Note instance is already set in constructor
-            $this->assertNotNull($db->getQueryRunner());
+            $this->assertNull($db->getQueryRunner());
              
             $qr = $this->getMockBuilder('DatabaseQueryRunner')
                           ->getMock();
@@ -144,7 +139,12 @@
                  ->method('getCacheContent')
                  ->will($this->returnValue($result)); 
                  
+            $qb = $this->getMockBuilder('DatabaseQueryBuilder')
+                          ->setMethods(null)
+                          ->getMock();
+                 
             $db->setCache($cache);
+            $db->setQueryBuilder($qb);
               
            $this->assertNotEmpty($db->get());
            $this->assertArrayHasKey('foo', $db->get());
@@ -335,12 +335,17 @@
             $db->setQueryRunner($qr);
 
             $db->setData($data);
+            
+            $cache = $this->getMockCacheInstanceReturnNull();
+                        
+            $db->setCache($cache);
            
             $db->getQueryBuilder()->from('foo');
             $this->assertSame(17, $db->insert());  
             $this->assertSame(17, $db->insertId());  
             $this->assertSame(1, $db->queryCount());  
 		}
+        
         
         public function testInsertNoInsertId() {
             $data = array('foo' => 'bar');
@@ -400,6 +405,9 @@
             $db->setQueryRunner($qr);
 
             $db->setData($data);
+            
+            $cache = $this->getMockCacheInstanceReturnNull();
+            $db->setCache($cache);
            
             $db->getQueryBuilder()->from('foo');
             $this->assertTrue($db->insert());  
@@ -463,6 +471,9 @@
             $db->setQueryRunner($qr);
 
             $db->setData($data);
+            
+             $cache = $this->getMockCacheInstanceReturnNull();
+            $db->setCache($cache);
            
             $db->getQueryBuilder()->from('foo');
             $this->assertFalse($db->insert());  
@@ -523,6 +534,9 @@
             $db->setQueryRunner($qr);
 
             $db->setData($data);
+            
+            $cache = $this->getMockCacheInstanceReturnNull();
+            $db->setCache($cache);
            
             $db->getQueryBuilder()->from('foo');
             $this->assertTrue($db->update());  
@@ -571,9 +585,43 @@
             $qr->setQueryResult($qresult);
             
             $db->setQueryRunner($qr);
+            
+            $cache = $this->getMockCacheInstanceReturnNull();
+            $db->setCache($cache);
 
             $db->getQueryBuilder()->from('foo');
             $this->assertTrue($db->delete());  
 		}
+        
+        
+        /**
+        * Mock of Database cache instance that will return null value
+        */
+        private function getMockCacheInstanceReturnNull() {
+            $cache = $this->getMockBuilder('DatabaseCache')
+                          ->getMock();
+            
+            $cache->expects($this->any())
+                 ->method('setQuery')
+                 ->will($this->returnValue($cache)); 
+                 
+            $cache->expects($this->any())
+                 ->method('setReturnType')
+                 ->will($this->returnValue($cache)); 
+                 
+            $cache->expects($this->any())
+                 ->method('setReturnAsArray')
+                 ->will($this->returnValue($cache)); 
+            
+            $cache->expects($this->any())
+                 ->method('setCacheTtl')
+                 ->will($this->returnValue($cache)); 
+                 
+             $cache->expects($this->any())
+                 ->method('getCacheContent')
+                 ->will($this->returnValue(null)); 
+              return $cache;    
+        }
+        
 
 	}

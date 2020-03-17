@@ -267,14 +267,8 @@
             if ($this->validateData($data, $skipRulesValidation) !== false) {
                 $data = $this->trigger('beforeCreateCallbacks', $data);
                 $this->getQueryBuilder()->from($this->table);
-                $this->db->insert($data, $escape);
-                $insertId = $this->db->insertId();
+                $insertId = $this->db->insert($data, $escape);
                 $this->trigger('afterCreateCallbacks', $insertId);
-                //if the table doesn't have the auto increment field 
-                //or sequence, the value of 0 will be returned 
-                if (!$insertId) {
-                    $insertId = true;
-                }
                 return $insertId;
             } 
             return false;
@@ -548,31 +542,6 @@
          */
         public function isSkipRulesValidation() {
             return $this->skipRulesValidation;
-        }
-
-        /**
-         * Return the next auto increment of the table. 
-         * Only tested on MySQL and SQLite
-         *
-         * @return mixed
-         */
-        public function getNextAutoIncrementId() {
-            $driver = $this->db->getConnection()->getDriver();
-            if ($driver == 'mysql') {
-                $this->getQueryBuilder()->select('AUTO_INCREMENT')
-                                        ->from('information_schema.TABLES')
-                                        ->where('TABLE_NAME', $this->getTable())
-                                        ->where('TABLE_SCHEMA', $this->db->getConnection()->getDatabase());
-                return (int) $this->db->get()->AUTO_INCREMENT;
-            }
-
-            if ($driver == 'sqlite') {
-                $this->getQueryBuilder()->select('SEQ')
-                                        ->from('SQLITE_SEQUENCE')
-                                        ->where('NAME', $this->getTable());
-                return ((int) $this->db->get()->seq) + 1;
-            }
-            return null;
         }
 
         /**

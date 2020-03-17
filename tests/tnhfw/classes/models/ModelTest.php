@@ -477,19 +477,6 @@
             $this->assertSame(300, $m->getDb()->getTempCacheTimeToLive());
          }
          
-          public function testGetNextAutoIncrementId() {
-            $db = $this->getDbInstanceForTest();
-            $m = new DefaultModel($db);
-            
-            $this->assertSame(5, $m->getNextAutoIncrementId());
-            
-            //No supported driver
-            $db = $this->getDbInstanceForTest();
-            $db->getConnection()->setDriver('fooooodriver');
-            $m->setDb($db);
-            $this->assertNull($m->getNextAutoIncrementId());
-         }
-         
          public function testGetPrimaryKey() {
             $db = $this->getDbInstanceForTest();
             $m = new DefaultModel($db);
@@ -643,29 +630,6 @@
             $this->assertSame(1, count($result));
          }
         
-        
-        /**
-        * Return the database instance for test
-        */
-        private function getDbInstanceForTest() {
-            
-            $cfg = $this->getDbConfig();
-            $connection = new DatabaseConnection($cfg, true);
-            $db = new Database($connection);
-                        
-            $qr = new DatabaseQueryRunner($connection);
-            $qr->setBenchmark(new Benchmark());
-            
-            $qresult = new DatabaseQueryResult();
-            $qr->setQueryResult($qresult);
-            
-            $db->setQueryRunner($qr);
-            
-            $qb = new DatabaseQueryBuilder($connection);
-            $db->setQueryBuilder($qb);
-            
-            return $db;
-        }
         
         /**
         * Truncate the table and reset SQLite sequence 

@@ -121,9 +121,14 @@
          */
         public function connect() {
             try {
-                $this->pdo = new PDO($this->getDsnValue(), $this->getUsername(), $this->getPassword());
-                $this->pdo->exec("SET CHARACTER SET '" . $this->getCharset() . "'");
-                $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+                $options = array(
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ
+                );
+                $this->pdo = new PDO($this->getDsnValue(), $this->getUsername(), $this->getPassword(), $options);
+                if($this->getDriver() == 'mysql') {
+                    $this->pdo->exec("SET NAMES '" . $this->getCharset() . "' COLLATE '" . $this->getCollation() . "'");
+                    $this->pdo->exec("SET CHARACTER SET '" . $this->getCharset() . "'");
+                }
                 return is_object($this->pdo);
             } catch (PDOException $e) {
                 $this->logger->fatal($e->getMessage());
@@ -419,6 +424,20 @@
         }
 
          /**
+         * Get the database configuration using the configuration file
+         
+         * @return array the database configuration from file
+         */
+        public function getDatabaseConfigFromFile() {
+            $db = array();
+            if (file_exists(CONFIG_PATH . 'database.php')) {
+                //here don't use require_once because somewhere user can create database instance directly
+                require CONFIG_PATH . 'database.php';
+            }
+            return $db;
+        }
+
+         /**
          * Update the properties using the current database configuration
          * 
          * @return object the current instance
@@ -440,5 +459,13 @@
                 $this->port = (int) $part[1];
             }
             return $this;
+        }
+
+        /**
+         * Class desctructor this is used to disconnect to server
+         * and call $this->disconnect
+         */
+        function __destruct() {
+            $this->disconnect();
         }
     }

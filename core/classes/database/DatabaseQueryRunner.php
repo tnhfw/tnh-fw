@@ -88,12 +88,6 @@
             if ($connection !== null) {
                 $this->connection = $connection;
             }
-
-            //Set DatabaseQueryResult instance to use
-            $this->setDependency('queryResult', 'DatabaseQueryResult', 'classes/database');
-             
-            //Set Benchmark instance to use
-            $this->setDependency('benchmark', 'Benchmark', 'libraries');
         }
         
         /**

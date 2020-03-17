@@ -16,14 +16,8 @@
 		private $secret = 'bXlzZWNyZXQ';
 		
 		public function __construct(){
-            parent::__construct();
-            
-            $cfg = $this->getDbConfig();
-            $connection = new DatabaseConnection($cfg, true);
-			$this->db = new Database($connection);
-            $qr = new DatabaseQueryRunner($connection);
-            $qr->setBenchmark(new Benchmark());
-            $this->db->setQueryRunner($qr);
+            parent::__construct();  
+            $this->db = $this->getDbInstanceForTest();
 		}
 		
 		public static function setUpBeforeClass() {
@@ -32,7 +26,7 @@
 		
 		protected function setUp() {
             parent::setUp();
-			$this->model = new DBSessionModel($this->db);
+            $this->model = new DBSessionModel($this->db);
             
             //to prevent old data conflict
 			$this->model->truncate();
@@ -47,8 +41,8 @@
 			//assign Database instance manually
 			$o = &get_instance();
 			$o->database = $this->db;
-			
-			$this->assertTrue($dbsh->open(null, null));
+            
+            $this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
 			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
@@ -60,11 +54,13 @@
 			$this->assertTrue($dbsh->destroy('foo'));
 			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
-			$encoded = $dbsh->encode('foo');
+			$encoded = $this->runPrivateProtectedMethod($dbsh, 'encode', array('foo'));
 			$this->assertNotEmpty($encoded);
-			$this->assertEquals($dbsh->decode($encoded), 'foo');
+            $decoded = $this->runPrivateProtectedMethod($dbsh, 'decode', array($encoded));
+			$this->assertEquals($decoded, 'foo');
 		}
 		
+        
 		public function testWhenDataIsExpired(){
 			$dbsh = new DBSessionHandler($this->model);
 			$dbsh->setSessionSecret($this->secret);
@@ -113,15 +109,18 @@
 			$this->assertTrue($dbsh->destroy('foo'));
 			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
-			$encoded = $dbsh->encode('foo');
-			$this->assertNotEmpty($encoded);
-			$this->assertEquals($dbsh->decode($encoded), 'foo');
 		}
 		
+        
 		public function testWhenModelInsanceIsNotSet(){
+            $this->config->set('session_save_path', 'DBSessionModel');
+            //assign Database instance manually
+			$o = &get_instance();
+			$o->database = $this->db;
+            
 			$dbsh = new DBSessionHandler();
 			$dbsh->setSessionSecret($this->secret);
-			
+           
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
 			$this->assertNull($dbsh->read('foo'));
@@ -141,14 +140,12 @@
 			$this->assertTrue($dbsh->destroy('foo'));
 			$this->assertNull($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
-			$encoded = $dbsh->encode('foo');
-			$this->assertNotEmpty($encoded);
-			$this->assertEquals($dbsh->decode($encoded), 'foo');
 		}
 		
 		public function testWhenModelTableColumnsIsNotSet(){
 			//session table is empty
 			$this->model->setSessionTableColumns(array());
+			$this->assertEmpty($this->model->getSessionTableColumns());
 			$dbsh = new DBSessionHandler($this->model);
 			$this->assertTrue($dbsh->open(null, null));
 		}

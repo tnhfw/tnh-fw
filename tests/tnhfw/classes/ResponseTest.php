@@ -31,8 +31,7 @@
             //Used in ResponseTest::testRenderFinalPageWhenEventListenerReturnEmptyContent()
             require_once TESTS_PATH . 'include/listeners_event_dispatcher_test.php';
         }
-        
-        /*
+       
 		
         public function testConstructor() {
             $_SERVER['REQUEST_URI'] = '/foo/bar';
@@ -146,20 +145,27 @@
             $obj->eventdispatcher->removeListener('FINAL_VIEW_READY', array($listener, 'responseTestListener'));
      	}
         
-        */
         public function testRenderFinalPageWhenCacheStatusIsEnabled() {
-            $fileCache = $this->getMockBuilder('FileCache')->getMock();
+            $this->vfsRoot = vfsStream::setup();
+            $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
+            $cache = new FileCache($this->vfsFileCachePath->url() . DS);
+            $cacheKey = md5('/foo/bar?a=b&b=c');
+            $cache->setCompressCacheData(false);
+            $cache->set($cacheKey, 'cacheview', 3000);
+    
+            
+            $_SERVER['REQUEST_URI'] = '/foo/bar';
+            $_SERVER['QUERY_STRING'] = 'a=b&b=c';
+            
             $benchmark = $this->getMockBuilder('Benchmark')->getMock();
             $this->config->set('cache_enable', true);
             $this->config->set('cache_handler', 'FileCache');
             $obj = &get_instance();
-            $obj->filecache = $fileCache;
+            $obj->cache = $cache;
             $obj->benchmark = $benchmark;
-            $this->runPrivateProtectedMethod($obj, 'setCacheIfEnabled', array());
-			
-            $obj->view_cache_enable = true;
             
-                    
+            $obj->view_cache_enable = true;
+            $obj->view_cache_ttl = 300;
             $r = new Response();
             $r->render('testview');
             $this->assertNotEmpty($r->getFinalPageRendered());
@@ -191,7 +197,6 @@
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
-			
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
         
@@ -207,7 +212,6 @@
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
-			
             $this->assertFalse($r->renderFinalPageFromCache($cache));
      	}
         
@@ -223,7 +227,6 @@
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
-			
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
         
@@ -242,24 +245,38 @@
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
             $r = new Response();
-			
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
         
+        
         public function testRenderFinalPageFromCacheDataIsNotValidOrExpired() {
+            $obj = &get_instance();
+            $obj->benchmark = $this->getMockBuilder('Benchmark')->getMock();
+            
             $this->vfsRoot = vfsStream::setup();
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
             $cache->setCompressCacheData(false);
-            $cache->set($cacheKey, 'cacheview', 1);
-    
+            $cache->set($cacheKey, 'cacheview', 100);
+            
             $_SERVER['REQUEST_URI'] = '/foo/bar';
             $_SERVER['QUERY_STRING'] = 'a=b&b=c';
-            $r = new Response();
-			
+            
+            
+            //Mock method "sendCacheNotYetExpireInfoToBrowser" to allow 
+            //call method "sendCachePageContentToBrowser"  
+            $r = $this->getMockBuilder('Response')
+                              ->setMethods(array('sendCacheNotYetExpireInfoToBrowser'))
+                              ->getMock();
+            
+             $r->expects($this->any())
+                 ->method('sendCacheNotYetExpireInfoToBrowser')
+                 ->will($this->returnValue(false));
             $this->assertTrue($r->renderFinalPageFromCache($cache));
      	}
+        
+        
         
         public function testSend404(){
             $r = new Response();
@@ -304,8 +321,6 @@
             $this->assertNotEmpty($r->getFinalPageRendered());
         }
         
-           
-        
         public function testSendError(){
             $data['title'] = 'error title';
             $data['error'] = 'error message';
@@ -323,5 +338,5 @@
             $r->sendError($data);
             $this->assertContains('error message', $r->getFinalPageRendered());
         }
-
+        
 	}

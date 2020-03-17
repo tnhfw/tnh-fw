@@ -107,6 +107,35 @@
                     );
         }
         
+        /**
+        * Return the database instance for test
+        */
+        protected function getDbInstanceForTest() {
+            $connection = new DatabaseConnection($this->getDbConfig(), true);
+            $db = new Database($connection);
+                        
+            $qr = new DatabaseQueryRunner($connection);
+            $qr->setBenchmark(new Benchmark());
+            
+            $qresult = new DatabaseQueryResult();
+            $qr->setQueryResult($qresult);
+            $db->setQueryRunner($qr);
+            
+            $qb = new DatabaseQueryBuilder($connection);
+            $db->setQueryBuilder($qb);
+            
+            $cache = $this->getMockBuilder('DatabaseCache')
+                          ->setMethods(array('getCacheContent', 'setCacheContent'))
+                          ->getMock();
+            
+             $cache->expects($this->any())
+                 ->method('getCacheContent')
+                 ->will($this->returnValue(null));    
+             $db->setCache($cache);
+             
+            return $db;
+        }
+        
         
         /**
         * This is used only to debug test case in certain situation

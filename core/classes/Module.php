@@ -126,7 +126,7 @@
                 $file = MODULE_PATH . $module . DS . 'config' . DS . 'autoload.php';
                 if (file_exists($file)) {
                     $autoload = array();
-                    require_once $file;
+                    require $file;
                     if (!empty($autoload) && is_array($autoload)) {
                         $autoloads = array_merge_recursive($autoloads, $autoload);
                         unset($autoload);
@@ -138,7 +138,8 @@
 
         /**
          * Get the list of the custom routes configuration from module if exists
-         * @return array|boolean the routes list or false if no module contains the routes configuration
+         * @return array|boolean the routes list or false if no module 
+         * contains the routes configuration
          */
         public function getModulesRoutesConfig() {
             if (empty($this->list)) {
@@ -150,7 +151,7 @@
                 $file = MODULE_PATH . $module . DS . 'config' . DS . 'routes.php';
                 if (file_exists($file)) {
                     $route = array();
-                    require_once $file;
+                    require $file;
                     if (!empty($route) && is_array($route)) {
                         $routes = array_merge($routes, $route);
                         unset($route);
@@ -164,7 +165,8 @@
         /**
          * Check if in module list can have this controller
          * @see Module::findClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this controller, path the full path of the controller
+         * @return boolean|string  false or null if no module have this 
+         * controller, path the full path of the controller
          */
         public function findControllerFullPath($class, $module = null) {
             return $this->findClassInModuleFullFilePath($class, $module, 'controllers');
@@ -173,7 +175,8 @@
         /**
          * Check if in module list can have this model
          * @see Module::findClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this model, return the full path of this model
+         * @return boolean|string  false or null if no module 
+         * have this model, return the full path of this model
          */
         public function findModelFullPath($class, $module = null) {
             return $this->findClassInModuleFullFilePath($class, $module, 'models');
@@ -182,7 +185,8 @@
         /**
          * Check if in module list can have this library
          * @see Module::findClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this library,  return the full path of this library
+         * @return boolean|string  false or null if no module have 
+         * this library,  return the full path of this library
          */
         public function findLibraryFullPath($class, $module = null) {
             return $this->findClassInModuleFullFilePath($class, $module, 'libraries');
@@ -192,7 +196,8 @@
         /**
          * Check if in module list can have this config
          * @see  Module::findNonClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this configuration,  return the full path of this configuration
+         * @return boolean|string  false or null if no module have this configuration,
+         *   return the full path of this configuration
          */
         public function findConfigFullPath($configuration, $module = null) {
             return $this->findNonClassInModuleFullFilePath($configuration, $module, 'config');
@@ -201,7 +206,8 @@
         /**
          * Check if in module list can have this helper
          * @see  Module::findNonClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this helper,  return the full path of this helper
+         * @return boolean|string  false or null if no module have this 
+         * helper,  return the full path of this helper
          */
         public function findFunctionFullPath($helper, $module = null) {
             return $this->findNonClassInModuleFullFilePath($helper, $module, 'functions');
@@ -210,7 +216,8 @@
         /**
          * Check if in module list can have this view
          * @see  Module::findNonClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this view, path the full path of the view
+         * @return boolean|string  false or null if no module have 
+         * this view, path the full path of the view
          */
         public function findViewFullPath($view, $module = null) {
             return $this->findNonClassInModuleFullFilePath($view, $module, 'views');
@@ -219,7 +226,8 @@
         /**
          * Check if in module list can have this language
          * @see  Module::findNonClassInModuleFullFilePath
-         * @return boolean|string  false or null if no module have this language,  return the full path of this language
+         * @return boolean|string  false or null if no module have
+         *  this language,  return the full path of this language
          */
         public function findLanguageFullPath($language, $appLang, $module = null) {
             return $this->findNonClassInModuleFullFilePath($language, $module, 'lang', $appLang);
@@ -254,7 +262,8 @@
             $this->logger->debug('Checking the class [' . $class . '] in module [' . $module . '] for [' . $type . '] ...');
             $filePath = MODULE_PATH . $module . DS . $type . DS . $classFile;
             if (file_exists($filePath)) {
-                $this->logger->info('Found class [' . $class . '] in module [' . $module . '] for [' . $type . '] the file path is [' . $filePath . ']');
+                $this->logger->info('Found class [' . $class . '] in module [' . $module . '] '
+                                     . 'for [' . $type . '] the file path is [' . $filePath . ']');
                 return $filePath;
             }
             $this->logger->info('Class [' . $class . '] does not exist in the module [' . $module . '] for [' . $type . ']');
@@ -294,7 +303,8 @@
             }
             $this->logger->debug('Checking resource [' . $name . '] in module [' . $module . '] for [' . $type . '] ...');
             if (file_exists($filePath)) {
-                $this->logger->info('Found resource [' . $name . '] in module [' . $module . '] for [' . $type . '] the file path is [' . $filePath . ']');
+                $this->logger->info('Found resource [' . $name . '] in module [' . $module . '] '
+                                    . 'for [' . $type . '] the file path is [' . $filePath . ']');
                 return $filePath;
             }
             $this->logger->info('Resource [' . $name . '] does not exist in the module [' . $module . '] for [' . $type . ']');
