@@ -197,15 +197,14 @@
              $u->setUploadFunction('copy');
              $this->assertFalse($u->save());
              
-             $u = $this->getUploadMockInstance(true);
              
              //using custom filename
-             $u->setFilename('my_image');
+             $u = $this->getUploadMockInstance(true);
              $u->setUploadedFileData($files);
              $u->setInput('image');
              $u->setUploadFunction('copy');
              $this->assertFalse($u->save());
-             $this->assertSame('my_image.ext', $u->getFilename());
+             $this->assertSame('foo.ext', $u->getFilename());
              
              
              $u = $this->getUploadMockInstance(true);
@@ -291,7 +290,7 @@
             
              $upload->expects($this->any())
                  ->method('isUploaded')
-                 ->will($this->returnValue($isUploadedStatus));
+                 ->will($this->returnValue($isUploadedMethodMock));
               return $upload;
          }
 

@@ -758,7 +758,6 @@
             return true;
         }
        
-       
         /**
          *    Check valid path
          *
@@ -856,7 +855,7 @@
 
             //check for php upload error
             $error = $this->getPhpUploadErrorMessageByCode($this->file['error']);
-            if ($error !== null) {
+            if ($error) {
                 $this->setError($error);
                 return true;
             }
