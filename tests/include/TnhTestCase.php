@@ -27,9 +27,9 @@
      * SOFTWARE.
      */
     
-	use PHPUnit\Framework\TestCase;
+    use PHPUnit\Framework\TestCase;
 
-	class TnhTestCase extends TestCase {	
+    class TnhTestCase extends TestCase {    
         //The super controller instance
         private $instance = null;
         
@@ -49,8 +49,8 @@
         //see class "Config"
         protected $config = null;
         
-	
-		public function __construct() {
+    
+        public function __construct() {
             parent::__construct();
             $this->instance = & get_instance();
             $this->config = new Config();
@@ -77,12 +77,12 @@
                 return $instance;
             }
             return Controller::getInstance();
-       }
+        }
         
         protected function setUp() {
             //delete all configuration, so each test will set the custom config to use
            $this->config->deleteAll();
-		}
+        }
         
         /**
         * Method to test private & protected method
@@ -152,4 +152,4 @@
             }
         }
 
-	}
+    }

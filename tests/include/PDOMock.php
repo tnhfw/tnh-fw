@@ -27,16 +27,16 @@
      * SOFTWARE.
      */
     
-	/**
+    /**
     * Class to mock PDO to prevent error:
     * You cannot serialize or unserialize PDO instances
     */
-	class PDOMock extends PDO {	
+    class PDOMock extends PDO { 
         
         /**
         * Disable the default constructor
         */
-		public function __construct() {}
+        public function __construct() {}
         
         
-	}
+    }

@@ -725,6 +725,38 @@
             }
             return in_array(strtolower($mime), $this->allowedMimeTypes);
         }
+
+        /**
+         *    Validate max upload file size,
+         *    but if max size is 0, this method return true
+         *
+         *    @since     1.0
+         *    @version   1.0
+         *    @param     double|integer      $size
+         *    @return    boolean
+         */
+        protected function checkMaxSize($size) {
+            if ($this->maxFileSize <= 0) {
+                return true;
+            }
+            if ($this->maxFileSize < $size) {
+                return false;
+            }
+            return true;
+        }
+
+         /**
+         *    Check the file overwritting
+         *    @since     1.0
+         *    @version   1.0
+         *    @return    boolean
+         */
+        protected function checkFileOverwritting() {
+            if ($this->fileExists($this->destinationDirectory . $this->filename)) {
+                return $this->overwriteFile;
+            }
+            return true;
+        }
        
        
         /**
@@ -823,8 +855,9 @@
             }
 
             //check for php upload error
-            if (is_numeric($this->file['error']) && $this->file['error'] > 0) {
-                $this->setError($this->getPhpUploadErrorMessageByCode($this->file['error']));
+            $error = $this->getPhpUploadErrorMessageByCode($this->file['error']);
+            if ($error !== null) {
+                $this->setError($error);
                 return true;
             }
             
@@ -835,13 +868,13 @@
             }
 
             // Check file size
-            if ($this->maxFileSize > 0 && $this->maxFileSize < $this->file['size']) {
+            if (!$this->checkMaxSize($this->file['size'])) {
                 $this->setError(sprintf($this->errorMessages['max_file_size'], $this->sizeFormat($this->maxFileSize)));
                 return true;
             }
 
             // Check if exists file
-            if ($this->fileExists($this->destinationDirectory . $this->filename) && $this->overwriteFile === false) {
+            if (!$this->checkFileOverwritting()) {
                 $this->setError($this->errorMessages['overwritten_not_allowed']);
                 return true;
             }

@@ -284,7 +284,7 @@
          /**
          * Get upload instance for test with mocking isUploaded() method
          */
-         private function getUploadMockInstance($isUploadedStatus = true) {
+         private function getUploadMockInstance($isUploadedMethodMock = true) {
              $upload = $this->getMockBuilder('Upload')
                               ->setMethods(array('isUploaded'))
                               ->getMock();

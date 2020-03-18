@@ -213,7 +213,6 @@
          */
         protected function getLogDebugBacktraceInfo() {
             $dtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-            $fileInfo = $dtrace[0];
             $i = 0;
             while ($dtrace[$i]['file'] == __FILE__ ) {
                 $i++;
