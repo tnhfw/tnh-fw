@@ -186,11 +186,11 @@
          *  for table "table", for thead "thead", for thead tr "thead_tr",
          *  for thead th "thead_th", for tbody "tbody", for tbody tr "tbody_tr", for tbody td "tbody_td", for tfoot "tfoot",
          *  for tfoot tr "tfoot_tr", for tfoot th "tfoot_th".
-         * @param boolean $use_footer whether need to generate table footer (<tfoot>) use the $headers values
+         * @param boolean $useFooter whether need to generate table footer (<tfoot>) use the $headers values
          * @param  boolean $return whether need return the generated html or just display it directly
          * @return string|void the generated "table" html  if $return is true or display it if not.
          */
-        public static function table($headers = array(), $body = array(), $attributes = array(), $use_footer = false, $return = true) {
+        public static function table($headers = array(), $body = array(), $attributes = array(), $useFooter = false, $return = true) {
             $headers = (array) $headers;
             $body = (array) $body;
             $str = null;
@@ -202,7 +202,7 @@
             $str .= self::buildTableHeader($headers, $attributes);
             $str .= self::buildTableBody($body, $attributes);
 
-            if ($use_footer) {
+            if ($useFooter) {
                 $str .= self::buildTableFooter($headers, $attributes);
             }
             $str .= '</table>';

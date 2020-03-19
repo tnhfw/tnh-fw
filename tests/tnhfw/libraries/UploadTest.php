@@ -1,28 +1,28 @@
 <?php 
 
-	/**
+    /**
      * Upload library class tests
      *
      * @group core
      * @group libraries
      */
-	class UploadTest extends TnhTestCase {	
-	
-		public function testConstructor() {
+    class UploadTest extends TnhTestCase {  
+    
+        public function testConstructor() {
             $u = new Upload();
-			$this->assertTrue(true);
-		}
+            $this->assertTrue(true);
+        }
         
         public function testSetInput() {
             $u = new Upload();
-			$this->assertEmpty($u->getInput());
+            $this->assertEmpty($u->getInput());
             $u->setInput('foo');
-			$this->assertSame('foo', $u->getInput());
-		}
+            $this->assertSame('foo', $u->getInput());
+        }
         
         public function testSetUploadedFileData() {
             $u = new Upload();
-			$this->assertEmpty($u->getUploadedFileData());
+            $this->assertEmpty($u->getUploadedFileData());
             $files = array(
                 'name' => 'foo',
                 'tmp_name' => '/foo/bar',
@@ -30,40 +30,40 @@
                 'size' => 344
             );
             $u->setUploadedFileData($files);
-			$this->assertSame($files, $u->getUploadedFileData());
-		}
+            $this->assertSame($files, $u->getUploadedFileData());
+        }
         
         public function testSetFilename() {
             $u = new Upload();
-			$this->assertEmpty($u->getFilename());
+            $this->assertEmpty($u->getFilename());
             $u->setFilename('foo');
-			$this->assertSame('foo', $u->getFilename());
-		}
+            $this->assertSame('foo', $u->getFilename());
+        }
         
         public function testSetAutoFilename() {
             $u = new Upload();
-			$this->assertEmpty($u->getFilename());
+            $this->assertEmpty($u->getFilename());
             
             $u->setAutoFilename();
-			$this->assertNotEmpty($u->getFilename());
-		}
+            $this->assertNotEmpty($u->getFilename());
+        }
         
         public function testSetMaxFileSize() {
             $u = new Upload();
-			$this->assertSame(0.0, $u->getMaxFileSize());
+            $this->assertSame(0.0, $u->getMaxFileSize());
             
             $sizeHuman = '1M';
             $sizeByte = 1048576.0;
             $u->setMaxFileSize($sizeHuman);
-			$this->assertSame($sizeByte, $u->getMaxFileSize());
+            $this->assertSame($sizeByte, $u->getMaxFileSize());
             
             $u->setMaxFileSize($sizeByte);
-			$this->assertSame($sizeByte, $u->getMaxFileSize());
-		}
+            $this->assertSame($sizeByte, $u->getMaxFileSize());
+        }
         
          public function testSetAllowedMimeTypes() {
              $u = new Upload();
-			 $this->assertEmpty($u->getAllowMimeType());
+             $this->assertEmpty($u->getAllowMimeType());
             
             //empty array
             $u->setAllowedMimeTypes(array());
@@ -76,7 +76,7 @@
          
          public function testSetMimeHelping() {
              $u = new Upload();
-			 $this->assertEmpty($u->getAllowMimeType());
+             $this->assertEmpty($u->getAllowMimeType());
             
             //invalid name
             $u->setMimeHelping('ffffffffffff');
@@ -89,7 +89,7 @@
          
          public function testClearAllowedMimeTypes() {
              $u = new Upload();
-			 $this->assertEmpty($u->getAllowMimeType());
+             $this->assertEmpty($u->getAllowMimeType());
              
              $u->setMimeHelping('document');
              $this->assertNotEmpty($u->getAllowMimeType());
@@ -102,7 +102,7 @@
          
          public function testSetCallbackInput() {
              $u = new Upload();
-			 $this->assertEmpty($u->getCallbacks());
+             $this->assertEmpty($u->getCallbacks());
              $this->assertArrayNotHasKey('input', $u->getCallbacks());
             //not an callable
             $u->setCallbackInput('fooooooooooooxxxxxxxx');
@@ -118,7 +118,7 @@
          
          public function testSetCallbackOutput() {
              $u = new Upload();
-			 $this->assertEmpty($u->getCallbacks());
+             $this->assertEmpty($u->getCallbacks());
              $this->assertArrayNotHasKey('output', $u->getCallbacks());
             //not an callable
             $u->setCallbackOutput('bazbaroooooxxxxxxxx');
@@ -134,7 +134,7 @@
          
          public function testSetUploadFunction() {
              $u = new Upload();
-			 $this->assertSame('move_uploaded_file', $u->getUploadFunction());
+             $this->assertSame('move_uploaded_file', $u->getUploadFunction());
             
             //is not an callable
             $u->setUploadFunction('ffffffffffff');
@@ -294,4 +294,4 @@
               return $upload;
          }
 
-	}
+    }

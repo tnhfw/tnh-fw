@@ -120,7 +120,8 @@
                 unset($modulesRoutes);
             }
             $this->setRouteConfiguration($moduleRouteList);
-            $this->logger->info('The routes configuration are listed below: ' . stringfy_vars($this->routes));
+            $this->logger->info('The routes configuration are listed below: ' 
+                                . stringfy_vars($this->routes));
         }
 
         /**
@@ -276,8 +277,10 @@
         }
 
         /**
-        * Setting the route configuration using the configuration file and additional configuration from param
-        * @param array $overwriteConfig the additional configuration to overwrite with the existing one
+        * Setting the route configuration using the configuration file 
+        * and additional configuration from param
+        * @param array $overwriteConfig the additional configuration 
+        * to overwrite with the existing one
         * @param boolean $useConfigFile whether to use route configuration file
         * 
         * @return object
@@ -309,7 +312,8 @@
 
         /**
          * Set the route URI to use later
-         * @param string $uri the route URI, if is empty will determine automatically
+         * @param string $uri the route URI, if is empty will 
+         * determine automatically
          * @return object
          */
         public function setRouteUri($uri = '') {
@@ -356,10 +360,12 @@
             //determine route parameters using the config
             $this->determineRouteParamsFromConfig();
 			
-            //if can not determine the module/controller/method via the defined routes configuration we will use
+            //if can not determine the module/controller/method via the 
+            //defined routes configuration we will use
             //the URL like http://domain.com/module/controller/method/arg1/arg2
             if (!$this->controller) {
-                $this->logger->info('Cannot determine the routing information using the predefined routes configuration, will use the request URI parameters');
+                $this->logger->info('Cannot determine the routing information ' 
+                       . 'using the predefined routes configuration, will use the request URI parameters');
                 //determine route parameters using the route URI param
                 $this->determineRouteParamsFromRequestUri();
             }
@@ -446,12 +452,24 @@
          */
         protected function removeDocumentRootFrontControllerFromSegments(){
             $segment = $this->segments;
-            $baseUrl = get_config('base_url');
-            //check if the app is not in DOCUMENT_ROOT
-            if (isset($segment[0]) && stripos($baseUrl, $segment[0]) !== false) {
-                array_shift($segment);
-                $this->segments = $segment;
+            $globals = & class_loader('GlobalVar', 'classes');
+            $rootFolder = substr($globals->server('SCRIPT_NAME'), 0, strpos(
+                                                                    $globals->server('SCRIPT_NAME'), 
+                                                                    basename($globals->server('SCRIPT_FILENAME'))
+                                                                ));
+            //Remove "/" at the first and and part or folder root
+            $rootFolder = trim($rootFolder, $this->uriTrim);
+            $segmentString = implode('/', $segment);
+            $segmentString = str_ireplace($rootFolder, '', $segmentString);
+            //Remove the "/" after replace like "root_folder/foo" => "/foo"
+            $segmentString = trim($segmentString, $this->uriTrim);
+            if (empty($segmentString)) {
+                //So means we have on the home page
+                $segment = array();
+            } else {
+                $segment = explode('/', $segmentString);
             }
+            $this->segments = $segment;
             $this->logger->debug('Check if the request URI contains the front controller');
             if (isset($segment[0]) && $segment[0] == SELF) {
                 $this->logger->info('The request URI contains the front controller');
@@ -487,7 +505,8 @@
             $callback = $this->callback[$findIndex];
             //only one
             if (strpos($callback, '#') === false && strpos($callback, '@') === false) {
-                $this->logger->info('Callback [' . $callback . '] does not have module or controller definition try to check if is an module or controller');
+                $this->logger->info('Callback [' . $callback . '] does not have module or ' 
+                    . 'controller definition try to check if is an module or controller');
                 //get the module list
                 $modules = $this->moduleInstance->getModuleList();
                 if (in_array($callback, $modules)) {
@@ -590,7 +609,8 @@
         protected function findControllerFullPathUsingCurrentModule(){
             $path = $this->moduleInstance->findControllerFullPath(ucfirst($this->controller), $this->module);
             if (!$path) {
-                $this->logger->info('The controller [' . $this->controller . '] not found in the module, may be will use the module [' . $this->module . '] as controller');
+                $this->logger->info('The controller [' . $this->controller . '] not ' 
+                    . 'found in the module, may be will use the module [' . $this->module . '] as controller');
                 $this->controller = $this->module;
                 return false;
             }

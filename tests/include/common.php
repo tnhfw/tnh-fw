@@ -110,7 +110,7 @@
     }
 
     function save_to_log($level, $message, $logger = null){
-        echo 'save_to_log('.$level . ',' . $message . ',' . $logger . ")\n";
+        echo 'save_to_log(' . $level . ',' . $message . ',' . $logger . ")\n";
     }
     
     function show_error($msg, $title = 'error', $logging = true){

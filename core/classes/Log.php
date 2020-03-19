@@ -149,7 +149,7 @@
             }
 			
             //check if config log_logger_name and current log can save log data
-            if (!$this->canSaveLogDataForLogger()) {
+            if (!$this->currentLoggerNameCanSaveLog()) {
                 return;
             }
 			
@@ -157,13 +157,13 @@
             if (!is_numeric($level)) {
                 $level = self::getLevelValue($level);
             }
-			
+
             //check if can logging regarding the log level config
-            $configLevel = self::getLevelValue($configLogLevel);
-            if ($configLevel > $level) {
-                //can't log
+            //or custom logger level
+            if (!$this->levelCanSaveLog($level)) {
                 return;
             }
+			
             //check log file and directory
             $path = $this->checkAndSetLogFileDirectory();
             //save the log data
@@ -197,7 +197,7 @@
 
             $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' 
                             . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
-                            . $message . ' ' . '[' . $fileInfo['file'] . '::' . $fileInfo['line'] . ']' . "\n";
+                            . $message . ' ' . '[' . $fileInfo['file'] . ':' . $fileInfo['line'] . ']' . "\n";
             $fp = fopen($path, 'a+');
             if (is_resource($fp)) {
                 flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
@@ -206,6 +206,52 @@
             }
         }	
 
+        /**
+         * Check if the given level can save log data
+         * @param  integer $level the current level value to save the log data
+         * @return boolean
+         */
+        protected function levelCanSaveLog($level) {
+            $result = true;
+            $configLogLevel = get_config('log_level');
+             //check if can save log regarding the log level configuration
+            $configLevel = self::getLevelValue($configLogLevel);
+            if ($configLevel > $level) {
+                //can't log
+                $result = false;
+            }
+            //If result is false so means current log level can not save log data
+            //using the config level 
+            if ($result === false) {
+                //Check for logger rule overwritting
+                $configLoggersNameLevel = get_config('log_logger_name_level', array());
+                foreach ($configLoggersNameLevel as $loggerName => $loggerLevel) { 
+                    if (preg_match('#' . $loggerName . '#', $this->logger)) {
+                        $loggerLevelValue = self::getLevelValue($loggerLevel);
+                        if ($loggerLevelValue <= $level) {
+                            $result = true;
+                        } 
+                        break;
+                    }
+                }
+            }
+            return $result;
+        }
+
+        /**
+         * Check if the current logger can save log data regarding the configuration
+         * of logger filter
+         * @return boolean
+         */
+        protected function currentLoggerNameCanSaveLog() {
+                $configLoggersName = get_config('log_logger_name', array());
+                if (!empty($configLoggersName)) {
+                    if (!in_array($this->logger, $configLoggersName)) {
+                        return false;
+                    }
+                }
+            return true;
+        }
 
         /**
          * Return the debug backtrace information
@@ -220,12 +266,11 @@
             $fileInfo = $dtrace[$i];
             
             $line = -1;
-            $file = -1;
-
+            $file = '';
+           
             if (isset($fileInfo['file'])) {
                 $file = $fileInfo['file'];
             }
-
             if (isset($fileInfo['line'])) {
                 $line = $fileInfo['line'];
             }
@@ -233,23 +278,6 @@
                 'file' => $file,
                 'line' => $line
             );
-        }
-
-        /**
-         * Check if the current logger can save log data regarding the configuration
-         * of logger filter
-         * @return boolean
-         */
-        protected function canSaveLogDataForLogger() {
-                $configLoggersName = get_config('log_logger_name', array());
-                if (!empty($configLoggersName)) {
-                    //for best comparaison put all string to lowercase
-                    $configLoggersName = array_map('strtolower', $configLoggersName);
-                    if (!in_array(strtolower($this->logger), $configLoggersName)) {
-                        return false;
-                    }
-                }
-            return true;
         }
 
         /**
@@ -265,7 +293,8 @@
             if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
                 //NOTE: here need put the show_error() "logging" to false 
                 //to prevent self function loop call
-                show_error('Error : the log dir does not exist or is not writable', 'Log directory error', $logging = false);
+                show_error('Error : the log dir does not exist or is not writable',
+                           'Log directory error', $logging = false);
             }
 			
             $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';

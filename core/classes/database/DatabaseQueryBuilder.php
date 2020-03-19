@@ -154,7 +154,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function count($field = '*', $name = null) {
-            return $this->select_min_max_sum_count_avg('COUNT', $field, $name);
+            return $this->selectMinMaxSumCountAvg('COUNT', $field, $name);
         }
     
         /**
@@ -164,7 +164,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function min($field, $name = null) {
-            return $this->select_min_max_sum_count_avg('MIN', $field, $name);
+            return $this->selectMinMaxSumCountAvg('MIN', $field, $name);
         }
 
         /**
@@ -174,7 +174,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function max($field, $name = null) {
-            return $this->select_min_max_sum_count_avg('MAX', $field, $name);
+            return $this->selectMinMaxSumCountAvg('MAX', $field, $name);
         }
 
         /**
@@ -184,7 +184,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function sum($field, $name = null) {
-            return $this->select_min_max_sum_count_avg('SUM', $field, $name);
+            return $this->selectMinMaxSumCountAvg('SUM', $field, $name);
         }
 
         /**
@@ -194,7 +194,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function avg($field, $name = null) {
-            return $this->select_min_max_sum_count_avg('AVG', $field, $name);
+            return $this->selectMinMaxSumCountAvg('AVG', $field, $name);
         }
 
         /**
@@ -411,15 +411,15 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function in($field, array $keys, $type = '', $andOr = 'AND', $escape = true) {
-            $_keys = array();
+            $keysList = array();
             foreach ($keys as $k => $v) {
                 $v = $this->checkForNullValue($v);
                 if (! is_numeric($v)) {
                     $v = $this->connection->escape($v, $escape);
                 }
-                $_keys[] = $v;
+                $keysList[] = $v;
             }
-            $keys = implode(', ', $_keys);
+            $keys = implode(', ', $keysList);
             $whereStr = $field . $type . ' IN (' . $keys . ')';
             $this->setWhereStr($whereStr, $andOr);
             return $this;
@@ -812,13 +812,12 @@
          * @return string
          */
         protected function getWhereStrIfIsArray(array $where, $type = '', $andOr = 'AND', $escape = true) {
-            $_where = array();
+            $wheres = array();
             foreach ($where as $column => $data) {
                 $data = $this->checkForNullValue($data);
-                $_where[] = $type . $column . ' = ' . ($this->connection->escape($data, $escape));
+                $wheres[] = $type . $column . ' = ' . ($this->connection->escape($data, $escape));
             }
-            $where = implode(' ' . $andOr . ' ', $_where);
-            return $where;
+            return implode(' ' . $andOr . ' ', $wheres);
         }
 
         /**
@@ -887,7 +886,7 @@
          * @see  DatabaseQueryBuilder::avg
          * @return object
          */
-        protected function select_min_max_sum_count_avg($clause, $field, $name = null) {
+        protected function selectMinMaxSumCountAvg($clause, $field, $name = null) {
             $clause = strtoupper($clause);
             $func = $clause . '(' . $field . ')' . (!is_null($name) ? ' AS ' . $name : '');
             return $this->setSelectStr($func);

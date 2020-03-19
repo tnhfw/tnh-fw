@@ -113,13 +113,14 @@
     }
 
     /**
-     * This function is used to load the configurations in the case the "Config" library not yet loaded
-     * @param  array  $overwrite_values if need overwrite the existing configuration
+     * This function is used to load the configurations in the 
+     * case the "Config" library not yet loaded
+     * @param  array  $overwriteValues if need overwrite the existing configuration
      * @codeCoverageIgnore
      * 
-     * @return array                   the configurations values
+     * @return array  the configurations values
      */
-    function & load_configurations(array $overwrite_values = array()){
+    function & load_configurations(array $overwriteValues = array()){
         static $config;
         if (empty($config)) {
             $file = CONFIG_PATH . 'config.php';
@@ -134,7 +135,7 @@
                 die();
             }
         }
-        foreach ($overwrite_values as $key => $value) {
+        foreach ($overwriteValues as $key => $value) {
             $config[$key] = $value;
         }
         return $config;
@@ -227,7 +228,8 @@
                     $errorType = 'notice';
                     break;
             }
-            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
+            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' 
+                       . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
         }
         if ($isError) {
             die();
@@ -246,9 +248,11 @@
      */
     function fw_exception_handler($ex) {
         if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
+            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' 
+                . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
         } else {
-            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
+            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() 
+                . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
         }
         return true;
     }
@@ -274,7 +278,7 @@
      */
     function set_http_status_header($code = 200, $text = null) {
         if (empty($text)) {
-            $http_status = array(
+            $httpStatus = array(
                                 100 => 'Continue',
                                 101 => 'Switching Protocols',
                                 200 => 'OK',
@@ -317,8 +321,8 @@
                                 504 => 'Gateway Timeout',
                                 505 => 'HTTP Version Not Supported',
                             );
-            if (isset($http_status[$code])) {
-                $text = $http_status[$code];
+            if (isset($httpStatus[$code])) {
+                $text = $httpStatus[$code];
             } else {
                 show_error('No HTTP status text found for your code please check it.');
             }

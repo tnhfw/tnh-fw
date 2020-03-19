@@ -176,6 +176,23 @@
      * $config['log_logger_name'] = array('MY_LOGGER1', 'MY_LOGGER2'); //only log message with MY_LOGGER1 or MY_LOGGER2 will be saved in file.
      */	
     $config['log_logger_name'] = array();
+
+    /**
+    * The logger name custom level to use for the log
+    * 
+    * If this config is set so means the logger level will be used to overwrite 
+    * the default log level configuration above. 
+    *
+    * Example:
+    * $config['log_logger_name_level'] = array('MY_LOGGER1' => 'WARNING'); 
+    * So if $config['log_level'] = 'ERROR' but all log messages with "MY_LOGGER1" as logger name
+    *  will be saved for WARNING message and above
+    *  Note: You can also use an regular expression for the logger name.
+    *  Example:
+    *  $config['log_logger_name_level'] = array('^Class::Con(.*)' => 'info');
+    *  So all logger name like "Class::Config", "Class::Cookie", etc. will be match
+    */  
+    $config['log_logger_name_level'] = array();
 	
 	
     /*+----------------------------------------------------------------+

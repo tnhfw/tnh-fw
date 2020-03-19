@@ -241,10 +241,14 @@
             $this->assertNull($r->getModule());
 		}
         
+        
         public function testRemoveDocumentRootFrontControllerFromSegments() {
             //NOTE: currently the value of constant SELF is "bootstrap.php"
             //because this the first file executed
-            $this->config->set('base_url', 'http://localhost/app');
+            //hack of server variable
+            $_SERVER['SCRIPT_FILENAME'] = TESTS_PATH . 'bootstrap.php';
+            $_SERVER['SCRIPT_NAME'] = '/app/bootstrap.php';
+            $this->config->set('base_url', 'http://localhost/app/');
             $r = new Router($this->module);
             $r->add('/foo/bar', 'TestController')
               ->setRouteUri('/app/bootstrap.php/foo/bar')
@@ -254,6 +258,7 @@
 			$this->assertSame('index', $r->getMethod());
 			$this->assertSame(0, count($r->getArgs()));
 		}
+        
         
         public function testRemoveSuffixAndQueryStringFromUri() {
             $this->config->set('url_suffix', '.html');

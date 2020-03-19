@@ -23,9 +23,6 @@
             }
 		}
 
-		protected function tearDown() {
-		}
-        
         public function testSetLoggerName() {
             $log = new Log();
             $this->assertSame('ROOT_LOGGER', $log->getLogger());
@@ -55,7 +52,18 @@
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
 		}
 		
-		public function testLogLevelNone() {
+		public function testLogLevelEmpty() {
+            //check if filename not exists before
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', '');
+            $log = new Log();
+            $this->assertSame('ROOT_LOGGER', $log->getLogger());
+            $log->debug('Debug message');
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+		}
+        
+        public function testLogLevelNone() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
@@ -196,6 +204,24 @@
             $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
             $this->assertContains('Info message', $content);
             $this->assertContains('FOO_LOGGER', $content);
+        }
+        
+        public function testCustomLoggerNameLevel(){
+            //check if filename not exists before
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', 'ERROR');
+            $this->config->set('log_logger_name_level', array());
+            
+            $log = new Log();
+            $log->debug('Debug message');                       
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_logger_name_level', array('FOO_LOGGER' => 'DEBUG'));
+            $log = new Log();
+            $log->setLogger('FOO_LOGGER');
+            $log->info('Info message');                       
+            $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
         }
         
 

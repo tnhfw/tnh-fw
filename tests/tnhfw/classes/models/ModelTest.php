@@ -1,13 +1,13 @@
 <?php 
 
-	/**
+    /**
      * Model class tests
      *
      * @group core
      * @group database
      * @group model
      */
-     class ModelTest extends TnhTestCase {	
+     class ModelTest extends TnhTestCase {  
     
         public static function setUpBeforeClass() {
             require APPS_MODEL_PATH . 'DefaultModel.php';
@@ -25,7 +25,7 @@
         
         protected function setUp() {
             parent::setUp();
-		}
+        }
         
         public function testConstructorUsingDbParam() {
                 $db = $this->getMockBuilder('Database')
@@ -692,4 +692,4 @@
         }
 
 
-	}
+    }
