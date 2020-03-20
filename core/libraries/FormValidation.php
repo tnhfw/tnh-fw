@@ -269,7 +269,7 @@
         }
 
         /**
-         * Process the data validation of each field, if it has any rules, run
+         * Process the data validation for each field, if it has any rules, run
          * each rule against the data value. 
          * and finally set $this->valid to true if there are no errors otherwise set to false
          * in case of error
@@ -514,7 +514,7 @@
         }
         
         /**
-         * Set the rules validation messages using translation messages
+         * Set the validation messages using translation messages
          */
         protected function setValidationMessages() {
             //Load form validation language message
