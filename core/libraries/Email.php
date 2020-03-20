@@ -105,7 +105,7 @@
 
         /**
          * SMTP connection socket
-         * @var resource
+         * @var resource|boolean
          */
         protected $smtpSocket;
 
@@ -1099,7 +1099,7 @@
 
         /**
          * Check if server support TLS connection
-         * @return object
+         * @return boolean
          */
         protected function checkForSmtpConnectionTls() {
             if ($this->transport == 'tls') {
@@ -1217,9 +1217,8 @@
                         }
                 }
             }
-            $quitCode = $this->sendCommand('QUIT')->getSmtpResponseCode();
+            $this->sendCommand('QUIT');
             $this->logs['QUIT'] = $this->smtpResponse;
-            fclose($this->smtpSocket); 
             return empty($this->error);
         }
 
