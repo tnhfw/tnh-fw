@@ -39,9 +39,7 @@
         foreach (array(APPS_PATH, CORE_PATH) as $path) {
             $file = $path . $dir . DS . $class . '.php';
             if(file_exists($file)){
-                if(class_exists($class, false) === false){
-                    require_once $file;
-                }
+                require_once $file;
                 //already found
                 $found = true;
                 break;
@@ -81,16 +79,13 @@
         return $list;
     }
 
-    function & load_configurations(array $overwrite_values = array()){
+    function & load_configurations(){
         static $config;
         if(empty($config)){
             $file = CONFIG_PATH . 'config.php';
             if (file_exists($file)) {
                 require_once $file;
             }       
-            foreach ($overwrite_values as $key => $value) {
-                $config[$key] = $value;
-            }
         }
         return $config;
     }
@@ -109,13 +104,9 @@
         return array_key_exists($key, $cfg[0]) ? $cfg[0][$key] : $default;
     }
 
-    function save_to_log($level, $message, $logger = null){
-        echo 'save_to_log(' . $level . ',' . $message . ',' . $logger . ")\n";
-    }
-    
-    function show_error($msg, $title = 'error', $logging = true){
+    function show_error($msg, $title = 'error', $logging = true, $logLevel = 'ERROR') {
         //show only and continue to help track of some error occured
-        //echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ")\n";
+        echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ', ' . $logLevel . ")\n";
         return true;
     }
     

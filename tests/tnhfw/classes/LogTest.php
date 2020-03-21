@@ -14,6 +14,7 @@
         }
 		
 		protected function setUp() {
+            parent::setUp();
             //need setup for each test
             $this->vfsRoot = vfsStream::setup();
             $this->vfsLogPath = vfsStream::newDirectory('logs')->at($this->vfsRoot);
@@ -87,10 +88,7 @@
             $this->assertContains('Debug message', $content);
 		}
         
-        
-        
         public function testLogLevelInfo() {
-            
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
@@ -102,7 +100,17 @@
             $this->assertContains('Info message', $content);
 		}
         
-        
+        public function testLogLevelNotice() {  
+            //check if filename not exists before
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', 'NOTICE');
+            $log = new Log();
+            $log->notice('Notice message');
+            $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
+            $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
+            $this->assertContains('Notice message', $content);
+		}
         
         public function testLogLevelWarning() {
             //check if filename not exists before
@@ -128,16 +136,43 @@
             $this->assertContains('Error message', $content);
 		}
         
-        public function testLogLevelFatal() {
+        public function testLogLevelCritical() {
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
-            $this->config->set('log_level', 'FATAL');
+            $this->config->set('log_level', 'CRITICAL');
             $log = new Log();
-            $log->fatal('Fatal message');
+            $log->critical('Critical message');
             $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
             $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
-            $this->assertContains('Fatal message', $content);
+            $this->assertContains('Critical message', $content);
+		}
+        
+        
+        public function testLogLevelAlert() {
+            //check if filename not exists before
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', 'ALERT');
+            $log = new Log();
+            $log->alert('Alert message');
+            $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
+            $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
+            $this->assertContains('Alert message', $content);
+		}
+        
+        
+        
+        public function testLogLevelEmergency() {
+            //check if filename not exists before
+            $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
+            
+            $this->config->set('log_level', 'EMERGENCY');
+            $log = new Log();
+            $log->emergency('Emergency message');
+            $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
+            $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
+            $this->assertContains('Emergency message', $content);
 		}
         
         
@@ -145,14 +180,14 @@
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
-            $this->config->set('log_level', 'FATAL');
+            $this->config->set('log_level', 'CRITICAL');
             $log = new Log();
-            $log->fatal('Fatal message');            
+            $log->critical('Critical message');            
             $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
             //log can not be saved 
             $log->info('Info message');
             $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
-            $this->assertContains('Fatal message', $content);
+            $this->assertContains('Critical message', $content);
             $this->assertNotContains('Info message', $content);
         }
         
@@ -162,17 +197,17 @@
             
             $this->config->set('log_level', 'FOO_LEVEL');
             $log = new Log();
-            $log->fatal('Fatal message');            
+            $log->critical('Critical message');            
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
         }
         
-        public function testUsingDirectMethodWriteLog(){
+        public function testUsingDirectMethodLog(){
             //check if filename not exists before
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
             
             $this->config->set('log_level', 'DEBUG');
             $log = new Log();
-            $log->writeLog('Info message', 'INFO');            
+            $log->log('INFO', 'Info message');        
             $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
             $content = $this->vfsLogPath->getChild($this->logFilename)->getContent();
             $this->assertContains('Info message', $content);
@@ -186,7 +221,7 @@
             $this->config->set('log_logger_name', array('FOO_LOGGER'));
             $log = new Log();
             $this->assertSame('ROOT_LOGGER',$log->getLogger());
-            $log->writeLog('Info message', 'INFO');            
+            $log->log('INFO', 'Info message');            
             $this->assertFalse($this->vfsLogPath->hasChild($this->logFilename));
         }
         

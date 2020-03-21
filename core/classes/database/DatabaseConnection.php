@@ -104,7 +104,6 @@
          */
         public function __construct(array $config = array(), $autoConnect = false) {
             parent::__construct();
-
             //Note need use the method to set config
             $this->setConfig($config);
 
@@ -131,7 +130,7 @@
                 }
                 return is_object($this->pdo);
             } catch (PDOException $e) {
-                $this->logger->fatal($e->getMessage());
+                $this->logger->critical($e->getMessage());
                 show_error('Cannot connect to Database.');
                 return false;
             }

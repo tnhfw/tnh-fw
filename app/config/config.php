@@ -134,24 +134,26 @@
 	*/
 	
     /** 
-     * The log level
-     *
-     * The valid level are: OFF, NONE, FATAL, ERROR, WARNING, WARN, INFO, DEBUG, ALL
-     *
-     * 'OFF' or 'NONE' = do not save log
-     * 'FATAL' = enable log for fatal level and above (FATAL)
-     * 'ERROR' = enable log for error level and above (ERROR, FATAL)
-     * 'WARNING' or WARN = enable log for warning level and above (WARNING, ERROR, FATAL)
-     * 'INFO' = enable log for info level and above (INFO, WARNING, ERROR, FATAL)
-     * 'DEBUG' = enable log for debug level and above (DEBUG, INFO, WARNING, ERROR, FATAL)
-     * 'ALL' = enable log for all level
-     *
-     * The default value is NONE if the config value is: null, '', 0, false
-     * 
-     * Note: in production environment it's recommand to set the log level to 'WARNING' if not in small
-     * of time the log file size will increase very fast and will cost the application performance
-     * and also the filesystem usage of your server.
-     */
+    * The log level
+    *
+    * The valid log level are: OFF, NONE, DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY
+    *
+    * 'OFF' or 'NONE' = do not save log
+    * 'EMERGENCY' = enable log for emergency level and above (EMERGENCY)
+    * 'ALERT' = enable log for alert level and above (ALERT, EMERGENCY)
+    * 'CRITICAL' = enable log for critical level and above (CRITICAL, ALERT, EMERGENCY)
+    * 'ERROR' = enable log for error level and above (ERROR, CRITICAL, ALERT, EMERGENCY)
+    * 'WARNING' = enable log for warning level and above (WARNING, ERROR, CRITICAL, ALERT, EMERGENCY)
+    * 'NOTICE' = enable log for notice level and above (NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY)
+    * 'INFO' = enable log for info level and above (INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY)
+    * 'DEBUG' = enable log for debug level and above (DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY)
+    *
+    * The default value is NONE if the config value is: null, '', 0, false
+    * 
+    * Note: in production environment it's recommand to set the log level to 'WARNING' or 'ERROR' if not, in small
+    * time the log file size will increase very fast and will cost the application performance
+    * and also the filesystem usage of your server.
+    */
     $config['log_level'] = 'NONE';
 
 

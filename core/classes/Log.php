@@ -31,15 +31,17 @@
     class Log {
 		
         /**
-         * The defined constante for Log level
+         * The defined constants for Log level
          */
-        const NONE = 99999999;
-        const FATAL = 500;
-        const ERROR = 400;
-        const WARNING = 300;
-        const INFO = 200;
-        const DEBUG = 100;
-        const ALL = -99999999;
+        const NONE      = 99999999;
+        const EMERGENCY = 800;
+        const ALERT     = 700;
+        const CRITICAL  = 600;
+        const ERROR     = 500;
+        const WARNING   = 400;
+        const NOTICE    = 300;
+        const INFO      = 200;
+        const DEBUG     = 100;
 
         /**
          * The logger name
@@ -51,7 +53,7 @@
          * List of valid log level to be checked for the configuration
          * @var array
          */
-        private static $validConfigLevel = array('off', 'none', 'fatal', 'error', 'warning', 'warn', 'info', 'debug', 'all');
+        private static $validConfigLevel = array('off', 'none', 'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug');
 
         /**
          * Create new Log instance
@@ -77,59 +79,104 @@
         }
 
         /**
-         * Save the fatal message in the log
-         * @see Log::writeLog for more detail
+         * System is unusable.
+         *
+         * @see Log::log for more detail
          * @param  string $message the log message to save
          */
-        public function fatal($message) {
-            $this->writeLog($message, self::FATAL);
-        } 
-		
-        /**
-         * Save the error message in the log
-         * @see Log::writeLog for more detail
-         * @param  string $message the log message to save
-         */
-        public function error($message) {
-            $this->writeLog($message, self::ERROR);
+        public function emergency($message) {
+            $this->log(self::EMERGENCY, $message);
         } 
 
         /**
-         * Save the warning message in the log
-         * @see Log::writeLog for more detail
+         * Action must be taken immediately.
+         *
+         * Example: Entire website down, database unavailable, etc. This should
+         * trigger the SMS alerts and wake you up.
+         *
+         * @see Log::log for more detail
+         * @param  string $message the log message to save
+         */
+        public function alert($message) {
+            $this->log(self::ALERT, $message);
+        } 
+
+        /**
+         * Critical conditions.
+         *
+         * Example: Application component unavailable, unexpected exception.
+         *
+         * @see Log::log for more detail
+         * @param  string $message the log message to save
+         */
+        public function critical($message) {
+            $this->log(self::CRITICAL, $message);
+        } 
+		
+        /**
+         * Runtime errors that do not require immediate action but should typically
+         * be logged and monitored.
+         *
+         * @see Log::log for more detail
+         * @param  string $message the log message to save
+         */
+        public function error($message) {
+            $this->log(self::ERROR, $message);
+        } 
+
+        /**
+         * Exceptional occurrences that are not errors.
+         *
+         * Example: Use of deprecated APIs, poor use of an API, undesirable things
+         * that are not necessarily wrong.
+         *
+         * @see Log::log for more detail
          * @param  string $message the log message to save
          */
         public function warning($message) {
-            $this->writeLog($message, self::WARNING);
+            $this->log(self::WARNING, $message);
+        } 
+
+        /**
+         * Normal but significant events.
+         *
+         * @see Log::log for more detail
+         * @param  string $message the log message to save
+         */
+        public function notice($message) {
+            $this->log(self::NOTICE, $message);
         } 
 		
         /**
-         * Save the info message in the log
-         * @see Log::writeLog for more detail
+         * Interesting events.
+         *
+         * Example: User logs in, SQL logs.
+         *
+         * @see Log::log for more detail
          * @param  string $message the log message to save
          */
         public function info($message) {
-            $this->writeLog($message, self::INFO);
+            $this->log(self::INFO, $message);
         } 
 		
         /**
-         * Save the debug message in the log
-         * @see Log::writeLog for more detail
+         * Detailed debug information.
+         *
+         * @see Log::log for more detail
          * @param  string $message the log message to save
          */
         public function debug($message) {
-            $this->writeLog($message, self::DEBUG);
+            $this->log(self::DEBUG, $message);
         } 
 		
-		
-        /**
-         * Save the log message
+		/**
+         * Logs with an arbitrary level.
+         *
+         * @param  integer|string $level   the log level in integer or string format,
+         * if is string will convert into integer. 
          * @param  string $message the log message to be saved
-         * @param  integer|string $level   the log level in integer or string format, 
-         * if is string will convert into integer
-         * to allow check the log level threshold.
          */
-        public function writeLog($message, $level = self::INFO) {
+        public function log($level, $message) {
             $configLogLevel = get_config('log_level');
             if (!$configLogLevel) {
                 //so means no need log just stop here
@@ -195,7 +242,7 @@
             //debug info
             $fileInfo = $this->getLogDebugBacktraceInfo();
 
-            $str = $logDate . ' [' . str_pad($levelName, 7 /*warning len*/) . '] ' 
+            $str = $logDate . ' [' . str_pad($levelName, 9 /*emergency len*/) . '] ' 
                             . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
                             . $message . ' ' . '[' . $fileInfo['file'] . ':' . $fileInfo['line'] . ']' . "\n";
             $fp = fopen($path, 'a+');
@@ -325,13 +372,14 @@
         protected static function getLevelValue($level) {
             $level = strtolower($level);
             $levelMaps = array(
-                'fatal'   => self::FATAL,
-                'error'   => self::ERROR,
-                'warning' => self::WARNING,
-                'warn'    => self::WARNING,
-                'info'    => self::INFO,
-                'debug'   => self::DEBUG,
-                'all'     => self::ALL
+                'emergency' => self::EMERGENCY,
+                'alert'     => self::ALERT,
+                'critical'  => self::CRITICAL,
+                'error'     => self::ERROR,
+                'warning'   => self::WARNING,
+                'notice'    => self::NOTICE,
+                'info'      => self::INFO,
+                'debug'     => self::DEBUG
             );
             //the default value is NONE, so means no need test for NONE
             $value = self::NONE;
@@ -348,11 +396,14 @@
          */
         protected static function getLevelName($level) {
             $levelMaps = array(
-                self::FATAL   => 'FATAL',
-                self::ERROR   => 'ERROR',
-                self::WARNING => 'WARNING',
-                self::INFO    => 'INFO',
-                self::DEBUG   => 'DEBUG'
+                self::EMERGENCY => 'EMERGENCY',
+                self::ALERT     => 'ALERT',
+                self::CRITICAL  => 'CRITICAL',
+                self::ERROR     => 'ERROR',
+                self::WARNING   => 'WARNING',
+                self::NOTICE   => 'NOTICE',
+                self::INFO      => 'INFO',
+                self::DEBUG     => 'DEBUG'
             );
             $value = '';
             if (isset($levelMaps[$level])) {

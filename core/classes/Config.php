@@ -48,7 +48,7 @@
                 //@codeCoverageIgnoreStart
                  if (ENVIRONMENT == 'production' && in_array(strtolower($this->config['log_level']), array('debug', 'info', 'all'))) {
                     $this->logger->warning('You are in production environment, please set '
-                                           . 'log level to WARNING, ERROR, FATAL to increase the application performance');
+                                           . 'log level to WARNING, ERROR, CRITICAL, ALERT, EMERGENCY to increase the application performance');
                 }
                 //@codeCoverageIgnoreEnd
             }

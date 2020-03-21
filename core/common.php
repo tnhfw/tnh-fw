@@ -64,9 +64,7 @@
         foreach (array(APPS_PATH, CORE_PATH) as $path) {
             $file = $path . $dir . DS . $class . '.php';
             if (file_exists($file)) {
-                if (class_exists($class, false) === false) {
-                    require_once $file;
-                }
+                require_once $file;
                 //already found
                 $found = true;
                 break;
@@ -115,12 +113,11 @@
     /**
      * This function is used to load the configurations in the 
      * case the "Config" library not yet loaded
-     * @param  array  $overwriteValues if need overwrite the existing configuration
      * @codeCoverageIgnore
      * 
      * @return array  the configurations values
      */
-    function & load_configurations(array $overwriteValues = array()){
+    function & load_configurations(){
         static $config;
         if (empty($config)) {
             $file = CONFIG_PATH . 'config.php';
@@ -134,9 +131,6 @@
                 echo 'Unable to find the configuration file [' . $file . ']';
                 die();
             }
-        }
-        foreach ($overwriteValues as $key => $value) {
-            $config[$key] = $value;
         }
         return $config;
     }
@@ -161,37 +155,25 @@
     }
 
     /**
-     * This function is a helper to logging message
-     * @param  string $level   the log level "ERROR", "DEBUG", "INFO", etc.
-     * @param  string $message the log message to be saved
-     * @param  string $logger  the logger to use if is set
-     * 
-     * @codeCoverageIgnore
-     */
-    function save_to_log($level, $message, $logger = null) {
-        $log = & class_loader('Log', 'classes');
-        if ($logger) {
-            $log->setLogger($logger);
-        }
-        $log->writeLog($message, $level);
-    }
-
-    /**
-     *  This function displays an error message to the user and ends the execution of the script.
+     *  This function displays an error message to the user and ends the 
+     *  execution of the script.
      *  
      *  @param string $msg the message to display
      *  @param string $title the message title: "error", "info", "warning", etc.
      *  @param boolean $logging either to save error in log
+     *  @param string $logLevel the log level to use
      *  
      *  @codeCoverageIgnore
      */
-    function show_error($msg, $title = 'error', $logging = true) {
+    function show_error($msg, $title = 'error', $logging = true, $logLevel = 'ERROR') {
         $title = strtoupper($title);
         $data = array();
         $data['error'] = $msg;
         $data['title'] = $title;
         if ($logging) {
-            save_to_log('error', '[' . $title . '] ' . strip_tags($msg), 'GLOBAL::ERROR');
+            $log = & class_loader('Log', 'classes');
+            $log->setLogger('APP::ERROR');
+            $log->log($logLevel, strip_tags($msg));
         }
         $response = & class_loader('Response', 'classes');
         $response->sendError($data);
@@ -214,22 +196,35 @@
         if ($isError) {
             set_http_status_header(500);
         }
-        if (!(error_reporting() & $errno)) {
-            save_to_log('error', 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr, 'PHP ERROR');
+        $errorType = 'Error';
+        $errorsType = array (
+                E_ERROR              => 'Error',
+                E_WARNING            => 'Warning',
+                E_PARSE              => 'Parsing Error',
+                E_NOTICE             => 'Notice',
+                E_CORE_ERROR         => 'Core Error',
+                E_CORE_WARNING       => 'Core Warning',
+                E_COMPILE_ERROR      => 'Compile Error',
+                E_COMPILE_WARNING    => 'Compile Warning',
+                E_USER_ERROR         => 'User Error',
+                E_USER_WARNING       => 'User Warning',
+                E_USER_NOTICE        => 'User Notice',
+                E_STRICT             => 'Runtime Notice',
+                E_RECOVERABLE_ERROR  => 'Catchable Fatal Error'
+        );
+        if (isset($errorsType[$errno])) {
+           $errorType = $errorsType[$errno];
+        }
+        $errorText = 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr;
+        if ((error_reporting() & $errno) !== $errno) {
             return;
         }
         if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            $errorType = 'error';
-            switch ($errno) {
-                case E_USER_WARNING:
-                    $errorType = 'warning';
-                    break;
-                case E_USER_NOTICE:
-                    $errorType = 'notice';
-                    break;
-            }
-            show_error('An error is occurred in the file <b>' . $errfile . '</b> at line <b>' 
-                       . $errline . '</b> raison : ' . $errstr, 'PHP ' . $errorType);
+            show_error($errorText, 'PHP ' . $errorType);
+        } else {
+            $log = & class_loader('Log', 'classes');
+            $log->setLogger('PHP ' . $errorType);
+            $log->critical($errorText);
         }
         if ($isError) {
             die();
@@ -247,12 +242,13 @@
      *  @return boolean
      */
     function fw_exception_handler($ex) {
+        $errorText = 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage();
         if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            show_error('An exception is occured in file ' . $ex->getFile() . ' at line ' 
-                . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception #' . $ex->getCode());
+            show_error($errorText, 'PHP Exception #' . $ex->getCode());
         } else {
-            save_to_log('error', 'An exception is occured in file ' . $ex->getFile() 
-                . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage(), 'PHP Exception');
+            $log = & class_loader('Log', 'classes');
+            $log->setLogger('PHP Exception #' . $ex->getCode());
+            $log->critical($errorText);
         }
         return true;
     }
@@ -263,7 +259,7 @@
      */
     function fw_shudown_handler() {
         $lastError = error_get_last();
-        if (isset($lastError) &&
+        if (is_array($lastError) &&
             ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
             fw_error_handler($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
         }

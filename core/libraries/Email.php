@@ -999,7 +999,9 @@
          * @return object
          */
         protected function sendCommand($command) {
-            fputs($this->smtpSocket, $command . PHP_EOL);
+            if (is_resource($this->smtpSocket)) {
+                fputs($this->smtpSocket, $command . PHP_EOL);
+            }
             $this->smtpResponse = $this->getSmtpServerResponse();
             return $this;
         }
@@ -1029,14 +1031,16 @@
          */
         protected function getSmtpServerResponse() {
             $response = '';
-            stream_set_timeout($this->smtpSocket, $this->smtpResponseTimeout);
-            while (($line = fgets($this->smtpSocket)) !== false) {
-                $response .= trim($line) . "\n";
-                if (substr($line, 3, 1) == ' ') {
-                    break;
+            if (is_resource($this->smtpSocket)) {
+                stream_set_timeout($this->smtpSocket, $this->smtpResponseTimeout);
+                while (($line = fgets($this->smtpSocket)) !== false) {
+                    $response .= trim($line) . "\n";
+                    if (substr($line, 3, 1) == ' ') {
+                        break;
+                    }
                 }
+                $response = trim($response);
             }
-            $response = trim($response);
             return $response;
         }
 
@@ -1115,11 +1119,13 @@
                      *
                      * We want the negotiation, so we'll force it below ...
                      */
-                    $method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
-                    if(version_compare(PHP_VERSION, '5.6', '>=')) {
-                        $method = STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                    if (is_resource($this->smtpSocket)) {
+                        $method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+                        if(version_compare(PHP_VERSION, '5.6', '>=')) {
+                            $method = STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                        }
+                        stream_socket_enable_crypto($this->smtpSocket, true, $method);
                     }
-                    stream_socket_enable_crypto($this->smtpSocket, true, $method);
                     $hello = $this->sendHelloCommand();
                     $this->logs['HELLO_TLS'] = $this->smtpResponse; 
                     if (!$hello) {
