@@ -10,7 +10,7 @@
 [![Total Downloads](https://poser.pugx.org/tnhfw/tnh-fw/downloads)](https://packagist.org/packages/tnhfw/tnh-fw)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7cd6345e1f49603a0817/maintainability)](https://codeclimate.com/github/tnhfw/tnh-fw/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7cd6345e1f49603a0817/test_coverage)](https://codeclimate.com/github/tnhfw/tnh-fw/test_coverage)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4545dafc7e3244bb8fed6b71f9089baf)](https://www.codacy.com/gh/tnhfw/tnh-fw?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tnhfw/tnh-fw&amp;utm_campaign=Badge_Grade)  
 
 ### Requirements 
 You can use **TNH Framework** for web or command line application. For web application: 
