@@ -123,12 +123,11 @@
             $this->logger->debug('Getting of cache info for key [' . $key . ']');
             $cacheInfos = $this->getCacheInfo($key);
             if ($cacheInfos) {
-                $data = array(
-                            'mtime' => $cacheInfos['creation_time'],
+                return array(
+                            'mtime'  => $cacheInfos['creation_time'],
                             'expire' => $cacheInfos['creation_time'] + $cacheInfos['ttl'],
-                            'ttl' => $cacheInfos['ttl']
-                            );
-                return $data;
+                            'ttl'    => $cacheInfos['ttl']
+                           );
             } 
             $this->logger->info('This cache does not exists skipping');
             return false;
