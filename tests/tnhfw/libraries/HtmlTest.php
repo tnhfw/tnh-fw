@@ -10,6 +10,9 @@
 	class HtmlTest extends TnhTestCase {	
 		
 		public function testAnchor() {
+            $obj = & get_instance();
+            $obj->url = new Url();
+            
             $h = new Html();
             $expected = '<a href = ""></a>';
 			$this->assertSame($expected, $h->anchor());

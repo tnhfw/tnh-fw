@@ -77,7 +77,7 @@
      * instance of the Log class
      */
     $LOGGER = & class_loader('Log', 'classes');
-
+    
     $LOGGER->setLogger('ApplicationBootstrap');
 
     $LOGGER->debug('Checking PHP version ...');	

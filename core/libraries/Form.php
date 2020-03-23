@@ -297,15 +297,12 @@
         /**
          * Generate the form field for select
          * @param  string $name       the name of the form field
-         * @param  mixed|array $values      the values used to populate the "option" tags
+         * @param  array $values      the values used to populate the "option" tags
          * @param  mixed $selected   the selected value in the option list
          * @param  array  $attributes the additional attribute to be added
          * @return string             the generated form field html content for select
          */
-        public static function select($name, $values = null, $selected = null, array $attributes = array()) {
-            if (!is_array($values)) {
-                $values = array('' => $values);
-            }
+        public static function select($name, array $values = array(), $selected = null, array $attributes = array()) {
             $str = null;
             $str .= '<select name = "' . $name . '"';
             $str .= attributes_to_string($attributes);

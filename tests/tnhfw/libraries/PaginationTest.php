@@ -62,6 +62,9 @@
          }
          
          public function testDeterminePaginationQueryStringValue() {
+             $obj = & get_instance();
+             $obj->url = new Url();
+            
              $defaultCurrentUrl = 'http://localhost/';
              $p = new Pagination();
              $this->assertNull($p->getPaginationQueryString());

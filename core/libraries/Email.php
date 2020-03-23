@@ -97,11 +97,10 @@
         protected $protocol = 'mail';
 
         /**
-         * Send mail transport, current supported values are:
-         * "tls", "plain"
-         * @var string
+         * SMTP configuration
+         * @var array
          */
-        protected $transport = 'plain';
+        protected $smtpConfig = array();
 
         /**
          * SMTP connection socket
@@ -110,43 +109,7 @@
         protected $smtpSocket;
 
         /**
-         * SMTP server hostname
-         * @var string
-         */
-        protected $smtpHostname = 'localhost';
-
-        /**
-         * SMTP server port
-         * @var integer
-         */
-        protected $smtpPort = 25;
-
-        /**
-         * SMTP authentication username
-         * @var string
-         */
-        protected $smtpUsername;
-
-        /**
-         * SMTP authentication password
-         * @var string
-         */
-        protected $smtpPassword;
-
-        /**
-         * SMTP server connection timeout (second)
-         * @var integer
-         */
-        protected $smtpConnectionTimeout = 30;
-
-        /**
-         * SMTP server response timeout (second)
-         * @var integer
-         */
-        protected $smtpResponseTimeout = 10;
-
-        /**
-         * The last SMTP response string
+         * The last SMTP server response string
          * @var string
          */
         protected $smtpResponse;
@@ -195,8 +158,17 @@
             $this->attachments = array();
             $this->logs = array();
             $this->error = null;
-            $this->uid = $this->getUniqueId();  
-            $this->smtpResponse = null;          
+            $this->uid = md5(uniqid(time())); 
+            $this->smtpResponse = null; 
+            $this->smtpConfig = array(
+                'transport'          => 'plain', //plain,tls
+                'hostname'           => 'localhost',
+                'port'               => 25,
+                'username'           => null,
+                'password'           => null,
+                'connection_timeout' => 30,
+                'response_timeout'   => 10
+            );         
             return $this;
         }
         
@@ -371,27 +343,24 @@
          *
          * @param string $path The file path to the attachment.
          * @param string $filename The filename of the attachment when emailed.
-         * @param string $data
          * 
          * @return object
          */
-        public function addAttachment($path, $filename = null, $data = null) {
+        public function addAttachment($path, $filename = null) {
             if (!file_exists($path)) {
-                show_error('The file [' . $path . '] does not exists.');
+                show_error('The email attachment file [' . $path . '] does not exists.');
                 return $this;
             }
             if (empty($filename)) {
                 $filename = basename($path);
             }
             $filename = $this->encodeUtf8($this->filterOther((string) $filename));
-            if (empty($data)) {
-               $data = $this->getAttachmentData($path);
-            }
+            $data = $this->getAttachmentData($path);
             $this->attachments[] = array(
-                'path' => $path,
-                'file' => $filename,
-                'data' => chunk_split(base64_encode($data))
-            );            
+                                        'path' => $path,
+                                        'file' => $filename,
+                                        'data' => chunk_split(base64_encode($data))
+                                    );            
             return $this;
         }
 
@@ -539,7 +508,7 @@
          *
          * @return object the current instance
          */
-        public function setProtocolMail() {
+        public function useMail() {
             $this->protocol = 'mail';
             return $this;
         }
@@ -549,150 +518,58 @@
          * 
          * @return object the current instance
          */
-        public function setProtocolSmtp() {
+        public function useSmtp() {
             $this->protocol = 'smtp';
             return $this;
         }
 
         /**
-         * Return the mail transport
-         * @return string
+         * Return all the smtp configurations
+         * @return array
          */
-        public function getTransport() {
-            return $this->transport;
+        public function getSmtpConfigs() {
+            return $this->smtpConfig;
         }
 
         /**
-         * Set the send mail transport to "tls"
+         * Return the smtp configuration value for the given name
+         *
+         * @param string $name the configuration name to get value
+         * @param mixed $default the default value to return if can not find configuration
+         * 
+         * @return mixed the configuration value if exist or $default will be returned
+         * returned
+         */
+        public function getSmtpConfig($name, $default = null) {
+            $value = $default;
+            if (array_key_exists($name, $this->smtpConfig)) {
+                $value = $this->smtpConfig[$name];
+            }
+            return $value;
+        }
+
+        /**
+         * Set the smtp configuration.
+         *
+         * The possible values are:
+         * array(
+         *      'transport'          => 'plain', //plain,tls
+         *      'hostname'           => 'localhost', //smtp server hostname
+         *      'port'               => 25, //smtp server port
+         *      'username'           => null, //smtp username if required
+         *      'password'           => null, //smtp password if required
+         *      'connection_timeout' => 30, //connection timeout for smtp server socket
+         *      'response_timeout'   => 10 //response timeout for smtp server socket reply
+         *   );    
+         *
+         * NOTE: the configuration will be merged with the existing one
+         *
+         * @param array $config the configuration
          *
          * @return object the current instance
          */
-        public function setTransportTls() {
-            $this->transport = 'tls';
-            return $this;
-        }
-
-        /**
-         * Set the send mail transport to "plain"
-         *
-         * @return object the current instance
-         */
-        public function setTransportPlain() {
-            $this->transport = 'plain';
-            return $this;
-        }
-
-        /**
-         * Return the smtp server hostname
-         * @return string
-         */
-        public function getSmtpHostname() {
-            return $this->smtpHostname;
-        }
-
-        /**
-         * Set the smtp server hostname
-         * @param string $smtpHostname
-         *
-         * @return object the current instance
-         */
-        public function setSmtpHostname($smtpHostname) {
-            $this->smtpHostname = $smtpHostname;
-            return $this;
-        }
-
-        /**
-         * Return the smtp server port
-         * @return integer
-         */
-        public function getSmtpPort() {
-            return $this->smtpPort;
-        }
-
-        /**
-         * Set the smtp server port
-         * @param integer $smtpPort
-         *
-         * @return object the current instance
-         */
-        public function setSmtpPort($smtpPort) {
-            $this->smtpPort = $smtpPort;
-            return $this;
-        }
-
-        /**
-         * Return the smtp username
-         * @return string
-         */
-        public function getSmtpUsername() {
-            return $this->smtpUsername;
-        }
-
-        /**
-         * Set the smtp username
-         * @param string $smtpUsername
-         *
-         * @return object the current instance
-         */
-        public function setSmtpUsername($smtpUsername) {
-            $this->smtpUsername = $smtpUsername;
-            return $this;
-        }
-
-        /**
-         * Return the smtp password
-         * @return string
-         */
-        public function getSmtpPassword() {
-            return $this->smtpPassword;
-        }
-
-        /**
-         * Set the smtp password
-         * @param string $smtpPassword
-         *
-         * @return object the current instance
-         */
-        public function setSmtpPassword($smtpPassword) {
-            $this->smtpPassword = $smtpPassword;
-            return $this;
-        }
-
-        /**
-         * Return the smtp server connection timeout
-         * @return integer
-         */
-        public function getSmtpConnectionTimeout() {
-            return $this->smtpConnectionTimeout;
-        }
-
-        /**
-         * Set the smtp server connection timeout
-         * @param integer $timeout
-         *
-         * @return object the current instance
-         */
-        public function setSmtpConnectionTimeout($timeout) {
-            $this->smtpConnectionTimeout = $timeout;
-            return $this;
-        }
-
-        /**
-         * Return the smtp server response timeout
-         * @return integer
-         */
-        public function getSmtpResponseTimeout() {
-            return $this->smtpResponseTimeout;
-        }
-
-        /**
-         * Set the smtp server response timeout
-         * @param integer $timeout
-         *
-         * @return object the current instance
-         */
-        public function setSmtpResponseTimeout($timeout) {
-            $this->smtpResponseTimeout = $timeout;
+        public function setSmtpConfig(array $config = array()) {
+            $this->smtpConfig = array_merge($this->smtpConfig, $config);
             return $this;
         }
 
@@ -736,16 +613,6 @@
         }
 
         /**
-         * Debug
-         * @codeCoverageIgnore
-         * 
-         * @return string
-         */
-        public function debug() {
-            return '<pre>' . print_r($this->logs, true) . '</pre>';
-        }
-
-        /**
          * Get attachment data
          *
          * @param string $path The path to the attachment file.
@@ -754,7 +621,7 @@
          */
         protected function getAttachmentData($path) {
             $filesize = filesize($path);
-            $handle = fopen($path, "r");
+            $handle = fopen($path, 'r');
             $attachment = null;
             if (is_resource($handle)) {
                 $attachment = fread($handle, $filesize);
@@ -781,10 +648,10 @@
          */
         protected function assembleAttachmentBody() {
             $body = array();
-            $body[] = "This is a multi-part message in MIME format.";
+            $body[] = 'This is a multi-part message in MIME format.';
             $body[] = "--{$this->uid}";
-            $body[] = "Content-Type: text/html; charset=\"utf-8\"";
-            $body[] = "Content-Transfer-Encoding: base64";
+            $body[] = 'Content-Type: text/html; charset="utf-8"';
+            $body[] = 'Content-Transfer-Encoding: base64';
             $body[] = PHP_EOL;
             $body[] = chunk_split(base64_encode($this->message));
             $body[] = PHP_EOL;
@@ -809,7 +676,7 @@
 
             $head = array();
             $head[] = "Content-Type: application/octet-stream; name=\"{$file}\"";
-            $head[] = "Content-Transfer-Encoding: base64";
+            $head[] = 'Content-Transfer-Encoding: base64';
             $head[] = "Content-Disposition: attachment; filename=\"{$file}\"";
             $head[] = "";
             $head[] = $data;
@@ -984,19 +851,10 @@
         }
 
         /**
-         * getUniqueId
-         *
-         * @return string
-         */
-        protected function getUniqueId() {
-            return md5(uniqid(time()));
-        }
-
-        /**
          * Send smtp command to server
          * @param  string $command the smtp command
          * 
-         * @return object
+         * @return object the current instance
          */
         protected function sendCommand($command) {
             if (is_resource($this->smtpSocket)) {
@@ -1014,13 +872,8 @@
             $responseCode = $this->sendCommand('EHLO ' . $this->getSmtpClientHostname())
                                  ->getSmtpResponseCode();
             if ($responseCode !== 250) {
-                //May be try with "HELO"
-                $responseCode = $this->sendCommand('HELO ' . $this->getSmtpClientHostname())
-                                     ->getSmtpResponseCode();
-                if ($responseCode !== 250) {
-                    $this->error = $this->smtpResponse;
-                    return false;
-                }
+                $this->error = $this->smtpResponse;
+                return false;
             }
             return true;
         }
@@ -1032,7 +885,7 @@
         protected function getSmtpServerResponse() {
             $response = '';
             if (is_resource($this->smtpSocket)) {
-                stream_set_timeout($this->smtpSocket, $this->smtpResponseTimeout);
+                stream_set_timeout($this->smtpSocket, $this->getSmtpConfig('response_timeout', 10));
                 while (($line = fgets($this->smtpSocket)) !== false) {
                     $response .= trim($line) . "\n";
                     if (substr($line, 3, 1) == ' ') {
@@ -1065,15 +918,15 @@
          */
         protected function smtpConnection() {
             $this->smtpSocket = fsockopen(
-                                        $this->smtpHostname,
-                                        $this->smtpPort,
+                                        $this->getSmtpConfig('hostname'),
+                                        $this->getSmtpConfig('port', 25),
                                         $errorNumber,
                                         $errorMessage,
-                                        $this->smtpConnectionTimeout
+                                        $this->getSmtpConfig('connection_timeout', 30)
                                     );
 
             if (! is_resource($this->smtpSocket)) {
-                $this->error = $errorNumber . ':' . $errorMessage;
+                $this->error = $errorNumber . ': ' . $errorMessage;
                 return false;
             }
             $response = $this->getSmtpServerResponse();
@@ -1106,7 +959,7 @@
          * @return boolean
          */
         protected function checkForSmtpConnectionTls() {
-            if ($this->transport == 'tls') {
+            if ($this->getSmtpConfig('transport', 'plain') == 'tls') {
                 $tlsCode = $this->sendCommand('STARTTLS')->getSmtpResponseCode();
                 $this->logs['STARTTLS'] = $this->smtpResponse;
                 if ($tlsCode === 220) {
@@ -1144,8 +997,8 @@
             $authCode = $this->sendCommand('AUTH LOGIN')->getSmtpResponseCode();
             $this->logs['AUTH_LOGIN'] = $this->smtpResponse;
             if ($authCode === 334) {
-                $this->sendCommand(base64_encode($this->smtpUsername))->getSmtpResponseCode();
-                $code = $this->sendCommand(base64_encode($this->smtpPassword))->getSmtpResponseCode();
+                $this->sendCommand(base64_encode($this->getSmtpConfig('username')))->getSmtpResponseCode();
+                $code = $this->sendCommand(base64_encode($this->getSmtpConfig('password')))->getSmtpResponseCode();
                 $this->logs['CLIENT_AUTH'] = $this->smtpResponse;
                 if ($code !== 235) {
                     $this->error = $this->smtpResponse;

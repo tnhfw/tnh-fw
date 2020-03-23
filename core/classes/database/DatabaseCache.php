@@ -147,7 +147,6 @@
             $this->returnAsArray = $status;
             return $this;
         }
-
     	
         /**
          * Get the cache content for this query
@@ -158,7 +157,7 @@
         public function getCacheContent() {
             //set some attributes values
             $this->setPropertiesValues();
-            if(! $this->isSelectQuery || ! $this->dbCacheStatus){
+            if (! $this->canUseCache()) {
                 $this->logger->info('The cache is not enabled for this query or is not a SELECT query'); 
                 return null;
             }
@@ -179,7 +178,8 @@
         public function saveCacheContent($result) {
             //set some attributes values
             $this->setPropertiesValues();
-            if(! $this->isSelectQuery || ! $this->dbCacheStatus){
+            if (! $this->canUseCache()) {
+                $this->logger->info('The cache is not enabled for this query or is not a SELECT query'); 
                 return null;
             }
             $this->setCacheFromSuperInstanceIfNull();
@@ -223,4 +223,11 @@
             return md5($this->query . $this->returnAsList . $this->returnAsArray);
         }
 
-}
+        /**
+         * Check whether can use cache feature for the current query
+         * @return boolean
+         */
+        protected function canUseCache() {
+            return $this->isSelectQuery && $this->dbCacheStatus;
+        }
+    }

@@ -398,6 +398,24 @@
         }
 
         /**
+         * Set the error for given field if condition(s) match(es).
+         * 
+         * @param boolean $conditions the condtion to evaluate, if true so means set the error for given field
+         * @param string $field      the error field
+         * @param mixed $value      the value of field
+         * @param string $rule       the name of the rule raise this error
+         * @param mixed $paramValue the value of rule parameter
+         * Example: min_length[17], the $paramValue will be "17"
+         * @param string|null $field2     the second field used in some validation rule like "matches", "not_equal"
+         *
+         */
+        protected function setSmpleFieldError($conditions, $field, $value, $rule, $paramValue = null, $field2 = null) {
+            if ($conditions) {
+                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue, $field2);
+            }
+        }
+
+        /**
          * Check whether the given field is required or not
          * @param  string $field the name of the field
          * @return boolean
@@ -597,10 +615,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */ 
         protected function checkRuleMinLength($field, $rule, $paramValue) {
-           $value = $this->getFieldValue($field);    
-            if (strlen($value) < $paramValue) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+           $value = $this->getFieldValue($field);  
+           $this->setSmpleFieldError(
+                                     strlen($value) < $paramValue, 
+                                     $field, 
+                                     $value, 
+                                     $rule, 
+                                     $paramValue
+                                 );
         }
 
         /**
@@ -611,10 +633,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleMaxLength($field, $rule, $paramValue) {
-           $value = $this->getFieldValue($field);    
-            if (strlen($value) > $paramValue) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+           $value = $this->getFieldValue($field);
+           $this->setSmpleFieldError(
+                                     strlen($value) > $paramValue, 
+                                     $field, 
+                                     $value, 
+                                     $rule, 
+                                     $paramValue
+                                 );
         }
 
         /**
@@ -625,10 +651,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleExactLength($field, $rule, $paramValue) {
-           $value = $this->getFieldValue($field);    
-            if (strlen($value) != $paramValue) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+           $value = $this->getFieldValue($field);
+           $this->setSmpleFieldError(
+                                     strlen($value) != $paramValue, 
+                                     $field, 
+                                     $value, 
+                                     $rule, 
+                                     $paramValue
+                                 );
         }
 
         /**
@@ -640,9 +670,14 @@
          */
         protected function checkRuleMatches($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
-            if ($value != $this->getFieldValue($paramValue)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue, $field2 = $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                     $value != $this->getFieldValue($paramValue), 
+                                     $field, 
+                                     $value, 
+                                     $rule, 
+                                     $paramValue,
+                                     $paramValue //field2
+                                 );
         }
 
         /**
@@ -654,9 +689,14 @@
          */
         protected function checkRuleNotEqual($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
-            if ($value == $this->getFieldValue($paramValue)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue, $field2 = $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                     $value == $this->getFieldValue($paramValue), 
+                                     $field, 
+                                     $value, 
+                                     $rule, 
+                                     $paramValue,
+                                     $paramValue //field2
+                                 );
         }
 
         /**
@@ -667,10 +707,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleMin($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if ($value < $paramValue) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);  
+            $this->setSmpleFieldError(
+                                 $value < $paramValue, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -681,10 +725,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleMax($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if ($value > $paramValue) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field); 
+            $this->setSmpleFieldError(
+                                 $value > $paramValue, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -699,9 +747,13 @@
             $value = $this->getFieldValue($field);    
             $betweens = explode(',', $paramValue, 2);
             $betweens = array_map('trim', $betweens);
-            if (($value < $betweens[0]) || ($value > $betweens[1])) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                 ($value < $betweens[0]) || ($value > $betweens[1]), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -717,9 +769,13 @@
             $list = explode(',', $paramValue);
             $list = array_map('trim', $list);
             $paramValue = implode(',', $list);
-            if (!in_array($value, $list)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                 !in_array($value, $list), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             ); 
         }
 
         /**
@@ -731,9 +787,13 @@
          */
         protected function checkRuleNumeric($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
-            if (!is_numeric($value)) {
-               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                 !is_numeric($value), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -744,10 +804,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleInteger($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_INT) === false) {
-               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);  
+             $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_INT) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -758,10 +822,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleIntegerNatural($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_INT) === false || $value < 0) {
-               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);
+            $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_INT) === false || $value < 0, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -772,10 +840,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleAlpha($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (!preg_match('/^[\pL\pM\s]+$/u', $value)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);
+            $this->setSmpleFieldError(
+                                 !preg_match('/^[\pL\pM\s]+$/u', $value), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -787,9 +859,13 @@
          */
         protected function checkRuleAlphaDash($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            if (!preg_match('/^[\pL\pM_-]+$/u', $value)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                 !preg_match('/^[\pL\pM_-]+$/u', $value), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -801,9 +877,13 @@
          */
         protected function checkRuleAlnum($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            if (!preg_match('/^[\pL\pM\pN\s]+$/u', $value)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                 !preg_match('/^[\pL\pM\pN\s]+$/u', $value), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -815,9 +895,13 @@
          */
         protected function checkRuleAlnumDash($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            if (!preg_match('/^[\pL\pM\pN_-]+$/u', $value)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $this->setSmpleFieldError(
+                                 !preg_match('/^[\pL\pM\pN_-]+$/u', $value), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -828,10 +912,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleEmail($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field); 
+            $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_EMAIL) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -845,10 +933,14 @@
         protected function checkRuleDate($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
             $format = $paramValue;
-            $dateValue = date_create_from_format($format, $value);    
-            if ($dateValue === false || $dateValue->format($format) !== $value) {
-               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $dateValue = date_create_from_format($format, $value);  
+            $this->setSmpleFieldError(
+                                 $dateValue === false || $dateValue->format($format) !== $value, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -860,10 +952,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleDateBefore($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (strtotime($value) >= strtotime($paramValue)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);
+             $this->setSmpleFieldError(
+                                 strtotime($value) >= strtotime($paramValue), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -875,10 +971,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleDateAfter($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (strtotime($value) <= strtotime($paramValue)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);
+            $this->setSmpleFieldError(
+                                 strtotime($value) <= strtotime($paramValue), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -889,10 +989,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleUrl($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_URL) === false) {
-               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);
+            $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_URL) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -904,10 +1008,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleIp($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_IP) === false) {
-               $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);   
+            $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_IP) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -918,10 +1026,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleIpv4($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);  
+            $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -932,10 +1044,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleIpv6($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);   
+            $this->setSmpleFieldError(
+                                 filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );
         }
 
         /**
@@ -1010,10 +1126,14 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleRegex($field, $rule, $paramValue) {
-            $value = $this->getFieldValue($field);    
-            if (!preg_match($paramValue, $value)) {
-                $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-            }
+            $value = $this->getFieldValue($field);
+             $this->setSmpleFieldError(
+                                 !preg_match($paramValue, $value), 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             );       
         }
 
         /**
@@ -1034,9 +1154,13 @@
         protected function checkRuleCallback($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
             if (is_callable($paramValue)) {
-                if (call_user_func_array($paramValue, array($value)) === false) {
-                    $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
-                }
+                $this->setSmpleFieldError(
+                                 call_user_func_array($paramValue, array($value)) === false, 
+                                 $field, 
+                                 $value, 
+                                 $rule, 
+                                 $paramValue
+                             ); 
             } else{
                 $this->forceError = true;
                 show_error('The callback validation function/method "' . $paramValue . '" does not exist');

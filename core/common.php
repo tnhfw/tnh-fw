@@ -56,8 +56,18 @@
     function & class_loader($class, $dir = 'libraries', $params = null){
         //put the first letter of class to upper case 
         $class = ucfirst($class);
+        /*
+           TODO use the best method to get the Log instance
+         */
+        if ($class == 'Log') {
+            require_once CORE_CLASSES_PATH . 'Log.php';
+            //can't use the instruction like "return new Log()" 
+            //because we need return the reference instance of the loaded class.
+            $log = new Log();
+            return $log;
+        }
         static $classes = array();
-        if (isset($classes[$class]) /*hack for duplicate log Logger name*/ && $class != 'Log') {
+        if (isset($classes[$class])) {
             return $classes[$class];
         }
         $found = false;
@@ -76,23 +86,12 @@
             echo 'Cannot find the class [' . $class . ']';
             die();
         }
-		
-        /*
-		   TODO use the best method to get the Log instance
-		 */
-        if ($class == 'Log') {
-            //can't use the instruction like "return new Log()" 
-            //because we need return the reference instance of the loaded class.
-            $log = new Log();
-            return $log;
-        }
         //track of loaded classes
         class_loaded($class);
 		
         //record the class instance
         $classes[$class] = isset($params) ? new $class($params) : new $class();
-		
-        return $classes[$class];
+		return $classes[$class];
     }
 
     /**
@@ -236,18 +235,18 @@
      *  Function defined for handling PHP exception error message, 
      *  it displays an error message using the function "show_error"
      *  
-     *  @param object $ex instance of the "Exception" class or a derived class
+     *  @param object $exception instance of the "Exception" class or a derived class
      *  @codeCoverageIgnore
      *  
      *  @return boolean
      */
-    function fw_exception_handler($ex) {
-        $errorText = 'An exception is occured in file ' . $ex->getFile() . ' at line ' . $ex->getLine() . ' raison : ' . $ex->getMessage();
+    function fw_exception_handler($exception) {
+        $errorText = 'An exception is occured in file ' . $exception->getFile() . ' at line ' . $exception->getLine() . ' raison : ' . $exception->getMessage();
         if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
-            show_error($errorText, 'PHP Exception #' . $ex->getCode());
+            show_error($errorText, 'PHP Exception #' . $exception->getCode());
         } else {
             $log = & class_loader('Log', 'classes');
-            $log->setLogger('PHP Exception #' . $ex->getCode());
+            $log->setLogger('PHP Exception #' . $exception->getCode());
             $log->critical($errorText);
         }
         return true;
@@ -445,17 +444,16 @@
      */
     function clean_input($str) {
         if (is_array($str)) {
-            $str = array_map('clean_input', $str);
-        } else if (is_object($str)) {
+            return array_map('clean_input', $str);
+        } 
+        if (is_object($str)) {
             $obj = $str;
             foreach ($str as $var => $value) {
                 $obj->$var = clean_input($value);
             }
-            $str = $obj;
-        } else {
-            $str = htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
-        }
-        return $str;
+            return $obj;
+        } 
+        return htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
     }
 	
     /**

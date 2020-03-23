@@ -91,91 +91,50 @@
             //Default is mail
             $this->assertSame('mail', $e->getProtocol());
             
-            $e->setProtocolMail();
+            $e->useMail();
             $this->assertSame('mail', $e->getProtocol());
             
-            $e->setProtocolSmtp();
+            $e->useSmtp();
             $this->assertSame('smtp', $e->getProtocol());
 		}
         
-        public function testSetGetSmtpTransport() {
+        public function testSetGetSmtpConfig() {
             $e = new Email(); 
-            //Default is plain
-            $this->assertSame('plain', $e->getTransport());
+            //Default configuration
+            $this->assertSame('plain', $e->getSmtpConfig('transport'));
+            $this->assertSame('localhost', $e->getSmtpConfig('hostname'));
+            $this->assertSame(25, $e->getSmtpConfig('port'));
+            $this->assertNull($e->getSmtpConfig('username'));
+            $this->assertNull($e->getSmtpConfig('password'));
+            $this->assertSame(30, $e->getSmtpConfig('connection_timeout'));
+            $this->assertSame(10, $e->getSmtpConfig('response_timeout'));
             
-            $e->setTransportTls();
-            $this->assertSame('tls', $e->getTransport());
+            //Custom configuration
+            $smtpConfig = array(
+                'transport'          => 'tls',
+                'hostname'           => 'my.smtpserver.com',
+                'port'               => 2525,
+                'username'           => 'foo',
+                'password'           => 'bar',
+                'connection_timeout' => 5,
+                'response_timeout'   => 2
+            );   
+            $e->setSmtpConfig($smtpConfig);
+            $this->assertNotEmpty($e->getSmtpConfigs());
+            $this->assertSame(7, count($e->getSmtpConfigs()));
             
-            $e->setTransportPlain();
-            $this->assertSame('plain', $e->getTransport());
-		}
-        
-        public function testSetGetSmtpHostname() {
-            $e = new Email(); 
-            //Default is localhost
-            $this->assertSame('localhost', $e->getSmtpHostname());
+            $this->assertSame('tls', $e->getSmtpConfig('transport'));
+            $this->assertSame('my.smtpserver.com', $e->getSmtpConfig('hostname'));
+            $this->assertSame(2525, $e->getSmtpConfig('port'));
+            $this->assertSame('foo', $e->getSmtpConfig('username'));
+            $this->assertSame('bar', $e->getSmtpConfig('password'));
+            $this->assertSame(5, $e->getSmtpConfig('connection_timeout'));
+            $this->assertSame(2, $e->getSmtpConfig('response_timeout'));
             
-            $e->setSmtpHostname('foo.com');
-            $this->assertSame('foo.com', $e->getSmtpHostname());
-            
-            $e->setSmtpHostname('bar.foo');
-            $this->assertSame('bar.foo', $e->getSmtpHostname());
-		}
-        
-        public function testSetGetSmtpPort() {
-            $e = new Email(); 
-            //Default is 25
-            $this->assertSame(25, $e->getSmtpPort());
-            
-            $e->setSmtpPort(2525);
-            $this->assertSame(2525, $e->getSmtpPort());
-            
-            $e->setSmtpPort(587);
-            $this->assertSame(587, $e->getSmtpPort());
-		}
-        
-        public function testSetGetSmtpUsername() {
-            $e = new Email(); 
-            $e->setSmtpUsername('foo');
-            $this->assertSame('foo', $e->getSmtpUsername());
-            
-            $e->setSmtpUsername('bar');
-            $this->assertSame('bar', $e->getSmtpUsername());
-		}
-        
-        public function testSetGetSmtpPassword() {
-            $e = new Email(); 
-            $e->setSmtpPassword('foopwd');
-            $this->assertSame('foopwd', $e->getSmtpPassword());
-            
-            $e->setSmtpPassword('pwdbar');
-            $this->assertSame('pwdbar', $e->getSmtpPassword());
-		}
-        
-        public function testSetGetSmtpConnectionTimeout() {
-            $e = new Email(); 
-            //Default is 30
-            $this->assertSame(30, $e->getSmtpConnectionTimeout());
-            
-            $e->setSmtpConnectionTimeout(60);
-            $this->assertSame(60, $e->getSmtpConnectionTimeout());
-            
-            $e->setSmtpConnectionTimeout(10);
-            $this->assertSame(10, $e->getSmtpConnectionTimeout());
-		}
-        
-        public function testSetGetSmtpResponseTimeout() {
-            $e = new Email(); 
-            //Default is 10
-            $this->assertSame(10, $e->getSmtpResponseTimeout());
-            
-            $e->setSmtpResponseTimeout(20);
-            $this->assertSame(20, $e->getSmtpResponseTimeout());
-            
-            $e->setSmtpResponseTimeout(5);
-            $this->assertSame(5, $e->getSmtpResponseTimeout());
-		}
-        
+            $this->assertNotEmpty($e->getSmtpConfigs());
+            $this->assertSame(7, count($e->getSmtpConfigs()));
+ 		}
+                
         public function testSetReplyTo() {
             $email = 'foo@bar.com';
             $name = null;
@@ -224,7 +183,6 @@
             $e->addAttachment('attachment.ext');
 			$this->assertFalse($e->hasAttachments());
 		}
-        
         
         public function testAddAttachmentFileExists() {
             $e = new Email(); 
@@ -277,7 +235,7 @@
             $e = new Email();
             $e->setFrom('foo@bar.com')
               ->setTo('baz@foo.fr')
-              ->setProtocolMail();
+              ->useMail();
             $this->assertFalse($e->send());
             $this->assertNotEmpty($e->getError());
             
@@ -285,8 +243,8 @@
             $e = new Email();
             $e->setFrom('foo@bar.com')
               ->setTo('baz@foo.fr')
-              ->setProtocolSmtp()
-              ->setSmtpHostname('ffffffffffffffffffffffffff');
+              ->useSmtp()
+              ->setSmtpConfig(array('hostname' => 'ffffffffffffffffffffffffff'));
             $this->assertFalse($e->send());
             
              //using wrong protocol
@@ -295,6 +253,7 @@
             
             $e = new Email();
             $proto->setValue($e, 'fooprotocol');
+            
             $e->setFrom('foo@bar.com')
               ->setTo('baz@foo.fr');
             $this->assertFalse($e->send());
@@ -325,7 +284,7 @@
             $e = new Email();
             $e->setFrom('foo@bar.com')
               ->setTo('baz@foo.fr')
-              ->setProtocolMail();
+              ->useMail();
             $this->assertFalse($e->send());
             $this->assertNotEmpty($e->getError());
         }
@@ -335,8 +294,8 @@
             $e = new Email();
             $e->setFrom('foo@bar.com')
               ->setTo('baz@foo.fr')
-              ->setProtocolSmtp()
-              ->setSmtpHostname('ffffffffffffffffffffffffff');
+              ->useSmtp()
+              ->setSmtpConfig(array('hostname' => 'ffffffffffffffffffffffffff'));
             $this->assertFalse($e->send());
         }
         
@@ -354,8 +313,8 @@
               ->setTo('baz@foo.fr')
               ->setCc(array('foo' => 'foo@bar.com', 'bar@foo.fr'))
               ->setBcc(array('foo' => 'foo@bar.com', 'bar@foo.fr'))
-              ->setProtocolSmtp()
-              ->setTransportTls();
+              ->useSmtp()
+              ->setSmtpConfig(array('transport' => 'tls'));
             $this->assertFalse($e->send());
             $this->assertNotEmpty($e->getLogs());
         }

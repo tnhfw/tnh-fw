@@ -182,27 +182,11 @@
         }
 
         /**
-         * Set the name of the browser
-         * @param $browser string The name of the browser
-         */
-        public function setBrowser($browser) {
-            $this->browserName = $browser;
-        }
-
-        /**
          * The name of the platform. 
          * @return string name of the platform
          */
         public function getPlatform() {
             return $this->platform;
-        }
-
-        /**
-         * Set the name of the platform
-         * @param string $platform the name of the platform
-         */
-        public function setPlatform($platform) {
-            $this->platform = $platform;
         }
 
         /**
@@ -212,14 +196,6 @@
          */
         public function getVersion() {
             return $this->version;
-        }
-
-        /**
-         * Set the version of the browser
-         * @param string $version the version of the browser
-         */
-        public function setVersion($version) {
-            $this->version = $version;
         }
 
 
@@ -270,44 +246,12 @@
 
 
         /**
-         * Set the browser to be mobile
-         * @param boolean $value is the browser a mobile browser or not
-         */
-        protected function setMobile($value = true) {
-            $this->isMobile = $value;
-        }
-
-        /**
-         * Set the browser to be tablet
-         * @param boolean $value is the browser a tablet browser or not
-         */
-        protected function setTablet($value = true) {
-            $this->isTablet = $value;
-        }
-
-        /**
-         * Set the browser to be a robot
-         * @param boolean $value is the browser a robot or not
-         */
-        protected function setRobot($value = true) {
-            $this->isRobot = $value;
-        }
-
-        /**
-         * Set the browser to be a facebook request
-         * @param boolean $value is the browser a robot or not
-         */
-        protected function setFacebook($value = true) {
-            $this->isFacebook = $value;
-        }
-
-        /**
          * Determine the user's platform
          */
 		protected function checkPlatform() { 
 			foreach ($this->platforms as $regex => $value) { 
 				if (preg_match($regex, $this->agent) ) {
-					$this->setPlatform($value);
+					$this->platform = $value;
 					break;
 				}
 			}   
@@ -319,7 +263,7 @@
 		protected function checkBrowser() {
 			foreach ($this->browsers as $regex => $value) { 
 				if (preg_match($regex, $this->agent ) ) {
-					$this->setBrowser($value);
+					$this->browserName = $value;
 					break;
 				}
 			}
@@ -335,7 +279,7 @@
 			$regex = "/(?<browser>version|{$browser})[\/]+(?<version>[0-9.|a-zA-Z.]*)/i";
 			if (preg_match_all($regex, $this->agent, $matches)) {
 				$found = array_search($browser, $matches['browser']);
-				$this->setVersion($matches['version'][$found]);
+				$this->version = $matches['version'][$found];
 			}
 		}
 
@@ -345,7 +289,7 @@
 		protected function checkMobile() {
 			if (preg_match('/(android|avantgo|blackberry|bolt|boost|cricket'
                 . '|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i', $this->agent) ) {
-				$this->setMobile(true);
+				$this->isMobile = true;
 			}
 		}
 
@@ -354,7 +298,7 @@
          */
 		protected function checkTablet() {
 			if (preg_match('/tablet|ipad/i', $this->agent) ) {
-				$this->setTablet(true);
+				$this->isTablet = true;
 			}
 		}
 
@@ -363,7 +307,7 @@
          */
 		protected function checkBot() {
 			if (preg_match('/bot/i', $this->agent) ) {
-				$this->setRobot(true);
+				$this->isRobot = true;
 			}
 		}
 
@@ -372,10 +316,10 @@
          */
         protected function checkFacebook() {
             if (stristr($this->agent, 'FacebookExternalHit')) {
-                $this->setRobot(true);
-                $this->setFacebook(true);
+                $this->isRobot = true;
+                $this->isFacebook = true;
             }  else if (stristr($this->agent, 'FBIOS')) {
-                $this->setFacebook(true);
+                $this->isFacebook = true;
             }
         }
 

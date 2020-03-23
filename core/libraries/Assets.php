@@ -84,26 +84,18 @@
          *  For example :
          *  	css('mystyle'); => http://mysite.com/assets/css/mystyle.css
          *  Note:
-         *  The argument passed to this function must be the relative link to the folder that contains the static contents defined by the constant ASSETS_PATH.
+         *  The argument passed to this function must be the relative link to the folder that 
+         *  contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $path the name of the css file without the extension.
-         *  @return string|null the absolute path of the css file, if it exists otherwise returns null if the file does not exist.
+         *  
+         *  @return string|null the absolute path of the css file, if it exists otherwise returns 
+         *  null if the file does not exist.
+         *
+         * @see Assets:link
          */
         public function css($path) {
-            /*
-			* if the file name contains the ".css" extension, replace it with 
-			* an empty string for better processing.
-			*/
-            $path = str_ireplace('.css', '', $path);
-            $path = ASSETS_PATH . 'css/' . $path . '.css';
-            $this->logger->debug('Including the Assets file [' . $path . '] for CSS');
-            //Check if the file exists
-            if (file_exists($path)) {
-                $this->logger->info('Assets file [' . $path . '] for CSS included successfully');
-                return get_instance()->url->mainUrl($path);
-            }
-            $this->logger->warning('Assets file [' . $path . '] for CSS does not exist');
-            return null;
+           return $this->link($path, 'css');
         }
 
         /**
@@ -117,19 +109,14 @@
          *  the folder that contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $path the name of the javascript file without the extension.
+         *  
          *  @return string|null the absolute path of the javascript file, 
          *  if it exists otherwise returns null if the file does not exist.
+         *
+         * @see Assets:link
          */
         public function js($path) {
-            $path = str_ireplace('.js', '', $path);
-            $path = ASSETS_PATH . 'js/' . $path . '.js';
-            $this->logger->debug('Including the Assets file [' . $path . '] for javascript');
-            if (file_exists($path)) {
-                $this->logger->info('Assets file [' . $path . '] for Javascript included successfully');
-                return get_instance()->url->mainUrl($path);
-            }
-            $this->logger->warning('Assets file [' . $path . '] for Javascript does not exist');
-            return null;
+            return $this->link($path, 'js');
         }
 
         /**
@@ -143,17 +130,45 @@
          *  the folder that contains the static contents defined by the constant ASSETS_PATH.
          *  
          *  @param string $path the name of the image file with the extension.
+         *  
          *  @return string|null the absolute path of the image file, if it exists 
          *  otherwise returns null if the file does not exist.
+         *
+         * @see Assets:link
          */
         public function img($path) {
-            $path = ASSETS_PATH . 'images/' . $path;
-            $this->logger->debug('Including the Assets file [' . $path . '] for image');
-            if (file_exists($path)) {
-                $this->logger->info('Assets file [' . $path . '] for image included successfully');
-                return get_instance()->url->mainUrl($path);
+            return $this->link($path, 'images');
+        }
+
+        /**
+         *  Generate the link of the css, js, images file.
+         *  
+         *  Generates the absolute link of a file containing the CSS style, Javascript and images.
+         *  
+         *  @param string $path the name of the file without the extension.
+         *  @param string $type the type of asset file value can be "css", "js" and "images"
+         *  
+         *  @return string|null the absolute path of the assets file, if it exists otherwise returns 
+         *  null if the file does not exist.
+         */
+        protected function link($path, $type) {
+            /*
+            * if the file name contains the extension like  ".css", ".js", replace it with 
+            * an empty string.
+            */
+            $extension = '.' . $type;
+            $filePath = str_ireplace($extension, '', $path);
+            $filePath = ASSETS_PATH . $type . '/' . $filePath . $extension;
+            if ($type == 'images') {
+                $filePath = ASSETS_PATH . 'images/' . $path;
             }
-            $this->logger->warning('Assets file [' . $path . '] for image does not exist');
+            $this->logger->debug('Including the Assets file [' . $filePath . '] for [' . $type . ']');
+            //Check if the file exists
+            if (file_exists($filePath)) {
+                $this->logger->info('Assets file [' . $filePath . '] for [' . $type . '] included successfully');
+                return get_instance()->url->mainUrl($filePath);
+            }
+            $this->logger->warning('Assets file [' . $filePath . '] for [' . $type . '] does not exist');
             return null;
         }
     }

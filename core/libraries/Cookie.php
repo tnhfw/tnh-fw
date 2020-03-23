@@ -84,10 +84,9 @@
                 $this->logger->info('Delete cookie item [' . $item . ']');
                 get_instance()->globalvar->removeCookie($item);
                 return true;
-            } else {
-                $this->logger->warning('Cookie item [' . $item . '] to be deleted does not exists');
-                return false;
-            }
+            } 
+            $this->logger->warning('Cookie item [' . $item . '] to be deleted does not exists');
+            return false;
         }
 
         /**

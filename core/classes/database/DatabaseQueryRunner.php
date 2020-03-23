@@ -135,7 +135,6 @@
                 $this->pdoStatment->closeCursor();
                 return $this->queryResult;
             }
-            $this->logger->info('The execution of this query got an error');
             $this->setQueryRunnerError();
         }
     	

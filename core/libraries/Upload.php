@@ -739,10 +739,7 @@
             if ($this->maxFileSize <= 0) {
                 return true;
             }
-            if ($this->maxFileSize < $size) {
-                return false;
-            }
-            return true;
+            return $this->maxFileSize >= $size;
         }
 
          /**
@@ -770,9 +767,8 @@
         protected function isDirpath($path) {
             if (DIRECTORY_SEPARATOR == '/') {
                 return (preg_match('/^[^*?"<>|:]*$/', $path) == 1);
-            } else {
-                return (preg_match("/^[^*?\"<>|:]*$/", substr($path, 2)) == 1);
             }
+            return (preg_match("/^[^*?\"<>|:]*$/", substr($path, 2)) == 1);
         }
 
         /**
@@ -826,7 +822,7 @@
          * @return object the current instance
          */
         protected function setError($message) {
-            $this->logger->info('The file upload got error : ' . $message);
+            $this->logger->error('The file upload got error : ' . $message);
             $this->error = $message;
             return $this;
         }

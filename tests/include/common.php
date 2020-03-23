@@ -31,43 +31,42 @@
     function & class_loader($class, $dir = 'libraries', $params = null){
         //put the first letter of class to upper case 
         $class = ucfirst($class);
+        /*
+           TODO use the best method to get the Log instance
+         */
+        if ($class == 'Log') {
+            require_once CORE_CLASSES_PATH . 'Log.php';
+            //can't use the instruction like "return new Log()" 
+            //because we need return the reference instance of the loaded class.
+            $log = new Log();
+            return $log;
+        }
         static $classes = array();
-        if(isset($classes[$class]) /*hack for duplicate log Logger name*/ && $class != 'Log'){
+        if (isset($classes[$class])) {
             return $classes[$class];
         }
         $found = false;
         foreach (array(APPS_PATH, CORE_PATH) as $path) {
             $file = $path . $dir . DS . $class . '.php';
-            if(file_exists($file)){
+            if (file_exists($file)) {
                 require_once $file;
                 //already found
                 $found = true;
                 break;
             }
         }
-        if(! $found){
+        if (!$found) {
             //can't use show_error() at this time because some dependencies not yet loaded
             set_http_status_header(503);
             echo 'Cannot find the class [' . $class . ']';
             die();
         }
-        
-        /*
-           TODO use the best method to get the Log instance
-         */
-        if($class == 'Log'){
-            //can't use the instruction like "return new Log()" 
-            //because we need return the reference instance of the loaded class.
-            $log = new Log();
-            return $log;
-        }
         //track of loaded classes
         class_loaded($class);
-        
+		
         //record the class instance
         $classes[$class] = isset($params) ? new $class($params) : new $class();
-        
-        return $classes[$class];
+		return $classes[$class];
     }
 
 
@@ -106,7 +105,7 @@
 
     function show_error($msg, $title = 'error', $logging = true, $logLevel = 'ERROR') {
         //show only and continue to help track of some error occured
-        echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ', ' . $logLevel . ")\n";
+        //echo 'show_error(' . $msg . ', ' . $title . ', ' . ($logging ? 'Y' : 'N') . ', ' . $logLevel . ")\n";
         return true;
     }
     
@@ -117,9 +116,9 @@
     }
 
     
-    function fw_exception_handler($ex){
+    function fw_exception_handler($exception){
         //show only and continue to help track of some error occured
-        //echo 'fw_exception_handler('.$ex->getMessage().', '.$ex->getFile().', '.$ex->getLine() . ")\n";
+        //echo 'fw_exception_handler('.$exception->getMessage().', '.$exception->getFile().', '.$exception->getLine() . ")\n";
         return true;
     }   
     
@@ -191,21 +190,18 @@
     /**
     *  @test
     */
-    function clean_input($str){
-        if(is_array($str)){
-            $str = array_map('clean_input', $str);
-        }
-        else if(is_object($str)){
+    function clean_input($str) {
+        if (is_array($str)) {
+            return array_map('clean_input', $str);
+        } 
+        if (is_object($str)) {
             $obj = $str;
             foreach ($str as $var => $value) {
                 $obj->$var = clean_input($value);
             }
-            $str = $obj;
-        }
-        else{
-            $str = htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
-        }
-        return $str;
+            return $obj;
+        } 
+        return htmlspecialchars(strip_tags($str), ENT_QUOTES, 'UTF-8');
     }
     
     /**

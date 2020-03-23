@@ -324,7 +324,7 @@
         public function testSelect() {
             $f = new Form();
             //Default
-            $expected = '<select name = "foo"><option value = "" selected></option></select>';
+            $expected = '<select name = "foo"></select>';
 			$this->assertSame($expected, $f->select('foo'));
             
             //Option values set

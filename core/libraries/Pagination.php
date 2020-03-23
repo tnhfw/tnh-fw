@@ -44,7 +44,8 @@
 
         /**
          * Create an instance of pagination
-         * @param array $overwriteConfig the list of configuration to overwrite the defined configuration in config_pagination.php
+         * @param array $overwriteConfig the list of configuration to overwrite the 
+         * defined configuration in config_pagination.php
          */
         public function __construct(array $overwriteConfig = array()) {
             $config = array();
@@ -220,31 +221,6 @@
         }
 
         /**
-         * Build the pagination link for the first page
-         * @param  int $begin             the pagination begin number
-         * @param  int $end               the pagination end number
-         * @param  int $currentPageNumber the pagination current page number
-         * @return string                    
-         */
-        protected function buildPaginationLinkForFirstPage($begin, $end, $currentPageNumber) {
-            $navbar = null;
-            $query = $this->paginationQueryString;
-            for ($i = $begin; $i <= $end; $i++) {
-                if ($i == $currentPageNumber) {
-                    $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
-                } else {
-                    $navbar .= $this->config['digit_open'] 
-                            . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
-                            . $this->config['digit_close'];
-                }
-            }
-            $navbar .= $this->config['next_open']
-                            . '<a href="' . $query . ($currentPageNumber + 1) . '">' 
-                            . $this->config['next_text'] . '</a>' . $this->config['next_close'];
-            return $navbar;
-        }
-
-        /**
          * Build the pagination link for the page in the middle
          * @param  int $begin             the pagination begin number
          * @param  int $end               the pagination end number
@@ -262,37 +238,65 @@
                     $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
                 } else {
                     $navbar .= $this->config['digit_open'] 
-                                    . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
+                                    . '<a href="' . $query . $i . '"' 
+                                    . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
                                     . $this->config['digit_close'];
                 }
             }
-            $navbar .= $this->config['next_open'] . '<a href="' . $query . ($currentPageNumber + 1) . '">' . $this->config['next_text'] . '</a>' . $this->config['next_close'];
+            $navbar .= $this->config['next_open'] . '<a href="' . $query . ($currentPageNumber + 1) . '">' 
+                       . $this->config['next_text'] . '</a>' . $this->config['next_close'];
             return $navbar;
+        }
+
+
+         /**
+         * Build the pagination link for the first page
+         * @see Pagination::buildPaginationLinkForFirstAndLastPage
+         */
+        protected function buildPaginationLinkForFirstPage($begin, $end, $currentPageNumber) {
+            return $this->buildPaginationLinkForFirstAndLastPage($begin, $end, $currentPageNumber, 'first');
         }
 
         /**
          * Build the pagination link for the last page
-         * @param  int $begin             the pagination begin number
-         * @param  int $end               the pagination end number
-         * @param  int $currentPageNumber the pagination current page number
-         * @return string                    
+         * @see Pagination::buildPaginationLinkForFirstAndLastPage
          */
         protected function buildPaginationLinkForLastPage($begin, $end, $currentPageNumber) {
+            return $this->buildPaginationLinkForFirstAndLastPage($begin, $end, $currentPageNumber, 'last');
+        }
+
+        /**
+         * Build the pagination link for the first and last page
+         * 
+         * @param  int $begin the pagination begin number
+         * @param  int $end the pagination end number
+         * @param  int $currentPageNumber the pagination current page number
+         * @param string $type can be "first", "last"
+         * 
+         * @return string                    
+         */
+        protected function buildPaginationLinkForFirstAndLastPage($begin, $end, $currentPageNumber, $type = 'first') {
             $navbar = null;
             $query = $this->paginationQueryString;
-            $navbar .= $this->config['previous_open'] 
+            if ($type == 'last') {
+                $navbar .= $this->config['previous_open'] 
                         . '<a href="' . $query . ($currentPageNumber - 1) . '">' 
                         . $this->config['previous_text'] . '</a>' . $this->config['previous_close'];
+            }
             for ($i = $begin; $i <= $end; $i++) {
                 if ($i == $currentPageNumber) {
-                    $navbar .= $this->config['active_link_open'] 
-                                . $currentPageNumber 
-                                . $this->config['active_link_close'];
+                    $navbar .= $this->config['active_link_open'] . $currentPageNumber . $this->config['active_link_close'];
                 } else {
                     $navbar .= $this->config['digit_open'] 
-                                . '<a href="' . $query . $i . '"' . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
-                                . $this->config['digit_close'];
+                            . '<a href="' . $query . $i . '"' 
+                            . attributes_to_string($this->config['attributes']) . '>' . $i . '</a>' 
+                            . $this->config['digit_close'];
                 }
+            }
+            if ($type == 'first') {
+                $navbar .= $this->config['next_open']
+                            . '<a href="' . $query . ($currentPageNumber + 1) . '">' 
+                            . $this->config['next_text'] . '</a>' . $this->config['next_close'];
             }
             return $navbar;
         }
