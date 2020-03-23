@@ -78,7 +78,8 @@
             $cookieLang = $objCookie->get($cfgKey);
             if ($cookieLang && $this->isValid($cookieLang)) {
                 $this->current = $cookieLang;
-                $this->logger->info('Language from cookie [' . $cfgKey . '] is valid so we will set the language using the cookie value [' . $cookieLang . ']');
+                $this->logger->info('Language from cookie [' . $cfgKey . '] is valid so '
+                                     .'we will set the language using the cookie value [' . $cookieLang . ']');
             } else {
                 $this->logger->info('Language from cookie [' . $cfgKey . '] is not set, use the default value [' . $this->getDefault() . ']');
                 $this->current = $this->getDefault();

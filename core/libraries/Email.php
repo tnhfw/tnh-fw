@@ -1034,22 +1034,11 @@
                 return false;
             }
             $to = $this->getToForSend();
-            $additionalHeaders = array(
-                'Date' => date('r'),
-                'Subject' => $this->subject,
-                'Return-Path' => $this->from,
-                'To' => $to
-            );
-            foreach ($additionalHeaders as $key => $value) {
-                if (! isset($this->headers[$key])) {
-                    $this->headers[$key] = $value;
-                }
-            }
+            $this->setSmtpAdditionnalHeaders();
             $message = $this->getMessageWithAttachmentForSend();
             $headers = $this->getHeadersForSend();
             $this->logger->info('Sending new mail using SMTP protocol, the information are listed below: '
                                   . 'destination: ' . $to . ', headers: ' . $headers . ', message: ' . $message);
-            
             $recipients = array_merge($this->to, $this->cc, $this->bcc);
             $commands = array(
                                 'mail_from' => array('MAIL FROM: <' . $this->from . '>', 'MAIL_FROM', 250),
@@ -1080,6 +1069,25 @@
             $this->logs['QUIT'] = $this->smtpResponse;
             return empty($this->error);
         }
+
+        /**
+         * Set the additionnal headers for SMTP protocol
+         */
+        protected function setSmtpAdditionnalHeaders() {
+            $to = $this->getToForSend();
+            $additionalHeaders = array(
+                'Date' => date('r'),
+                'Subject' => $this->subject,
+                'Return-Path' => $this->from,
+                'To' => $to
+            );
+            foreach ($additionalHeaders as $key => $value) {
+                if (! isset($this->headers[$key])) {
+                    $this->headers[$key] = $value;
+                }
+            }
+        }
+
 
          /**
          * Return the client hostname for SMTP
