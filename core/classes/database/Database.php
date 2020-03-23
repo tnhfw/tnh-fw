@@ -124,7 +124,7 @@
          */
         public function get($sqlOrResult = false) {
             $this->queryBuilder->limit(1);
-            $query = $this->getAll($returnSql = true);
+            $query = $this->getAll(true);
             if ($sqlOrResult === true) {
                 return $query;
             } 
@@ -420,9 +420,9 @@
         }
 
         /**
-         * Reset the database class attributs to the initail values before each query.
+         * Reset the database class attributs to the initial values before each query.
          */
-        private function reset() {
+        protected function reset() {
             //query builder reset
             $this->queryBuilder->reset();
             $this->numRows    = 0;
