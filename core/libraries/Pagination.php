@@ -88,11 +88,11 @@
             return $this->paginationQueryString;
         }
 
-            /**
-             * Set the value of the pagination query string
-             * @param string $pQueryString the new value
-             * @return object
-             */
+        /**
+        * Set the value of the pagination query string
+        * @param string $pQueryString the new value
+        * @return object
+        */
         public function setPaginationQueryString($pQueryString) {
             $this->paginationQueryString = $pQueryString;
             return $this;
@@ -205,7 +205,6 @@
                 $end   = $numberOfLink;
             } else if ($start > 1 && $end < $numberOfPage) {
                 $begin = $start;
-                $end = $end;
             } else {
                 $begin = ($numberOfPage - $numberOfLink) + 1;
                 $end   = $numberOfPage;
