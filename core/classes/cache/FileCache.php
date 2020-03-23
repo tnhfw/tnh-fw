@@ -190,12 +190,11 @@
             $this->logger->info('This cache data is OK check for expire');
             if ($data['expire'] > time()) {
                 $this->logger->info('This cache not yet expired return cache informations');
-                $info = array(
-                    'mtime' => $data['mtime'],
-                    'expire' => $data['expire'],
-                    'ttl' => $data['ttl']
-                    );
-                return $info;
+                return array(
+                           'mtime' => $data['mtime'],
+                           'expire' => $data['expire'],
+                           'ttl' => $data['ttl']
+                         );
             }
             $this->logger->info('This cache already expired return false');
             return false;
