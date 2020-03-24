@@ -75,15 +75,10 @@
             }
             $this->currentUrl = $currentUrl;		
             $this->currentUrlCacheKey = md5($this->currentUrl);
-			
-            $this->canCompressOutput = get_config('compress_output')
-                                          && $globals->server('HTTP_ACCEPT_ENCODING') !== null 
-                                          && stripos($globals->server('HTTP_ACCEPT_ENCODING'), 'gzip') !== false 
-                                          && extension_loaded('zlib')
-                                          && (bool) ini_get('zlib.output_compression') === false;
+
+            $this->setOutputCompressionStatus();
         }
 
-		
         /**
          * Send the HTTP Response headers
          * @param  integer $httpCode the HTTP status code
@@ -382,6 +377,17 @@
             return $handler;
         }
 
+        /**
+         * Set the status of output compression
+         */
+        protected function setOutputCompressionStatus() {
+            $globals = & class_loader('GlobalVar', 'classes');
+            $this->canCompressOutput = get_config('compress_output')
+                                          && $globals->server('HTTP_ACCEPT_ENCODING') !== null 
+                                          && stripos($globals->server('HTTP_ACCEPT_ENCODING'), 'gzip') !== false 
+                                          && extension_loaded('zlib')
+                                          && (bool) ini_get('zlib.output_compression') === false;
+        }
 
          /**
          * Return the default full file path for view

@@ -170,9 +170,9 @@
             $functionFilePath = null;
             //first check if this helper is in the module
             $this->logger->debug('Checking helper [' . $function . '] from module list ...');
-            $moduleInfo = $this->getModuleInfoForFunction($function);
+            $moduleInfo = $this->getModuleInfoForFunctionLanguage($function, 'function');
             $module    = $moduleInfo['module'];
-            $function  = $moduleInfo['function'];
+            $function  = $moduleInfo['name'];
             if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
@@ -263,9 +263,9 @@
             $languageFilePath = null;
             //first check if this language is in the module
             $this->logger->debug('Checking language [' . $language . '] from module list ...');
-            $moduleInfo = $this->getModuleInfoForLanguage($language);
+            $moduleInfo = $this->getModuleInfoForFunctionLanguage($language, 'lang');
             $module    = $moduleInfo['module'];
-            $language  = $moduleInfo['language'];
+            $language  = $moduleInfo['name'];
             if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
@@ -336,11 +336,9 @@
          * @return string|null          the full file path
          */
         protected function getDefaultFilePathForFunctionLanguage($file, $type, $appLang = null){
-            $searchDir = null;
-            if ($type == 'function') {
-               $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
-            }
-            else if ($type == 'language') {
+            //Default to "function"
+            $searchDir = array(FUNCTIONS_PATH, CORE_FUNCTIONS_PATH);
+            if ($type == 'language') {
                 $searchDir = array(APP_LANG_PATH, CORE_LANG_PATH);
                 $file = $appLang . DS . $file;
             }
@@ -395,61 +393,36 @@
         }
 
         /**
-         * Get the module information for the function to load
-         * @param  string $function the function name like moduleName/functionName, functionName,
+         * Get the module information for the function or language to load
+         * 
+         * @param  string $name the function or language name like moduleName/functionName, functionName,
+         * moduleName/langName, langName, etc.
+         * @param string $type the type of resource can be "function", "lang"
+         * 
          * @return array        the module information
          * array(
          * 	'module'=> 'module_name'
-         * 	'function' => 'function'
+         * 	'name' => 'function or language'
          * 	'file' => 'file'
          * )
          */
-        protected function getModuleInfoForFunction($function) {
+        protected function getModuleInfoForFunctionLanguage($name, $type = 'function') {
             $module = null;
             $file = null;
             //check if the request class contains module name
-            $path = explode('/', $function);
+            $path = explode('/', $name);
             if (count($path) >= 2 && in_array($path[0], get_instance()->module->getModuleList())) {
                 $module = $path[0];
-                $function = 'function_' . $path[1];
-                $file = $path[0] . DS . $function . '.php';
+                $name = $type . '_' . $path[1];
+                $file = $path[0] . DS . $name . '.php';
             }
             $module = $this->getModuleFromSuperController($module);
             return array(
-                        'function' => $function,
+                        'name' => $name,
                         'module' => $module,
                         'file' => $file
                     );
         }
-
-        /**
-         * Get the module information for the language to load
-         * @param  string $language the language name like moduleName/languageName, languageName,
-         * @return array        the module information
-         * array(
-         * 	'module'=> 'module_name'
-         * 	'language' => 'language'
-         * 	'file' => 'file'
-         * )
-         */
-        protected function getModuleInfoForLanguage($language) {
-            $module = null;
-            $file = null;
-            //check if the request class contains module name
-            $path = explode('/', $language);
-            if (count($path) >= 2 && in_array($path[0], get_instance()->module->getModuleList())) {
-                $module = $path[0];
-                $language = 'lang_' . $path[1] . '.php';
-                $file = $path[0] . DS . $language;
-            }
-            $module = $this->getModuleFromSuperController($module);
-            return array(
-                        'language' => $language,
-                        'module' => $module,
-                        'file' => $file
-                    );
-        }
-
 
         /**
          * Get the module information for the config to load
@@ -529,9 +502,9 @@
             if ($libraryFilePath) {
                     require_once $libraryFilePath;
                 if (class_exists($class)) {
-                    $c = $params ? new $class($params) : new $class();
+                    $cls = $params ? new $class($params) : new $class();
                     $obj = & get_instance();
-                    $obj->{$instance} = $c;
+                    $obj->{$instance} = $cls;
                     $this->loaded[$instance] = $class;
                     $this->logger->info('Library [' . $class . '] --> ' . $libraryFilePath . ' loaded successfully.');
                 } else {
@@ -550,7 +523,7 @@
          */
         protected function loadLanguage($languageFilePath, $language) {
             if ($languageFilePath) {
-                    $lang = array();
+                $lang = array();
                 require_once $languageFilePath;
                 if (!empty($lang) && is_array($lang)) {
                     $this->logger->info('Language file  [' . $languageFilePath . '] contains the '

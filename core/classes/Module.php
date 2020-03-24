@@ -73,12 +73,13 @@
          */
         public function remove($name) {
             $this->logger->debug('Removing of the module [' . $name . '] ...');
-            if (false !== $index = array_search($name, $this->list, true)) {
+            $index = array_search($name, $this->list, true);
+            if ($index !== false) {
                 $this->logger->info('Found the module at index [' . $index . '] remove it');
                 unset($this->list[$index]);
-            } else {
-                $this->logger->info('Cannot found this module in the list');
+                return $this;
             }
+            $this->logger->info('Cannot found this module in the list');
             return $this;
         }
         

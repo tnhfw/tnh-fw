@@ -504,7 +504,7 @@
         protected function setRouteParamsUsingPredefinedConfig($findIndex) {
             $callback = $this->callback[$findIndex];
             //only one
-            if (strpos($callback, '#') === false && strpos($callback, '@') === false) {
+            if (preg_match('/^([a-z0-9_]+)$/i', $callback)) {
                 $this->logger->info('Callback [' . $callback . '] does not have module or ' 
                     . 'controller definition try to check if is an module or controller');
                 //get the module list
