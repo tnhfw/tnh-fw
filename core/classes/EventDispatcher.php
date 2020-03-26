@@ -71,7 +71,8 @@
             $this->logger->debug('Removing of the event listener, the event name [' . $eventName . '], listener [' . stringfy_vars($listener) . ']');
             if (isset($this->listeners[$eventName])) {
                 $this->logger->info('This event have the listeners, check if this listener exists');
-                if (false !== $index = array_search($listener, $this->listeners[$eventName], true)) {
+                $index = array_search($listener, $this->listeners[$eventName], true);
+                if ($index !== false) {
                     $this->logger->info('Found the listener at index [' . $index . '] remove it');
                     unset($this->listeners[$eventName][$index]);
                 } else {
@@ -123,8 +124,8 @@
          * @return void|object if event need return, will return the final EventInfo object.
          */	
         public function dispatch($event) {
-            if (!$event || !$event instanceof EventInfo) {
-                $this->logger->info('The event is not set or is not an instance of "EventInfo" create the default "EventInfo" object to use instead of.');
+            if (!$event instanceof EventInfo) {
+                $this->logger->info('The event is not an instance of "EventInfo" create the default "EventInfo" object to use instead of.');
                 $event = new EventInfo((string) $event);
             }			
             $this->logger->debug('Dispatch to the event listener, the event [' . stringfy_vars($event) . ']');
