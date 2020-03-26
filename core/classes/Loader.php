@@ -89,9 +89,9 @@
             if (file_exists($classFilePath)) {
                 require_once $classFilePath;
                 if (class_exists($class)) {
-                    $c = new $class();
+                    $cls = new $class();
                     $obj = & get_instance();
-                    $obj->{$instance} = $c;
+                    $obj->{$instance} = $cls;
                     $this->loaded[$instance] = $class;
                     $this->logger->info('Model [' . $class . '] --> ' . $classFilePath . ' loaded successfully.');
                 } else {
