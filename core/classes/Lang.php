@@ -69,7 +69,6 @@
             parent::__construct();
 
             $this->default = get_config('default_language', 'en');
-            $this->logger->debug('Setting the supported languages');
 
             //if the language exists in cookie use it
             $cfgKey = get_config('language_cookie_name');
