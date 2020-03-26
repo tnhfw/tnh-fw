@@ -140,7 +140,7 @@
             $this->logger->debug('Reading database session data for SID: ' . $sid);
             $instance = $this->getModel();
             $columns = $this->sessionTableColumns;
-            list($ip, $host, $browser) = $this->getSessionDataParams();
+            list(, $host, $browser) = $this->getSessionDataParams();
 			
             $data = $instance->getSingleRecordCond(array($columns['sid'] => $sid, $columns['shost'] => $host, $columns['sbrowser'] => $browser));
             if ($data && isset($data->{$columns['sdata']})) {
@@ -199,8 +199,7 @@
          */
         public function destroy($sid) {
             $this->logger->debug('Destroy of session data for SID: ' . $sid);
-            $instance = $this->model;
-            $instance->delete($sid);
+            $this->model->delete($sid);
             return true;
         }
 
@@ -210,10 +209,9 @@
          * @return boolean
          */
         public function gc($maxLifetime) {
-            $instance = $this->model;
             $time = time() - $maxLifetime;
             $this->logger->debug('Garbage collector of expired session. maxLifetime [' . $maxLifetime . '] sec, expired time [' . $time . ']');
-            $instance->deleteExipredSession($time);
+            $this->model->deleteExipredSession($time);
             return true;
         }
 
@@ -317,7 +315,7 @@
         }
 
         /**
-         * Get some parameters data need like ip address, hostname, browser info, etc.
+         * Get some parameters need like ip address, hostname, browser info, etc.
          * @return array
          */
         protected function getSessionDataParams(){
