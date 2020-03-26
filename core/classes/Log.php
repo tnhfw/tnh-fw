@@ -169,7 +169,7 @@
             $this->log(self::DEBUG, $message);
         } 
 		
-		/**
+	/**
          * Logs with an arbitrary level.
          *
          * @param  integer|string $level   the log level in integer or string format,
@@ -401,7 +401,7 @@
                 self::CRITICAL  => 'CRITICAL',
                 self::ERROR     => 'ERROR',
                 self::WARNING   => 'WARNING',
-                self::NOTICE   => 'NOTICE',
+                self::NOTICE    => 'NOTICE',
                 self::INFO      => 'INFO',
                 self::DEBUG     => 'DEBUG'
             );
