@@ -35,17 +35,19 @@
 		
         /**
          * The session table columns to use
+         *
          * @var array
+         *
          * @example
          * 	array(
-				'sid' => '', //VARCHAR(255) Note: this a primary key
-				'sdata' => '', //TEXT
-				'stime' => '', //unix timestamp (INT|BIGINT)
-				'shost' => '', //VARCHAR(255)
-				'sip' => '', //VARCHAR(255) 
-				'sbrowser' => '', //VARCHAR(255) 
-				'skey' => '' //VARCHAR(255) 
-			);
+	 *	      'sid' => '', //VARCHAR(100) Note: this a primary key
+	 *	      'sdata' => '', //TEXT
+	 *	      'stime' => '', //unix timestamp (INT|BIGINT)
+	 *	      'shost' => '', //VARCHAR(255)
+	 *	      'sip' => '', //VARCHAR(128) 
+	 *	      'sbrowser' => '', //VARCHAR(255) 
+	 *	      'skey' => '' //VARCHAR(255) 
+	 *	);
          */
         protected $sessionTableColumns = array();
 
