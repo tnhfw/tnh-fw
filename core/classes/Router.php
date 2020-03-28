@@ -115,7 +115,7 @@
             //loading routes for module
             $moduleRouteList = array();
             $modulesRoutes = $this->moduleInstance->getModulesRoutesConfig();
-            if ($modulesRoutes && is_array($modulesRoutes)) {
+            if (is_array($modulesRoutes)) {
                 $moduleRouteList = $modulesRoutes;
                 unset($modulesRoutes);
             }
@@ -141,7 +141,6 @@
          */
         public function setModuleInstance(Module $module = null) {
             $this->moduleInstance = $module;
-
             return $this;
         }
 
@@ -239,7 +238,7 @@
                 $this->logger->warning('The route [' . $uri . '] already added, '
                                         . 'may be adding again can have route conflict');
             }
-            $this->pattern[] = $uri;
+            $this->pattern[]  = $uri;
             $this->callback[] = $callback;
             return $this;
         }
@@ -272,7 +271,7 @@
             $this->logger->info('Remove all routes from the configuration');
             $this->pattern  = array();
             $this->callback = array();
-            $this->routes = array();
+            $this->routes   = array();
             return $this;
         }
 
@@ -362,7 +361,7 @@
 			
             //if can not determine the module/controller/method via the 
             //defined routes configuration we will use
-            //the URL like http://domain.com/module/controller/method/arg1/arg2
+            //the URL like http://domain.com/module/controller/method/arg1/arg2/argn 
             if (!$this->controller) {
                 $this->logger->info('Cannot determine the routing information ' 
                        . 'using the predefined routes configuration, will use the request URI parameters');
@@ -418,6 +417,7 @@
                 return $this;
             }
             //did we set the controller, so set the controller path
+            //if not yet set before 
             if ($this->controller && !$this->controllerPath) {
                 $this->logger->debug('Setting the file path for the controller [' . $this->controller . ']');
                 $controllerPath = APPS_CONTROLLER_PATH . ucfirst($this->controller) . '.php';
@@ -457,14 +457,14 @@
                                                                     $globals->server('SCRIPT_NAME'), 
                                                                     basename($globals->server('SCRIPT_FILENAME'))
                                                                 ));
-            //Remove "/" at the first and and part or folder root
+            //Remove "/" at the first or folder root
             $rootFolder = trim($rootFolder, $this->uriTrim);
             $segmentString = implode('/', $segment);
             $segmentString = str_ireplace($rootFolder, '', $segmentString);
             //Remove the "/" after replace like "root_folder/foo" => "/foo"
             $segmentString = trim($segmentString, $this->uriTrim);
             if (empty($segmentString)) {
-                //So means we have on the home page
+                //So means we are on the home page
                 $segment = array();
             } else {
                 $segment = explode('/', $segmentString);
@@ -542,7 +542,7 @@
                 $callback = implode('', $part);
             }
 
-            //check for method
+            //Check for method
             //the remaining will be the method if is not empty
             if (!empty($callback)) {
                 $this->method = $callback;
@@ -556,8 +556,8 @@
         protected function determineRouteParamsFromConfig() {
             $uri = implode('/', $this->segments);
             /*
-	   		* Generics routes patterns
-	    	*/
+	    * Generics routes patterns
+	    */
             $pattern = array(':num', ':alpha', ':alnum', ':any');
             $replace = array('[0-9]+', '[a-zA-Z]+', '[a-zA-Z0-9]+', '.*');
 
@@ -567,7 +567,7 @@
                                     );
             $args = array();
             $findIndex = -1;
-            // Cycle through the URIs stored in the array
+            //Cycle through the URIs stored in the array
             foreach ($this->pattern as $index => $uriList) {
                 $uriList = str_ireplace($pattern, $replace, $uriList);
                 // Check for an existant matching URI
@@ -577,15 +577,17 @@
                                         . ' [' . $this->pattern[$index] . '] --> [' . $this->callback[$index] . ']'
                                     );
                     $findIndex = $index;
-                    // stop here
+                    //stop here
                     break;
                 }
             }
             if($findIndex !== -1){
-                //$args[0] => full string captured by preg_match
-                //$args[1], $args[2], $args[n] => contains the value of 
-                //(:num), (:alpha), (:alnum), (:any)
-                //so need remove the first value $args[0]
+                /*
+                * $args[0] => full string captured by preg_match
+                * $args[1], $args[2], $args[n] => contains the value of 
+                * (:num), (:alpha), (:alnum), (:any)
+                * so need remove the first value $args[0]
+                */
                 array_shift($args);
                 $this->args = $args;
                 $this->setRouteParamsUsingPredefinedConfig($findIndex);
@@ -610,7 +612,7 @@
             $path = $this->moduleInstance->findControllerFullPath(ucfirst($this->controller), $this->module);
             if (!$path) {
                 $this->logger->info('The controller [' . $this->controller . '] not ' 
-                    . 'found in the module, may be will use the module [' . $this->module . '] as controller');
+                                    . 'found in the module, may be will use the module [' . $this->module . '] as controller');
                 $this->controller = $this->module;
                 return false;
             }
@@ -655,7 +657,6 @@
                 //check if the second arg is the controller from module
                 if (isset($segment[0])) {
                     $this->controller = $segment[0];
-
                     //check if the request use the same module name and controller
                     if($this->findControllerFullPathUsingCurrentModule()){
                         array_shift($segment);
@@ -685,7 +686,6 @@
             if ($nbSegment > 0) {
                 //get the module list
                 $modules = $this->moduleInstance->getModuleList();
-
                 //first check if no module
                 if (empty($modules)) {
                     $this->logger->info('No module was loaded will skip the module checking');
