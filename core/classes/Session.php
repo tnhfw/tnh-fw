@@ -57,7 +57,7 @@
                 $this->logger->info('Found session data for item [' . $item . '] the vaue is : [' . stringfy_vars($sessions[$item]) . ']');
                 return $sessions[$item];
             }
-            $this->logger->warning('Cannot find session item [' . $item . '] using the default value [' . $default . ']');
+            $this->logger->warning('Cannot find session item [' . $item . '] using the default value [' . stringfy_vars($default) . ']');
             return $default;
         }
 
@@ -85,7 +85,7 @@
                 $return = $sessions[$key];
                 get_instance()->globalvar->removeSession($key);
             } else {
-                $this->logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . $default . ']');
+                $this->logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . stringfy_vars($default) . ']');
             }
             return $return;
         }
