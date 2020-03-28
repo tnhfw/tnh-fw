@@ -89,12 +89,12 @@
          * @return string the friendly generated text
          */
         public function title($str = null, $separator = '-', $lowercase = true) {
-            $str = trim($str);
+            $str  = trim($str);
             $from = array('ç', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'à', 'á', 'â', 'ã', 'ä', 'å', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'È', 'É', 'Ê', 'Ë', 'è', 'é', 'ê', 'ë', 'Ç', 'ç', 'Ì', 'Í', 'Î', 'Ï', 'ì', 'í', 'î', 'ï', 'Ù', 'Ú', 'Û', 'Ü', 'ù', 'ú', 'û', 'ü', 'ÿ', 'Ñ', 'ñ');
-            $to = array('c', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'n', 'n');
-            $str = str_replace($from, $to, $str);
-            $str = preg_replace('#([^a-z0-9]+)#i', $separator, $str);
-            $str = str_replace('--', $separator, $str);
+            $to   = array('c', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'n', 'n');
+            $str  = str_replace($from, $to, $str);
+            $str  = preg_replace('#([^a-z0-9]+)#i', $separator, $str);
+            $str  = str_replace('--', $separator, $str);
             //if after process we get something like one-two-three-, need truncate the last separator "-"
             if (substr($str, -1) == $separator) {
                 $str = substr($str, 0, -1);
@@ -128,8 +128,7 @@
                     break;
                 }
             }
-			$port = get_instance()->request->server('SERVER_PORT');
-            
+	    $port = get_instance()->request->server('SERVER_PORT');
             if ($port && !in_array($port, array(80, 443))) {
                 $domain .= ':' . $port;
             }
@@ -155,11 +154,11 @@
             $suffix = get_config('url_suffix');
             if ($suffix && $path) {
                 if (strpos($path, '?') !== false) {
-                    $query = explode('?', $path);
+                    $query    = explode('?', $path);
                     $query[0] = str_ireplace($suffix, '', $query[0]);
                     $query[0] = rtrim($query[0], '/');
                     $query[0] .= $suffix;
-                    $path = implode('?', $query);
+                    $path     = implode('?', $query);
                 } else {
                     $path .= $suffix;
                 }
