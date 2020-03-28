@@ -185,7 +185,7 @@
                 $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] '
                                     . 'using the default location');
             }
-			if (!$path) {
+	    if (!$path) {
                 $path = $this->getDefaultFilePathForView($viewFile);
             }
             $this->logger->info('The view file path to be loaded is [' . $path . ']');
@@ -206,7 +206,7 @@
                 return;
             }
             $obj = & get_instance();
-            $cachePageStatus = get_instance()->config->get('cache_enable', false) 
+            $cachePageStatus = get_config('cache_enable', false) 
                                && !empty($obj->view_cache_enable);
             
             $content = $this->dispatchFinalViewEvent();
@@ -283,7 +283,7 @@
                 return;
             }
             $obj = & get_instance();
-            $cachePageStatus = get_instance()->config->get('cache_enable', false) 
+            $cachePageStatus = get_config('cache_enable', false) 
                                 && !empty($obj->view_cache_enable);
             //dispatch
             get_instance()->eventdispatcher->dispatch(new EventInfo('PAGE_NOT_FOUND'));
@@ -383,7 +383,6 @@
         protected function setOutputCompressionStatus() {
             $globals = & class_loader('GlobalVar', 'classes');
             $this->canCompressOutput = get_config('compress_output')
-                                          && $globals->server('HTTP_ACCEPT_ENCODING') !== null 
                                           && stripos($globals->server('HTTP_ACCEPT_ENCODING'), 'gzip') !== false 
                                           && extension_loaded('zlib')
                                           && (bool) ini_get('zlib.output_compression') === false;
@@ -475,7 +474,7 @@
             //current page URL
             $url = $this->currentUrl;
             //Cache view Time to live in second
-            $viewCacheTtl = get_instance()->config->get('cache_ttl');
+            $viewCacheTtl = get_config('cache_ttl');
             if (!empty($obj->view_cache_ttl)) {
                 $viewCacheTtl = $obj->view_cache_ttl;
             }
