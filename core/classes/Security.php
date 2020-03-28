@@ -85,7 +85,7 @@
             }
             //perform form data
             $token = get_instance()->request->post($key);
-            if (!$token || $token !== $sessionInstance->get($key) || $sessionInstance->get($keyExpire) <= $currentTime) {
+            if ($token !== $sessionInstance->get($key) || $sessionInstance->get($keyExpire) <= $currentTime) {
                 $this->logger->warning('The CSRF data [' . $token . '] is not valide may be attacker do his job');
                 return false;
             }
