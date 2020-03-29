@@ -339,7 +339,7 @@
             //@codeCoverageIgnoreEnd
         }
 
-                /**
+         /**
          * Dispatch the FINAL_VIEW_READY event
          *             
          * @return string|null the final view content after processing by each listener
