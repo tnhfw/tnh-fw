@@ -149,8 +149,8 @@
                 exit;
             }
             echo '<script>
-					location.href = "'.$url . '";
-				</script>';
+			location.href = "'.$url . '";
+		 </script>';
         }
 
         /**
