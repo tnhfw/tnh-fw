@@ -19,6 +19,11 @@ You can use **TNH Framework** for web or command line application. For web appli
 
 For CLI application just PHP executable is needed. 
 
+### Why another PHP Framework?
+Well, I created TNH Framework for my own project, but decided to share with everyone.
+I was also tired of all those bloated PHP Framework, with steep learning curve that create another language on top of PHP. Really?!
+So this one is smaller. It is not bloated and contains some useful libraries, functions and tricks. And above all, it's damn simple.
+
 ### Installation
 #### Using composer (recommended)
 ```bash
