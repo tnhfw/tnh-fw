@@ -175,10 +175,13 @@
                 'sqlite' => 'sqlite:' . $this->getDatabase()
             );
             if ($port) {
-                if (in_array($driver, array('mysql', 'pgsql'))) {
-                    $port = 'port=' . $port . ';';
-                } else if ($driver == 'oracle') {
-                    $port = ':' . $port;
+                $driversPort = array(
+                      'mysql'  => 'port=' . $port . ';',
+                      'pgsql'  => 'port=' . $port . ';',
+                      'oracle' => ':' . $port
+                );
+                if (isset($driversPort[$driver])) {
+                    $port = $driversPort[$driver];
                 }
             }
             if (isset($driversDsn[$driver])) {
