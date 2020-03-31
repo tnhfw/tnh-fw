@@ -53,7 +53,18 @@
          * List of valid log level to be checked for the configuration
          * @var array
          */
-        private static $validConfigLevel = array('off', 'none', 'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug');
+        private static $validConfigLevel = array(
+                                                    'off', 
+                                                    'none', 
+                                                    'emergency', 
+                                                    'alert', 
+                                                    'critical', 
+                                                    'error', 
+                                                    'warning', 
+                                                    'notice', 
+                                                    'info', 
+                                                    'debug'
+                                                );
 
         /**
          * Create new Log instance
@@ -210,21 +221,20 @@
             if (!$this->levelCanSaveLog($level)) {
                 return;
             }
-			
-            //check log file and directory
-            $path = $this->checkAndSetLogFileDirectory();
+			  
             //save the log data
-            $this->saveLogData($path, $level, $message);
+            $this->saveLogData($level, $message);
         }	
 
         /**
          * Save the log data into file
-         * @param  string $path    the path of the log file
          * @param  integer $level   the log level in integer format.
          * @param  string $message the log message to save
          * @return void
          */
-        protected function saveLogData($path, $level, $message) {
+        protected function saveLogData($level, $message) {
+            $path = $this->getLogFilePath();
+
             //may be at this time helper user_agent not yet included
             require_once CORE_FUNCTIONS_PATH . 'function_user_agent.php';
 			
@@ -242,7 +252,7 @@
             //debug info
             $fileInfo = $this->getLogDebugBacktraceInfo();
 
-            $str = $logDate . ' [' . str_pad($levelName, 9 /*emergency len*/) . '] ' 
+            $str = $logDate . ' [' . str_pad($levelName, 9 /*emergency length*/) . '] ' 
                             . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
                             . $message . ' ' . '[' . $fileInfo['file'] . ':' . $fileInfo['line'] . ']' . "\n";
             $fp = fopen($path, 'a+');
@@ -252,7 +262,7 @@
                 fclose($fp);
             }
         }	
-
+        
         /**
          * Check if the given level can save log data
          * @param  integer $level the current level value to save the log data
@@ -328,29 +338,24 @@
         }
 
         /**
-         * Check the file and directory 
-         * @return string|null the log file path
+         * return the current log file path to use
+         * @return string
          */
-        protected function checkAndSetLogFileDirectory() {
-            $logSavePath = get_config('log_save_path');
+        protected function getLogFilePath() {
+            $logSavePath = get_config('log_save_path', null);
             if (!$logSavePath) {
                 $logSavePath = LOGS_PATH;
             }
-			
+            
             if (!is_dir($logSavePath) || !is_writable($logSavePath)) {
                 //NOTE: here need put the show_error() "logging" to false 
                 //to prevent self function loop call
                 show_error('Error : the log dir does not exist or is not writable',
                            'Log directory error', $logging = false);
             }
-			
-            $path = $logSavePath . 'logs-' . date('Y-m-d') . '.log';
-            if (!file_exists($path)) {
-                touch($path);
-            }
-            return $path;
+            return $logSavePath . 'logs-' . date('Y-m-d') . '.log';
         }
-		
+
         /**
          * Check if the given log level is valid
          *

@@ -409,7 +409,7 @@
          * @param string|null $field2     the second field used in some validation rule like "matches", "not_equal"
          *
          */
-        protected function setSmpleFieldError($conditions, $field, $value, $rule, $paramValue = null, $field2 = null) {
+        protected function setSimpleFieldError($conditions, $field, $value, $rule, $paramValue = null, $field2 = null) {
             if ($conditions) {
                 $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue, $field2);
             }
@@ -616,7 +616,7 @@
          */ 
         protected function checkRuleMinLength($field, $rule, $paramValue) {
            $value = $this->getFieldValue($field);  
-           $this->setSmpleFieldError(
+           $this->setSimpleFieldError(
                                      strlen($value) < $paramValue, 
                                      $field, 
                                      $value, 
@@ -634,7 +634,7 @@
          */
         protected function checkRuleMaxLength($field, $rule, $paramValue) {
            $value = $this->getFieldValue($field);
-           $this->setSmpleFieldError(
+           $this->setSimpleFieldError(
                                      strlen($value) > $paramValue, 
                                      $field, 
                                      $value, 
@@ -652,7 +652,7 @@
          */
         protected function checkRuleExactLength($field, $rule, $paramValue) {
            $value = $this->getFieldValue($field);
-           $this->setSmpleFieldError(
+           $this->setSimpleFieldError(
                                      strlen($value) != $paramValue, 
                                      $field, 
                                      $value, 
@@ -670,7 +670,7 @@
          */
         protected function checkRuleMatches($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                      $value != $this->getFieldValue($paramValue), 
                                      $field, 
                                      $value, 
@@ -689,7 +689,7 @@
          */
         protected function checkRuleNotEqual($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                      $value == $this->getFieldValue($paramValue), 
                                      $field, 
                                      $value, 
@@ -708,7 +708,7 @@
          */
         protected function checkRuleMin($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);  
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  $value < $paramValue, 
                                  $field, 
                                  $value, 
@@ -726,7 +726,7 @@
          */
         protected function checkRuleMax($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field); 
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  $value > $paramValue, 
                                  $field, 
                                  $value, 
@@ -747,7 +747,7 @@
             $value = $this->getFieldValue($field);    
             $betweens = explode(',', $paramValue, 2);
             $betweens = array_map('trim', $betweens);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  ($value < $betweens[0]) || ($value > $betweens[1]), 
                                  $field, 
                                  $value, 
@@ -769,7 +769,7 @@
             $list = explode(',', $paramValue);
             $list = array_map('trim', $list);
             $paramValue = implode(',', $list);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  !in_array($value, $list), 
                                  $field, 
                                  $value, 
@@ -787,7 +787,7 @@
          */
         protected function checkRuleNumeric($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  !is_numeric($value), 
                                  $field, 
                                  $value, 
@@ -805,7 +805,7 @@
          */
         protected function checkRuleInteger($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);  
-             $this->setSmpleFieldError(
+             $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_INT) === false, 
                                  $field, 
                                  $value, 
@@ -823,7 +823,7 @@
          */
         protected function checkRuleIntegerNatural($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_INT) === false || $value < 0, 
                                  $field, 
                                  $value, 
@@ -841,7 +841,7 @@
          */
         protected function checkRuleAlpha($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  !preg_match('/^[\pL\pM\s]+$/u', $value), 
                                  $field, 
                                  $value, 
@@ -859,7 +859,7 @@
          */
         protected function checkRuleAlphaDash($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  !preg_match('/^[\pL\pM_-]+$/u', $value), 
                                  $field, 
                                  $value, 
@@ -877,7 +877,7 @@
          */
         protected function checkRuleAlnum($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  !preg_match('/^[\pL\pM\pN\s]+$/u', $value), 
                                  $field, 
                                  $value, 
@@ -895,7 +895,7 @@
          */
         protected function checkRuleAlnumDash($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  !preg_match('/^[\pL\pM\pN_-]+$/u', $value), 
                                  $field, 
                                  $value, 
@@ -913,7 +913,7 @@
          */
         protected function checkRuleEmail($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field); 
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_EMAIL) === false, 
                                  $field, 
                                  $value, 
@@ -934,7 +934,7 @@
             $value = $this->getFieldValue($field);
             $format = $paramValue;
             $dateValue = date_create_from_format($format, $value);  
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  $dateValue === false || $dateValue->format($format) !== $value, 
                                  $field, 
                                  $value, 
@@ -953,7 +953,7 @@
          */
         protected function checkRuleDateBefore($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-             $this->setSmpleFieldError(
+             $this->setSimpleFieldError(
                                  strtotime($value) >= strtotime($paramValue), 
                                  $field, 
                                  $value, 
@@ -972,7 +972,7 @@
          */
         protected function checkRuleDateAfter($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  strtotime($value) <= strtotime($paramValue), 
                                  $field, 
                                  $value, 
@@ -990,7 +990,7 @@
          */
         protected function checkRuleUrl($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_URL) === false, 
                                  $field, 
                                  $value, 
@@ -1009,7 +1009,7 @@
          */
         protected function checkRuleIp($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);   
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_IP) === false, 
                                  $field, 
                                  $value, 
@@ -1027,7 +1027,7 @@
          */
         protected function checkRuleIpv4($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);  
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false, 
                                  $field, 
                                  $value, 
@@ -1045,7 +1045,7 @@
          */
         protected function checkRuleIpv6($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);   
-            $this->setSmpleFieldError(
+            $this->setSimpleFieldError(
                                  filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false, 
                                  $field, 
                                  $value, 
@@ -1127,7 +1127,7 @@
          */
         protected function checkRuleRegex($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-             $this->setSmpleFieldError(
+             $this->setSimpleFieldError(
                                  !preg_match($paramValue, $value), 
                                  $field, 
                                  $value, 
@@ -1154,7 +1154,7 @@
         protected function checkRuleCallback($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);    
             if (is_callable($paramValue)) {
-                $this->setSmpleFieldError(
+                $this->setSimpleFieldError(
                                  call_user_func_array($paramValue, array($value)) === false, 
                                  $field, 
                                  $value, 

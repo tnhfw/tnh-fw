@@ -86,11 +86,14 @@
      * Verification of the PHP environment: minimum and maximum version
      */
     if (version_compare(phpversion(), TNH_MIN_PHP_VERSION, '<')) {
-        show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
+        show_error('Your PHP Version [' . phpversion() . '] is less than [' . TNH_MIN_PHP_VERSION 
+                    . '], please install a new version or update your PHP to the latest.', 'PHP Error environment');	
     } else if (version_compare(phpversion(), TNH_MAX_PHP_VERSION, '>')) {
-        show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION . '] please install a PHP version that is compatible.', 'PHP Error environment');	
+        show_error('Your PHP Version [' . phpversion() . '] is greather than [' . TNH_MAX_PHP_VERSION 
+                    . '] please install a PHP version that is compatible.', 'PHP Error environment');	
     }
-    $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_MIN_PHP_VERSION . ', REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '], application can work without any issue');
+    $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_MIN_PHP_VERSION 
+                   . 'REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '], application can work without any issue');
 
     /**
      * Setting of the PHP error message handling function
@@ -127,6 +130,15 @@
      * Load configurations 
      */
     $CONFIG = & class_loader('Config', 'classes');	
+
+
+    /**
+     * Set the application server default timezone
+     */
+    $TIMEZONE = get_config('server_timezone', 'UTC');
+    if (!date_default_timezone_set($TIMEZONE)) {
+        show_error('Invalid server timezone configuration "' .$TIMEZONE. '"');
+    }
 
     /**
      * Load modules and initialize the list of module.

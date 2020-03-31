@@ -418,7 +418,7 @@
                 $lastModified = $cacheInfo['mtime'];
                 $expire = $cacheInfo['expire'];
                 $globals = & class_loader('GlobalVar', 'classes');
-                $maxAge = $expire - (double) $globals->server('REQUEST_TIME');
+                $maxAge = $expire - $globals->server('REQUEST_TIME');
                 $this->setHeader('Pragma', 'public');
                 $this->setHeader('Cache-Control', 'max-age=' . $maxAge . ', public');
                 $this->setHeader('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');

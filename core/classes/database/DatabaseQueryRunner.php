@@ -117,7 +117,7 @@
             if ((double) $responseTime >= 1.000000) {
                 $this->logger->warning(
                                         'High response time while processing database query [' . $this->query . '].' 
-                                        . 'The response time is [' .$responseTime . '] sec.'
+                                        . ' The response time is [' .$responseTime . '] sec.'
                                         );
             }
     		

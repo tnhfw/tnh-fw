@@ -297,24 +297,20 @@
         /**
          * Set the SQL WHERE CLAUSE statment
          * @param  string|array  $where the where field or array of field list
-         * @param  array|string  $op     the condition operator. If is null the default will be "="
-         * @param  mixed  $val    the where value
-         * @param  string  $type   the type used for this where clause (NOT, etc.)
+         * @param  null|string  $op the condition operator. If is null the default will be "="
+         * @param  mixed  $val the where value
+         * @param  string  $type the type used for this where clause (NOT, etc.)
          * @param  string  $andOr the separator type used 'AND', 'OR', etc.
          * @param  boolean $escape whether to escape or not the $val
-         * @return object        the current DatabaseQueryBuilder instance
+         * @return object the current instance
          */
         public function where($where, $op = null, $val = null, $type = '', $andOr = 'AND', $escape = true) {
-            $whereStr = '';
             if (is_array($where)) {
-                $whereStr = $this->getWhereStrIfIsArray($where, $type, $andOr, $escape);
-            } else {
-                if (is_array($op)) {
-                    $whereStr = $this->getWhereStrIfOperatorIsArray($where, $op, $type, $escape);
-                } else {
-                    $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
-                }
-            }
+                $whereStr = $this->getWhereStrArray($where, $type, $andOr, $escape);
+                $this->setWhereStr($whereStr, $andOr);
+                return $this;
+            } 
+            $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
             $this->setWhereStr($whereStr, $andOr);
             return $this;
         }
@@ -592,21 +588,19 @@
         /**
          * Set the SQL HAVING CLAUSE statment
          * @param  string  $field  the field name used for HAVING statment
-         * @param  string|array  $op     the operator used or array
-         * @param  mixed  $val    the value for HAVING comparaison
+         * @param  string|null $op the operator used or array
+         * @param  mixed  $val the value for HAVING comparaison
          * @param  boolean $escape whether to escape or not the values
-         * @return object        the current DatabaseQueryBuilder instance
+         * @return object the current instance
          */
         public function having($field, $op = null, $val = null, $escape = true) {
-            if (is_array($op)) {
-                $this->having = $this->getHavingStrIfOperatorIsArray($field, $op, $escape);
-            } else if (!in_array($op, $this->operatorList)) {
+            if (!in_array($op, $this->operatorList)) {
                 $op = $this->checkForNullValue($op);
                 $this->having = $field . ' > ' . ($this->connection->escape($op, $escape));
-            } else {
-                $val = $this->checkForNullValue($val);
-                $this->having = $field . ' ' . $op . ' ' . ($this->connection->escape($val, $escape));
-            }
+                return $this;
+            } 
+            $val = $this->checkForNullValue($val);
+            $this->having = $field . ' ' . $op . ' ' . ($this->connection->escape($val, $escape));
             return $this;
         }
 
@@ -782,63 +776,18 @@
         }
 
         /**
-         * Get the SQL HAVING clause when operator argument is an array
-         * @see DatabaseQueryBuilder::having
-         *
-         * @return string
-         */
-        protected function getHavingStrIfOperatorIsArray($field, $op = null, $escape = true) {
-            $x = explode('?', $field);
-            $w = '';
-            foreach ($x as $k => $v) {
-                if (!empty($v)) {
-                    if (!isset($op[$k])) {
-                        $op[$k] = '';
-                    }
-                    $value = '';
-                    if (isset($op[$k])) {
-                        $value = $this->connection->escape($op[$k], $escape);
-                    }
-                    $w .= $v . $value;
-                }
-            }
-            return $w;
-        }
-
-        /**
          * Get the SQL WHERE clause using array column => value
          * @see DatabaseQueryBuilder::where
          *
          * @return string
          */
-        protected function getWhereStrIfIsArray(array $where, $type = '', $andOr = 'AND', $escape = true) {
+        protected function getWhereStrArray(array $where, $type = '', $andOr = 'AND', $escape = true) {
             $wheres = array();
             foreach ($where as $column => $data) {
                 $data = $this->checkForNullValue($data);
                 $wheres[] = $type . $column . ' = ' . ($this->connection->escape($data, $escape));
             }
             return implode(' ' . $andOr . ' ', $wheres);
-        }
-
-        /**
-         * Get the SQL WHERE clause when operator argument is an array
-         * @see DatabaseQueryBuilder::where
-         *
-         * @return string
-         */
-        protected function getWhereStrIfOperatorIsArray($where, array $op, $type = '', $escape = true) {
-            $x = explode('?', $where);
-            $w = '';
-            foreach ($x as $k => $v) {
-                if (!empty($v)) {
-                    $value = '';
-                    if (isset($op[$k])) {
-                        $value = $this->connection->escape($op[$k], $escape);
-                    }
-                    $w .= $type . $v . $value;
-                }
-            }
-            return $w;
         }
 
         /**
