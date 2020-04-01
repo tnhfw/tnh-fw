@@ -201,7 +201,7 @@
          */
         public function setRules(array $rules) {
             foreach ($rules as $rule) {
-                call_user_func_array(array($this, 'setRule'), array($rule['name'], $rule['label'], $rule['rules']));
+                $this->setRule($rule['name'], $rule['label'], $rule['rules']);
             }
             return $this;
         }

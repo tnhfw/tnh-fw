@@ -252,7 +252,7 @@
             //debug info
             $fileInfo = $this->getLogDebugBacktraceInfo();
 
-            $str = $logDate . ' [' . str_pad($levelName, 9 /*emergency length*/) . '] ' 
+            $str = $logDate . ' [' . str_pad($levelName, 9 /*emergency length*/) . ']' 
                             . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
                             . $message . ' ' . '[' . $fileInfo['file'] . ':' . $fileInfo['line'] . ']' . "\n";
             $fp = fopen($path, 'a+');

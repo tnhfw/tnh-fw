@@ -125,7 +125,7 @@
          */
         public static function value($name, $default = null) {
             $value = get_instance()->request->query($name);
-            if (strlen($value) > 0) {
+            if (is_string($value) && strlen($value) > 0) {
                 return $value;
             }
             return $default;
