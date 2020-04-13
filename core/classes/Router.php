@@ -258,6 +258,7 @@
                 unset($this->pattern[$index]);
                 unset($this->callback[$index]);
             }
+            $this->logger->warning('Cannot found route uri [' . $uri . '] from the configuration');
             return $this;
         }
 

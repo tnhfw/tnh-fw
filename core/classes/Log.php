@@ -254,7 +254,7 @@
 
             $str = $logDate . ' [' . str_pad($levelName, 9 /*emergency length*/) . ']' 
                             . ' [' . str_pad($ip, 15) . '] ' . $this->logger . ': ' 
-                            . $message . ' ' . '[' . $fileInfo['file'] . ':' . $fileInfo['line'] . ']' . "\n";
+                            . $message . ' ' . '[' . $fileInfo['file'] . ' ' . $fileInfo['class'] . '->' . $fileInfo['function'] . '():' . $fileInfo['line'] . ']' . "\n";
             $fp = fopen($path, 'a+');
             if (is_resource($fp)) {
                 flock($fp, LOCK_EX); // exclusive lock, will get released when the file is closed
@@ -324,6 +324,8 @@
             
             $line = -1;
             $file = '';
+            $function = '';
+            $class = '';
            
             if (isset($fileInfo['file'])) {
                 $file = $fileInfo['file'];
@@ -331,9 +333,18 @@
             if (isset($fileInfo['line'])) {
                 $line = $fileInfo['line'];
             }
+            if (isset($dtrace[$i+1]['function'])) {
+                $function = $dtrace[$i+1]['function'];
+            }
+            if (isset($dtrace[$i+1]['class'])) {
+                $class = $dtrace[$i+1]['class'];
+            }
+            
             return array(
                 'file' => $file,
-                'line' => $line
+                'line' => $line,
+                'function' => $function,
+                'class' => $class
             );
         }
 

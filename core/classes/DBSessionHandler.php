@@ -153,7 +153,7 @@
                 }
                 return $this->decode($data->{$columns['sdata']});
             }
-            $this->logger->info('Database session data for SID: ' . $sid . ' is not valid return false, may be the session ID is wrong');
+            $this->logger->warning('Database session data for SID: ' . $sid . ' is not valid return false, may be the session ID is wrong');
             return null;
         }
 

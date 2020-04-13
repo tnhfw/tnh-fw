@@ -58,7 +58,7 @@
          */
         public function add($name) {
             if (in_array($name, $this->list)) {
-               $this->logger->info('The module [' .$name. '] already added skipping.');
+               $this->logger->warning('The module [' .$name. '] already added skipping.');
                return $this;
             }
             $this->list[] = $name;
@@ -79,7 +79,7 @@
                 unset($this->list[$index]);
                 return $this;
             }
-            $this->logger->info('Cannot found this module in the list');
+            $this->logger->warning('Cannot found this module in the list');
             return $this;
         }
         
