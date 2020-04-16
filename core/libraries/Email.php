@@ -860,7 +860,7 @@
          * @return boolean
          */
         protected function checkForSmtpConnectionTls() {
-            if ($this->getSmtpConfig('transport', 'plain') == 'tls') {
+            if ($this->smtpConfig['transport'] == 'tls') {
                 $tlsCode = $this->sendCommand('STARTTLS')->getSmtpResponseCode();
                 $this->logs['STARTTLS'] = $this->smtpResponse;
                 if ($tlsCode === 220) {
@@ -898,8 +898,8 @@
             $authCode = $this->sendCommand('AUTH LOGIN')->getSmtpResponseCode();
             $this->logs['AUTH_LOGIN'] = $this->smtpResponse;
             if ($authCode === 334) {
-                $this->sendCommand(base64_encode($this->getSmtpConfig('username')))->getSmtpResponseCode();
-                $code = $this->sendCommand(base64_encode($this->getSmtpConfig('password')))->getSmtpResponseCode();
+                $this->sendCommand(base64_encode($this->smtpConfig['username']))->getSmtpResponseCode();
+                $code = $this->sendCommand(base64_encode($this->smtpConfig['password']))->getSmtpResponseCode();
                 $this->logs['CLIENT_AUTH'] = $this->smtpResponse;
                 if ($code !== 235) {
                     $this->error = $this->smtpResponse;
