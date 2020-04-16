@@ -410,7 +410,7 @@
 
         /**
          * Send the cache not yet expire to browser
-         * @param  array $cacheInfo the cache information
+         * @param  boolean|array $cacheInfo the cache information
          * @return boolean            true if the information is sent otherwise false
          */
         protected function sendCacheNotYetExpireInfoToBrowser($cacheInfo) {

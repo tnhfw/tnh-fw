@@ -786,7 +786,7 @@
         protected function getSmtpServerResponse() {
             $response = '';
             if (is_resource($this->smtpSocket)) {
-                stream_set_timeout($this->smtpSocket, $this->getSmtpConfig('response_timeout', 10));
+                stream_set_timeout($this->smtpSocket, $this->smtpConfig['response_timeout']);
                 while (($line = fgets($this->smtpSocket)) !== false) {
                     $response .= trim($line) . "\n";
                     if (substr($line, 3, 1) == ' ') {
