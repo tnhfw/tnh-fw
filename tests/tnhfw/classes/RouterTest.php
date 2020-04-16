@@ -18,9 +18,10 @@
         
         public function testConstructor() {
             $r = new Router($this->module);
-            
-            $this->assertNotEmpty($r->getPattern());
-            $this->assertNotEmpty($r->getCallback());
+            $rPattern = $this->getPrivateProtectedAttribute('Router', 'pattern');
+            $rCallback = $this->getPrivateProtectedAttribute('Router', 'callback');
+            $this->assertNotEmpty($rPattern->getValue($r));
+            $this->assertNotEmpty($rCallback->getValue($r));
 		}
         
         public function testModuleInstance() {
@@ -305,12 +306,13 @@
             $log = new Log();
             
             $r = new Router($this->module);
+            $rPattern = $this->getPrivateProtectedAttribute('Router', 'pattern');
             $r->setLogger($log);
              //First remove all route to prevent duplication
             $r->removeAllRoute();
-            $this->assertSame(0, count($r->getPattern()));
+            $this->assertSame(0, count($rPattern->getValue($r)));
             $r->add('/foo/bar', 'TestController');
-            $this->assertSame(1, count($r->getPattern()));
+            $this->assertSame(1, count($rPattern->getValue($r)));
             $r->add('/foo/bar', 'FooController');
             
             $this->assertTrue($this->vfsLogPath->hasChild($this->logFilename));
@@ -321,21 +323,21 @@
         public function testRemoveRoute() {
             
             $r = new Router($this->module);
-            
+            $rPattern = $this->getPrivateProtectedAttribute('Router', 'pattern');
             //First remove all route to prevent duplication
             $r->removeAllRoute();
             
-            $this->assertSame(0, count($r->getPattern()));
+            $this->assertSame(0, count($rPattern->getValue($r)));
             $r->add('/foo/bar', 'TestController');
-            $this->assertSame(1, count($r->getPattern()));
+            $this->assertSame(1, count($rPattern->getValue($r)));
             $r->add('/bar/foo', 'FooController');
-            $this->assertSame(2, count($r->getPattern()));
+            $this->assertSame(2, count($rPattern->getValue($r)));
             $r->removeRoute('/foo/bar');
-            $this->assertSame(1, count($r->getPattern()));
+            $this->assertSame(1, count($rPattern->getValue($r)));
             $r->add('/', 'HomeController');
-            $this->assertSame(2, count($r->getPattern()));
+            $this->assertSame(2, count($rPattern->getValue($r)));
             $r->removeRoute('/');
-            $this->assertSame(1, count($r->getPattern()));
+            $this->assertSame(1, count($rPattern->getValue($r)));
              
 		}
         

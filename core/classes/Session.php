@@ -134,13 +134,7 @@
          */
         public function clearFlash($item) {
             $key = self::SESSION_FLASH_KEY . '_' . $item;
-            if (array_key_exists($key, get_instance()->globalvar->session())) {
-                $this->logger->info('Delete session flash for item [' . $key . ']');
-                get_instance()->globalvar->removeSession($key);
-                return true;
-            } 
-            $this->logger->warning('Session flash item [' . $key . '] to be deleted does not exist');
-            return false;
+            return $this->clear($key);
         }
 
         /**

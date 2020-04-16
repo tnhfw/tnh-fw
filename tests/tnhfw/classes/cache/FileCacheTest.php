@@ -8,16 +8,12 @@
      */
 	class FileCacheTest extends TnhTestCase {	
 			
-		protected function setUp()
-        {
+		protected function setUp(){
             parent::setUp();
             $this->vfsRoot = vfsStream::setup();
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
         }
 
-		protected function tearDown() {
-		}
-		
 		public function testConstructor() {
             $fc = new FileCache($this->vfsFileCachePath->url() . DS);
 			$this->assertTrue($fc->isSupported());
@@ -185,19 +181,6 @@
             $this->assertTrue(true);
 		}
         
-        public function testSetCompressCacheData() {
-            $fc = new FileCache();
-            $fc->setCompressCacheData(false);
-            $this->assertFalse($fc->isCompressCacheData());
-            //when extension zlib loaded and param is true
-            $fc->setCompressCacheData(true);
-            if (extension_loaded('zlib')) {
-                $this->assertTrue($fc->isCompressCacheData());
-                
-            } else {
-                $this->assertFalse($fc->isCompressCacheData());
-            }   
-		}
         
         public function testSetCacheFilePathWhenParamIsNotNull() {
             $fc = new FileCache();

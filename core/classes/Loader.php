@@ -289,12 +289,9 @@
          */
         protected function loadDatabase() {
             $connection = &class_loader('DatabaseConnection', 'classes/database');
-            $config = $connection->getDatabaseConfigFromFile();
-            $connection->setConfig($config);
             $connection->connect();
 
             $obj = &get_instance();
-
             $db = & class_loader('Database', 'classes/database', $connection);
             $queryResult = &class_loader('DatabaseQueryResult', 'classes/database');
             $queryRunner = &class_loader('DatabaseQueryRunner', 'classes/database', $connection);

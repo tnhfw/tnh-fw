@@ -153,22 +153,6 @@
         }
 
         /**
-         * Get the route patterns
-         * @return array
-         */
-        public function getPattern() {
-            return $this->pattern;
-        }
-
-        /**
-         * Get the route callbacks
-         * @return array
-         */
-        public function getCallback() {
-            return $this->callback;
-        }
-
-        /**
          * Get the module name
          * @return string
          */

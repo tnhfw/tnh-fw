@@ -133,24 +133,24 @@
             $this->assertContains('foo', $dc->getCacheContent());
 		}
         
-        public function testSaveCacheContentCacheFeatureIsNotEnabled() {
+        public function testsetCacheContentCacheFeatureIsNotEnabled() {
             $query = 'SELECT foo FROM bar';  
             $queryResult = array('foo');
             $dc = new DatabaseCache();
             $dc->setQuery($query);
-            $this->assertNull($dc->saveCacheContent($queryResult));
+            $this->assertNull($dc->setCacheContent($queryResult));
 		}
         
-        public function testSaveCacheContentQueryIsNotAnSelect() {
+        public function testsetCacheContentQueryIsNotAnSelect() {
             $query = 'UPDATE foo SET bar = 2';  
             $queryResult = array('foo');
             $dc = new DatabaseCache();
             $dc->setQuery($query);
-            $this->assertNull($dc->saveCacheContent($queryResult));
+            $this->assertNull($dc->setCacheContent($queryResult));
 		}
        
         
-        public function testSaveCacheContent() {
+        public function testsetCacheContent() {
             $query = 'SELECT foo FROM bar';  
             $queryResult = array('foo');
             $cache = $this->getMockBuilder('FileCache')
@@ -168,7 +168,7 @@
             $dc->setCacheTtl(100);
             
             $dc->setQuery($query);
-            $this->assertTrue($dc->saveCacheContent($queryResult));
+            $this->assertTrue($dc->setCacheContent($queryResult));
 		}
         
         

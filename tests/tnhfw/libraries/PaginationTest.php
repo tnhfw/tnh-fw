@@ -54,24 +54,18 @@
             $this->assertSame(20, $value);
 		}
         
-         public function testSetPaginationQueryString() {
-             $p = new Pagination();
-             $this->assertNull($p->getPaginationQueryString());
-             $p->setPaginationQueryString('foo');
-             $this->assertSame('foo', $p->getPaginationQueryString());
-         }
-         
          public function testDeterminePaginationQueryStringValue() {
              $obj = & get_instance();
              $obj->url = new Url();
-            
+                
              $defaultCurrentUrl = 'http://localhost/';
              $p = new Pagination();
-             $this->assertNull($p->getPaginationQueryString());
-             $p->determinePaginationQueryStringValue();
+             $rPQString = $this->getPrivateProtectedAttribute('Pagination', 'paginationQueryString');
+             $this->assertNull($rPQString->getValue($p));
+             $this->runPrivateProtectedMethod($p, 'determinePaginationQueryStringValue');
              //default value is 'http://localhost/' for Url::current() and query string is empty so just
              //append page?=
-             $this->assertSame($defaultCurrentUrl . '?page=', $p->getPaginationQueryString());
+             $this->assertSame($defaultCurrentUrl . '?page=', $rPQString->getValue($p));
              
              //When query string is not null and not contain 'queryPageName='
               $qs = 'foo=bar&bar=baz';
@@ -81,9 +75,9 @@
               $obj = & get_instance();
               $obj->request = new Request();
             
-              $p->determinePaginationQueryStringValue();
+              $this->runPrivateProtectedMethod($p, 'determinePaginationQueryStringValue');
              
-              $this->assertSame($defaultCurrentUrl . '?' . $qsExpected . '&page=', $p->getPaginationQueryString());
+              $this->assertSame($defaultCurrentUrl . '?' . $qsExpected . '&page=', $rPQString->getValue($p));
              
                //When query string is not null and contains 'queryPageName='
               $qs = 'foo=bar&bar=baz&page=3';
@@ -93,9 +87,9 @@
              $obj = & get_instance();
              $obj->request = new Request();
             
-             $p->determinePaginationQueryStringValue();
+             $this->runPrivateProtectedMethod($p, 'determinePaginationQueryStringValue');
              
-             $this->assertSame($defaultCurrentUrl . '?' . $qsExpected, $p->getPaginationQueryString());
+             $this->assertSame($defaultCurrentUrl . '?' . $qsExpected, $rPQString->getValue($p));
              
              //When query string is not null and contains 'queryPageName=' without other query string
              $qs = 'page=3';
@@ -107,9 +101,9 @@
              $obj = & get_instance();
              $obj->request = new Request();
             
-             $p->determinePaginationQueryStringValue();
+             $this->runPrivateProtectedMethod($p, 'determinePaginationQueryStringValue');
              
-             $this->assertSame($defaultCurrentUrl . '?' . $qsExpected, $p->getPaginationQueryString());
+             $this->assertSame($defaultCurrentUrl . '?' . $qsExpected, $rPQString->getValue($p));
          }
          
           public function testGetLink() {

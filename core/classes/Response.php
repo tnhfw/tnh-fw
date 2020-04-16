@@ -234,7 +234,7 @@
          *
          * @return boolean whether the page content if available or not
          */
-        public function renderFinalPageFromCache(&$cache) {
+        public function renderFinalPageFromCache(CacheInterface &$cache) {
             //the current page cache key for identification
             $pageCacheKey = $this->currentUrlCacheKey;
 			

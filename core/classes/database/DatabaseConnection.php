@@ -120,10 +120,16 @@
          */
         public function connect() {
             try {
+                if(empty($this->config) && file_exists(CONFIG_PATH . 'database.php')) {
+                    $db = array();
+                    require CONFIG_PATH . 'database.php';
+                    //Note need use the method to set config
+                    $this->setConfig($db);
+                }
                 $options = array(
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ
                 );
-                $this->pdo = new PDO($this->getDsnValue(), $this->getUsername(), $this->getPassword(), $options);
+                $this->pdo = new PDO($this->getDsn(), $this->getUsername(), $this->getPassword(), $options);
                 if($this->getDriver() == 'mysql') {
                     $this->pdo->exec("SET NAMES '" . $this->getCharset() . "' COLLATE '" . $this->getCollation() . "'");
                     $this->pdo->exec("SET CHARACTER SET '" . $this->getCharset() . "'");
@@ -163,7 +169,7 @@
          * 
          * @return string|null         the dsn value
          */
-        public function getDsnValue() {
+        public function getDsn() {
             $dsn    = '';
             $port   = $this->getPort();
             $driver = $this->getDriver();
@@ -424,22 +430,7 @@
             }
             return $this;
         }
-
-         /**
-         * Get the database configuration using the configuration file
-         
-         * @return array the database configuration from file
-         */
-        public function getDatabaseConfigFromFile() {
-            $db = array();
-            if (file_exists(CONFIG_PATH . 'database.php')) {
-                //here don't use require_once because somewhere can 
-                //create database instance directly
-                require CONFIG_PATH . 'database.php';
-            }
-            return $db;
-        }
-
+        
          /**
          * Update the properties using the current database configuration
          * 

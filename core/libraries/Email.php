@@ -219,17 +219,6 @@
         }
 
         /**
-         * getTo
-         *
-         * Return an array of formatted To addresses.
-         *
-         * @return array
-         */
-        public function getTo() {
-            return $this->to;
-        }
-
-        /**
          * setCc
          * 
          * @param array  $pairs  An array of name => email pairs.
@@ -239,15 +228,6 @@
         public function setCc(array $pairs) {
             $this->cc = $pairs;
             return $this->addMailHeaders('Cc', $pairs);
-        }
-
-        /**
-         * Return the list of Cc
-         *
-         * @return array
-         */
-        public function getCc() {
-            return $this->cc;
         }
 
         /**
@@ -261,15 +241,6 @@
         public function setBcc(array $pairs) {
             $this->bcc = $pairs;
             return $this->addMailHeaders('Bcc', $pairs);
-        }
-
-        /**
-         * Return the list of Bcc
-         *
-         * @return array
-         */
-        public function getBcc() {
-            return $this->bcc;
         }
 
         /**
@@ -303,18 +274,8 @@
          * @return object
          */
         public function setSubject($subject) {
-            $this->subject = $this->encodeUtf8(
-            $this->filterOther((string) $subject));
+            $this->subject = $this->encodeUtf8($this->filterOther((string) $subject));
             return $this;
-        }
-
-        /**
-         * getSubject function.
-         *
-         * @return string
-         */
-        public function getSubject() {
-            return $this->subject;
         }
 
         /**
@@ -327,15 +288,6 @@
         public function setMessage($message) {
             $this->message = str_replace("\n.", "\n..", (string) $message);            
             return $this;
-        }
-
-        /**
-         * getMessage
-         *
-         * @return string
-         */
-        public function getMessage() {
-            return $this->message;
         }
 
         /**
@@ -467,15 +419,6 @@
         }
 
         /**
-         * getWrap
-         *
-         * @return int
-         */
-        public function getWrap() {
-            return $this->wrap;
-        }
-
-        /**
          * hasAttachments
          * 
          * Checks if the email has any registered attachments.
@@ -484,23 +427,6 @@
          */
         public function hasAttachments() {
             return !empty($this->attachments);
-        }
-
-        /**
-         * getWrapMessage
-         *
-         * @return string
-         */
-        public function getWrapMessage() {
-            return wordwrap($this->message, $this->wrap);
-        }
-    
-        /**
-         * Return the send mail protocol
-         * @return string
-         */
-        public function getProtocol() {
-            return $this->protocol;
         }
 
         /**
@@ -521,31 +447,6 @@
         public function useSmtp() {
             $this->protocol = 'smtp';
             return $this;
-        }
-
-        /**
-         * Return all the smtp configurations
-         * @return array
-         */
-        public function getSmtpConfigs() {
-            return $this->smtpConfig;
-        }
-
-        /**
-         * Return the smtp configuration value for the given name
-         *
-         * @param string $name the configuration name to get value
-         * @param mixed $default the default value to return if can not find configuration
-         * 
-         * @return mixed the configuration value if exist or $default will be returned
-         * returned
-         */
-        public function getSmtpConfig($name, $default = null) {
-            $value = $default;
-            if (array_key_exists($name, $this->smtpConfig)) {
-                $value = $this->smtpConfig[$name];
-            }
-            return $value;
         }
 
         /**
@@ -842,7 +743,7 @@
          * @return string
          */
         protected function getMessageWithAttachmentForSend() {
-            $message = $this->getWrapMessage();
+            $message = wordwrap($this->message, $this->wrap);
             if ($this->hasAttachments()) {
                 $this->setAttachmentHeaders();
                 $message  = $this->assembleAttachmentBody();
@@ -918,11 +819,11 @@
          */
         protected function smtpConnection() {
             $this->smtpSocket = fsockopen(
-                                        $this->getSmtpConfig('hostname'),
-                                        $this->getSmtpConfig('port', 25),
+                                        $this->smtpConfig['hostname'],
+                                        $this->smtpConfig['port'],
                                         $errorNumber,
                                         $errorMessage,
-                                        $this->getSmtpConfig('connection_timeout', 30)
+                                        $this->smtpConfig['connection_timeout']
                                     );
 
             if (! is_resource($this->smtpSocket)) {

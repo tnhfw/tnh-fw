@@ -257,35 +257,7 @@
             return $this;
         }
 
-        /**
-         *    Get the file input name
-         *    @return    string
-         */
-        public function getInput() {
-            return $this->input;
-        }
-
-        /**
-         * Set the file array data generally in constructor this is already set using $_FILES 
-         * super global
-         * @param array $fileData the new value
-         *
-         * @return object the current instance
-         */
-        public function setUploadedFileData(array $fileData){
-            $this->uploadedFileData = $fileData;
-            return $this;
-        }
-
-         /**
-         *    Get the uploade file array
-         *    @return    array
-         */
-        public function getUploadedFileData() {
-            return $this->uploadedFileData;
-        }
-
-
+        
         /**
          *    Set new filename
          *    Example:
@@ -320,14 +292,6 @@
             return $this;
         }
 
-         /**
-         *    Get the filename
-         *    @return    string
-         */
-        public function getFilename() {
-            return $this->filename;
-        }
-
         /**
          *    Set file size limit
          *
@@ -353,14 +317,6 @@
         }
 
          /**
-         *    Get the max file size
-         *    @return    double|int
-         */
-        public function getMaxFileSize() {
-            return $this->maxFileSize;
-        }
-
-         /**
          *    Append a mime type to allowed mime types
          *
          *    @since     1.0
@@ -382,9 +338,9 @@
          *    @version   1.0
          *    @param     array       $mimes
          *    @return    object
-         *    @method    boolean     setAllowedMimeTypes
+         *    @method    boolean     setAllowMimeTypes
          */
-        public function setAllowedMimeTypes(array $mimes) {
+        public function setAllowMimeTypes(array $mimes) {
             array_map(array($this, 'setAllowMimeType'), $mimes);
             return $this;
         }
@@ -399,7 +355,7 @@
          */
         public function setMimeHelping($name) {
             if (array_key_exists($name, $this->mimeHelping)) {
-                return $this->setAllowedMimeTypes($this->mimeHelping[$name]);
+                return $this->setAllowMimeTypes($this->mimeHelping[$name]);
             }
             return $this;
         }
@@ -416,14 +372,6 @@
             $this->allowedMimeTypes = array();
             $this->file['allowed_mime_types'] = array();
             return $this;
-        }
-
-        /**
-         *    Get the list of mimes type allowed
-         *    @return    array
-         */
-        public function getAllowMimeType() {
-            return $this->allowedMimeTypes;
         }
 
         /**
@@ -459,14 +407,6 @@
         }
 
         /**
-         *    Get the list of callbacks for "input" and "output"
-         *    @return    array
-         */
-        public function getCallbacks() {
-            return $this->callbacks;
-        }
-
-        /**
          *    Set function to upload file
          *    Examples:
          *        1.- FileUpload::setUploadFunction("move_uploaded_file");
@@ -483,14 +423,6 @@
                 $this->uploadFunction = $function;
             }
             return $this;
-        }
-
-         /**
-         *    Get the upload function name like "copy", "move_uploaded_file"
-         *    @return    string
-         */
-        public function getUploadFunction() {
-            return $this->uploadFunction;
         }
 
         /**
@@ -520,35 +452,21 @@
          *    @since     1.0
          *    @version   1.0
          *    @param     string      $directory      Destination path
-         *    @param     boolean     $autoCreate
          *    @return    object
          *    @method    boolean     setDestinationDirectory
          */
-        public function setDestinationDirectory($directory, $autoCreate = false) {
+        public function setDestinationDirectory($directory) {
             $dir = realpath($directory);
             $dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
             if ($this->isDirpath($dir)) {
                 if ($this->dirExists($dir)) {
                     $this->destinationDirectory = $dir;
                     chdir($dir);
-                } else if ($autoCreate === true) {
-                    if (mkdir($dir, 0775, true)) {
-                        $this->destinationDirectory = $dir;
-                        chdir($dir);
-                    } else {
-                        $this->logger->warning('Can not create the upload directory [' . $directory . ']');
-                    }
+                } else {
+                    $this->logger->warning('The upload directory [' . $directory . '] does not exist');
                 }
             }
             return $this;
-        }
-
-        /**
-         *    Get the destination directory
-         *    @return    string
-         */
-        public function getDestinationDirectory() {
-            return $this->destinationDirectory ;
         }
 
         /**

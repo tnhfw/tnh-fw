@@ -108,7 +108,7 @@
             $this->assertSame($expected, $cnx->escape($data, true));
 		}
         
-        public function testGetDsnValue() {
+        public function testGetDsn() {
             
             //Using standard port
             $config = array(
@@ -126,27 +126,27 @@
             //Invalid DSN
             $expected = null;
             $cnx->setDriver('foodriver');
-            $this->assertEmpty($cnx->getDsnValue());
+            $this->assertEmpty($cnx->getDsn());
             
             //Sqlite
             $expected = 'sqlite:bazdb';
             $cnx->setDriver('sqlite');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
             
             //MySQL
             $expected = 'mysql:host=mydbhostname;dbname=bazdb;charset=utf8';
             $cnx->setDriver('mysql');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
             
             //PostgreSQL
             $expected = 'pgsql:host=mydbhostname;dbname=bazdb;charset=utf8';
             $cnx->setDriver('pgsql');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
             
             //Oracle
             $expected = 'oci:dbname=mydbhostname/bazdb;charset=utf8';
             $cnx->setDriver('oracle');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
             
             
             //Using custom port
@@ -166,17 +166,17 @@
             //MySQL
             $expected = 'mysql:host=mydbhostname;port=46575;dbname=bazdb;charset=utf8';
             $cnx->setDriver('mysql');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
             
             //PostgreSQL
             $expected = 'pgsql:host=mydbhostname;port=46575;dbname=bazdb;charset=utf8';
             $cnx->setDriver('pgsql');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
             
             //Oracle
             $expected = 'oci:dbname=mydbhostname:46575/bazdb;charset=utf8';
             $cnx->setDriver('oracle');
-            $this->assertSame($expected, $cnx->getDsnValue());
+            $this->assertSame($expected, $cnx->getDsn());
 		}
 
 	}

@@ -15,141 +15,139 @@
         
         public function testSetInput() {
             $u = new Upload();
-            $this->assertEmpty($u->getInput());
+            $rInput = $this->getPrivateProtectedAttribute('Upload', 'input');
+            $this->assertEmpty($rInput->getValue($u));
             $u->setInput('foo');
-            $this->assertSame('foo', $u->getInput());
-        }
-        
-        public function testSetUploadedFileData() {
-            $u = new Upload();
-            $this->assertEmpty($u->getUploadedFileData());
-            $files = array(
-                'name' => 'foo',
-                'tmp_name' => '/foo/bar',
-                'error' => 0,
-                'size' => 344
-            );
-            $u->setUploadedFileData($files);
-            $this->assertSame($files, $u->getUploadedFileData());
+            $this->assertSame('foo', $rInput->getValue($u));
         }
         
         public function testSetFilename() {
             $u = new Upload();
-            $this->assertEmpty($u->getFilename());
+            $rFilename = $this->getPrivateProtectedAttribute('Upload', 'filename');
+            $this->assertEmpty($rFilename->getValue($u));
             $u->setFilename('foo');
-            $this->assertSame('foo', $u->getFilename());
+            $this->assertSame('foo', $rFilename->getValue($u));
         }
         
         public function testSetAutoFilename() {
             $u = new Upload();
-            $this->assertEmpty($u->getFilename());
+            $rFilename = $this->getPrivateProtectedAttribute('Upload', 'filename');
+            $this->assertEmpty($rFilename->getValue($u));
             
             $u->setAutoFilename();
-            $this->assertNotEmpty($u->getFilename());
+            $this->assertNotEmpty($rFilename->getValue($u));
         }
         
         public function testSetMaxFileSize() {
             $u = new Upload();
-            $this->assertSame(0.0, $u->getMaxFileSize());
+            $rMaxSize = $this->getPrivateProtectedAttribute('Upload', 'maxFileSize');
+            $this->assertSame(0.0, $rMaxSize->getValue($u));
             
             $sizeHuman = '1M';
             $sizeByte = 1048576.0;
             $u->setMaxFileSize($sizeHuman);
-            $this->assertSame($sizeByte, $u->getMaxFileSize());
+            $this->assertSame($sizeByte, $rMaxSize->getValue($u));
             
             $u->setMaxFileSize($sizeByte);
-            $this->assertSame($sizeByte, $u->getMaxFileSize());
+            $this->assertSame($sizeByte, $rMaxSize->getValue($u));
         }
         
-         public function testSetAllowedMimeTypes() {
+         public function testsetAllowMimeTypes() {
              $u = new Upload();
-             $this->assertEmpty($u->getAllowMimeType());
+             $rAllowedMimeType = $this->getPrivateProtectedAttribute('Upload', 'allowedMimeTypes');
+             $this->assertEmpty($rAllowedMimeType->getValue($u));
             
             //empty array
-            $u->setAllowedMimeTypes(array());
-            $this->assertEmpty($u->getAllowMimeType());
+            $u->setAllowMimeTypes(array());
+            $this->assertEmpty($rAllowedMimeType->getValue($u));
             
-            $u->setAllowedMimeTypes(array('image/jpg', 'application/pdf'));
-            $this->assertNotEmpty($u->getAllowMimeType());
-            $this->assertContains('image/jpg', $u->getAllowMimeType());
+            $u->setAllowMimeTypes(array('image/jpg', 'application/pdf'));
+            $this->assertNotEmpty($rAllowedMimeType->getValue($u));
+            $this->assertContains('image/jpg', $rAllowedMimeType->getValue($u));
          }
          
          public function testSetMimeHelping() {
              $u = new Upload();
-             $this->assertEmpty($u->getAllowMimeType());
+             $rAllowedMimeType = $this->getPrivateProtectedAttribute('Upload', 'allowedMimeTypes');
+             $this->assertEmpty($rAllowedMimeType->getValue($u));
             
             //invalid name
             $u->setMimeHelping('ffffffffffff');
-            $this->assertEmpty($u->getAllowMimeType());
+            $this->assertEmpty($rAllowedMimeType->getValue($u));
             
             $u->setMimeHelping('image');
-            $this->assertNotEmpty($u->getAllowMimeType());
-            $this->assertSame(5, count($u->getAllowMimeType()));
+            $this->assertNotEmpty($rAllowedMimeType->getValue($u));
+            $this->assertSame(5, count($rAllowedMimeType->getValue($u)));
          }
          
          public function testClearAllowedMimeTypes() {
              $u = new Upload();
-             $this->assertEmpty($u->getAllowMimeType());
+             $rAllowedMimeType = $this->getPrivateProtectedAttribute('Upload', 'allowedMimeTypes');
+             $this->assertEmpty($rAllowedMimeType->getValue($u));
              
              $u->setMimeHelping('document');
-             $this->assertNotEmpty($u->getAllowMimeType());
-             $this->assertSame(8, count($u->getAllowMimeType()));
+             $this->assertNotEmpty($rAllowedMimeType->getValue($u));
+             $this->assertSame(8, count($rAllowedMimeType->getValue($u)));
              
              $u->clearAllowedMimeTypes();
-             $this->assertEmpty($u->getAllowMimeType());
+             $this->assertEmpty($rAllowedMimeType->getValue($u));
          }
          
          
          public function testSetCallbackInput() {
              $u = new Upload();
-             $this->assertEmpty($u->getCallbacks());
-             $this->assertArrayNotHasKey('input', $u->getCallbacks());
+             $rCallbacks = $this->getPrivateProtectedAttribute('Upload', 'callbacks');
+             $this->assertEmpty($rCallbacks->getValue($u));
+             $this->assertArrayNotHasKey('input', $rCallbacks->getValue($u));
             //not an callable
             $u->setCallbackInput('fooooooooooooxxxxxxxx');
-            $this->assertEmpty($u->getCallbacks());
+            $this->assertEmpty($rCallbacks->getValue($u));
             
             //using an example of PHP function
             $u->setCallbackInput('trim');
-            $this->assertNotEmpty($u->getCallbacks());
-            $this->assertArrayHasKey('input', $u->getCallbacks());
-            $values = $u->getCallbacks();
+            $this->assertNotEmpty($rCallbacks->getValue($u));
+            $this->assertArrayHasKey('input', $rCallbacks->getValue($u));
+            $values = $rCallbacks->getValue($u);
             $this->assertSame('trim', $values['input']);
          }
          
          public function testSetCallbackOutput() {
              $u = new Upload();
-             $this->assertEmpty($u->getCallbacks());
-             $this->assertArrayNotHasKey('output', $u->getCallbacks());
+             $rCallbacks = $this->getPrivateProtectedAttribute('Upload', 'callbacks');
+             $this->assertEmpty($rCallbacks->getValue($u));
+             $this->assertArrayNotHasKey('output', $rCallbacks->getValue($u));
             //not an callable
             $u->setCallbackOutput('bazbaroooooxxxxxxxx');
-            $this->assertEmpty($u->getCallbacks());
+            $this->assertEmpty($rCallbacks->getValue($u));
             
             //using an example of PHP function
             $u->setCallbackOutput('trim');
-            $this->assertNotEmpty($u->getCallbacks());
-            $this->assertArrayHasKey('output', $u->getCallbacks());
-            $values = $u->getCallbacks();
+            $this->assertNotEmpty($rCallbacks->getValue($u));
+            $this->assertArrayHasKey('output', $rCallbacks->getValue($u));
+            $values = $rCallbacks->getValue($u);
             $this->assertSame('trim', $values['output']);
          }
          
          public function testSetUploadFunction() {
              $u = new Upload();
-             $this->assertSame('move_uploaded_file', $u->getUploadFunction());
+             $rUploadFunction = $this->getPrivateProtectedAttribute('Upload', 'uploadFunction');
+             $this->assertSame('move_uploaded_file', $rUploadFunction->getValue($u));
             
             //is not an callable
             $u->setUploadFunction('ffffffffffff');
-            $this->assertSame('move_uploaded_file', $u->getUploadFunction());
+            $this->assertSame('move_uploaded_file', $rUploadFunction->getValue($u));
             
             $u->setUploadFunction('copy');
-            $this->assertSame('copy', $u->getUploadFunction());
+            $this->assertSame('copy', $rUploadFunction->getValue($u));
          }
          
          public function testSetDestinationDirectory() {
              //Can not test because vfsStream does not support for function "realpath", "chdir"
              $u = new Upload();
+             $rDestinationDirectory = $this->getPrivateProtectedAttribute('Upload', 'destinationDirectory');
              $u->setDestinationDirectory('foo');
-             $u->setDestinationDirectory('bar', true); //create if not exist
-             $this->assertNotEmpty($u->getDestinationDirectory());
+             $u->setDestinationDirectory('bar'); //create if not exist
+             $this->assertNotEmpty($rDestinationDirectory->getValue($u));
          }
          
          public function testAllowOverwriting() {
@@ -177,7 +175,7 @@
          
          public function testSave() {
              $u = $this->getUploadMockInstance(true);
-             
+             $rUploadedFileData = $this->getPrivateProtectedAttribute('Upload', 'uploadedFileData');
              $files['image'] = array(
                 'name' => 'foo.ext',
                 'tmp_name' => '/foo/bar',
@@ -185,7 +183,7 @@
                 'size' => 344,
                 'type' => 'image/jpg'
             );
-             $u->setUploadedFileData($files);
+             $rUploadedFileData->setValue($u, $files);
              $u->setInput('image');
              $u->setAllowMimeType('image/jpg');
              $u->setUploadFunction('copy');
@@ -200,11 +198,12 @@
              
              //using custom filename
              $u = $this->getUploadMockInstance(true);
-             $u->setUploadedFileData($files);
+             $rUploadedFileData->setValue($u, $files);
              $u->setInput('image');
              $u->setUploadFunction('copy');
              $this->assertFalse($u->save());
-             $this->assertSame('foo.ext', $u->getFilename());
+             $rFilename = $this->getPrivateProtectedAttribute('Upload', 'filename');
+             $this->assertSame('foo.ext', $rFilename->getValue($u));
              
              
              $u = $this->getUploadMockInstance(true);
@@ -216,7 +215,7 @@
                 'size' => 344,
                 'type' => 'image/jpg'
             );
-            $u->setUploadedFileData($files);
+            $rUploadedFileData->setValue($u, $files);
             $u->setInput('image');
             $u->setUploadFunction('copy');
             $u->save();
@@ -234,7 +233,8 @@
                 'size' => 344,
                 'type' => 'image/jpg'
             );
-            $u->setUploadedFileData($files);
+            
+            $rUploadedFileData->setValue($u, $files);
             $u->setInput('image');
             $u->setCallbackInput('trim');
             $u->setCallbackOutput('rtrim');
@@ -250,7 +250,7 @@
                 'size' => 13,
                 'type' => 'image/jpg'
             );
-            $u->setUploadedFileData($files);
+            $rUploadedFileData->setValue($u, $files);
             $u->setInput('image');
             $u->setAllowMimeType('foobar');
             $u->save();
@@ -266,7 +266,7 @@
                 'size' => 349997969694,
                 'type' => 'image/jpg'
             );
-            $u->setUploadedFileData($files);
+            $rUploadedFileData->setValue($u, $files);
             $u->setInput('image');
             $u->setMaxFileSize('1K');
             $u->save();

@@ -116,12 +116,12 @@
                 $protocol = 'https';
             }
 
-            $domainserverVars = array(
+            $domainServerVars = array(
                 'HTTP_HOST',
                 'SERVER_NAME',
                 'SERVER_ADDR'
             );
-            foreach ($domainserverVars as $var) {
+            foreach ($domainServerVars as $var) {
                 $value = get_instance()->request->server($var);
                 if ($value) {
                     $domain = $value;

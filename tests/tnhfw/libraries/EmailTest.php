@@ -35,38 +35,40 @@
             $name = null;
             
             $e = new Email(); 
-            $this->assertEmpty($e->getTo());
+            $rTo = $this->getPrivateProtectedAttribute('Email', 'to');
+            $this->assertEmpty($rTo->getValue($e));
             
             $e->setTo($email, $name);
-			$this->assertNotEmpty($e->getTo());
-			$this->assertSame(1, count($e->getTo()));
+			$this->assertNotEmpty($rTo->getValue($e));
+			$this->assertSame(1, count($rTo->getValue($e)));
             
             $name = 'Foo Bar';
             $e->setTo($email, $name);
-			$this->assertSame(2, count($e->getTo()));
+			$this->assertSame(2, count($rTo->getValue($e)));
 		}
 
         public function testSetTos() {
             $emails = array('foo@bar.com', 'baz' => 'baz@foo.com');
             
             $e = new Email(); 
-            $this->assertEmpty($e->getTo());
+            $rTo = $this->getPrivateProtectedAttribute('Email', 'to');
+            $this->assertEmpty($rTo->getValue($e));
             
             $e->setTos($emails);
-			$this->assertNotEmpty($e->getTo());
-			$this->assertSame(2, count($e->getTo()));
+			$this->assertNotEmpty($rTo->getValue($e));
+			$this->assertSame(2, count($rTo->getValue($e)));
 		}
         
         public function testSetGetCc() {
             $emails = array('foo'=> 'foo@bar.com', 'baz' => 'baz@foo.com');
             
             $e = new Email(); 
+            $rCc = $this->getPrivateProtectedAttribute('Email', 'cc');
             $this->assertEmpty($e->getHeaders());
-            
             $e->setCc($emails);
+            $this->assertNotEmpty($rCc->getValue($e));
 			$this->assertNotEmpty($e->getHeaders());
 			$this->assertSame(1, count($e->getHeaders()));
-			$this->assertSame(2, count($e->getCc()));
 		}
         
         public function testSetGetBcc() {
@@ -74,40 +76,45 @@
             
             $e = new Email(); 
             $this->assertEmpty($e->getHeaders());
+            $rBcc = $this->getPrivateProtectedAttribute('Email', 'bcc');
+            
             
             $e->setBcc($emails);
+            $this->assertNotEmpty($rBcc->getValue($e));
 			$this->assertNotEmpty($e->getHeaders());
 			$this->assertSame(1, count($e->getHeaders()));
-			$this->assertSame(2, count($e->getBcc()));
-            
+			
             //empty value
             $e->setBcc(array());
+            $this->assertEmpty($rBcc->getValue($e));
             $this->assertSame(1, count($e->getHeaders()));
-            $this->assertSame(0, count($e->getBcc()));
 		}
         
         public function testSetGetSmtpProtocol() {
            $e = new Email(); 
+           $rProto = $this->getPrivateProtectedAttribute('Email', 'protocol');
             //Default is mail
-            $this->assertSame('mail', $e->getProtocol());
+            $this->assertSame('mail', $rProto->getValue($e));
             
             $e->useMail();
-            $this->assertSame('mail', $e->getProtocol());
+            $this->assertSame('mail', $rProto->getValue($e));
             
             $e->useSmtp();
-            $this->assertSame('smtp', $e->getProtocol());
+            $this->assertSame('smtp', $rProto->getValue($e));
 		}
         
         public function testSetGetSmtpConfig() {
             $e = new Email(); 
+            $rSmtpConfig = $this->getPrivateProtectedAttribute('Email', 'smtpConfig');
             //Default configuration
-            $this->assertSame('plain', $e->getSmtpConfig('transport'));
-            $this->assertSame('localhost', $e->getSmtpConfig('hostname'));
-            $this->assertSame(25, $e->getSmtpConfig('port'));
-            $this->assertNull($e->getSmtpConfig('username'));
-            $this->assertNull($e->getSmtpConfig('password'));
-            $this->assertSame(30, $e->getSmtpConfig('connection_timeout'));
-            $this->assertSame(10, $e->getSmtpConfig('response_timeout'));
+            $configs = $rSmtpConfig->getValue($e);
+            $this->assertSame('plain', $configs['transport']);
+            $this->assertSame('localhost', $configs['hostname']);
+            $this->assertSame(25, $configs['port']);
+            $this->assertNull($configs['username']);
+            $this->assertNull($configs['password']);
+            $this->assertSame(30, $configs['connection_timeout']);
+            $this->assertSame(10, $configs['response_timeout']);
             
             //Custom configuration
             $smtpConfig = array(
@@ -120,19 +127,20 @@
                 'response_timeout'   => 2
             );   
             $e->setSmtpConfig($smtpConfig);
-            $this->assertNotEmpty($e->getSmtpConfigs());
-            $this->assertSame(7, count($e->getSmtpConfigs()));
+            $configs = $rSmtpConfig->getValue($e);
+            $this->assertNotEmpty($configs);
+            $this->assertSame(7, count($configs));
             
-            $this->assertSame('tls', $e->getSmtpConfig('transport'));
-            $this->assertSame('my.smtpserver.com', $e->getSmtpConfig('hostname'));
-            $this->assertSame(2525, $e->getSmtpConfig('port'));
-            $this->assertSame('foo', $e->getSmtpConfig('username'));
-            $this->assertSame('bar', $e->getSmtpConfig('password'));
-            $this->assertSame(5, $e->getSmtpConfig('connection_timeout'));
-            $this->assertSame(2, $e->getSmtpConfig('response_timeout'));
+            $this->assertSame('tls', $configs['transport']);
+            $this->assertSame('my.smtpserver.com', $configs['hostname']);
+            $this->assertSame(2525, $configs['port']);
+            $this->assertSame('foo', $configs['username']);
+            $this->assertSame('bar', $configs['password']);
+            $this->assertSame(5, $configs['connection_timeout']);
+            $this->assertSame(2, $configs['response_timeout']);
             
-            $this->assertNotEmpty($e->getSmtpConfigs());
-            $this->assertSame(7, count($e->getSmtpConfigs()));
+            $this->assertNotEmpty($configs);
+            $this->assertSame(7, count($configs));
  		}
                 
         public function testSetReplyTo() {
@@ -140,10 +148,10 @@
             $name = null;
             
             $e = new Email(); 
-            $this->assertEmpty($e->getTo());
-            
+            $rReplyTo = $this->getPrivateProtectedAttribute('Email', 'replyTo');
             $e->setReplyTo($email, $name);
-			$this->assertNotEmpty($e->getHeaders());
+			$this->assertNotEmpty($rReplyTo->getValue($e));
+            $this->assertNotEmpty($e->getHeaders());
 			$this->assertSame(1, count($e->getHeaders()));
             
             $name = 'Foo Bar';
@@ -162,18 +170,18 @@
         
         public function testSubject() {
             $e = new Email(); 
-            $this->assertEmpty($e->getSubject());
-            
             $e->setSubject('foo subject');
-			$this->assertNotEmpty($e->getSubject());
+            $rSubject = $this->getPrivateProtectedAttribute('Email', 'subject');
+            $this->assertNotEmpty($rSubject->getValue($e));
 		}
         
         public function testMessage() {
             $e = new Email(); 
-            $this->assertEmpty($e->getMessage());
+            $rMessage = $this->getPrivateProtectedAttribute('Email', 'message');
+            $this->assertEmpty($rMessage->getValue($e));
             
             $e->setMessage('foo message');
-			$this->assertNotEmpty($e->getMessage());
+			$this->assertNotEmpty($rMessage->getValue($e));
 		}
         
         public function testAddAttachmentFileNotExist() {
@@ -202,18 +210,20 @@
         
         public function testWrap() {
             $e = new Email(); 
+            $rWrap = $this->getPrivateProtectedAttribute('Email', 'wrap');
+            
             //default value is 78
-            $this->assertSame(78, $e->getWrap());
+            $this->assertSame(78, $rWrap->getValue($e));
             
             //negative value
             $wrap = -1;
             $e->setWrap($wrap);
-			$this->assertSame(78, $e->getWrap());
+			$this->assertSame(78, $rWrap->getValue($e));
             
             //negative value
             $wrap = 100;
             $e->setWrap($wrap);
-			$this->assertSame(100, $e->getWrap());
+			$this->assertSame(100, $rWrap->getValue($e));
 		}
         
         public function testSendNoDestinataireOrSender() {

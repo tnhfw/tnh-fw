@@ -393,7 +393,7 @@
                     $this->result  = $queryResult->getResult();
                     $this->numRows = $queryResult->getNumRows();
                     //save the result into cache
-                    $this->cache->saveCacheContent($this->result);
+                    $this->cache->setCacheContent($this->result);
                 }
             } else {
                 $this->logger->info('The result for query [' . $this->query . '] already cached use it');

@@ -95,6 +95,15 @@
         }
         
         /**
+        * Method to set/get private & protected attribute
+        */
+        protected function getPrivateProtectedAttribute($className, $attr){
+            $rProp = new ReflectionProperty($className, $attr);
+            $rProp->setAccessible(true);
+            return $rProp;
+        }
+        
+        /**
         * Method to return the correct database configuration
         * using for test
         */

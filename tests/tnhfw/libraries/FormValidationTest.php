@@ -17,16 +17,6 @@
     class FormValidationTest extends TnhTestCase
     {   
         
-        public function testSetGetDatabase()
-        {
-            $db = $this->getMockBuilder('Database')->getMock();
-              
-            $fv = new FormValidation();
-            $this->assertNull($fv->getDatabase());
-            $fv->setDatabase($db);
-            $this->assertInstanceOf('Database', $fv->getDatabase());
-        }
-        
         public function testValidationData()
         {
             $fv = new FormValidation();
@@ -1228,32 +1218,23 @@
         public function testRuleExists()
         {
             $db = $this->getDbInstanceForTest();
+            $obj = &get_instance();
+            $obj->database = $db;            
+            
             //Validation failed
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             $fv->setRule('foo', 'foo label', 'exists[form_validation.name]');
             $fv->setData(array('foo' => 'ab3'));
             $this->assertFalse($fv->validate());  
 
             //Validation success
             $fv = new FormValidation();
-            $fv->setDatabase($db);    
             $fv->setRule('foo', 'foo label', 'exists[form_validation.name]');
             $fv->setData(array('foo' => 'foo'));
             $this->assertTrue($fv->validate());  
             
-            $db = $this->getDbInstanceForTest();
-            
-            //using super object database instance
-            $obj = &get_instance();
-            $obj->database = $db;
-            $fv = new FormValidation();
-            $fv->setRule('foo', 'foo label', 'exists[form_validation.name]');
-            $fv->setData(array('foo' => 'foo'));
-            $this->assertTrue($fv->validate()); 
 
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             $fv->setRule('foo', 'foo label', 'exists[form_validation.name]');
             //Field is not required 
             $fv->setData(array('foo' => ''));
@@ -1263,31 +1244,22 @@
         public function testRuleIsUnique()
         {
             $db = $this->getDbInstanceForTest();
+            $obj = &get_instance();
+            $obj->database = $db;   
            
             //Validation failed
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             $fv->setRule('foo', 'foo label', 'is_unique[form_validation.name]');
             $fv->setData(array('foo' => 'bar'));
             $this->assertFalse($fv->validate());  
 
             //Validation success
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
-            $fv->setRule('foo', 'foo label', 'is_unique[form_validation.name]');
-            $fv->setData(array('foo' => 'foovalue'));
-            $this->assertTrue($fv->validate());  
-            
-             //using super object database instance
-            $obj = &get_instance();
-            $obj->database = $db;
-            $fv = new FormValidation();
             $fv->setRule('foo', 'foo label', 'is_unique[form_validation.name]');
             $fv->setData(array('foo' => 'foovalue'));
             $this->assertTrue($fv->validate());  
             
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             $fv->setRule('foo', 'foo label', 'is_unique[form_validation.name]');
             //Field is not required 
             $fv->setData(array('foo' => ''));
@@ -1297,10 +1269,11 @@
         public function testRuleIsUniqueUpdate()
         {
             $db = $this->getDbInstanceForTest();
+            $obj = &get_instance();
+            $obj->database = $db;   
             
             //Validation failed
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             //current id is 1, but the value 'bar' already exists for id 2 so can not use it to do update
             $fv->setRule('foo', 'foo label', 'is_unique_update[form_validation.name,id=1]');
             $fv->setData(array('foo' => 'bar'));
@@ -1308,29 +1281,19 @@
 
             //invalid rule definition
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             $fv->setRule('foo', 'foo label', 'is_unique_update[form_validation.name]');
             $fv->setData(array('foo' => 'bar'));
             $this->assertTrue($fv->validate()); 
 
             //Validation success
             $fv = new FormValidation();
-            $fv->setDatabase($db);   
              //current id is 1, and the value 'foo' already exists and id is 1 so is the same can use it to do update
             $fv->setRule('foo', 'foo label', 'is_unique_update[form_validation.name,id=1]');
             $fv->setData(array('foo' => 'foo'));
             $this->assertTrue($fv->validate());  
             
-             //using super object database instance
-            $obj = &get_instance();
-            $obj->database = $db;
-            $fv = new FormValidation();
-            $fv->setRule('foo', 'foo label', 'is_unique_update[form_validation.name,id=1]');
-            $fv->setData(array('foo' => 'foo'));
-            $this->assertTrue($fv->validate());  
             
             $fv = new FormValidation();
-            $fv->setDatabase($db);            
             $fv->setRule('foo', 'foo label', 'is_unique_update[form_validation.name,id=1]');
             //Field is not required 
             $fv->setData(array('foo' => ''));

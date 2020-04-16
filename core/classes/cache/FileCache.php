@@ -35,7 +35,7 @@
          * Note: extension zlib must be availabe for this to work
          * @var boolean
          */
-        private $compressCacheData = true;
+        private $compressCacheData = false;
 
         /**
          * The path of saved file cache
@@ -54,11 +54,8 @@
                 show_error('The cache for file system is not available. Check the cache directory if is exist or is writable.');
             }
 			
-            //if Zlib extension is not loaded set compressCacheData to false
-            if (!extension_loaded('zlib')) {
-                $this->logger->warning('The zlib extension is not loaded set cache compress data to false');
-                $this->compressCacheData = false;
-            }
+            //set compress cache data if zlib extension is loaded
+            $this->compressCacheData = extension_loaded('zlib');
         }
 
         /**
@@ -242,34 +239,6 @@
                 $this->logger->debug('Processing the cache file [' . $file . ']');
                 unlink($file);
             }
-        }
-	
-        /**
-         * Whether the compression is enabled or not
-         * 
-         * @return boolean
-         */
-        public function isCompressCacheData() {
-            return $this->compressCacheData;
-        }
-
-        /**
-         * Set the compression data status
-         * Note: this is set to "true" only if zlib extension is loaded and enabled
-         * 
-         * @param boolean $compressCacheData
-         *
-         * @return object
-         */
-        public function setCompressCacheData($status = true) {
-            //if zlib extension is not loaded set compressCacheData to false
-            if ($status === true && !extension_loaded('zlib')) {
-                $this->logger->warning('The zlib extension is not loaded set cache compress data to false');
-                $this->compressCacheData = false;
-            } else {
-                $this->compressCacheData = $status;
-            }
-            return $this;
         }
 		
         /**

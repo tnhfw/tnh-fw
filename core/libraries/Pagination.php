@@ -82,21 +82,32 @@
         }
 
         /**
-         * Return the value of the pagination query string
-         * @return string
+         * Generate the pagination link
+         * @param  int $totalRows the total number of data
+         * @param  int $currentPageNumber the current page number
+         * 
+         * @return null|string the pagination link
          */
-        public function getPaginationQueryString() {
-            return $this->paginationQueryString;
-        }
-
-        /**
-        * Set the value of the pagination query string
-        * @param string $pQueryString the new value
-        * @return object
-        */
-        public function setPaginationQueryString($pQueryString) {
-            $this->paginationQueryString = $pQueryString;
-            return $this;
+        public function getLink($totalRows, $currentPageNumber) {
+            $numberOfLink = $this->config['nb_link'];
+            $numberOfRowPerPage = $this->config['pagination_per_page'];
+            
+            //determine the pagination query string value
+            $this->determinePaginationQueryStringValue();
+            
+            $navbar = null;
+            $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
+            $currentPageNumber = (int) $currentPageNumber;
+            $numberOfLink = (int) $numberOfLink;
+            $numberOfRowPerPage = (int) $numberOfRowPerPage;
+			
+            if ($currentPageNumber <= 0) {
+                $currentPageNumber = 1;
+            }
+            if ($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0) {
+                return $navbar;
+            }
+            return $this->buildPaginationNavbar($currentPageNumber, $numberOfPage);
         }
 
         /**
@@ -105,7 +116,7 @@
          * 
          * @return object
          */
-        public function determinePaginationQueryStringValue() {
+        protected function determinePaginationQueryStringValue() {
             $pageQueryName = $this->config['page_query_string_name'];
             $queryString = get_instance()->url->queryString();
             $currentUrl = get_instance()->url->current();
@@ -129,36 +140,6 @@
             $query = $temp[0] . $query;
             $this->paginationQueryString = $query;
             return $this;
-        }
-
-        /**
-         * Generate the pagination link
-         * @param  int $totalRows the total number of data
-         * @param  int $currentPageNumber the current page number
-         * 
-         * @return null|string the pagination link
-         */
-        public function getLink($totalRows, $currentPageNumber) {
-            $numberOfLink = $this->config['nb_link'];
-            $numberOfRowPerPage = $this->config['pagination_per_page'];
-            if (empty($this->paginationQueryString)) {
-                //determine the pagination query string value
-                $this->determinePaginationQueryStringValue();
-            }
-            //************************************
-            $navbar = null;
-            $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
-            $currentPageNumber = (int) $currentPageNumber;
-            $numberOfLink = (int) $numberOfLink;
-            $numberOfRowPerPage = (int) $numberOfRowPerPage;
-			
-            if ($currentPageNumber <= 0) {
-                $currentPageNumber = 1;
-            }
-            if ($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0) {
-                return $navbar;
-            }
-            return $this->buildPaginationNavbar($currentPageNumber, $numberOfPage);
         }
 
         /**

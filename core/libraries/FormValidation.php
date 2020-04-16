@@ -104,15 +104,6 @@
         private $data = array();
 
         /**
-         * The database instance to use to validate rules:
-         * - exists
-         * - is_unique
-         * - is_unique_update
-         * @var object
-         */
-        private $database = null;
-        
-        /**
          * Construct new Form Validation instance
          * Reset the field to the default value
          * Set the rules validations messages
@@ -324,37 +315,6 @@
                 foreach (array_keys($this->rules) as $field) {
                     $this->customErrors[$field][$rule] = $message;
                 }
-            }
-            return $this;
-        }
-
-        /**
-         * Get the database instance
-         * @return object the database instance
-         */
-        public function getDatabase() {
-            return $this->database;
-        }
-
-        /**
-         * Set the database instance
-         * @param object $database the database instance
-         *
-         * @return object the current instance
-         */
-        public function setDatabase(Database $database) {
-            $this->database = $database;
-            return $this;
-        }
-
-         /**
-         * Set the database instance using get_instance() if is null
-         *
-         * @return object the current instance
-         */
-        protected function setDatabaseFromSuperInstanceIfNotSet() {
-            if (!is_object($this->database)) {
-                $this->database = get_instance()->database;
             }
             return $this;
         }
@@ -1063,13 +1023,16 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleIsUnique($field, $rule, $paramValue) {
-            $this->setDatabaseFromSuperInstanceIfNotSet();
+            $obj = & get_instance();
+            if (!isset($obj->database)) {
+                return;
+            }
             $value = $this->getFieldValue($field);    
             list($table, $column) = explode('.', $paramValue);
-            $this->database->getQueryBuilder()->from($table)
+            $obj->database->getQueryBuilder()->from($table)
                                               ->where($column, $value);
-            $this->database->get();
-            if ($this->database->numRows() > 0) {
+            $obj->database->get();
+            if ($obj->database->numRows() > 0) {
                 $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
@@ -1083,16 +1046,19 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleIsUniqueUpdate($field, $rule, $paramValue) {
-            $this->setDatabaseFromSuperInstanceIfNotSet();
+            $obj = & get_instance();
+            if (!isset($obj->database)) {
+                return;
+            }
             $value = $this->getFieldValue($field);  
             $data = explode(',', $paramValue, 2);
             list($table, $column) = explode('.', $data[0]);
             list($columnKey, $valueKey) = explode('=', $data[1]);
-            $this->database->getQueryBuilder()->from($table)
+            $obj->database->getQueryBuilder()->from($table)
                                               ->where($column, $value)
                                               ->where($columnKey, '!=', trim($valueKey));
-            $this->database->get();
-            if ($this->database->numRows() > 0) {
+            $obj->database->get();
+            if ($obj->database->numRows() > 0) {
                 $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }
@@ -1106,13 +1072,16 @@
          * @param  string|null  $paramValue  the rule parameter
          */
         protected function checkRuleExists($field, $rule, $paramValue) {
-            $this->setDatabaseFromSuperInstanceIfNotSet();
+            $obj = & get_instance();
+            if (!isset($obj->database)) {
+                return;
+            }
             $value = $this->getFieldValue($field);    
             list($table, $column) = explode('.', $paramValue);
-            $this->database->getQueryBuilder()->from($table)
+            $obj->database->getQueryBuilder()->from($table)
                                               ->where($column, $value);
-            $this->database->get();
-            if ($this->database->numRows() <= 0) {
+            $obj->database->get();
+            if ($obj->database->numRows() <= 0) {
                 $this->setFieldErrorWithRequiredCheck($field, $value, $rule, $paramValue);
             }
         }

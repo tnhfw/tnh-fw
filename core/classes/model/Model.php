@@ -657,21 +657,6 @@
         }
 
         /**
-         * Protect attributes by removing them from data to insert or update
-         *
-         * @return mixed the final row after remove the protected
-         * table columns if they exist
-         */
-        public function removeProtectedTableColumns($row) {
-            foreach ($this->protectedTableColumns as $attr) {
-               if (isset($row[$attr])) {
-                    unset($row[$attr]);
-                }
-            }
-            return $row;
-        }
-		
-        /**
          * Return the database instance
          * @return Database the database instance
          */
@@ -737,6 +722,21 @@
         public function limit($offset = 0, $limit = 10) {
             $this->getQueryBuilder()->limit($offset, $limit);
             return $this;
+        }
+
+        /**
+         * Protect attributes by removing them from data to insert or update
+         *
+         * @return mixed the final row after remove the protected
+         * table columns if they exist
+         */
+        protected function removeProtectedTableColumns($row) {
+            foreach ($this->protectedTableColumns as $attr) {
+               if (isset($row[$attr])) {
+                    unset($row[$attr]);
+                }
+            }
+            return $row;
         }
 
         /**

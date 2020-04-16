@@ -150,7 +150,8 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
-            $cache->setCompressCacheData(false);
+            $rCompressCacheData = $this->getPrivateProtectedAttribute('FileCache', 'compressCacheData');
+            $rCompressCacheData->setValue($cache, false);
             $cache->set($cacheKey, 'cacheview', 3000);
     
             
@@ -190,7 +191,8 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
-            $cache->setCompressCacheData(false);
+            $rCompressCacheData = $this->getPrivateProtectedAttribute('FileCache', 'compressCacheData');
+            $rCompressCacheData->setValue($cache, false);
             $cache->set($cacheKey, 'cacheview', 3000);
     
             
@@ -205,7 +207,8 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
-            $cache->setCompressCacheData(false);
+            $rCompressCacheData = $this->getPrivateProtectedAttribute('FileCache', 'compressCacheData');
+            $rCompressCacheData->setValue($cache, false);
             $cache->set($cacheKey, 'cacheview', -99999999);
     
             
@@ -220,7 +223,8 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
-            $cache->setCompressCacheData(false);
+            $rCompressCacheData = $this->getPrivateProtectedAttribute('FileCache', 'compressCacheData');
+            $rCompressCacheData->setValue($cache, false);
             $cache->set($cacheKey, 'cacheview', 3000);
     
             $_SERVER['HTTP_IF_MODIFIED_SINCE'] = date('Y-m-d', time() + 99999);
@@ -238,7 +242,8 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
-            $cache->setCompressCacheData(false);
+            $rCompressCacheData = $this->getPrivateProtectedAttribute('FileCache', 'compressCacheData');
+            $rCompressCacheData->setValue($cache, false);
             $cache->set($cacheKey, 'cacheview', 8888);
     
             
@@ -257,7 +262,8 @@
             $this->vfsFileCachePath = vfsStream::newDirectory('cache')->at($this->vfsRoot);
             $cache = new FileCache($this->vfsFileCachePath->url() . DS);
             $cacheKey = md5('/foo/bar?a=b&b=c');
-            $cache->setCompressCacheData(false);
+            $rCompressCacheData = $this->getPrivateProtectedAttribute('FileCache', 'compressCacheData');
+            $rCompressCacheData->setValue($cache, false);
             $cache->set($cacheKey, 'cacheview', 100);
             
             $_SERVER['REQUEST_URI'] = '/foo/bar';

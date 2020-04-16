@@ -122,7 +122,7 @@
          * @param object CacheInterface $cache the cache object
          * @return object Database
          */
-        public function setCache($cache) {
+        public function setCache(CacheInterface $cache) {
             $this->cache = $cache;
             return $this;
         }
@@ -175,7 +175,7 @@
          *
          * @return boolean|null the status of the operation
          */
-        public function saveCacheContent($result) {
+        public function setCacheContent($result) {
             //set some attributes values
             $this->setPropertiesValues();
             if (! $this->canUseCache()) {
