@@ -38,40 +38,40 @@
          * @var Dompdf
          */
         private $dompdf = null;
+
+        /**
+         * The PDF generated filename
+         * @var string
+         */
+        private $filename = 'output.pdf';
+
+        /**
+         * The HTML content
+         * @var string
+         */
+        private $html = null;
+
+        /**
+         * The PDF document paper type like 'A4', 'A5', 'letter', etc.
+         * @var string
+         */
+        private $paper = 'A4';
+
+        /**
+         * The PDF document orientation like 'portrait', 'landscape'
+         * @var string
+         */
+        private $orientation = 'portrait';
 		
         /**
          * Create PDF library instance
          */
         public function __construct() {
             parent::__construct();
-
             require_once VENDOR_PATH . 'dompdf/dompdf_config.inc.php';
             $this->dompdf = new Dompdf();
         }
 
-        /**
-         * Generate PDF document
-         * @param  string  $html        the HTML content to use for generation
-         * @param  string  $filename    the generated PDF document filename
-         * @param  boolean $stream      if need send the generated PDF to browser for download
-         * @param  string  $paper       the PDF document paper type like 'A4', 'A5', 'letter', etc.
-         * @param  string  $orientation the PDF document orientation like 'portrait', 'landscape'
-         * @return string|void               if $stream is true send PDF document to browser for download, else return the generated PDF
-         * content like to join in Email attachment of for other purpose use.
-         */
-        public function generate($html, $filename = 'output.pdf', $stream = true, $paper = 'A4', $orientation = 'portrait') {
-            $this->logger->info('Generating of PDF document: filename [' . $filename . '], stream [' . ($stream ? 'TRUE' : 'FALSE') . '], paper [' . $paper . '], orientation [' . $orientation . ']');
-            $this->dompdf->load_html($html);
-            $this->dompdf->set_paper($paper, $orientation);
-            $this->dompdf->render();
-            if (!$stream) {
-                return $this->dompdf->output();
-            }
-            //@codeCoverageIgnoreStart
-            $this->dompdf->stream($filename);
-        }
-        //@codeCoverageIgnoreEnd
-		
         /**
          * Return the instance of Dompdf
          *
@@ -79,6 +79,119 @@
          */
         public function getDompdf() {
             return $this->dompdf;
+        }
+
+        /**
+         * This method is the shortcut to Dompdf::render
+         * @return object the current instance
+         */
+        public function render() {
+           $this->dompdf->load_html($this->html);
+           $this->dompdf->set_paper($this->paper, $this->orientation);
+           $this->dompdf->render(); 
+           return $this;
+        }
+
+        /**
+         * Set the filename of generated PDF document
+         * @param string $filename the filename
+         *
+         * @return object the current instance
+         */
+        public function setFilename($filename) {
+            if(stripos($filename, '.pdf') === false) {
+                $filename .= '.pdf';     
+            }
+            $this->filename = $filename;
+            return $this;
+        }
+
+        /**
+         * Set the HTML content to use to generate the PDF
+         * @param string $html the content of HTML
+         *
+         * @return object the current instance
+         */
+        public function setHtml($html) {
+            $this->html = $html; 
+            return $this;
+        }
+
+        /**
+         * Set the page paper of the generated PDF
+         * @param string $paper the page paper like "A4", "letter", etc.
+         *
+         * @return object the current instance
+         */
+        public function setPaper($paper) {
+            $this->paper = $paper; 
+            return $this;
+        }
+
+        /**
+         * Set the page orientation of the generated PDF to "portrait"
+         *
+         * @return object the current instance
+         */
+        public function portrait() {
+            $this->orientation = 'portrait'; 
+            return $this;
+        }
+
+        /**
+         * Set the page orientation of the generated PDF to "portrait"
+         *
+         * @return object the current instance
+         */
+        public function landscape() {
+            $this->orientation = 'landscape'; 
+            return $this;
+        }
+
+        /**
+         * Download the generated PDF document
+         * @codeCoverageIgnore
+         * 
+         * @return void
+         */
+        public function download() {
+            $this->logger->info('Download of PDF document: filename [' . $this->filename . '], '
+                                . 'paper [' . $this->paper . '], orientation [' . $this->orientation . ']');
+            $this->prepare();
+            $this->dompdf->stream($this->filename);
+        }
+
+        /**
+         * Return the content of the generated PDF document as string
+         * @return string
+         */
+        public function content() {
+            $this->logger->info('Return of PDF document as string: paper '
+                                . '[' . $this->paper . '], orientation [' . $this->orientation . ']');
+            $this->prepare();
+            return $this->dompdf->output();
+        }
+
+        /**
+         * Save the content of the generated PDF document on the server filesystem
+         * @return void
+         */
+        public function save() {
+            $this->logger->info('Saving PDF document : filename path [' . $this->filename . '], paper '
+                                . '[' . $this->paper . '], orientation [' . $this->orientation . ']');
+            file_put_contents($this->filename, $this->content());
+        }
+
+        /**
+         * Prepare the PDF to generate 
+         * @return void
+         */
+        protected function prepare() {
+            //If the canvas instance is null so means the method "render"
+            // not yet called
+            if ($this->dompdf->get_canvas() === null) {
+                $this->render();  
+            }
         }
 		
     }
