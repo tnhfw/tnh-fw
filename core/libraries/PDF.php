@@ -82,6 +82,15 @@
         }
 
         /**
+         * Return the instance of Canvas
+         *
+         * @return object the canvas instance
+         */
+        public function getCanvas() {
+            return $this->dompdf->get_canvas();
+        }
+
+        /**
          * This method is the shortcut to Dompdf::render
          * @return object the current instance
          */

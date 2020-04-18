@@ -62,7 +62,21 @@
             
             $p->landscape();
             $this->assertSame('landscape', $rOrientation->getValue($p));
+        }
+        
+        public function testCanvas() {
+            //Default before rendered
+            $p = new PDF();
+            $this->assertNull($p->getCanvas());
             
+            $filename = 'output.pdf';
+            $vfsRoot = vfsStream::setup();
+            $vfsFilePath = vfsStream::newDirectory('pdf')->at($vfsRoot);
+            $p = new PDF();
+            $p->setHtml('foo')
+               ->setFilename($vfsFilePath->url() . '/' . $filename)
+               ->save();            
+            $this->assertNotNull($p->getCanvas());
         }
         
         
@@ -78,8 +92,6 @@
                ->setFilename($vfsFilePath->url() . '/' . $filename)
                ->save();
             $this->assertTrue($vfsFilePath->hasChild($filename));
-            
-            
         }
         
         public function testSaveFilenameWithoutExtension() {
