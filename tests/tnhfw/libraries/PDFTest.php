@@ -21,7 +21,7 @@
         
 		public function testConstructor() {
             $p = new PDF();
-			$this->assertInstanceOf('Dompdf', $p->getDompdf());
+			$this->assertInstanceOf('Dompdf\Dompdf', $p->getDompdf());
 		}
         
         public function testDefault() {
@@ -34,6 +34,7 @@
             $this->assertSame('output.pdf', $rFilename->getValue($p));
             $this->assertSame('portrait', $rOrientation->getValue($p));
             $this->assertSame('A4', $rPaper->getValue($p));
+            $this->assertNotNull($p->getCanvas());
         }
         
         public function testSetProperties() {
@@ -64,21 +65,7 @@
             $this->assertSame('landscape', $rOrientation->getValue($p));
         }
         
-        public function testCanvas() {
-            //Default before rendered
-            $p = new PDF();
-            $this->assertNull($p->getCanvas());
-            
-            $filename = 'output.pdf';
-            $vfsRoot = vfsStream::setup();
-            $vfsFilePath = vfsStream::newDirectory('pdf')->at($vfsRoot);
-            $p = new PDF();
-            $p->setHtml('foo')
-               ->setFilename($vfsFilePath->url() . '/' . $filename)
-               ->save();            
-            $this->assertNotNull($p->getCanvas());
-        }
-        
+       
         
         public function testSave() {
             $filename = 'output.pdf';

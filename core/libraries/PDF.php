@@ -62,14 +62,23 @@
          * @var string
          */
         private $orientation = 'portrait';
+
+        /**
+         * Whether the document already rendered call to render method
+         * @var boolean
+         */
+        private $rendered = false;
 		
         /**
          * Create PDF library instance
          */
         public function __construct() {
             parent::__construct();
-            require_once VENDOR_PATH . 'dompdf/dompdf_config.inc.php';
-            $this->dompdf = new Dompdf();
+            require_once VENDOR_PATH . 'dompdf/autoload.inc.php';
+            $defaultOptions = array(
+                'isRemoteEnabled' => true
+            );
+            $this->dompdf = new Dompdf\Dompdf($defaultOptions);
         }
 
         /**
@@ -87,7 +96,7 @@
          * @return object the canvas instance
          */
         public function getCanvas() {
-            return $this->dompdf->get_canvas();
+            return $this->dompdf->getCanvas();
         }
 
         /**
@@ -95,9 +104,10 @@
          * @return object the current instance
          */
         public function render() {
-           $this->dompdf->load_html($this->html);
-           $this->dompdf->set_paper($this->paper, $this->orientation);
+           $this->dompdf->loadHtml($this->html);
+           $this->dompdf->setPaper($this->paper, $this->orientation);
            $this->dompdf->render(); 
+           $this->rendered = true;
            return $this;
         }
 
@@ -196,9 +206,7 @@
          * @return void
          */
         protected function prepare() {
-            //If the canvas instance is null so means the method "render"
-            // not yet called
-            if ($this->dompdf->get_canvas() === null) {
+            if ($this->rendered === false) {
                 $this->render();  
             }
         }
