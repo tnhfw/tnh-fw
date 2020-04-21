@@ -503,7 +503,7 @@
          * @return object        the current DatabaseQueryBuilder instance
          */
         public function like($field, $value, $type = '', $andOr = 'AND', $escape = true) {
-            $data = $this->checkForNullValue($data);
+            $value = $this->checkForNullValue($value);
             $this->setWhereStr($field . $type . ' LIKE ' . ($this->connection->escape($value, $escape)), $andOr);
             return $this;
         }
