@@ -80,32 +80,32 @@
 			$this->assertSame($expected, $url->current());
 		}
         
-        public function testGetUrlTitle() {
+        public function testGetUgly() {
             $url = new Url();
             
             $link = 'foo bar';
             $expected = 'foo-bar';
-			$this->assertSame($expected, $url->title($link));
+			$this->assertSame($expected, $url->ugly($link));
             
             //special char
             $link = 'foo bar/$57^*-1';
             $expected = 'foo-bar-57-1';
-			$this->assertSame($expected, $url->title($link));
+			$this->assertSame($expected, $url->ugly($link));
             
             //using another separator char
             $link = 'foo bar/$57^*-1';
             $expected = 'foo@bar@57@1';
-			$this->assertSame($expected, $url->title($link, '@'));
+			$this->assertSame($expected, $url->ugly($link, '@'));
             
             //using uppercase char
             $link = 'Foo Bar%u';
             $expected = 'Foo-Bar-u';
-			$this->assertSame($expected, $url->title($link, '-', false));
+			$this->assertSame($expected, $url->ugly($link, '-', false));
             
             //When last char equal to separator
             $link = 'foo bar -';
             $expected = 'foo-bar';
-			$this->assertSame($expected, $url->title($link));
+			$this->assertSame($expected, $url->ugly($link));
 		}
         
         public function testGetDomainUsingDefaultValue() {

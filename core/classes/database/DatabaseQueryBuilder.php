@@ -298,19 +298,19 @@
          * Set the SQL WHERE CLAUSE statment
          * @param  string|array  $where the where field or array of field list
          * @param  null|string  $op the condition operator. If is null the default will be "="
-         * @param  mixed  $val the where value
+         * @param  mixed  $value the where value
          * @param  string  $type the type used for this where clause (NOT, etc.)
          * @param  string  $andOr the separator type used 'AND', 'OR', etc.
          * @param  boolean $escape whether to escape or not the $val
          * @return object the current instance
          */
-        public function where($where, $op = null, $val = null, $type = '', $andOr = 'AND', $escape = true) {
+        public function where($where, $op = null, $value = null, $type = '', $andOr = 'AND', $escape = true) {
             if (is_array($where)) {
                 $whereStr = $this->getWhereStrArray($where, $type, $andOr, $escape);
                 $this->setWhereStr($whereStr, $andOr);
                 return $this;
             } 
-            $whereStr = $this->getWhereStrForOperator($where, $op, $val, $type, $escape);
+            $whereStr = $this->getWhereStrForOperator($where, $op, $value, $type, $escape);
             $this->setWhereStr($whereStr, $andOr);
             return $this;
         }
@@ -320,8 +320,8 @@
          * @see  DatabaseQueryBuilder::where()
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function orWhere($where, $op = null, $val = null, $escape = true) {
-            return $this->where($where, $op, $val, '', 'OR', $escape);
+        public function orWhere($where, $op = null, $value = null, $escape = true) {
+            return $this->where($where, $op, $value, '', 'OR', $escape);
         }
 
         /**
@@ -329,8 +329,8 @@
          * @see  DatabaseQueryBuilder::where()
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function notWhere($where, $op = null, $val = null, $escape = true) {
-            return $this->where($where, $op, $val, 'NOT ', 'AND', $escape);
+        public function notWhere($where, $op = null, $value = null, $escape = true) {
+            return $this->where($where, $op, $value, 'NOT ', 'AND', $escape);
         }
 
         /**
@@ -338,8 +338,8 @@
          * @see  DatabaseQueryBuilder::where()
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function orNotWhere($where, $op = null, $val = null, $escape = true) {
-            return $this->where($where, $op, $val, 'NOT ', 'OR', $escape);
+        public function orNotWhere($where, $op = null, $value = null, $escape = true) {
+            return $this->where($where, $op, $value, 'NOT ', 'OR', $escape);
         }
 
         /**
@@ -496,15 +496,15 @@
         /**
          * Set the SQL WHERE CLAUSE statment for LIKE
          * @param  string  $field  the field name used in LIKE statment
-         * @param  string  $data   the LIKE value for this field including the '%', and '_' part
+         * @param  string  $value   the LIKE value for this field including the '%', and '_' part
          * @param  string  $type   the condition separator type (NOT)
          * @param  string  $andOr the multiple conditions separator (OR, AND)
          * @param  boolean $escape whether to escape or not the values
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function like($field, $data, $type = '', $andOr = 'AND', $escape = true) {
+        public function like($field, $value, $type = '', $andOr = 'AND', $escape = true) {
             $data = $this->checkForNullValue($data);
-            $this->setWhereStr($field . $type . ' LIKE ' . ($this->connection->escape($data, $escape)), $andOr);
+            $this->setWhereStr($field . $type . ' LIKE ' . ($this->connection->escape($value, $escape)), $andOr);
             return $this;
         }
 
@@ -513,8 +513,8 @@
          * @see  DatabaseQueryBuilder::like()
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function orLike($field, $data, $escape = true) {
-            return $this->like($field, $data, '', 'OR', $escape);
+        public function orLike($field, $value, $escape = true) {
+            return $this->like($field, $value, '', 'OR', $escape);
         }
 
         /**
@@ -522,8 +522,8 @@
          * @see  DatabaseQueryBuilder::like()
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function notLike($field, $data, $escape = true) {
-            return $this->like($field, $data, ' NOT', 'AND', $escape);
+        public function notLike($field, $value, $escape = true) {
+            return $this->like($field, $value, ' NOT', 'AND', $escape);
         }
 
         /**
@@ -531,42 +531,42 @@
          * @see  DatabaseQueryBuilder::like()
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function orNotLike($field, $data, $escape = true) {
-            return $this->like($field, $data, ' NOT', 'OR', $escape);
+        public function orNotLike($field, $value, $escape = true) {
+            return $this->like($field, $value, ' NOT', 'OR', $escape);
         }
 
         /**
          * Set the SQL LIMIT statment
-         * @param  int $limit    the limit offset. If $limitEnd is null this will be the limit count
+         * @param  int $offset    the limit offset. If $limitEnd is null this will be the limit count
          * like LIMIT n;
-         * @param  int $limitEnd the limit count
+         * @param  int $count the limit count
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function limit($limit, $limitEnd = null) {
-            if (empty($limit)) {
-                $limit = 0;
+        public function limit($offset, $count = null) {
+            if (empty($offset)) {
+                $offset = 0;
             }
-            if (!is_null($limitEnd)) {
-                $this->limit = $limit . ', ' . $limitEnd;
+            if (!is_null($count)) {
+                $this->limit = $offset . ', ' . $count;
             } else {
-                $this->limit = $limit;
+                $this->limit = $offset;
             }
             return $this;
         }
 
         /**
          * Set the SQL ORDER BY CLAUSE statment
-         * @param  string $orderBy   the field name used for order
+         * @param  string $field   the field name used for order
          * @param  string $orderDir the order direction (ASC or DESC)
          * @return object        the current DatabaseQueryBuilder instance
          */
-        public function orderBy($orderBy, $orderDir = 'ASC') {
-            if (stristr($orderBy, ' ') || $orderBy == 'rand()') {
-                $this->orderBy = empty($this->orderBy) ? $orderBy : $this->orderBy . ', ' . $orderBy;
+        public function orderBy($field, $orderDir = 'ASC') {
+            if (stristr($field, ' ') || $field == 'rand()') {
+                $this->orderBy = empty($this->orderBy) ? $field : $this->orderBy . ', ' . $field;
             } else {
                 $this->orderBy = empty($this->orderBy) 
-                            ? ($orderBy . ' ' . strtoupper($orderDir)) 
-                            : $this->orderBy . ', ' . $orderBy . ' ' . strtoupper($orderDir);
+                            ? ($field . ' ' . strtoupper($orderDir)) 
+                            : $this->orderBy . ', ' . $field . ' ' . strtoupper($orderDir);
             }
             return $this;
         }
@@ -589,18 +589,18 @@
          * Set the SQL HAVING CLAUSE statment
          * @param  string  $field  the field name used for HAVING statment
          * @param  string|null $op the operator used or array
-         * @param  mixed  $val the value for HAVING comparaison
+         * @param  mixed  $value the value for HAVING comparaison
          * @param  boolean $escape whether to escape or not the values
          * @return object the current instance
          */
-        public function having($field, $op = null, $val = null, $escape = true) {
+        public function having($field, $op = null, $value = null, $escape = true) {
             if (!in_array($op, $this->operatorList)) {
                 $op = $this->checkForNullValue($op);
                 $this->having = $field . ' > ' . ($this->connection->escape($op, $escape));
                 return $this;
             } 
-            $val = $this->checkForNullValue($val);
-            $this->having = $field . ' ' . $op . ' ' . ($this->connection->escape($val, $escape));
+            $value = $this->checkForNullValue($value);
+            $this->having = $field . ' ' . $op . ' ' . ($this->connection->escape($value, $escape));
             return $this;
         }
 
@@ -796,14 +796,14 @@
          *
          * @return string
          */
-        protected function getWhereStrForOperator($where, $op = null, $val = null, $type = '', $escape = true) {
+        protected function getWhereStrForOperator($where, $op = null, $value= null, $type = '', $escape = true) {
             $w = '';
             if (!in_array((string) $op, $this->operatorList)) {
                 $op = $this->checkForNullValue($op);
                 $w = $type . $where . ' = ' . ($this->connection->escape($op, $escape));
             } else {
-                $val = $this->checkForNullValue($val);
-                $w = $type . $where . ' ' . $op . ' ' . ($this->connection->escape($val, $escape));
+                $value = $this->checkForNullValue($value);
+                $w = $type . $where . ' ' . $op . ' ' . ($this->connection->escape($value, $escape));
             }
             return $w;
         }

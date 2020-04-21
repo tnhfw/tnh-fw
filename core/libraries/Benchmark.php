@@ -59,10 +59,10 @@
          * This method is used to get the total excution time in second between two markers
          * @param  string  $startMarkerName the marker for start point
          * @param  string  $endMarkerName   the marker for end point
-         * @param  integer $decimalCount   the number of decimal
+         * @param  integer $precision   the number of decimal
          * @return string         the total execution time
          */
-        public function elapsedTime($startMarkerName = null, $endMarkerName = null, $decimalCount = 6) {
+        public function elapsedTime($startMarkerName = null, $endMarkerName = null, $precision = 6) {
             if (!$startMarkerName || !isset($this->markersTime[$startMarkerName])) {
                 return 0;
             }
@@ -72,7 +72,7 @@
             }
             return number_format(
                                     $this->markersTime[$endMarkerName] - $this->markersTime[$startMarkerName], 
-                                    $decimalCount, 
+                                    $precision, 
                                     '.',
                                     ''
                                 );
@@ -82,10 +82,10 @@
          * This method is used to get the total memory usage in byte between two markers
          * @param  string  $startMarkerName the marker for start point
          * @param  string  $endMarkerName   the marker for end point
-         * @param  integer $decimalCount   the number of decimal
+         * @param  integer $precision   the number of decimal
          * @return string         the total memory usage
          */
-        public function memoryUsage($startMarkerName = null, $endMarkerName = null, $decimalCount = 6) {
+        public function memoryUsage($startMarkerName = null, $endMarkerName = null, $precision = 6) {
             if (!$startMarkerName || !isset($this->markersMemory[$startMarkerName])) {
                 return 0;
             }
@@ -95,7 +95,7 @@
             }
             return number_format(
                                     $this->markersMemory[$endMarkerName] - $this->markersMemory[$startMarkerName], 
-                                    $decimalCount,
+                                    $precision,
                                     '.',
                                     ''
                                 );

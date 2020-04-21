@@ -597,65 +597,7 @@
             $this->returnOnlyRecordDeleted = true;
             return $this;
         }
-
-        /**
-         * Table DATETIME field created_at
-         *
-         * @param array $row the data to be inserted
-         *
-         * @return array the data after add field for created time
-         */
-        public function createdAt($row) {
-            $row['created_at'] = date('Y-m-d H:i:s');
-            return $row;
-        }
-
-        /**
-         * Table DATETIME field  updated_at
-         *
-         * @param array $row the data to be updated
-         *
-         * @return array the data after add field for updated time
-         */
-        public function updatedAt($row) {
-           $row['updated_at'] = date('Y-m-d H:i:s');
-           return $row;
-        }
-
-        /**
-         * Serialises data for you automatically, allowing you to pass
-         * through objects and let it handle the serialisation in the background
-         *
-         * @param array|object $row the data to be serialized
-         * 
-         * @return array|object the data after processing
-         */
-        public function serialize($row) {
-            foreach ($this->callbackParameters as $column) {
-                $row[$column] = serialize($row[$column]);
-            }
-            return $row;
-        }
-
-        /**
-         * Unserialises data for you automatically, allowing you to pass
-         * through objects and let it handle the serialisation in the background
-         *
-         * @param array|object $row the data to be unserialized
-         * 
-         * @return array|object the data after processing
-         */
-        public function unserialize($row) {
-            foreach ($this->callbackParameters as $column) {
-                if (is_array($row)) {
-                    $row[$column] = unserialize($row[$column]);
-                } else {
-                    $row->$column = unserialize($row->$column);
-                }
-            }
-            return $row;
-        }
-
+        
         /**
          * Return the database instance
          * @return Database the database instance
@@ -689,7 +631,7 @@
          * @param object $queryBuilder the DatabaseQueryBuilder object
          * @return object
          */
-        public function setQueryBuilder($queryBuilder) {
+        public function setQueryBuilder(DatabaseQueryBuilder $queryBuilder) {
             $this->db->setQueryBuilder($queryBuilder);
             return $this;
         }
@@ -703,13 +645,13 @@
          *
          * @see  DatabaseQueryBuilder::orderBy
          */
-        public function orderBy($criteria, $order = 'ASC') {
-            if (is_array($criteria)) {
-                foreach ($criteria as $key => $value) {
+        public function orderBy($field, $order = 'ASC') {
+            if (is_array($field)) {
+                foreach ($field as $key => $value) {
                     $this->getQueryBuilder()->orderBy($key, $value);
                 }
             } else {
-                $this->getQueryBuilder()->orderBy($criteria, $order);
+                $this->getQueryBuilder()->orderBy($field, $order);
             }
             return $this;
         }
@@ -722,6 +664,64 @@
         public function limit($offset = 0, $limit = 10) {
             $this->getQueryBuilder()->limit($offset, $limit);
             return $this;
+        }
+
+        /**
+         * Table DATETIME field created_at
+         *
+         * @param array $row the data to be inserted
+         *
+         * @return array the data after add field for created time
+         */
+        protected function createdAt($row) {
+            $row['created_at'] = date('Y-m-d H:i:s');
+            return $row;
+        }
+
+        /**
+         * Table DATETIME field  updated_at
+         *
+         * @param array $row the data to be updated
+         *
+         * @return array the data after add field for updated time
+         */
+        protected function updatedAt($row) {
+           $row['updated_at'] = date('Y-m-d H:i:s');
+           return $row;
+        }
+
+        /**
+         * Serialises data for you automatically, allowing you to pass
+         * through objects and let it handle the serialisation in the background
+         *
+         * @param array|object $row the data to be serialized
+         * 
+         * @return array|object the data after processing
+         */
+        protected function serialize($row) {
+            foreach ($this->callbackParameters as $column) {
+                $row[$column] = serialize($row[$column]);
+            }
+            return $row;
+        }
+
+        /**
+         * Unserialises data for you automatically, allowing you to pass
+         * through objects and let it handle the serialisation in the background
+         *
+         * @param array|object $row the data to be unserialized
+         * 
+         * @return array|object the data after processing
+         */
+        protected function unserialize($row) {
+            foreach ($this->callbackParameters as $column) {
+                if (is_array($row)) {
+                    $row[$column] = unserialize($row[$column]);
+                } else {
+                    $row->$column = unserialize($row->$column);
+                }
+            }
+            return $row;
         }
 
         /**

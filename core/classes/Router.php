@@ -396,7 +396,7 @@
          *
          * @return object the current instance
          */
-        public function setControllerFilePath($path = null) {
+        protected function setControllerFilePath($path = null) {
             if ($path !== null) {
                 $this->controllerPath = $path;
                 return $this;

@@ -193,16 +193,16 @@
         );
 
         /**
-         * The upload error message
+         * The loaded translations errors messages
          * @var array
          */
-        public $errorMessages = array();
+        private $errorMessages = array();
 
         /**
          * The upload error message
          * @var string
          */
-        protected $error = null;
+        private $error = null;
 
 
         /**

@@ -117,15 +117,6 @@
         }
 
         /**
-         * Load the configuration file. This an alias to Loader::config()
-         * @param  string $config the config name to be loaded
-         * @codeCoverageIgnore will test in Loader::config
-         */
-        public function load($config) {
-            get_instance()->loader->config($config);
-        }
-
-        /**
          * Load the configuration using config file and check if the config "base_url" is not set
          * try to set it using serve variable
          */

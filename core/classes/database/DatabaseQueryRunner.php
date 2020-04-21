@@ -171,7 +171,7 @@
          * @param Benchmark $benchmark the benchmark object
          * @return object DatabaseQueryRunner
          */
-        public function setBenchmark($benchmark) {
+        public function setBenchmark(Benchmark $benchmark) {
             $this->benchmark = $benchmark;
             return $this;
         }

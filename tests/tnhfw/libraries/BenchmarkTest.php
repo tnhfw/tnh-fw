@@ -76,7 +76,7 @@
 			$this->assertArrayHasKey($key2, $this->markersTime->getValue($b));
             
             $this->assertNotEmpty($b->elapsedTime($key1, $key2));
-            //default decimal count is 6
+            //default precision is 6
             $this->assertEquals(0.000300, $b->elapsedTime($key1, $key2));
             $this->assertEquals(0.000300, $b->elapsedTime($key1, $key2, 6));
             $this->assertEquals(0.00030, $b->elapsedTime($key1, $key2, 5));
@@ -95,7 +95,7 @@
 			$this->assertArrayHasKey($key2, $this->markersTime->getValue($b));
             
             $this->assertNotEmpty($b->elapsedTime($key1, $key2));
-            //default decimal count is 6
+            //default precision is 6
             $this->assertEquals(1.000000, $b->elapsedTime($key1, $key2));
             $this->assertEquals(1.000000, $b->elapsedTime($key1, $key2, 6));
             $this->assertEquals(1.00000, $b->elapsedTime($key1, $key2, 5));
@@ -139,7 +139,7 @@
             $this->assertNotEmpty($b->elapsedTime($key1, $key3));
             $this->assertNotEmpty($b->elapsedTime($key2, $key3));
             
-            //default decimal count is 6
+            //default precision is 6
             $this->assertEquals(3.000000, $b->elapsedTime($key1, $key2));
             $this->assertEquals(15.000000, $b->elapsedTime($key1, $key3));
             $this->assertEquals(12.000000, $b->elapsedTime($key2, $key3));
@@ -185,7 +185,7 @@
 			$this->assertArrayHasKey($key2, $this->markersMemory->getValue($b));
             
             $this->assertNotEmpty($b->memoryUsage($key1, $key2));
-            //default decimal count is 6
+            //default precision is 6
             $this->assertEquals(0.010400, $b->memoryUsage($key1, $key2));
             $this->assertEquals(0.010400, $b->memoryUsage($key1, $key2, 6));
             $this->assertEquals(0.01040, $b->memoryUsage($key1, $key2, 5));
@@ -204,7 +204,7 @@
 			$this->assertArrayHasKey($key2, $this->markersMemory->getValue($b));
             
             $this->assertNotEmpty($b->memoryUsage($key1, $key2));
-            //default decimal count is 6
+            //default precision is 6
             $this->assertEquals(15.300000, $b->memoryUsage($key1, $key2));
             $this->assertEquals(15.300000, $b->memoryUsage($key1, $key2, 6));
             $this->assertEquals(15.30000, $b->memoryUsage($key1, $key2, 5));
@@ -248,7 +248,7 @@
             $this->assertNotEmpty($b->memoryUsage($key1, $key3));
             $this->assertNotEmpty($b->memoryUsage($key2, $key3));
             
-            //default decimal count is 6
+            //default precision is 6
             $this->assertEquals(3.000000, $b->memoryUsage($key1, $key2));
             $this->assertEquals(15.000000, $b->memoryUsage($key1, $key3));
             $this->assertEquals(12.000000, $b->memoryUsage($key2, $key3));

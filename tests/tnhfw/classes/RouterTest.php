@@ -276,7 +276,7 @@
         
         public function testSetControllerFilePathWhenParamNotNull() {
             $r = new Router($this->module);
-            $r->setControllerFilePath(APPS_CONTROLLER_PATH . 'TestController.php');
+            $this->runPrivateProtectedMethod($r, 'setControllerFilePath', array(APPS_CONTROLLER_PATH . 'TestController.php'));
 			$this->assertSame(APPS_CONTROLLER_PATH . 'TestController.php', $r->getControllerPath());
 		}
         
