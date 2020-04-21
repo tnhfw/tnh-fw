@@ -38,8 +38,6 @@
         
         public function testGetSetBenchmark() {
             $qr = new DatabaseQueryRunner();
-            //Note Benchmark instance is already set in constructor
-            $qr->setBenchmark(null);
             $this->assertNull($qr->getBenchmark());
              
             $benchmark = $this->getMockBuilder('Benchmark')
