@@ -118,6 +118,26 @@
             
             $f = new Form();
             $this->assertSame($fieldValue, $f->value($fieldName));
+            
+            
+            //using array
+            $fieldName = 'fooname';
+            $fieldValue = array('foovalue');
+            $_POST[$fieldName] = $fieldValue;
+            
+            
+            $request = $this->getMockBuilder('Request')->getMock();
+			$request->expects($this->any())
+                    ->method('query')
+                    ->with($fieldName)
+                    ->will($this->returnValue($fieldValue));
+                    
+            $obj = & get_instance();
+            $obj->request = $request;
+            
+            $f = new Form();
+            $this->assertSame($fieldValue, $f->value($fieldName));
+            $this->assertContains('foovalue', $f->value($fieldName));
 		}
         
         public function testValueNotExist() {
@@ -339,6 +359,10 @@
             //using selected
             $expected = '<select name = "foo"><option value = "a">foo</option><option value = "b" selected>bar</option><option value = "c">baz</option></select>';
 			$this->assertSame($expected, $f->select('foo', $values, 'b'));
+            
+            //using selected (array)
+            $expected = '<select name = "foo[]" multiple = "1"><option value = "a" selected>foo</option><option value = "b">bar</option><option value = "c" selected>baz</option></select>';
+			$this->assertSame($expected, $f->select('foo[]', $values, array('a', 'c'), array('multiple' => true)));
             
            
 		}

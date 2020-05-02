@@ -125,7 +125,7 @@
          */
         public static function value($name, $default = null) {
             $value = get_instance()->request->query($name);
-            if (is_string($value) && strlen($value) > 0) {
+            if ((is_array($value) && count($value) > 0) || strlen($value) > 0) {
                 return $value;
             }
             return $default;
@@ -309,7 +309,7 @@
             $str .= '>';
             foreach ($values as $key => $val) {
                 $select = '';
-                if ($key == $selected) {
+                if ((is_array($selected) && in_array($key, $selected)) || $key == $selected) {
                     $select = ' selected';
                 }
                 $str .= '<option value = "' . $key . '"' . $select . '>' . $val . '</option>';

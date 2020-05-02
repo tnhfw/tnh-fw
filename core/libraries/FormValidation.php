@@ -562,7 +562,7 @@
          */
         protected function checkRuleRequired($field, $rule, $paramValue) {
             $value = $this->getFieldValue($field);
-            if ($value == '') {
+            if ((is_array($value) && count($value) === 0) || $value == '') {
                 $this->setFieldError($field, $rule, $paramValue);
             }
         }
@@ -1024,9 +1024,11 @@
          */
         protected function checkRuleIsUnique($field, $rule, $paramValue) {
             $obj = & get_instance();
+            //@codeCoverageIgnoreStart
             if (!isset($obj->database)) {
                 return;
             }
+            //@codeCoverageIgnoreEnd
             $value = $this->getFieldValue($field);    
             list($table, $column) = explode('.', $paramValue);
             $obj->database->getQueryBuilder()->from($table)
@@ -1047,9 +1049,11 @@
          */
         protected function checkRuleIsUniqueUpdate($field, $rule, $paramValue) {
             $obj = & get_instance();
+            //@codeCoverageIgnoreStart
             if (!isset($obj->database)) {
                 return;
             }
+            //@codeCoverageIgnoreEnd
             $value = $this->getFieldValue($field);  
             $data = explode(',', $paramValue, 2);
             list($table, $column) = explode('.', $data[0]);
@@ -1073,9 +1077,11 @@
          */
         protected function checkRuleExists($field, $rule, $paramValue) {
             $obj = & get_instance();
+            //@codeCoverageIgnoreStart
             if (!isset($obj->database)) {
                 return;
             }
+            //@codeCoverageIgnoreEnd
             $value = $this->getFieldValue($field);    
             list($table, $column) = explode('.', $paramValue);
             $obj->database->getQueryBuilder()->from($table)
