@@ -222,7 +222,7 @@
          * Return the value for the given field if exists otherwise null
          * will be returned
          * 
-         * @return string|array|null
+         * @return mixed
          */
         public function getFieldValue($field) {
              $value = null;
