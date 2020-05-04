@@ -214,7 +214,7 @@
         if (isset($errorsType[$errno])) {
            $errorType = $errorsType[$errno];
         }
-        $errorText = 'An error is occurred in the file ' . $errfile . ' at line ' . $errline . ' raison : ' . $errstr;
+        $errorText = 'An error is occurred in the file ' . substr($errfile, strlen(ROOT_PATH)) . ' at line ' . $errline . ' raison : ' . $errstr;
         if ((error_reporting() & $errno) !== $errno) {
             return;
         }
@@ -241,7 +241,7 @@
      *  @return boolean
      */
     function fw_exception_handler($exception) {
-        $errorText = 'An exception is occured in file ' . $exception->getFile() . ' at line ' . $exception->getLine() . ' raison : ' . $exception->getMessage();
+        $errorText = 'An exception is occured in file ' . substr($exception->getFile(), strlen(ROOT_PATH)) . ' at line ' . $exception->getLine() . ' raison : ' . $exception->getMessage();
         if (str_ireplace(array('off', 'none', 'no', 'false', 'null'), '', ini_get('display_errors'))) {
             show_error($errorText, 'PHP Exception #' . $exception->getCode());
         } else {
