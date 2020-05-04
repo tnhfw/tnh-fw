@@ -222,7 +222,7 @@
          * Return the value for the given field if exists otherwise null
          * will be returned
          * 
-         * @return string|null
+         * @return string|array|null
          */
         public function getFieldValue($field) {
              $value = null;
