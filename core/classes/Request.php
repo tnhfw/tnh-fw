@@ -31,12 +31,6 @@
     class Request {
 		
         /**
-         * The session instance
-         * @var Session
-         */
-        private $session = null;
-		
-        /**
          * The request headers
          * @var array
          */
@@ -58,7 +52,6 @@
          * Construct new request instance
          */
         public function __construct() {
-            $this->session = & class_loader('Session', 'classes');
             $this->method = $this->server('REQUEST_METHOD');
             $this->requestUri = $this->server('REQUEST_URI');
             $this->header = array();
@@ -137,24 +130,6 @@
         public function file($key, $xss = true) {
             return get_instance()->globalvar->files($key, $xss);
         }
-		
-        /**
-         * Get the value from $_SESSION for given key. if the key is empty will return the all values
-         *
-         *  NOTE: This super global is not filter by default
-         *  
-         * @param  string  $key the item key to be set or array if need set the current global variable 
-         * by this value
-         * @param  boolean $xss if need apply some XSS attack rule on the value
-         * @return array|mixed       the item value if the key exists or null if the key does not exists
-         */
-        public function session($key, $xss = false) {
-            $session = $this->session->get($key);
-            if ($xss) {
-                $session = clean_input($session);
-            }
-            return $session;
-        }
 
         /**
          * Get the value for header for given key. if the key is empty will return the all values
@@ -195,24 +170,6 @@
                 $this->header[$key] = $value;
             }
             return $this;
-        }
-
-        /**
-         * Set the instance for session.
-         * @param object|null $session the object of Session to be set
-         * @return object the current instance
-         */
-        public function setSession(Session $session = null) {
-            $this->session = $session;
-            return $this;
-        }
-
-         /**
-         * Return the instance of session.
-         * @return object the session instance
-         */
-        public function getSession() {
-            return $this->session;
         }
 
     }

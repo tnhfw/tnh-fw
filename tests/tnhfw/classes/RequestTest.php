@@ -80,35 +80,6 @@
 			$this->assertContains('bar', $r->file('foofile'));
 		}
         
-        public function testSession() {
-            $session = new Session();
-            $session->set('foo', 'bar');
-            
-            $r = new Request();
-            $r->setSession($session);
-            
-            $this->assertNotEmpty($r->session('foo'));
-			$this->assertSame('bar', $r->session('foo'));
-            
-            //Using xss flag
-            $session = new Session();
-            $session->set('foo', '<script>bar</script>');
-            
-            $r = new Request();
-            $r->setSession($session);
-            $expected = 'bar';
-            $this->assertNotEmpty($r->session('foo', true));
-			$this->assertSame($expected, $r->session('foo', true));
-		}
-        
-        
-        
-        public function testSetSession() {
-            $r = new Request();
-            $r->setSession(null);
-			$this->assertNull($r->getSession());
-		}
-        
         public function testGetWhenKeyIsNull() {
             $_GET['foo'] = 'bar';
             $_GET['bar'] = 'foo';

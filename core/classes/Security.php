@@ -47,7 +47,7 @@
             $expire = get_config('csrf_expire', 60);
             $keyExpire = 'csrf_expire';
             $currentTime = time();
-            $sessionInstance = get_instance()->request->getSession();
+            $sessionInstance = get_instance()->session;
             if (
                     $sessionInstance->exists($key) 
                     && $sessionInstance->exists($keyExpire) 
@@ -77,7 +77,7 @@
             $expire = get_config('csrf_expire', 60);
             $keyExpire = 'csrf_expire';
             $currentTime = time();
-            $sessionInstance = get_instance()->request->getSession();
+            $sessionInstance = get_instance()->session;
             $this->logger->info('The CSRF informations are listed below: key [' . $key . '], key expire [' . $keyExpire . '], expire time [' . $expire . ']');
             if (!$sessionInstance->exists($key) || $sessionInstance->get($keyExpire) <= $currentTime) {
                 $this->logger->warning('The CSRF session data is not valide');

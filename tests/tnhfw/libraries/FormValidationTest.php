@@ -17,6 +17,7 @@
     class FormValidationTest extends TnhTestCase
     {   
         
+        
         public function testValidationData()
         {
             $fv = new FormValidation();
@@ -82,7 +83,7 @@
         }
         
         
-        public function testValidateCsrf()
+        public function testValidateCsrfSuccessfully()
         {
              //generate CSRF
             $this->config->set('csrf_enable', true);
@@ -96,29 +97,44 @@
             $obj = &get_instance();
             $obj->globalvar->setServer('REQUEST_METHOD', 'POST');
             $obj->globalvar->setPost('kcsrf', $csrfValue);
-            $session = new Session();
-            $request = new Request();
-            $request->setSession($session);
-            $obj->request = $request;
             $obj->security = new Security();
             
             $fv = new FormValidation();
             $fv->setRule('name', 'name', 'required');
             $fv->setData(array('name' => 'foo'));
             $this->assertTrue($fv->validate());
+        }
+        
+        
+        public function testValidateCsrfFailed()
+        {
+             //generate CSRF
+            $this->config->set('csrf_enable', true);
+            $this->config->set('csrf_key', 'kcsrf');
+            $this->config->set('csrf_expire', 100);
             
-            //invalid CSRF
+            $csrfValue = uniqid();
             $_SESSION['kcsrf'] =  $csrfValue;
             $_SESSION['csrf_expire'] = time() + 600;
+                    
+            $obj = &get_instance();
+            $obj->globalvar->setServer('REQUEST_METHOD', 'POST');
+            $obj->globalvar->setPost('kcsrf', 'invalid CSRF'); 
+            $request = new Request();
+            $obj->request = $request;
+            $obj->security = new Security();
             
-            $obj->globalvar->setPost('kcsrf', 'invalid CSRF');           
             $fv = new FormValidation();
             $fv->setRule('name', 'name', 'required');
             $fv->setData(array('name' => 'foo'));
             $this->assertFalse($fv->validate());
-            
-             //disable CSRF
+        }
+        
+        
+        public function testValidateCsrfDisabledInConfig()
+        {
             $this->config->set('csrf_enable', false);
+            
             $fv = new FormValidation();
             $fv->setRule('name', 'name', 'required');
             $fv->setData(array('name' => 'foo'));
@@ -1299,5 +1315,6 @@
             $fv->setData(array('foo' => ''));
             $this->assertTrue($fv->validate());
         }
+        
         
     }
