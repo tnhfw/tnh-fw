@@ -34,14 +34,14 @@
         } 
         
         public function returnBackEventListener($e){
-            $e->payload = 'foo';
+            $e->setPayload('foo');
             return $e;
         }
         
         public function returnBackEventListenerAndStop($e){
-            $e->payload = 'bar';
+            $e->setPayload('bar');
             //no more listener will be call
-            $e->stop = true;
+            $e->setStop(true);
             return $e;
         }
         
@@ -58,7 +58,7 @@
         * Used in Response::test
         */
         public function responseTestListener($e){
-            $e->payload = null;
+            $e->setPayload(null);
             return $e;
         }
 

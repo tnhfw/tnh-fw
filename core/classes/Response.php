@@ -355,8 +355,8 @@
                                                                             )
                                                             );
             $content = null;
-            if (!empty($event->payload)) {
-                $content = $event->payload;
+            if ($event instanceof EventInfo) {
+                $content = $event->getPayload();
             }
             if (empty($content)) {
                 $this->logger->warning('The view content is empty after dispatch to event listeners.');

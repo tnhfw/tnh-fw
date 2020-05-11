@@ -37,26 +37,26 @@
          * The event name
          * @var string
          */
-        public $name;
+        private $name;
 
         /**
          * The event data to send to the listeners
          * @var mixed
          */
-        public $payload;
+        private $payload;
 
         /**
          * If the listeners need return the event after treatment or not, false means no need
          * return true need return the event. 
          * @var boolean
          */
-        public $returnBack;
+        private $returnBack;
 
         /**
          * This variable indicates if need stop the event propagation
          * @var boolean
          */
-        public $stop;
+        private $stop;
 		
         public function __construct($name, $payload = array(), $returnBack = false, $stop = false) {
             $this->name = $name;
@@ -64,4 +64,66 @@
             $this->returnBack = $returnBack;
             $this->stop = $stop;
         }
-    }
+
+        /**
+         * Return the name of the event
+         * 
+         * @return string
+         */
+        public function getName() {
+            return $this->name;
+        }
+
+       
+        /**
+         * Return the payload for this event
+         * 
+         * @return mixed
+         */
+        public function getPayload() {
+            return $this->payload;
+        }
+
+        /**
+         * Set the event payload
+         * 
+         * @param mixed $payload the data for this event
+         *
+         * @return object the current instance
+         */
+        public function setPayload($payload) {
+            $this->payload = $payload;
+            return $this;
+        }
+
+        /**
+         * If we need return the event instance 
+         * back after processing by each listener
+         * 
+         * @return boolean
+         */
+        public function isReturnBack() {
+            return $this->returnBack;
+        }
+
+        /**
+         * If we need stop the event propagation to listeners
+         *  
+         * @return boolean
+         */
+        public function isStop() {
+            return $this->stop;
+        }
+
+        /**
+         * Set the event stop status
+         * 
+         * @param boolean $stop the status value
+         *
+         * @return object the current instance
+         */
+        public function setStop($stop) {
+            $this->stop = $stop;
+            return $this;
+        }
+}

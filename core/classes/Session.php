@@ -54,7 +54,7 @@
             $sessions = get_instance()->globalvar->session();
             $this->logger->debug('Getting session data for item [' . $item . '] ...');
             if (array_key_exists($item, $sessions)) {
-                $this->logger->info('Found session data for item [' . $item . '] the vaue is : [' . stringfy_vars($sessions[$item]) . ']');
+                $this->logger->info('Found session data for item [' . $item . '] the value is : [' . stringfy_vars($sessions[$item]) . ']');
                 return $sessions[$item];
             }
             $this->logger->warning('Cannot find session item [' . $item . '] using the default value [' . stringfy_vars($default) . ']');

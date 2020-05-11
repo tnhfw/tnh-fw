@@ -287,7 +287,7 @@
                     if ($this->returnAsList) {
                         $numRows = count($result);
                     } else {
-                        //if object only one row will be returned
+                        //if only one row will be returned
                         $numRows = 1;
                     }
                 }

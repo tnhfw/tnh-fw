@@ -157,7 +157,7 @@
                     
             $d = new EventDispatcher();
             $event = new EventInfo('fooEvent', null, false, true);
-            $this->assertTrue($event->stop);
+            $this->assertTrue($event->isStop());
             $d->addListener('fooEvent', array($listener, 'stopEventListener'));
             $d->dispatch($event);
         }
@@ -170,7 +170,7 @@
             $d->addListener('fooEvent', array($listener, 'returnBackEventListenerAndStop'));
             $d->addListener('fooEvent', array($listener, 'stopEventListener'));
             $result = $d->dispatch($event);
-            $this->assertSame('bar', $result->payload);
+            $this->assertSame('bar', $result->getPayload());
         }
         
         public function testDispatchParamEventNeedReturnBack() {
@@ -178,10 +178,10 @@
                     
             $d = new EventDispatcher();
             $event = new EventInfo('fooEvent', null, true);
-            $this->assertTrue($event->returnBack);
+            $this->assertTrue($event->isReturnBack());
             $d->addListener('fooEvent', array($listener, 'returnBackEventListener'));
             $result = $d->dispatch($event);
-            $this->assertSame('foo', $result->payload);
+            $this->assertSame('foo', $result->getPayload());
         }
         
         public function testDispatchParamEventNeedReturnBackButNoReturn() {
@@ -189,7 +189,7 @@
                     
             $d = new EventDispatcher();
             $event = new EventInfo('fooEvent', null, true);
-            $this->assertTrue($event->returnBack);
+            $this->assertTrue($event->isReturnBack());
             $d->addListener('fooEvent', array($listener, 'returnBackEventListenerButNotReturnIt'));
             $result = $d->dispatch($event);
             $this->assertNull($result);
@@ -199,7 +199,7 @@
             $event = new EventInfo('fooEvent');
             $d = new EventDispatcher();
             $d->dispatch($event);
-            $this->assertSame($event->payload, $event->payload);
+            $this->assertSame($event->getPayload(), $event->getPayload());
         }
         
         public function testDispatchNoListenerForEventAndNeedReturnBack() {
