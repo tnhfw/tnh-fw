@@ -93,7 +93,7 @@
                     . '] please install a PHP version that is compatible.', 'PHP Error environment');	
     }
     $LOGGER->info('PHP version [' . phpversion() . '] is OK [REQUIRED MINIMUM: ' . TNH_MIN_PHP_VERSION 
-                   . 'REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '], application can work without any issue');
+                   . ', REQUIRED MAXIMUM: ' . TNH_MAX_PHP_VERSION . '] application can work without any issue');
 
     /**
      * Setting of the PHP error message handling function

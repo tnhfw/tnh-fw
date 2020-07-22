@@ -152,7 +152,7 @@
         /**
          * Escape the data before execute query useful for security.
          * @param  mixed $data the data to be escaped
-         * @param boolean $escaped whether wether can do escape or not 
+         * @param boolean $escaped whether can do escape or not 
          * @return mixed       the data after escaped or the same data if no
          * need escaped
          */

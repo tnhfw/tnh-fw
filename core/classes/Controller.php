@@ -206,7 +206,7 @@
             //dispatch the request instance created event
             $this->eventdispatcher->dispatch('REQUEST_CREATED');
             $this->session = & class_loader('Session', 'classes');
-            $this->response = & class_loader('Response', 'classes', 'classes');
+            $this->response = & class_loader('Response', 'classes');
         }
 
         /**
