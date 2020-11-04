@@ -18,7 +18,7 @@
         
         public function testContructorWithOverwriteConfig() {
             $p = new Pagination();
-            //Default config fog "pagination_per_page" is 10 in "tests/app/config/config_pagination.php"
+            //Default config for "pagination_per_page" is 10 in "tests/app/config/config_pagination.php"
             $this->assertArrayHasKey('pagination_per_page', $p->getConfig());
             
             $value = $this->config->get('pagination_per_page');
@@ -53,6 +53,16 @@
 			$value = $this->config->get('pagination_per_page');
             $this->assertSame(20, $value);
 		}
+        
+        public function testGetInfos(){
+            //Default config for "pagination_per_page" is 10 in "tests/app/config/config_pagination.php"
+            $p = new Pagination();
+            $infos = $p->getInfos(81, 1);
+            
+            $this->assertEquals(9, $infos['total_page']);
+            $this->assertTrue($infos['has_next_page']);
+            $this->assertFalse($infos['has_prev_page']);
+        }
         
          public function testDeterminePaginationQueryStringValue() {
              $obj = & get_instance();

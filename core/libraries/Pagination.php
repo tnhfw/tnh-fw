@@ -82,6 +82,31 @@
         }
 
         /**
+         * Get pagination information
+         * @param  int $totalRows the total number of data
+         * @param  int $currentPageNumber the current page number
+         * @return array
+         */
+        public function getInfos($totalRows, $currentPageNumber){
+            $numberOfRowPerPage = (int) $this->config['pagination_per_page'];
+            $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
+            $numberOfLink = (int) $this->config['nb_link'];
+            $infos['current_page'] = $currentPageNumber;
+            $infos['num_links'] = $numberOfLink;
+            $infos['limit'] = $numberOfRowPerPage;
+            $infos['total_page'] = $numberOfPage;
+            $infos['total_rows'] = $totalRows;
+            $infos['is_first_page'] = $currentPageNumber == 1;
+            $infos['is_last_page'] = $currentPageNumber == $numberOfPage;
+            $infos['prev_page'] = ($numberOfPage > 1 && $currentPageNumber > 1) ? $currentPageNumber - 1 : $currentPageNumber;
+            $infos['next_page'] = ($numberOfPage > 1 && $currentPageNumber < $numberOfPage) ? $currentPageNumber + 1 : $currentPageNumber;
+            $infos['has_prev_page'] = $numberOfPage > 1 && $currentPageNumber > 1;
+            $infos['has_next_page'] = $numberOfPage > 1 && $currentPageNumber < $numberOfPage;
+            
+            return $infos;
+        }
+
+        /**
          * Generate the pagination link
          * @param  int $totalRows the total number of data
          * @param  int $currentPageNumber the current page number
@@ -89,24 +114,22 @@
          * @return null|string the pagination link
          */
         public function getLink($totalRows, $currentPageNumber) {
-            $numberOfLink = $this->config['nb_link'];
-            $numberOfRowPerPage = $this->config['pagination_per_page'];
+            $infos = $this->getInfos($totalRows, $currentPageNumber);
+            $numberOfRowPerPage = $infos['limit'];
+            $numberOfPage = $infos['total_page'];
             
             //determine the pagination query string value
             $this->determinePaginationQueryStringValue();
             
-            $navbar = null;
-            $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
             $currentPageNumber = (int) $currentPageNumber;
-            $numberOfLink = (int) $numberOfLink;
-            $numberOfRowPerPage = (int) $numberOfRowPerPage;
-			
+            
             if ($currentPageNumber <= 0) {
                 $currentPageNumber = 1;
             }
-            if ($numberOfPage <= 1 || $numberOfLink <= 0 || $numberOfRowPerPage <= 0) {
-                return $navbar;
+            if ($numberOfPage <= 1 || $infos['num_links'] <= 0 || $numberOfRowPerPage <= 0) {
+                return null;
             }
+
             return $this->buildPaginationNavbar($currentPageNumber, $numberOfPage);
         }
 
