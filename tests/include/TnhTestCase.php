@@ -154,7 +154,7 @@
             if(is_resource($fp)){
                 $separator = str_repeat('=', 90). "\n\n";
                 $s = $separator;
-                $s .= stringfy_vars($o) . "\n";
+                $s .= stringify_vars($o) . "\n";
                 $s .= $separator;
                 fwrite($fp, $s);
                 fclose($fp);

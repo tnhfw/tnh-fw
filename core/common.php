@@ -431,7 +431,7 @@
      *
      * @return string the stringfy value
      */
-    function stringfy_vars($var) {
+    function stringify_vars($var) {
         return print_r($var, true);
     }
 

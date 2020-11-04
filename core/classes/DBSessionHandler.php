@@ -113,7 +113,7 @@
             if (empty($this->sessionTableColumns)) {
                 show_error('The session handler is "database" but the table columns is not set');
             }
-            $this->logger->info('Database session, the model columns are listed below: ' . stringfy_vars($this->sessionTableColumns));
+            $this->logger->info('Database session, the model columns are listed below: ' . stringify_vars($this->sessionTableColumns));
 			
             //delete the expired session
             $timeActivity = get_config('session_inactivity_time', 100);
@@ -164,7 +164,7 @@
          * @return boolean 
          */
         public function write($sid, $data) {
-            $this->logger->debug('Saving database session data for SID: ' . $sid . ', data: ' . stringfy_vars($data));
+            $this->logger->debug('Saving database session data for SID: ' . $sid . ', data: ' . stringify_vars($data));
             $instance = $this->getModel();
             $columns = $this->sessionTableColumns;
             $keyValue = $instance->getKeyValue();
@@ -179,7 +179,7 @@
                             $columns['sip'] => $ip,
                             $columns['skey'] => $keyValue
                         );
-            $this->logger->info('Database session data to save are listed below :' . stringfy_vars($params));
+            $this->logger->info('Database session data to save are listed below :' . stringify_vars($params));
             $exists = $instance->getSingleRecord($sid);
             if ($exists) {
                 $this->logger->info('Session data for SID: ' . $sid . ' already exists, just update it');

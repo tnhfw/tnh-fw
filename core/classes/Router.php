@@ -121,7 +121,7 @@
             }
             $this->setRouteConfiguration($moduleRouteList);
             $this->logger->info('The routes configuration are listed below: ' 
-                                . stringfy_vars($this->routes));
+                                . stringify_vars($this->routes));
         }
 
         /**
@@ -712,7 +712,7 @@
             $e404 = false;
             $classFilePath = $this->controllerPath;
             $controller = ucfirst($this->controller);
-            $this->logger->info('The routing information are: module [' . $this->module . '], controller [' . $controller . '], method [' . $this->method . '], args [' . stringfy_vars($this->args) . ']');
+            $this->logger->info('The routing information are: module [' . $this->module . '], controller [' . $controller . '], method [' . $this->method . '], args [' . stringify_vars($this->args) . ']');
             $this->logger->debug('Loading controller [' . $controller . '], the file path is [' . $classFilePath . ']...');
             
             if (file_exists($classFilePath)) {

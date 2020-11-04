@@ -52,7 +52,7 @@
          * @param callable $listener  the function or class method to receive the event information after dispatch
          */
         public function addListener($eventName, callable $listener) {
-            $this->logger->debug('Adding new event listener for the event name [' . $eventName . '], listener [' . stringfy_vars($listener) . ']');
+            $this->logger->debug('Adding new event listener for the event name [' . $eventName . '], listener [' . stringify_vars($listener) . ']');
             if (!isset($this->listeners[$eventName])) {
                 $this->logger->info('This event does not have the registered event listener before, adding new one');
                 $this->listeners[$eventName] = array();
@@ -68,7 +68,7 @@
          * @param  callable $listener  the listener callback
          */
         public function removeListener($eventName, callable $listener) {
-            $this->logger->debug('Removing of the event listener, the event name [' . $eventName . '], listener [' . stringfy_vars($listener) . ']');
+            $this->logger->debug('Removing of the event listener, the event name [' . $eventName . '], listener [' . stringify_vars($listener) . ']');
             if (isset($this->listeners[$eventName])) {
                 $this->logger->info('This event have the listeners, check if this listener exists');
                 $index = array_search($listener, $this->listeners[$eventName], true);
@@ -128,7 +128,7 @@
                 $this->logger->info('The event is not an instance of "EventInfo" create the default "EventInfo" object to use instead of.');
                 $event = new EventInfo((string) $event);
             }			
-            $this->logger->debug('Dispatch to the event listener, the event [' . stringfy_vars($event) . ']');
+            $this->logger->debug('Dispatch to the event listener, the event [' . stringify_vars($event) . ']');
             if ($event->isStop() === true) {
                 $this->logger->info('This event need stopped, no need call any listener');
                 return;
@@ -156,7 +156,7 @@
                 return;
             } 
             $this->logger->info('Found the registered event listener for the '
-                                 . 'event [' . $event->getName() . '] the list are: ' . stringfy_vars($list));
+                                 . 'event [' . $event->getName() . '] the list are: ' . stringify_vars($list));
             foreach ($list as $listener) {
                 $result = call_user_func_array($listener, array($event));
                 if ($event->isReturnBack() === true) {

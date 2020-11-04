@@ -49,6 +49,17 @@
 			$this->assertSame('bar', $r->getHeader('foo'));
 		}
         
+        public function testGetStatusDefault() {
+            $r = new Response();
+            $this->assertEquals(200, $r->getStatus());
+		}
+        
+        public function testSetStatus() {
+            $r = new Response();
+            $r->setStatus(345);
+            $this->assertEquals(345, $r->getStatus());
+		}
+        
         public function testGetHeaders() {
             $r = new Response();
             $r->setHeader('foo', 'bar');

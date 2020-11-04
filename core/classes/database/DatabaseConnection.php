@@ -426,7 +426,7 @@
                 $configInfo = $this->config;
                 //Hide password from log
                 $configInfo['password'] = string_hidden($this->getPassword());
-                $this->logger->info('The database configuration are listed below: ' . stringfy_vars($configInfo));
+                $this->logger->info('The database configuration are listed below: ' . stringify_vars($configInfo));
             }
             return $this;
         }

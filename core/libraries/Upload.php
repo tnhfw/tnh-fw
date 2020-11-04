@@ -236,7 +236,7 @@
 
             // Set file array
             $this->uploadedFileData = get_instance()->globalvar->files();
-            $this->logger->info('The upload file information are : ' . stringfy_vars($this->uploadedFileData));
+            $this->logger->info('The upload file information are : ' . stringify_vars($this->uploadedFileData));
         }
 
         
@@ -503,7 +503,7 @@
             $this->file['filename']     = $this->filename;
             $this->file['error']        = $this->uploadedFileData[$this->input]['error'];
 
-            $this->logger->info('The upload file information to process is : ' . stringfy_vars($this->file));
+            $this->logger->info('The upload file information to process is : ' . stringify_vars($this->file));
 
             if ($this->uploadHasError()) {
                 return false;

@@ -232,7 +232,7 @@
                 if (!empty($config) && is_array($config)) {
                     get_instance()->config->setAll($config);
                     $this->logger->info('Configuration [' . $configFilePath . '] loaded successfully.');
-                    $this->logger->info('The custom application configuration loaded are listed below: ' . stringfy_vars($config));
+                    $this->logger->info('The custom application configuration loaded are listed below: ' . stringify_vars($config));
                     unset($config);
                 }
             } else {

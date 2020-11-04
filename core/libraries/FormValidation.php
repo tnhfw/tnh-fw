@@ -147,7 +147,7 @@
          * @return object the current instance.
          */
         public function setData(array $data) {
-            $this->logger->debug('Setting the form validation data, the values are: ' . stringfy_vars($data));
+            $this->logger->debug('Setting the form validation data, the values are: ' . stringify_vars($data));
             $this->data = $data;
             return $this;
         }

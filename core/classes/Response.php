@@ -31,6 +31,12 @@
     class Response extends BaseClass {
 
         /**
+         * The HTTP status code
+         * @var  integer
+         */
+        private $status = 200;
+
+        /**
          * The list of request header to send with response
          * @var array
          */
@@ -81,11 +87,10 @@
 
         /**
          * Send the HTTP Response headers
-         * @param  integer $httpCode the HTTP status code
          * @param  array   $headers   the additional headers to add to the existing headers list
          */
-        public function sendHeaders($httpCode = 200, array $headers = array()) {
-            set_http_status_header($httpCode);
+        public function sendHeaders(array $headers = array()) {
+            set_http_status_header($this->getStatus());
             $this->setHeaders($headers);
             $this->setRequiredHeaders();
             //@codeCoverageIgnoreStart
@@ -104,6 +109,26 @@
          */
         public function getHeaders() {
             return $this->headers;
+        }
+
+        /**
+         * Get the HTTP status code
+         * @return integer
+         */
+        public function getStatus() {
+            return $this->status;
+        }
+
+
+        /**
+         * Set the HTTP status value
+         * @param integer $value the new status code
+         *
+         * @return  object the current instance
+         */
+        public function setStatus($code = 200) {
+            $this->status = $code;
+            return $this;
         }
 
         /**
@@ -222,7 +247,7 @@
             //compress the output if is available
             $compressOutputHandler = $this->getCompressOutputHandler();
             ob_start($compressOutputHandler);
-            $this->sendHeaders(200);
+            $this->sendHeaders();
             echo $content;
             ob_end_flush();
         }
@@ -306,7 +331,8 @@
             //compress the output if is available
             $compressOutputHandler = $this->getCompressOutputHandler();
             ob_start($compressOutputHandler);
-            $this->sendHeaders(404);
+            $this->setStatus(404);
+            $this->sendHeaders();
             echo $content;
             ob_end_flush();
         }
@@ -326,7 +352,8 @@
                 require $path;
                 $content = ob_get_clean();
                 $this->finalPageContent = $content;
-                $this->sendHeaders(503);
+                $this->setStatus(503);
+                $this->sendHeaders();
                 echo $content;
             }
             //@codeCoverageIgnoreStart
@@ -427,7 +454,8 @@
                 if (!empty($headerModifiedSince) && $lastModified <= strtotime($headerModifiedSince)) {
                     $this->logger->info('The cache page content is not yet expire for the '
                                          . 'URL [' . $this->currentUrl . '] send 304 header to browser');
-                    $this->sendHeaders(304);
+                    $this->setStatus(304);
+                    $this->sendHeaders();
                     return true;
                 }
             }
@@ -443,7 +471,7 @@
             $this->logger->info('The cache page content is expired or the browser does '
                  . 'not send the HTTP_IF_MODIFIED_SINCE header for the URL [' . $this->currentUrl . '] '
                  . 'send cache headers to tell the browser');
-            $this->sendHeaders(200);
+            $this->sendHeaders();
             //current page cache key
             $pageCacheKey = $this->currentUrlCacheKey;
             //get the cache content

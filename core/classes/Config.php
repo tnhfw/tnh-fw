@@ -64,7 +64,7 @@
             if (array_key_exists($item, $this->config)) {
                 return $this->config[$item];
             }
-            $this->logger->warning('Cannot find config item [' . $item . '] using the default value [' . stringfy_vars($default) . ']');
+            $this->logger->warning('Cannot find config item [' . $item . '] using the default value [' . stringify_vars($default) . ']');
             return $default;
         }
 
@@ -125,7 +125,7 @@
             $this->config = & load_configurations();
             $this->setBaseUrlUsingServerVar();
             $this->logger->info('Configuration initialized successfully');
-            $this->logger->info('The application configuration are listed below: ' . stringfy_vars($this->config));
+            $this->logger->info('The application configuration are listed below: ' . stringify_vars($this->config));
         }
 
 

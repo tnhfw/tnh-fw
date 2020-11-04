@@ -183,7 +183,7 @@
         return rtrim($str);
     }
 
-    function stringfy_vars($var){
+    function stringify_vars($var){
         return print_r($var, true);
     }
 

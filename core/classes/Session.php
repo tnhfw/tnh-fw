@@ -54,10 +54,10 @@
             $sessions = get_instance()->globalvar->session();
             $this->logger->debug('Getting session data for item [' . $item . '] ...');
             if (array_key_exists($item, $sessions)) {
-                $this->logger->info('Found session data for item [' . $item . '] the value is : [' . stringfy_vars($sessions[$item]) . ']');
+                $this->logger->info('Found session data for item [' . $item . '] the value is : [' . stringify_vars($sessions[$item]) . ']');
                 return $sessions[$item];
             }
-            $this->logger->warning('Cannot find session item [' . $item . '] using the default value [' . stringfy_vars($default) . ']');
+            $this->logger->warning('Cannot find session item [' . $item . '] using the default value [' . stringify_vars($default) . ']');
             return $default;
         }
 
@@ -67,7 +67,7 @@
          * @param mixed $value the session item value
          */
         public function set($item, $value) {
-            $this->logger->debug('Setting session data for item [' . $item . '], value [' . stringfy_vars($value) . ']');
+            $this->logger->debug('Setting session data for item [' . $item . '], value [' . stringify_vars($value) . ']');
             get_instance()->globalvar->setSession($item, $value);
         }
 
@@ -85,7 +85,7 @@
                 $return = $sessions[$key];
                 get_instance()->globalvar->removeSession($key);
             } else {
-                $this->logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . stringfy_vars($default) . ']');
+                $this->logger->warning('Cannot find session flash item [' . $key . '] using the default value [' . stringify_vars($default) . ']');
             }
             return $return;
         }

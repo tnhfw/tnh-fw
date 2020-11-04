@@ -257,7 +257,7 @@
         protected function setQueryRunnerError() {
             $error = $this->connection->getPdo()->errorInfo();
             $this->error = isset($error[2]) ? $error[2] : '';
-            $this->logger->error('The database query execution got an error: ' . stringfy_vars($error));
+            $this->logger->error('The database query execution got an error: ' . stringify_vars($error));
             //show error message
             show_error('Query: "' . $this->query . '" Error: ' . $this->error, 'Database Error');
         }
