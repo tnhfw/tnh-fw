@@ -88,9 +88,9 @@
          * @return array
          */
         public function getInfos($totalRows, $currentPageNumber){
-            $numberOfRowPerPage = (int) $this->config['pagination_per_page'];
-            $numberOfPage = (int) ceil($totalRows / $numberOfRowPerPage);
-            $numberOfLink = (int) $this->config['nb_link'];
+            $numberOfRowPerPage = (int)$this->config['pagination_per_page'];
+            $numberOfPage = (int)ceil($totalRows / $numberOfRowPerPage);
+            $numberOfLink = (int)$this->config['nb_link'];
             $infos['current_page'] = $currentPageNumber;
             $infos['num_links'] = $numberOfLink;
             $infos['limit'] = $numberOfRowPerPage;
@@ -121,7 +121,7 @@
             //determine the pagination query string value
             $this->determinePaginationQueryStringValue();
             
-            $currentPageNumber = (int) $currentPageNumber;
+            $currentPageNumber = (int)$currentPageNumber;
             
             if ($currentPageNumber <= 0) {
                 $currentPageNumber = 1;
