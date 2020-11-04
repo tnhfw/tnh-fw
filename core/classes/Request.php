@@ -47,6 +47,12 @@
          * @var string
          */
         private $requestUri = null;
+
+        /**
+         * Json body data
+         * @var array
+         */
+        private $json = array();
 		
         /**
          * Construct new request instance
@@ -61,7 +67,10 @@
             } else if (function_exists('getallheaders')) {
                 $this->header = getallheaders();
             }
+
             //@codeCoverageIgnoreEnd
+            $jsonBody = file_get_contents('php://input');
+            $this->json = json_decode($jsonBody, true);
         }
 
         /**
@@ -170,6 +179,28 @@
                 $this->header[$key] = $value;
             }
             return $this;
+        }
+
+        /**
+         * Get the value for JSON body for given key. if the key is empty will return all values
+         *
+         * @codeCoverageIgnore
+         * @param  string  $key the item key to be fetched
+         * @param  boolean $xss if need apply some XSS rule on the value
+         * @return array|mixed       the item value if the key exists or all array if the key is null
+         */
+        public function json($key = null, $xss = true) {
+            $data = null;
+            if ($key === null) {
+                //return all
+                $data = $this->json;
+            } else if (array_key_exists($key, $this->json)) {
+                $data = $this->json[$key];
+            }
+            if ($xss) {
+                $data = clean_input($data);
+            }
+            return $data;
         }
 
     }
