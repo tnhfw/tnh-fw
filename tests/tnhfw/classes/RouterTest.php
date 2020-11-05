@@ -133,6 +133,37 @@
 			$this->assertSame(0, count($r->getArgs()));
 		}
         
+        public function testSetHttpMethodMatch() {
+            $_SERVER['REQUEST_METHOD'] = 'POST';
+            $r = new Router($this->module);
+            
+            $r->add('/foo', array('POST' => 'testmodule'))
+              ->setRouteUri('/foo')
+              ->setRouteSegments()
+              ->determineRouteParamsInformation();
+          
+            $this->assertSame('testmodule', $r->getModule());
+            $this->assertSame('testmodule', $r->getController());
+			$this->assertSame('index', $r->getMethod());
+			$this->assertSame(0, count($r->getArgs()));
+		}
+        
+        public function testSetHttpMethodNotMatch() {
+            $_SERVER['REQUEST_METHOD'] = 'GET';
+            $r = new Router($this->module);
+            
+            $r->add('/foo', array('POST' => 'testmodule'))
+              ->setRouteUri('/foo')
+              ->setRouteSegments()
+              ->determineRouteParamsInformation();
+          
+            $this->assertNull($r->getModule());
+            $this->assertNull($r->getController());
+			$this->assertSame('index', $r->getMethod());
+			$this->assertSame(0, count($r->getArgs()));
+		}
+        
+        
         
         public function testDetermineRouteParamsFromRequestUriWhenNoModule() {
             $_SERVER['REQUEST_URI'] = '/TestController';

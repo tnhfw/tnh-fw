@@ -74,6 +74,13 @@
         protected $method = 'index';
 
         /**
+         * Whether the current request HTTP method match for the finding
+         * route.
+         * @var boolean
+         */
+        protected $routeMethodMatch = true;
+
+        /**
          * List of argument to pass to the method
          * @var array
          */
@@ -104,6 +111,12 @@
         protected $moduleInstance = null;
 
         /**
+         * The current request HTTP method
+         * @var string
+         */
+        protected $requestMethod = null;
+
+        /**
          * Construct the new Router instance
          *
          * @param object $module the instance of module to use
@@ -122,6 +135,10 @@
             $this->setRouteConfiguration($moduleRouteList);
             $this->logger->info('The routes configuration are listed below: ' 
                                 . stringify_vars($this->routes));
+
+            //Set request method
+            $globals = & class_loader('GlobalVar', 'classes');
+            $this->requestMethod = $globals->server('REQUEST_METHOD');
         }
 
         /**
@@ -347,7 +364,7 @@
             //if can not determine the module/controller/method via the 
             //defined routes configuration we will use
             //the URL like http://domain.com/module/controller/method/arg1/arg2/argn 
-            if (!$this->controller) {
+            if (!$this->controller && $this->routeMethodMatch /* normally if the route method isnot match no need continue */) {
                 $this->logger->info('Cannot determine the routing information ' 
                        . 'using the predefined routes configuration, will use the request URI parameters');
                 //determine route parameters using the route URI param
@@ -376,8 +393,21 @@
             //determine the route parameters information
             $this->determineRouteParamsInformation();
 
+            //if the request method not match
+            if(!$this->routeMethodMatch){
+                 //create the instance of Controller
+                $cError = new Controller();
+                $cError->response->setStatus(405);
+                $cError->response->setFinalPageContent('HTTP method [' . $this->requestMethod . '] not allowed');
+                $cError->response->renderFinalPage();
+                return;
+            }
+
             //Now load the controller if exists
             $this->loadControllerIfExist();
+
+
+            
             
             //if we have 404 error show it
             if ($this->error404) {
@@ -488,6 +518,19 @@
          */
         protected function setRouteParamsUsingPredefinedConfig($findIndex) {
             $callback = $this->callback[$findIndex];
+            //if callback is array so means user defined the HTTP Method
+            if(is_array($callback) && count($callback) > 0){
+                if(array_key_exists($this->requestMethod, $callback)){
+                    $callback = $callback[$this->requestMethod];
+                }
+                else{
+                    //Wrong request method
+                    $this->logger->warning('The request method [' . $this->requestMethod . '] is not allowed');
+                    $this->routeMethodMatch = false;
+                    return;
+                }
+            }
+
             //only one
             if (preg_match('/^([a-z0-9_]+)$/i', $callback)) {
                 $this->logger->info('Callback [' . $callback . '] does not have module or ' 
@@ -559,7 +602,7 @@
                 if (preg_match("#^$uriList$#", $uri, $args)) {
                     $this->logger->info(
                                         'Route found for request URI [' . $uri . '] using the predefined configuration '
-                                        . ' [' . $this->pattern[$index] . '] --> [' . $this->callback[$index] . ']'
+                                        . ' [' . $this->pattern[$index] . '] --> [' . stringify_vars($this->callback[$index]) . ']'
                                     );
                     $findIndex = $index;
                     //stop here
