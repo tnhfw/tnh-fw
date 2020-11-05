@@ -84,6 +84,13 @@
      * $route['article/(:any)'] = 'Article@read';
      * $route['/article/add'] = 'Article@add';
      *
+     * Note 6: you can set route for specific HTTP method(useful for REST API)
+     * 
+     * $route['/users']['GET'] = 'Users@list';
+     * $route['/users/(:num)']['GET'] = 'Users@detail';
+     * $route['/users']['POST'] = 'Users@add';
+     * $route['/users/(:num)']['PUT'] = 'Users@update';
+     * $route['/users']['DELETE'] = 'Users@delete';
      */
 	
     /**
