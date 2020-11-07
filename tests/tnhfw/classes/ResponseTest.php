@@ -81,15 +81,15 @@
         public function testRender() {
             $r = new Response();
             $r->render('testview');
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $this->assertSame('foo', $r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
+            $this->assertSame('foo', $r->getOutput());
      	}
         
         public function testRenderModule() {
             $r = new Response();
             $r->render('testmodule/module_view');
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $this->assertSame('foo_module', $r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
+            $this->assertSame('foo_module', $r->getOutput());
      	}
         
         public function testRenderUsingCurrentControllerModule() {
@@ -97,21 +97,21 @@
             $obj->moduleName= 'testmodule';
             $r = new Response();
             $r->render('module_view');
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $this->assertSame('foo_module', $r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
+            $this->assertSame('foo_module', $r->getOutput());
      	}
         
         public function testRenderReturnedContent() {
             $r = new Response();
             $content = $r->render('testview', array(), true);
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
             $this->assertSame('foo', $content);
      	}
         
         public function testRenderViewNotFound() {
             $r = new Response();
             $r->render('unkownview');
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
      	}
         
         public function testRenderFinalPage() {
@@ -119,27 +119,27 @@
             $obj->benchmark = $this->getMockBuilder('Benchmark')->getMock();
             $r = new Response();
             $r->render('testview');
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $this->assertSame('foo', $r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
+            $this->assertSame('foo', $r->getOutput());
             $r->renderFinalPage();
-            $this->assertSame('foo', $r->getFinalPageRendered());
+            $this->assertSame('foo', $r->getOutput());
      	}
         
-        public function testSetFinalPageContent() {
+        public function testsetOutput() {
             $r = new Response();
             $r->render('testview');
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $r->setFinalPageContent(null);
-            $this->assertNull($r->getFinalPageRendered());
-            $r->setFinalPageContent('bar');
-            $this->assertSame('bar', $r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
+            $r->setOutput(null);
+            $this->assertNull($r->getOutput());
+            $r->setOutput('bar');
+            $this->assertSame('bar', $r->getOutput());
      	}
         
         public function testRenderFinalPageWhenContentIsEmpty() {
             $r = new Response();
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
             $r->renderFinalPage();
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
      	}
         
         
@@ -149,10 +149,10 @@
             $obj->eventdispatcher->addListener('FINAL_VIEW_READY', array($listener, 'responseTestListener'));
             $r = new Response();
             $r->render('testview');
-            $this->assertNotEmpty($r->getFinalPageRendered());
-            $this->assertSame('foo', $r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
+            $this->assertSame('foo', $r->getOutput());
             $r->renderFinalPage();
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
             $obj->eventdispatcher->removeListener('FINAL_VIEW_READY', array($listener, 'responseTestListener'));
      	}
         
@@ -180,9 +180,9 @@
             $obj->view_cache_ttl = 300;
             $r = new Response();
             $r->render('testview');
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
             $r->renderFinalPage();
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
      	}
         
         public function testRenderFinalPageWhenCompressionIsAvailable() {
@@ -192,9 +192,9 @@
            $r = new Response();
            $this->assertTrue($this->canCompressOutput->getValue($r)); 
            $r->render('testview');
-           $this->assertNotEmpty($r->getFinalPageRendered());
+           $this->assertNotEmpty($r->getOutput());
            $r->renderFinalPage();
-           $this->assertNotEmpty($r->getFinalPageRendered());
+           $this->assertNotEmpty($r->getOutput());
      	}
         
         public function testRenderFinalPageFromCache() {
@@ -298,16 +298,16 @@
         public function testSend404(){
             $r = new Response();
             $r->render('404');
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
             $r->send404();
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
         }
         
         public function testSend404WhenContentIsEmpty(){
             $r = new Response();
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
             $r->send404();
-            $this->assertEmpty($r->getFinalPageRendered());
+            $this->assertEmpty($r->getOutput());
         }
         
         public function testSend404WhenCompressionIsAvailable(){
@@ -316,9 +316,9 @@
             
             $r = new Response();
             $r->render('404');
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
             $r->send404();
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
         }
         
         public function testSend404WhenCacheIsEnabled(){
@@ -333,9 +333,9 @@
             
             $r = new Response();
             $r->render('404');
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
             $r->send404();
-            $this->assertNotEmpty($r->getFinalPageRendered());
+            $this->assertNotEmpty($r->getOutput());
         }
         
         public function testSendError(){
@@ -343,7 +343,7 @@
             $data['error'] = 'error message';
             $r = new Response();
             $r->sendError($data);
-            $this->assertContains('error message', $r->getFinalPageRendered());
+            $this->assertContains('error message', $r->getOutput());
         }
                 
         public function testSendErrorWhenCompressionIsAvailable(){
@@ -353,7 +353,7 @@
             $data['error'] = 'error message';
             $r = new Response();
             $r->sendError($data);
-            $this->assertContains('error message', $r->getFinalPageRendered());
+            $this->assertContains('error message', $r->getOutput());
         }
         
 	}

@@ -37,7 +37,7 @@
         private $status = 200;
 
         /**
-         * The list of request header to send with response
+         * The list of request headers to send with response
          * @var array
          */
         private $headers = array();
@@ -46,7 +46,7 @@
          * The final page content to display to user
          * @var string
          */
-        private $finalPageContent = null;
+        private $output = null;
 		
         /**
          * The current request URL
@@ -174,8 +174,8 @@
                 exit;
             }
             echo '<script>
-			location.href = "'.$url . '";
-		 </script>';
+        			location.href = "'.$url . '";
+        		 </script>';
         }
 
         /**
@@ -210,7 +210,8 @@
                 $this->logger->info('Cannot find view [' . $view . '] in module [' . $module . '] '
                                     . 'using the default location');
             }
-	    if (!$path) {
+	        
+            if (!$path) {
                 $path = $this->getDefaultFilePathForView($viewFile);
             }
             $this->logger->info('The view file path to be loaded is [' . $path . ']');
@@ -225,7 +226,7 @@
          * Send the final page output
          */
         public function renderFinalPage() {
-            $content = $this->finalPageContent;
+            $content = $this->output;
             if (!$content) {
                 $this->logger->warning('The final view content is empty.');
                 return;
@@ -241,7 +242,7 @@
                 $this->savePageContentIntoCache($content);
             }
             //update final page content
-            $this->finalPageContent = $content;
+            $this->output = $content;
             $content = $this->replaceElapseTimeAndMemoryUsage($content);
 
             //compress the output if is available
@@ -282,18 +283,18 @@
          * Get the final page to be rendered
          * @return string
          */
-        public function getFinalPageRendered() {
-            return $this->finalPageContent;
+        public function getOutput() {
+            return $this->output;
         }
 
          /**
          * Set the final page to be rendered
-         * @param string $finalPage the content of the final page
+         * @param string $output the content of the final page
          * 
          * @return object
          */
-        public function setFinalPageContent($finalPage) {
-            $this->finalPageContent = $finalPage;
+        public function setOutput($output) {
+            $this->output = $output;
             return $this;
         }
 
@@ -302,7 +303,7 @@
          * routing information for the current request
          */
         public function send404() {
-            $content = $this->finalPageContent;
+            $content = $this->output;
             if (!$content) {
                 $this->logger->warning('The final view content is empty.');
                 return;
@@ -351,7 +352,7 @@
                 extract($data);
                 require $path;
                 $content = ob_get_clean();
-                $this->finalPageContent = $content;
+                $this->output = $content;
                 $this->setStatus(503);
                 $this->sendHeaders();
                 echo $content;
@@ -377,7 +378,7 @@
             $event = get_instance()->eventdispatcher->dispatch(
                                                                 new EventInfo(
                                                                                 'FINAL_VIEW_READY', 
-                                                                                $this->finalPageContent, 
+                                                                                $this->output, 
                                                                                 true
                                                                             )
                                                             );
@@ -601,7 +602,7 @@
                 if ($return) {
                     return $content;
                 }
-                $this->finalPageContent .= $content;
+                $this->output .= $content;
                 $found = true;
             }
             if (!$found) {

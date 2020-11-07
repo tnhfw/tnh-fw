@@ -398,7 +398,7 @@
                  //create the instance of Controller
                 $cError = new Controller();
                 $cError->response->setStatus(405);
-                $cError->response->setFinalPageContent('HTTP method [' . $this->requestMethod . '] not allowed');
+                $cError->response->setOutput('HTTP method [' . $this->requestMethod . '] not allowed');
                 $cError->response->renderFinalPage();
                 return;
             }
@@ -741,7 +741,7 @@
                 //create the instance of Controller
                 $c404 = new Controller();
                 //remove other content set to prevent duplicate view
-                $c404->response->setFinalPageContent(null);
+                $c404->response->setOutput(null);
                 $c404->response->render('404');
                 $c404->response->send404();
             }
