@@ -31,7 +31,7 @@ composer create-project tnhfw/tnh-fw --stability dev
 ```
 #### Using GitHub releases
 - Download the framework using the following link [https://github.com/tnhfw/tnh-fw/releases](https://github.com/tnhfw/tnh-fw/releases)
-- Extract the downloaded file in your web directory (**www, htdocs, web, etc.)** for example **/www/tnh-fw** or with your application name **/www/my-apps**
+- Extract the downloaded file in your web directory (**www, htdocs, web, etc.)** for example **/www/tnh-fw** or using your application name **/www/my-apps**
 
 ### Launch it
 Open your browser with the url like **http://localhost/tnh-fw** or **http://localhost/my-apps** change localhost with your real IP address or domain name.
@@ -43,4 +43,4 @@ See [TESTING.MD](TESTING.MD)
 MIT License See [LICENSE.MD](LICENSE.MD)
 
 ### Documentation 
-Read the doc
+Coming soon, be patient
