@@ -55,7 +55,7 @@
         public function fooListener($e){}
         
         /**
-        * Used in Response::test
+        * Used in Response::testXXX
         */
         public function responseTestListener($e){
             $e->setPayload(null);
