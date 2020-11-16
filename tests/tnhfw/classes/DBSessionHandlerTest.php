@@ -44,7 +44,7 @@
             
             $this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
@@ -71,7 +71,7 @@
 			$this->assertEquals($dbsh->read('foo'), '444');
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 		}
 		
 		public function testWhenDataAlreadyExistDoUpdate(){
@@ -93,7 +93,7 @@
 			
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
@@ -123,7 +123,7 @@
            
 			$this->assertTrue($dbsh->open(null, null));
 			$this->assertTrue($dbsh->close());
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			$this->assertNotEmpty($dbsh->read('foo'));
 			$this->assertEquals($dbsh->read('foo'), '444');
