@@ -52,7 +52,7 @@
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 			$encoded = $this->runPrivateProtectedMethod($dbsh, 'encode', array('foo'));
 			$this->assertNotEmpty($encoded);
@@ -100,14 +100,14 @@
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
 			
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 		}
 		
@@ -130,7 +130,7 @@
 			//put it in expired
 			$this->model->update('foo', array('s_time' => 1234567));
 			
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->write('foo', '444'));
 			
 			//do update of existing data
@@ -138,7 +138,7 @@
 			$this->assertTrue($dbsh->write('foo', '445'));
 			$this->assertEquals($dbsh->read('foo'), '445');	
 			$this->assertTrue($dbsh->destroy('foo'));
-			$this->assertNull($dbsh->read('foo'));
+			$this->assertEmpty($dbsh->read('foo'));
 			$this->assertTrue($dbsh->gc(13));
 		}
 		
