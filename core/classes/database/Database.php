@@ -398,7 +398,12 @@
             } else {
                 $this->logger->info('The result for query [' . $this->query . '] already cached use it');
                 $this->result = $cacheContent;
-                $this->numRows = count($this->result); //TODO check if is_array before use count
+                if ($returnAsList) {
+                    $this->numRows = count($this->result);
+                } else {
+                    //if only one row will be returned
+                    $this->numRows = 1;
+                }
             }
             return $this->result;
         }

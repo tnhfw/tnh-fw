@@ -149,12 +149,14 @@
                 if ($data->{$columns['stime']} < $timeInactivity) {
                     $this->logger->info('Database session data for SID: ' . $sid . ' already expired, destroy it');
                     $this->destroy($sid);
-                    return null;
+                    //Note: need return empty string for compatibility with PHP7
+                    return '';
                 }
                 return $this->decode($data->{$columns['sdata']});
             }
             $this->logger->warning('Database session data for SID: ' . $sid . ' is not valid return false, may be the session ID is wrong');
-            return null;
+            //Note: need return empty string for compatibility with PHP7
+            return '';
         }
 
         /**
