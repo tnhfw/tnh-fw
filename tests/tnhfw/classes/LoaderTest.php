@@ -241,6 +241,21 @@
             $this->assertSame('foo lang', $lg->get('l_test'));
 		}
         
+        public function testLoadLangUsingCustomCode() {            
+            $obj = & get_instance();
+            $lg = $obj->lang;
+            
+            $l = new Loader();
+            $l->lang('test', 'en');
+            
+            $this->assertNotEmpty($lg->getAll());
+            
+            $this->assertSame('foo lang', $lg->get('l_test'));
+            //already exists nothing will be done
+            $l->lang('test');
+            $this->assertSame('foo lang', $lg->get('l_test'));
+		}
+        
         public function testLoadLangInModule() {
             
             $this->config->set('default_language', 'en');

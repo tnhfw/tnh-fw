@@ -245,21 +245,24 @@
          * Load the language
          *
          * @param  string $language the language name to be loaded
+         * @param string $langCode the language code to use, if null will use app current language
          *
          * @return void
          */
-        public function lang($language) {
+        public function lang($language, $langCode = null) {
             $language = str_ireplace('.php', '', $language);
             $language = trim($language, '/\\');
             $language = str_ireplace('lang_', '', $language);
             $file = 'lang_' . $language . '.php';
+            if(!$langCode){
+                //get the current language
+                $langCode = $this->getAppLang();
+            }
             $this->logger->debug('Loading language [' . $language . '] ...');
-            if (isset($this->loaded['lang_' . $language])) {
+            if (isset($this->loaded['lang_' . $langCode . '_' . $language])) {
                 $this->logger->info('Language [' . $language . '] already loaded no need to load it again, cost in performance');
                 return;
             }
-            //get the current language
-            $appLang = $this->getAppLang();
             $languageFilePath = null;
             //first check if this language is in the module
             $this->logger->debug('Checking language [' . $language . '] from module list ...');
@@ -269,7 +272,7 @@
             if (!empty($moduleInfo['file'])) {
                 $file = $moduleInfo['file'];
             }
-            $moduleLanguagePath = get_instance()->module->findLanguageFullPath($language, $appLang, $module);
+            $moduleLanguagePath = get_instance()->module->findLanguageFullPath($language, $langCode, $module);
             if ($moduleLanguagePath) {
                 $this->logger->info('Found language [' . $language . '] from module [' . $module . '], '
                                     . 'the file path is [' . $moduleLanguagePath . '] we will used it');
@@ -278,10 +281,10 @@
                 $this->logger->info('Cannot find language [' . $language . '] from modules using the default location');
             }
             if (!$languageFilePath) {
-                $languageFilePath = $this->getDefaultFilePathForFunctionLanguage($file, 'language', $appLang);
+                $languageFilePath = $this->getDefaultFilePathForFunctionLanguage($file, 'language', $langCode);
             }
             $this->logger->info('The language file path to be loaded is [' . $languageFilePath . ']');
-            $this->loadLanguage($languageFilePath, $language);
+            $this->loadLanguage($languageFilePath, $language, $langCode);
         }
 
         /**
@@ -516,9 +519,10 @@
          * Load the language 
          * @param  string $languageFilePath the file path of the language to load
          * @param  string $language           the language name
+         * @param  string $langCode           the language code to use
          * @return void
          */
-        protected function loadLanguage($languageFilePath, $language) {
+        protected function loadLanguage($languageFilePath, $language, $langCode) {
             if ($languageFilePath) {
                 $lang = array();
                 require_once $languageFilePath;
@@ -531,7 +535,7 @@
                     //free the memory
                     unset($lang);
                 }
-                $this->loaded['lang_' . $language] = $languageFilePath;
+                $this->loaded['lang_' . $langCode . '_' . $language] = $languageFilePath;
                 $this->logger->info('Language [' . $language . '] --> ' . $languageFilePath . ' loaded successfully.');
             } else {
                 show_error('Unable to find language [' . $language . ']');
