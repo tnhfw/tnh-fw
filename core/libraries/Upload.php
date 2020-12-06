@@ -461,7 +461,6 @@
             if ($this->isDirpath($dir)) {
                 if ($this->dirExists($dir)) {
                     $this->destinationDirectory = $dir;
-                    chdir($dir);
                 } else {
                     $this->logger->warning('The upload directory [' . $directory . '] does not exist');
                 }
