@@ -72,4 +72,4 @@
      *  The maximum version of PHP required to use the framework. 
      *  If the version of PHP installed is higher than the required one, then the application will not work.
      */
-    define('TNH_MAX_PHP_VERSION', '7.1');
+    define('TNH_MAX_PHP_VERSION', '8.1');

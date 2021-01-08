@@ -113,6 +113,7 @@
                                                                     'DATABASE_QUERY_START(' . $benchmarkMarkerKey . ')', 
                                                                     'DATABASE_QUERY_END(' . $benchmarkMarkerKey . ')'
                                                                     );
+            $this->logger->info('Query execution time is [' . $responseTime . ' sec]');
                 //TODO use the configuration value for the high response time currently is 1 second
             if ((double) $responseTime >= 1.000000) {
                 $this->logger->warning(
@@ -123,7 +124,7 @@
     		
             if ($this->pdoStatment !== false) {
                 $this->logger->info('No error found for this query');
-                $isSelectQuery = stristr($this->query, 'SELECT') !== false;
+                $isSelectQuery = preg_match('/^(SELECT|SHOW)/i', $this->query) === 1;
                 if ($isSelectQuery) {
                     $this->logger->info('This an SELECT SQL query');
                     $this->setResultForSelect();              

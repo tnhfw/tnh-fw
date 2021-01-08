@@ -16,6 +16,8 @@
             $this->module = new Module();
         }
         
+        
+        
         public function testConstructor() {
             $r = new Router($this->module);
             $rPattern = $this->getPrivateProtectedAttribute('Router', 'pattern');
@@ -49,7 +51,7 @@
         
         public function testCustomUri() {
             $r = new Router($this->module);
-            $r->setRouteUri('users/profile/34/54')
+            $r->setRouteUri('/users/profile/34/54')
               ->setRouteSegments()
               ->determineRouteParamsInformation();
             $this->assertSame('users', $r->getController());
@@ -455,5 +457,6 @@
             $this->assertSame('baz', $args[0]);
             $this->assertSame('123', $args[1]);
 		}
+        
 
 	}

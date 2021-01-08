@@ -475,7 +475,9 @@
             //Remove "/" at the first or folder root
             $rootFolder = trim($rootFolder, $this->uriTrim);
             $segmentString = implode('/', $segment);
-            $segmentString = str_ireplace($rootFolder, '', $segmentString);
+            if(preg_match('#^' . $rootFolder .'#', $segmentString)){
+                $segmentString = substr($segmentString, strlen($rootFolder));
+            }
             //Remove the "/" after replace like "root_folder/foo" => "/foo"
             $segmentString = trim($segmentString, $this->uriTrim);
             if (empty($segmentString)) {

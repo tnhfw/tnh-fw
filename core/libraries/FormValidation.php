@@ -449,7 +449,7 @@
                             '{paramValue}' => $paramValue
                             );
             if ($field2 !== null) {
-                $template['field2}']  = $field2;
+                $template['{field2}']  = $field2;
                 $template['{value2}'] = $this->getFieldValue($field2);
                 $template['{label2}'] = $this->getFieldLabel($field2);
              }     

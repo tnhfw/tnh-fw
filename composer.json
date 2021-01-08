@@ -19,13 +19,13 @@
     },
 	
     "require": {
-        "php": ">=5.4 <7.2",
+        "php": ">=5.4 <8.1",
         "ext-pdo": "*"
     },
 	
     "require-dev": {
         "mikey179/vfsstream": "~1.3",
-        "phpunit/phpunit": ">=4.0 <6"
+        "phpunit/phpunit": ">=4.0 <=9"
     },
 
     "suggest": {

@@ -15,7 +15,7 @@
 ### Requirements 
 You can use **TNH Framework** for web or command line application. For web application: 
 - Any web server **(Apache, nginx, lighttp, etc.)**
-- **PHP >= 5.4**, **PHP 7** 
+- **PHP >= 5.4**, **PHP 7.4** 
 
 For CLI application just PHP executable is needed. 
 
